@@ -1,0 +1,27 @@
+{
+  "name": "Grado Eats",
+  "short_name": "Grado Eats",
+  "description": "Livraison premium à Safi, Maroc",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FDFCF9",
+  "theme_color": "#065F46",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["food", "lifestyle"],
+  "lang": "fr",
+  "dir": "ltr"
+}
