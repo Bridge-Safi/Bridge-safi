@@ -1,6 +1,6 @@
 {
-  "name": "Grado Eats",
-  "short_name": "Grado Eats",
+  "name": "Bridge Eats",
+  "short_name": "Bridge Eats",
   "description": "Livraison premium à Safi, Maroc",
   "start_url": "/",
   "display": "standalone",
@@ -8,20 +8,9 @@
   "theme_color": "#065F46",
   "orientation": "portrait",
   "icons": [
-    {
-      "src": "/logo.jpeg",
-      "sizes": "192x192",
-      "type": "image/jpeg",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/logo.jpeg",
-      "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "any maskable"
-    }
+    { "src": "/logo.jpeg", "sizes": "192x192", "type": "image/jpeg", "purpose": "any maskable" },
+    { "src": "/logo.jpeg", "sizes": "512x512", "type": "image/jpeg", "purpose": "any maskable" }
   ],
   "categories": ["food", "lifestyle"],
-  "lang": "fr",
-  "dir": "ltr"
+  "lang": "fr"
 }
