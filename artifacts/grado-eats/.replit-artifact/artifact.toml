@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Grado Eats"
+version = "1.0.0"
+id = "artifacts/grado-eats"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19406
+
+[services.development]
+run = "pnpm --filter @workspace/grado-eats run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/grado-eats", "run", "build" ]
+publicDir = "artifacts/grado-eats/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19406"
+BASE_PATH = "/"
