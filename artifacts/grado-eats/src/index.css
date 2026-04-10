@@ -6,14 +6,21 @@
   html { scroll-behavior: smooth; }
   body {
     background-color: #FDFCF9;
-    background-image: url('/image_1.png');
-    background-repeat: repeat;
-    background-attachment: fixed;
-    background-size: 250px;
     color: #1A2F23;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url('/image_1.png');
+    background-repeat: repeat;
+    background-size: 250px;
+    opacity: 0.2;
+    pointer-events: none;
+    z-index: -1;
   }
   .rtl { direction: rtl; }
   .ltr { direction: ltr; }
