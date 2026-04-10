@@ -552,10 +552,9 @@ function CheckoutDrawer({ cart, lang, onClose, onQty }: {
 
 // ─── HOME PAGE ────────────────────────────────────────────────────────────────
 
-function HomePage({ lang, t, onAddToCart, menuRef }: {
+function HomePage({ lang, t, onAddToCart }: {
   lang: Lang; t: typeof T.fr;
   onAddToCart: (i: MenuItem) => void;
-  menuRef: React.RefObject<HTMLElement | null>;
 }) {
   const [activeCat,   setActiveCat]   = useState('pizza');
   const [modalItem,   setModalItem]   = useState<MenuItem | null>(null);
@@ -585,7 +584,7 @@ function HomePage({ lang, t, onAddToCart, menuRef }: {
           <h2 className={`text-xl font-black text-white leading-tight mb-1 ${fClass}`}>{t.heroTitle}</h2>
           <p className="text-white/75 text-xs mb-4">{t.heroSub}</p>
           <button
-            onClick={() => menuRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+            onClick={() => document.getElementById('menu-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
             className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-black text-sm transition-all active:scale-95 ${fClass}`}
             style={{ background: 'linear-gradient(135deg,#065F46,#047857)', color: '#FDFCF9', boxShadow: '0 6px 24px rgba(6,95,70,0.4)' }}
           >
@@ -596,7 +595,7 @@ function HomePage({ lang, t, onAddToCart, menuRef }: {
       </section>
 
       {/* ── Menu section ── */}
-      <section ref={menuRef as React.RefObject<HTMLElement>} className="mb-6" style={{ scrollMarginTop: '80px' }}>
+      <section id="menu-section" className="mb-6" style={{ scrollMarginTop: '80px' }}>
         <div className="px-5 mb-3 flex items-center gap-2">
           <span className="text-lg">🍽️</span>
           <p className={`text-[11px] font-black uppercase tracking-widest ${fClass}`} style={{ color: '#065F46' }}>
@@ -957,7 +956,6 @@ export default function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [cart,       setCart]       = useState<CartItem[]>([]);
   const [showCart,   setShowCart]   = useState(false);
-  const menuRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setShowSplash(false), 3000);
@@ -1045,7 +1043,7 @@ export default function App() {
 
       {/* Pages */}
       <main className="max-w-md mx-auto pt-5 pb-28">
-        {page === 'home'     && <HomePage lang={lang} t={t} onAddToCart={addToCart} menuRef={menuRef} />}
+        {page === 'home'     && <HomePage lang={lang} t={t} onAddToCart={addToCart} />}
         {page === 'tracking' && <TrackingPage lang={lang} t={t} />}
         {page === 'contact'  && <ContactPage lang={lang} t={t} />}
       </main>
