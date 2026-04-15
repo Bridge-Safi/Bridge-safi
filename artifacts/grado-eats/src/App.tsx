@@ -1571,70 +1571,49 @@ function ServiceSelectPage({onSelect}:{onSelect:(s:'delivery'|'taxi')=>void}) {
           Choisissez votre service
         </p>
 
-        {/* Two service cards */}
-        <div className="flex items-center justify-center gap-5 w-full">
-          {/* Delivery */}
-          <button onClick={()=>choose('delivery')}
-            className="flex flex-col items-center gap-3 transition-all duration-300 active:scale-95"
-            style={{transform:pressed==='delivery'?'scale(0.93)':'scale(1)'}}>
-            <div className="relative">
-              <div className="absolute inset-0 rounded-full opacity-0 hover:opacity-20 transition-opacity"
-                style={{background:'#065F46',transform:'scale(1.08)'}}/>
-              <div className="rounded-full overflow-hidden" style={{
-                width:148,height:148,
-                border:pressed==='delivery'?'4px solid #065F46':'3.5px solid #D9C5A0',
-                boxShadow:pressed==='delivery'
-                  ?'0 0 0 6px rgba(6,95,70,0.15),0 12px 36px rgba(6,95,70,0.3)'
-                  :'0 8px 28px rgba(6,95,70,0.15)',
-                transition:'all 0.25s',
-              }}>
-                <img src="/logo_delivery.jpeg" alt="Bridge Delivery"
-                  style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
+        {/* Two service cards — identical structure & fixed size */}
+        <div className="flex items-start justify-center gap-4 w-full">
+          {([
+            {key:'delivery' as const, src:'/logo_delivery.jpeg', label:'Bridge Delivery', sub:'Livraison rapide', emoji:'🛵',
+             activeColor:'#065F46', activeShadow:'0 0 0 6px rgba(6,95,70,0.15),0 12px 36px rgba(6,95,70,0.3)', labelColor:'#065F46'},
+            {key:'taxi' as const, src:'/logo_taxi.jpeg', label:'Bridge Taxi', sub:'Confort & style', emoji:'🚖',
+             activeColor:'#B45309', activeShadow:'0 0 0 6px rgba(180,83,9,0.15),0 12px 36px rgba(180,83,9,0.25)', labelColor:'#B45309'},
+          ]).reduce<React.ReactNode[]>((acc,item,i)=>{
+            if(i>0) acc.push(
+              <div key="div" className="flex flex-col items-center gap-1.5 flex-shrink-0" style={{marginTop:'64px'}}>
+                <div className="w-px h-8" style={{background:'#E5E1D8'}}/>
+                <div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/>
+                <div className="w-px h-8" style={{background:'#E5E1D8'}}/>
               </div>
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center text-base"
-                style={{background:'#FDFCF9',border:'2px solid #D9C5A0',boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
-                🛵
-              </div>
-            </div>
-            <div className="text-center mt-1">
-              <p className="font-black text-xs tracking-[0.12em] uppercase" style={{color:'#065F46'}}>Bridge Delivery</p>
-              <p className="font-bold text-[10px] tracking-wide mt-0.5" style={{color:'#9CA3AF'}}>Livraison rapide</p>
-            </div>
-          </button>
-
-          {/* Divider */}
-          <div className="flex flex-col items-center gap-1.5 self-center" style={{marginTop:'-20px'}}>
-            <div className="w-px h-10" style={{background:'#E5E1D8'}}/>
-            <div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/>
-            <div className="w-px h-10" style={{background:'#E5E1D8'}}/>
-          </div>
-
-          {/* Taxi */}
-          <button onClick={()=>choose('taxi')}
-            className="flex flex-col items-center gap-3 transition-all duration-300 active:scale-95"
-            style={{transform:pressed==='taxi'?'scale(0.93)':'scale(1)'}}>
-            <div className="relative">
-              <div className="rounded-full overflow-hidden" style={{
-                width:148,height:148,
-                border:pressed==='taxi'?'4px solid #B45309':'3.5px solid #D9C5A0',
-                boxShadow:pressed==='taxi'
-                  ?'0 0 0 6px rgba(180,83,9,0.15),0 12px 36px rgba(180,83,9,0.25)'
-                  :'0 8px 28px rgba(6,95,70,0.15)',
-                transition:'all 0.25s',
-              }}>
-                <img src="/logo_taxi.jpeg" alt="Bridge Taxi Confort"
-                  style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
-              </div>
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center text-base"
-                style={{background:'#FDFCF9',border:'2px solid #D9C5A0',boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
-                🚖
-              </div>
-            </div>
-            <div className="text-center mt-1">
-              <p className="font-black text-xs tracking-[0.12em] uppercase" style={{color:'#B45309'}}>Bridge Taxi</p>
-              <p className="font-bold text-[10px] tracking-wide mt-0.5" style={{color:'#9CA3AF'}}>Confort & style</p>
-            </div>
-          </button>
+            );
+            const isPressed=pressed===item.key;
+            acc.push(
+              <button key={item.key} onClick={()=>choose(item.key)}
+                className="flex flex-col items-center gap-3 flex-shrink-0 transition-all duration-300 active:scale-95"
+                style={{transform:isPressed?'scale(0.93)':'scale(1)',width:148}}>
+                <div className="relative flex-shrink-0" style={{width:148,height:148}}>
+                  <div className="rounded-full overflow-hidden" style={{
+                    width:148,height:148,
+                    border:isPressed?`4px solid ${item.activeColor}`:'3.5px solid #D9C5A0',
+                    boxShadow:isPressed?item.activeShadow:'0 8px 28px rgba(6,95,70,0.15)',
+                    transition:'all 0.25s',
+                  }}>
+                    <img src={item.src} alt={item.label}
+                      style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
+                  </div>
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center text-base"
+                    style={{background:'#FDFCF9',border:'2px solid #D9C5A0',boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
+                    {item.emoji}
+                  </div>
+                </div>
+                <div className="text-center mt-1">
+                  <p className="font-black text-xs tracking-[0.12em] uppercase" style={{color:item.labelColor}}>{item.label}</p>
+                  <p className="font-bold text-[10px] tracking-wide mt-0.5" style={{color:'#9CA3AF'}}>{item.sub}</p>
+                </div>
+              </button>
+            );
+            return acc;
+          },[])}
         </div>
       </div>
     </div>
