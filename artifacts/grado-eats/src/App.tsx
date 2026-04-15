@@ -1167,7 +1167,17 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
       msg+='\n';
     });
     msg+=t.waMsgFooter(total,name.trim(),addr.trim(),phone.trim());
-    if(gpsCoords) msg+=`\n🗺️ GPS: https://maps.google.com/?q=${gpsCoords}`;
+    if(gpsCoords){
+      const [lat,lng]=gpsCoords.split(',');
+      msg+=`\n\n📍 Navigation livreur :`;
+      msg+=`\n🗺️ Google Maps : https://maps.google.com/?q=${lat},${lng}`;
+      msg+=`\n🔵 Waze : https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
+    } else if(addr.trim()){
+      const q=encodeURIComponent(`${addr.trim()}, Safi, Maroc`);
+      msg+=`\n\n📍 Navigation livreur :`;
+      msg+=`\n🗺️ Google Maps : https://maps.google.com/?q=${q}`;
+      msg+=`\n🔵 Waze : https://waze.com/ul?q=${q}`;
+    }
     return msg;
   };
 
