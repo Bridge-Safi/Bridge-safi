@@ -1832,12 +1832,14 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
       {/* ── Top-left: back to services ── */}
       <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
         <button onClick={onBack}
-          className="flex items-center gap-1 px-2.5 rounded-full font-black text-xs transition-all active:scale-90 hover:scale-110"
-          style={{...pillStyle,height:'38px'}}>
-          <span style={{fontSize:'13px',lineHeight:1}}>🛵</span>
-          <span style={{fontSize:'11px',color:'#D9C5A0',fontWeight:900}}>|</span>
-          <span style={{fontSize:'13px',lineHeight:1}}>🚖</span>
-          <span style={{fontSize:'13px',lineHeight:1}}>←</span>
+          className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl font-black transition-all active:scale-90 hover:scale-110"
+          style={{...pillStyle}}>
+          <div className="flex items-center gap-1">
+            <span style={{fontSize:'13px',lineHeight:1}}>🛵</span>
+            <span style={{fontSize:'10px',color:'#D9C5A0',fontWeight:900}}>|</span>
+            <span style={{fontSize:'13px',lineHeight:1}}>🚖</span>
+          </div>
+          <span style={{fontSize:'11px',lineHeight:1,color:'#065F46',fontWeight:900}}>←</span>
         </button>
       </div>
 
@@ -2053,12 +2055,14 @@ export default function App() {
       {/* ── Top-left: Services back ── */}
       <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
         <button onClick={()=>setService('none')}
-          className="flex items-center gap-1 px-2.5 rounded-full font-black text-xs transition-all active:scale-90 hover:scale-110"
-          style={{...pillStyle, height:'38px'}}>
-          <span style={{fontSize:'13px', lineHeight:1}}>🛵</span>
-          <span style={{fontSize:'11px', color:'#D9C5A0', fontWeight:900}}>|</span>
-          <span style={{fontSize:'13px', lineHeight:1}}>🚖</span>
-          <span style={{fontSize:'13px', lineHeight:1}}>←</span>
+          className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl font-black transition-all active:scale-90 hover:scale-110"
+          style={{...pillStyle}}>
+          <div className="flex items-center gap-1">
+            <span style={{fontSize:'13px',lineHeight:1}}>🛵</span>
+            <span style={{fontSize:'10px',color:'#D9C5A0',fontWeight:900}}>|</span>
+            <span style={{fontSize:'13px',lineHeight:1}}>🚖</span>
+          </div>
+          <span style={{fontSize:'11px',lineHeight:1,color:'#065F46',fontWeight:900}}>←</span>
         </button>
       </div>
 
