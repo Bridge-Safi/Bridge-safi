@@ -1811,18 +1811,47 @@ type Page = 'home'|'restaurant'|'tracking'|'contact';
 const LANG_CYCLE:Lang[]=['fr','en','ar','amz'];
 const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
 
+const NAV_KEY='bridge_nav_state';
+function loadNav() {
+  try {
+    const raw=localStorage.getItem(NAV_KEY);
+    if(!raw) return null;
+    return JSON.parse(raw) as {lang:Lang;service:'none'|'delivery'|'taxi';page:Page;restaurantId:string|null};
+  } catch { return null; }
+}
+
 export default function App() {
-  const [lang,setLang]         = useState<Lang>('fr');
-  const [page,setPage]         = useState<Page>('home');
-  const [showSplash,setShowSplash] = useState(true);
-  const [service,setService]       = useState<'none'|'delivery'|'taxi'>('none');
+  const saved = loadNav();
+
+  const [lang,setLang]         = useState<Lang>(saved?.lang??'fr');
+  const [page,setPage]         = useState<Page>(saved?.page??'home');
+  // Show splash only on very first visit; skip on any reload/reconnection
+  const [showSplash,setShowSplash] = useState(saved===null);
+  const [service,setService]       = useState<'none'|'delivery'|'taxi'>(saved?.service??'none');
   const [cart,setCart]         = useState<CartItem[]>([]);
   const [showCart,setShowCart] = useState(false);
   const [showProfile,setShowProfile] = useState(false);
-  const [selectedRestaurant,setSelectedRestaurant] = useState<Restaurant|null>(null);
+  const [selectedRestaurant,setSelectedRestaurant] = useState<Restaurant|null>(
+    saved?.restaurantId ? (RESTAURANTS.find(r=>r.id===saved.restaurantId)??null) : null
+  );
   const {profile,saveProfile}  = useProfile();
 
-  useEffect(()=>{const t=setTimeout(()=>setShowSplash(false),3000);return()=>clearTimeout(t);},[]);
+  // Splash timer only when shown
+  useEffect(()=>{
+    if(!showSplash) return;
+    const t=setTimeout(()=>setShowSplash(false),3000);
+    return()=>clearTimeout(t);
+  },[showSplash]);
+
+  // Persist nav state on every relevant change
+  useEffect(()=>{
+    try {
+      localStorage.setItem(NAV_KEY,JSON.stringify({
+        lang, service, page,
+        restaurantId: selectedRestaurant?.id ?? null,
+      }));
+    } catch {}
+  },[lang,service,page,selectedRestaurant]);
 
   const t=T[lang]; const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
   const cycleLang=()=>setLang(l=>LANG_CYCLE[(LANG_CYCLE.indexOf(l)+1)%LANG_CYCLE.length]);
