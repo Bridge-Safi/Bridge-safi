@@ -1684,61 +1684,60 @@ function TaxiPage({onBack}:{onBack:()=>void}) {
 
 function SplashScreen() {
   const [progress,setProgress]=useState(0);
+  const [dots,setDots]=useState(0);
   useEffect(()=>{const iv=setInterval(()=>setProgress(p=>Math.min(p+1.8,100)),50);return()=>clearInterval(iv);},[]);
-
-  const CircleCard=({src,title,sub,emoji}:{src:string;title:string;sub:string;emoji:string})=>(
-    <div className="flex flex-col items-center gap-3">
-      <div className="relative">
-        <div className="absolute inset-0 rounded-full animate-pulse opacity-20"
-          style={{background:'#D9C5A0',transform:'scale(1.12)'}}/>
-        <div className="relative rounded-full overflow-hidden flex-shrink-0"
-          style={{width:148,height:148,border:'3px solid #D9C5A0',boxShadow:'0 8px 28px rgba(6,95,70,0.18)'}}>
-          <img src={src} alt={title}
-            style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
-        </div>
-        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center text-base"
-          style={{background:'#FDFCF9',border:'2px solid #D9C5A0',boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
-          {emoji}
-        </div>
-      </div>
-      <div className="text-center mt-2">
-        <p className="font-black text-xs tracking-[0.15em] uppercase" style={{color:'#065F46'}}>{title}</p>
-        <p className="font-bold text-[10px] tracking-wider mt-0.5" style={{color:'#B45309'}}>{sub}</p>
-      </div>
-    </div>
-  );
+  useEffect(()=>{const iv=setInterval(()=>setDots(d=>(d+1)%4),420);return()=>clearInterval(iv);},[]);
 
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center z-50 px-6" style={{background:'#FDFCF9'}}>
-      {/* Header */}
-      <div className="flex flex-col items-center mb-8">
-        <h1 className="font-black tracking-[0.55em] text-3xl" style={{color:'#065F46'}}>BRIDGE</h1>
-        <p className="text-[10px] tracking-widest font-bold mt-1" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
-        <div className="flex items-center gap-2 mt-3">
+    <div className="fixed inset-0 flex flex-col items-center justify-center z-50" style={{background:'#FDFCF9'}}>
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 opacity-[0.035]"
+        style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
+
+      <div className="relative flex flex-col items-center">
+        {/* Main logo circle */}
+        <div className="relative mb-8">
+          {/* Outer pulse ring */}
+          <div className="absolute inset-0 rounded-full animate-pulse"
+            style={{background:'radial-gradient(circle,rgba(217,197,160,0.35) 0%,transparent 70%)',transform:'scale(1.55)'}}/>
+          {/* Logo */}
+          <div className="relative rounded-full overflow-hidden"
+            style={{width:120,height:120,border:'3px solid #D9C5A0',boxShadow:'0 12px 40px rgba(6,95,70,0.2)'}}>
+            <img src="/logo_splash.jpeg" alt="Bridge"
+              style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center',display:'block',transform:'scale(1.22)'}}/>
+          </div>
+          {/* Download badge */}
+          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 flex items-center gap-1"
+            style={{background:'#065F46',boxShadow:'0 4px 12px rgba(6,95,70,0.35)'}}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="white">
+              <path d="M12 16l-6-6h4V4h4v6h4l-6 6z"/><rect x="4" y="18" width="16" height="2" rx="1" fill="white"/>
+            </svg>
+            <span className="text-[9px] font-black tracking-widest text-white">APP</span>
+          </div>
+        </div>
+
+        {/* Brand name */}
+        <h1 className="font-black tracking-[0.55em] text-3xl mb-1" style={{color:'#065F46'}}>BRIDGE</h1>
+        <p className="text-[10px] tracking-widest font-bold" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
+
+        {/* Gold divider */}
+        <div className="flex items-center gap-2 my-5">
           <div className="w-10 h-px" style={{background:'#D9C5A0'}}/>
           <div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/>
           <div className="w-10 h-px" style={{background:'#D9C5A0'}}/>
         </div>
-      </div>
 
-      {/* Two circles */}
-      <div className="flex items-start justify-center gap-5 mb-10">
-        <CircleCard src="/logo_delivery.jpeg" title="Bridge Delivery" sub="🛵 Livraison rapide" emoji="🛵"/>
-        {/* vertical divider */}
-        <div className="flex flex-col items-center self-center gap-1" style={{marginTop:'-8px'}}>
-          <div className="w-px h-10" style={{background:'#E5E1D8'}}/>
-          <div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/>
-          <div className="w-px h-10" style={{background:'#E5E1D8'}}/>
+        {/* Progress bar */}
+        <div className="w-48 h-1.5 rounded-full overflow-hidden mb-2" style={{background:'#E5E1D8'}}>
+          <div className="h-full rounded-full transition-all duration-75"
+            style={{width:`${progress}%`,background:'linear-gradient(to right,#065F46,#059669)'}}/>
         </div>
-        <CircleCard src="/logo_taxi.jpeg" title="Bridge Taxi" sub="🚖 Confort & style" emoji="🚖"/>
-      </div>
 
-      {/* Progress bar */}
-      <div className="w-52 h-1.5 rounded-full overflow-hidden" style={{background:'#E5E1D8'}}>
-        <div className="h-full rounded-full transition-all duration-75"
-          style={{width:`${progress}%`,background:'linear-gradient(to right,#065F46,#059669)'}}/>
+        {/* Loading dots */}
+        <p className="text-[9px] tracking-[0.3em] font-black" style={{color:'#B8AFA4'}}>
+          CHARGEMENT{'·'.repeat(dots)}
+        </p>
       </div>
-      <p className="text-[9px] tracking-widest font-bold mt-2" style={{color:'#9CA3AF'}}>CHARGEMENT...</p>
     </div>
   );
 }
