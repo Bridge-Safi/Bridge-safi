@@ -1394,7 +1394,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
                   {key:'delivery'as const,label:t.delivOption,desc:t.delivOptionDesc,color:'#065F46',selBg:'#D1FAE5',bg:'#F0FDF4'},
                   {key:'collect'as const,label:t.collectOption,desc:t.collectOptionDesc,color:'#B45309',selBg:'#FEF3C7',bg:'#FFFBEB'},
                 ]).map(opt=>(
-                  <button key={opt.key} onClick={()=>{setDelivMode(opt.key);setErr('');}}
+                  <button key={opt.key} onClick={()=>{setDelivMode(opt.key);setErr('');if(opt.key==='collect'&&payMethod==='cash')setPayMethod(null);}}
                     className="flex flex-col items-start p-3 rounded-2xl text-left transition-all active:scale-95"
                     style={{background:delivMode===opt.key?opt.selBg:opt.bg,border:`2px solid ${delivMode===opt.key?opt.color:'#E5E1D8'}`}}>
                     <p className={`font-black text-xs leading-tight mb-0.5 ${fClass}`} style={{color:opt.color}}>{opt.label}</p>
@@ -1496,7 +1496,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
                   <span className="font-black" style={{color:'#065F46'}}>{total} MAD</span>
                 </div>
               </div>
-              {[{key:'cash'as const,icon:'🤝',label:t.cashOption,desc:t.cashOptionDesc,color:'#065F46',bg:'#F0FDF4',selBg:'#D1FAE5'},{key:'card'as const,icon:'💳',label:t.cardOption,desc:t.cardOptionDesc,color:'#4F46E5',bg:'#EEF2FF',selBg:'#E0E7FF'}].map(opt=>(
+              {([{key:'cash'as const,icon:'🤝',label:t.cashOption,desc:t.cashOptionDesc,color:'#065F46',bg:'#F0FDF4',selBg:'#D1FAE5'},{key:'card'as const,icon:'💳',label:t.cardOption,desc:t.cardOptionDesc,color:'#4F46E5',bg:'#EEF2FF',selBg:'#E0E7FF'}] as const).filter(opt=>!(delivMode==='collect'&&opt.key==='cash')).map(opt=>(
                 <button key={opt.key} onClick={()=>setPayMethod(opt.key)}
                   className="w-full flex items-center gap-4 p-4 rounded-2xl mb-3 text-left transition-all active:scale-95"
                   style={{background:payMethod===opt.key?opt.selBg:'#FDFCF9',border:`2px solid ${payMethod===opt.key?opt.color:'#E5E1D8'}`}}>
