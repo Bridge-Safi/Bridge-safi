@@ -1311,10 +1311,10 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
 
 type CheckoutStep='cart'|'form'|'payment'|'card'|'success';
 
-function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
+function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantName}:{
   cart:CartItem[]; lang:Lang; onClose:()=>void;
   onQty:(cartId:string,delta:number)=>void;
-  profile:UserProfile; onClearCart:()=>void;
+  profile:UserProfile; onClearCart:()=>void; restaurantName?:string;
 }) {
   const t=T[lang]; const isAR=lang==='ar'; const fClass=fontClass(lang);
   const [delivMode,setDelivMode]=useState<'delivery'|'collect'>('delivery');
@@ -1337,6 +1337,29 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
   const [cardErr,setCardErr]=useState('');
 
   const autoFilled=!!(profile.name||profile.address||profile.phone);
+
+  const sendOrderToAPI=async(paymentMethod:string)=>{
+    try{
+      const items=cart.map(i=>({name:i.item.names['fr'],qty:i.qty,price:i.totalPerUnit,options:Object.entries(i.selectedOptions).flatMap(([,ids])=>ids)}));
+      await fetch('/api/orders',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          ref:orderRef,
+          service:'delivery',
+          customerName:name.trim(),
+          customerPhone:phone.trim(),
+          customerAddress:delivMode==='collect'?`Click & Collect — ${addr.trim()||'Plateau, Safi'}`:addr.trim(),
+          items,
+          total:Math.round(total*100)/100,
+          deliveryMode:delivMode,
+          paymentMethod,
+          restaurantName:restaurantName||null,
+        }),
+      });
+    }catch(_){/* silent — WhatsApp is still sent */}
+  };
+
   const fmtCard=(v:string)=>v.replace(/\D/g,'').slice(0,16).replace(/(.{4})/g,'$1 ').trim();
   const fmtExp=(v:string)=>{const d=v.replace(/\D/g,'').slice(0,4);return d.length>2?`${d.slice(0,2)}/${d.slice(2)}`:d;};
 
@@ -1579,7 +1602,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
               <button
                 onClick={()=>{
                   if(!payMethod)return;
-                  if(payMethod==='cash'){window.open(`https://wa.me/212764794856?text=${encodeURIComponent(buildWaMsg()+'\n\n'+t.paymentCash)}`,'_blank');setStep('success');}
+                  if(payMethod==='cash'){sendOrderToAPI('cash');window.open(`https://wa.me/212764794856?text=${encodeURIComponent(buildWaMsg()+'\n\n'+t.paymentCash)}`,'_blank');setStep('success');}
                   else setStep('card');
                 }}
                 disabled={!payMethod}
@@ -1628,6 +1651,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
               <button onClick={()=>{
                 if(!cardCVV||cardCVV.length<3){setCardErr(t.fillAll);return;}
                 setCardErr('');
+                sendOrderToAPI('card');
                 const cardMsg=buildWaMsg()+'\n\n'+t.paymentCard+
                   (cardName?`\n${t.cardHolderLabel} : ${cardName}`:'');
                 window.open(`https://wa.me/212764794856?text=${encodeURIComponent(cardMsg)}`,'_blank');
@@ -2204,6 +2228,196 @@ function loadNav() {
   } catch { return null; }
 }
 
+// ─── LIVREUR PANEL ────────────────────────────────────────────────────────────
+
+type OrderStatus = 'pending'|'preparing'|'on_the_way'|'delivered'|'cancelled';
+
+interface ApiOrder {
+  id: number; ref: string; service: string;
+  customerName: string; customerPhone: string; customerAddress: string;
+  items: Array<{name:string;qty:number;price:number}>;
+  total: number; deliveryMode: string; paymentMethod: string;
+  restaurantName: string|null; status: OrderStatus; driverName: string|null;
+  createdAt: string;
+}
+
+const STATUS_LABELS: Record<OrderStatus, {fr:string;en:string;ar:string;amz:string;color:string;bg:string}> = {
+  pending:     {fr:'En attente',en:'Pending',ar:'في الانتظار',amz:'ⴷⴷⴰⵡ',color:'#B45309',bg:'#FEF3C7'},
+  preparing:   {fr:'En préparation',en:'Preparing',ar:'قيد التحضير',amz:'ⵙⴽⴰⵔ',color:'#7C3AED',bg:'#EDE9FE'},
+  on_the_way:  {fr:'En chemin',en:'On the way',ar:'في الطريق',amz:'ⵖ ⵓⵣⵔⵉⵔⵉ',color:'#2563EB',bg:'#DBEAFE'},
+  delivered:   {fr:'Livrée',en:'Delivered',ar:'تم التوصيل',amz:'ⵜⵜⵓⵙⵍⵎⴷ',color:'#065F46',bg:'#D1FAE5'},
+  cancelled:   {fr:'Annulée',en:'Cancelled',ar:'ملغاة',amz:'ⵉⵍⴳⴰ',color:'#DC2626',bg:'#FEE2E2'},
+};
+
+const NEXT_STATUS: Partial<Record<OrderStatus,OrderStatus>> = {
+  pending:'preparing', preparing:'on_the_way', on_the_way:'delivered',
+};
+
+function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
+  const [orders,setOrders] = useState<ApiOrder[]>([]);
+  const [loading,setLoading] = useState(true);
+  const [filter,setFilter] = useState<OrderStatus|'all'>('all');
+  const [driverName,setDriverName] = useState(()=>localStorage.getItem('bridge_driver')||'');
+  const [driverInput,setDriverInput] = useState(driverName);
+  const [loginDone,setLoginDone] = useState(!!driverName);
+  const [updating,setUpdating] = useState<number|null>(null);
+  const fClass=fontClass(lang); const isAR=lang==='ar';
+
+  const fetchOrders=async()=>{
+    try{
+      const r=await fetch('/api/orders');
+      const d=await r.json();
+      setOrders(d.orders||[]);
+    }catch(_){}
+    setLoading(false);
+  };
+
+  useEffect(()=>{if(loginDone){fetchOrders();const id=setInterval(fetchOrders,8000);return()=>clearInterval(id);}}, [loginDone]);
+
+  const updateStatus=async(order:ApiOrder, newStatus:OrderStatus)=>{
+    setUpdating(order.id);
+    try{
+      await fetch(`/api/orders/${order.id}/status`,{
+        method:'PATCH',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({status:newStatus,driverName}),
+      });
+      setOrders(prev=>prev.map(o=>o.id===order.id?{...o,status:newStatus,driverName}:o));
+    }catch(_){}
+    setUpdating(null);
+  };
+
+  const filtered = filter==='all' ? orders : orders.filter(o=>o.status===filter);
+  const pending = orders.filter(o=>o.status==='pending').length;
+
+  if(!loginDone) return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{background:'rgba(0,0,0,0.6)',backdropFilter:'blur(4px)'}}>
+      <div className="bg-white rounded-3xl p-8 w-[90%] max-w-sm shadow-2xl">
+        <div className="text-4xl text-center mb-3">🛵</div>
+        <h2 className={`text-xl font-black text-center mb-1 ${fClass}`} style={{color:'#065F46'}}>Bridge Livreur</h2>
+        <p className="text-xs text-center mb-6" style={{color:'#9CA3AF'}}>Espace réservé aux chauffeurs-livreurs</p>
+        <input value={driverInput} onChange={e=>setDriverInput(e.target.value)}
+          className="w-full border-2 rounded-xl px-4 py-3 text-sm font-bold mb-4 outline-none"
+          style={{borderColor:'#D9C5A0',color:'#1A2F23'}} placeholder="Votre prénom (ex: Youssef)"/>
+        <button onClick={()=>{if(!driverInput.trim())return;localStorage.setItem('bridge_driver',driverInput.trim());setDriverName(driverInput.trim());setLoginDone(true);}}
+          className="w-full py-3 rounded-xl font-black text-white text-sm"
+          style={{background:'linear-gradient(135deg,#065F46,#047857)'}}>
+          Accéder au tableau de bord →
+        </button>
+        <button onClick={onClose} className="w-full mt-3 py-2 rounded-xl text-sm font-bold" style={{color:'#9CA3AF'}}>Annuler</button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className={`fixed inset-0 z-50 flex flex-col ${isAR?'rtl':'ltr'}`} style={{background:'#F9F7F2'}}>
+      {/* Header */}
+      <div className="flex-shrink-0 px-5 pt-5 pb-3" style={{background:'linear-gradient(135deg,#065F46,#047857)',boxShadow:'0 4px 20px rgba(6,95,70,0.3)'}}>
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h2 className="text-white font-black text-lg">🛵 Bridge Livreur</h2>
+            <p className="text-white/70 text-xs">{driverName} · Safi, Maroc</p>
+          </div>
+          <div className="flex items-center gap-2">
+            {pending>0&&<div className="w-6 h-6 rounded-full bg-red-400 flex items-center justify-center text-white text-xs font-black">{pending}</div>}
+            <button onClick={fetchOrders} className="w-8 h-8 rounded-full flex items-center justify-center text-white text-lg" style={{background:'rgba(255,255,255,0.15)'}}>↻</button>
+            <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center text-white font-black" style={{background:'rgba(255,255,255,0.15)'}}>✕</button>
+          </div>
+        </div>
+        {/* Filter pills */}
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          {(['all','pending','preparing','on_the_way','delivered'] as const).map(f=>{
+            const isActive=filter===f;
+            const count=f==='all'?orders.length:orders.filter(o=>o.status===f).length;
+            const label=f==='all'?'Tout':STATUS_LABELS[f as OrderStatus].fr;
+            return (
+              <button key={f} onClick={()=>setFilter(f)}
+                className="flex-shrink-0 px-3 py-1 rounded-full text-xs font-black transition-all"
+                style={{background:isActive?'white':'rgba(255,255,255,0.15)',color:isActive?'#065F46':'white'}}>
+                {label} {count>0&&`(${count})`}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Orders list */}
+      <div className="flex-1 overflow-y-auto px-4 py-4">
+        {loading&&<div className="text-center py-10 text-gray-400 font-bold">Chargement...</div>}
+        {!loading&&filtered.length===0&&(
+          <div className="text-center py-16">
+            <div className="text-5xl mb-4">📭</div>
+            <p className="font-black text-gray-400">Aucune commande</p>
+          </div>
+        )}
+        {filtered.map(order=>{
+          const st=STATUS_LABELS[order.status];
+          const next=NEXT_STATUS[order.status];
+          const isUpdating=updating===order.id;
+          return (
+            <div key={order.id} className="bg-white rounded-2xl mb-3 overflow-hidden shadow-sm" style={{border:'1.5px solid #E5E1D8'}}>
+              {/* Top strip */}
+              <div className="flex items-center justify-between px-4 py-2" style={{background:st.bg}}>
+                <span className="font-black text-xs" style={{color:st.color}}>#{order.ref} · {st.fr}</span>
+                <span className="text-xs font-bold" style={{color:st.color}}>{new Date(order.createdAt).toLocaleTimeString('fr-MA',{hour:'2-digit',minute:'2-digit'})}</span>
+              </div>
+              <div className="px-4 py-3">
+                {/* Customer */}
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center font-black text-white text-sm flex-shrink-0" style={{background:'#065F46'}}>
+                    {order.customerName.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-black text-sm truncate" style={{color:'#1A2F23'}}>{order.customerName}</p>
+                    <a href={`tel:${order.customerPhone}`} className="text-xs font-bold" style={{color:'#065F46'}}>{order.customerPhone}</a>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <p className="font-black text-sm" style={{color:'#065F46'}}>{order.total} MAD</p>
+                    <p className="text-xs" style={{color:'#9CA3AF'}}>{order.paymentMethod==='cash'?'Espèces':'Carte'}</p>
+                  </div>
+                </div>
+                {/* Address */}
+                <div className="flex items-start gap-2 mb-2 px-2 py-1.5 rounded-lg" style={{background:'#F9F7F2'}}>
+                  <span>📍</span>
+                  <p className="text-xs flex-1" style={{color:'#6B7280'}}>{order.customerAddress}</p>
+                  <a href={`https://maps.google.com/?q=${encodeURIComponent(order.customerAddress+', Safi, Maroc')}`} target="_blank" rel="noopener noreferrer"
+                    className="text-xs font-black flex-shrink-0" style={{color:'#4F46E5'}}>Nav →</a>
+                </div>
+                {/* Items */}
+                {order.restaurantName&&<p className="text-xs mb-1 font-bold" style={{color:'#B45309'}}>🍽️ {order.restaurantName}</p>}
+                <div className="mb-3">
+                  {(order.items as Array<{name:string;qty:number;price:number}>).map((it,idx)=>(
+                    <div key={idx} className="flex justify-between text-xs py-0.5">
+                      <span style={{color:'#6B7280'}}>• {it.name} x{it.qty}</span>
+                      <span className="font-bold" style={{color:'#1A2F23'}}>{it.price*it.qty} MAD</span>
+                    </div>
+                  ))}
+                </div>
+                {/* Action */}
+                {order.status!=='delivered'&&order.status!=='cancelled'&&(
+                  <div className="flex gap-2">
+                    <a href={`https://wa.me/${order.customerPhone.replace(/\s+/g,'')}`} target="_blank" rel="noopener noreferrer"
+                      className="flex-1 py-2 rounded-xl text-xs font-black text-center text-white"
+                      style={{background:'#25D366'}}>💬 WhatsApp</a>
+                    {next&&(
+                      <button onClick={()=>updateStatus(order,next)} disabled={isUpdating}
+                        className="flex-1 py-2 rounded-xl text-xs font-black text-white transition-all active:scale-95"
+                        style={{background:isUpdating?'#E5E1D8':'linear-gradient(135deg,#065F46,#047857)'}}>
+                        {isUpdating?'...':next==='preparing'?'▶ Préparer':next==='on_the_way'?'🛵 Partir':next==='delivered'?'✅ Livré':'→'}
+                      </button>
+                    )}
+                  </div>
+                )}
+                {order.driverName&&<p className="text-[10px] mt-2 text-center" style={{color:'#C9BFB2'}}>Pris en charge par {order.driverName}</p>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const saved = loadNav();
 
@@ -2215,6 +2429,7 @@ export default function App() {
   const [cart,setCart]         = useState<CartItem[]>([]);
   const [showCart,setShowCart] = useState(false);
   const [showProfile,setShowProfile] = useState(false);
+  const [showDriver,setShowDriver] = useState(false);
   const [selectedRestaurant,setSelectedRestaurant] = useState<Restaurant|null>(
     saved?.restaurantId ? (RESTAURANTS.find(r=>r.id===saved.restaurantId)??null) : null
   );
@@ -2272,8 +2487,8 @@ export default function App() {
   return (
     <div className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{color:'#1A2F23'}}>
 
-      {/* ── Top-left: Services back ── */}
-      <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
+      {/* ── Top-left: Services back + Driver ── */}
+      <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'right-5':'left-5'}`}>
         <button onClick={()=>setService('none')}
           className="flex items-center gap-0.5 px-1.5 rounded-full transition-all active:scale-90 hover:scale-110"
           style={{...pillStyle, height:'24px', minWidth:'unset'}}>
@@ -2281,6 +2496,11 @@ export default function App() {
           <span style={{fontSize:'8px', color:'#D9C5A0', fontWeight:900}}>|</span>
           <span style={{fontSize:'9px', lineHeight:1}}>🚖</span>
           <span style={{fontSize:'8px', lineHeight:1, color:'#9CA3AF'}}>←</span>
+        </button>
+        <button onClick={()=>setShowDriver(true)}
+          className="flex items-center gap-1 px-2 rounded-full transition-all active:scale-90 hover:scale-110 font-black text-[10px]"
+          style={{...pillStyle, height:'24px', minWidth:'unset', color:'#065F46'}}>
+          <span style={{fontSize:'11px'}}>🛵</span>
         </button>
       </div>
 
@@ -2361,8 +2581,9 @@ export default function App() {
         <p className="text-center text-[9px] pb-2" style={{color:'#C9BFB2'}}>{t.footer}</p>
       </nav>
 
-      {showCart&&<CheckoutDrawer cart={cart} lang={lang} onClose={()=>setShowCart(false)} onQty={adjustQty} profile={profile} onClearCart={clearCart}/>}
+      {showCart&&<CheckoutDrawer cart={cart} lang={lang} onClose={()=>setShowCart(false)} onQty={adjustQty} profile={profile} onClearCart={clearCart} restaurantName={selectedRestaurant?.name}/>}
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
+      {showDriver&&<DriverPanel lang={lang} onClose={()=>setShowDriver(false)}/>}
     </div>
   );
 }
