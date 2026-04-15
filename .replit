@@ -78,3 +78,8 @@ externalPort = 8008
 [[ports]]
 localPort = 19412
 externalPort = 8099
+
+[userenv]
+
+[userenv.shared]
+DRIVER_CODE = "BRIDGE-DRIVER-2025"

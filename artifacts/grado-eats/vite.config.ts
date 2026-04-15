@@ -68,6 +68,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      "/__clerk": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        secure: false,
+      },
     },
     fs: {
       strict: true,

@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useUser } from '@clerk/react';
+import { useLocation } from 'wouter';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Polygon, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -1357,6 +1359,8 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
   onQty:(cartId:string,delta:number)=>void;
   profile:UserProfile; onClearCart:()=>void; restaurantName?:string;
 }) {
+  const { isSignedIn } = useUser();
+  const [, navigate] = useLocation();
   const t=T[lang]; const isAR=lang==='ar'; const fClass=fontClass(lang);
   const [delivMode,setDelivMode]=useState<'delivery'|'collect'>('delivery');
   const baseTotal=cart.reduce((s,i)=>s+i.totalPerUnit*i.qty,0);
@@ -1502,9 +1506,12 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                   <span className={`font-black text-sm ${fClass}`} style={{color:'#6B7280'}}>{t.total}</span>
                   <span className="font-black text-xl" style={{color:'#065F46'}}>{total} MAD</span>
                 </div>
-                <button onClick={()=>setStep('form')} className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
+                <button onClick={()=>{
+                  if(!isSignedIn){onClose();navigate('/sign-in');}
+                  else setStep('form');
+                }} className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
                   style={{background:'linear-gradient(135deg,#065F46,#047857)',boxShadow:'0 6px 20px rgba(6,95,70,0.3)'}}>
-                  {t.checkout} →
+                  {isSignedIn ? `${t.checkout} →` : `🔒 Se connecter pour commander`}
                 </button>
               </div>
             )}
@@ -2342,12 +2349,19 @@ function CountdownTimer({createdAt,onExpire}:{createdAt:string;onExpire:()=>void
 }
 
 function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
+  const { user, isSignedIn, isLoaded } = useUser();
+  const [, navigate] = useLocation();
   const [orders,setOrders] = useState<ApiOrder[]>([]);
   const [loading,setLoading] = useState(true);
   const [filter,setFilter] = useState<OrderStatus|'all'>('all');
   const [driverName,setDriverName] = useState(()=>localStorage.getItem('bridge_driver')||'');
   const [driverInput,setDriverInput] = useState(driverName);
-  const [loginDone,setLoginDone] = useState(!!driverName);
+  // Step: 'name' (enter name), 'code' (enter secret code), 'done' (panel open)
+  const [driverStep,setDriverStep] = useState<'name'|'code'|'done'>(driverName?'done':'name');
+  const [codeInput,setCodeInput] = useState('');
+  const [codeErr,setCodeErr] = useState('');
+  const [codeVerifying,setCodeVerifying] = useState(false);
+  const loginDone = driverStep === 'done';
   const [updating,setUpdating] = useState<number|null>(null);
   const [navModal,setNavModal] = useState<ApiOrder|null>(null);
   const fClass=fontClass(lang); const isAR=lang==='ar';
@@ -2511,24 +2525,95 @@ function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
   const filtered = filter==='all' ? orders : orders.filter(o=>o.status===filter);
   const pending = orders.filter(o=>o.status==='pending').length;
 
-  if(!loginDone) return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{background:'rgba(0,0,0,0.6)',backdropFilter:'blur(4px)'}}>
-      <div className="bg-white rounded-3xl p-8 w-[90%] max-w-sm shadow-2xl">
-        <div className="text-4xl text-center mb-3">🛵</div>
-        <h2 className={`text-xl font-black text-center mb-1 ${fClass}`} style={{color:'#065F46'}}>Bridge Livreur</h2>
-        <p className="text-xs text-center mb-6" style={{color:'#9CA3AF'}}>Espace réservé aux chauffeurs-livreurs</p>
-        <input value={driverInput} onChange={e=>setDriverInput(e.target.value)}
-          className="w-full border-2 rounded-xl px-4 py-3 text-sm font-bold mb-4 outline-none"
-          style={{borderColor:'#D9C5A0',color:'#1A2F23'}} placeholder="Votre prénom (ex: Youssef)"/>
-        <button onClick={()=>{if(!driverInput.trim())return;localStorage.setItem('bridge_driver',driverInput.trim());setDriverName(driverInput.trim());setLoginDone(true);try{audioCtxRef.current=new (window.AudioContext||(window as any).webkitAudioContext)();}catch(_){}}}
-          className="w-full py-3 rounded-xl font-black text-white text-sm"
-          style={{background:'linear-gradient(135deg,#065F46,#047857)'}}>
-          Accéder au tableau de bord →
-        </button>
-        <button onClick={onClose} className="w-full mt-3 py-2 rounded-xl text-sm font-bold" style={{color:'#9CA3AF'}}>Annuler</button>
+  // Écran de connexion livreur — 2 étapes
+  if(!loginDone) {
+    // Chargement Clerk en cours
+    if(!isLoaded) return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{background:'rgba(0,0,0,0.6)'}}>
+        <div className="bg-white rounded-3xl p-8 text-center"><div className="text-4xl mb-3">⏳</div><p className="font-bold text-sm" style={{color:'#065F46'}}>Chargement…</p></div>
       </div>
-    </div>
-  );
+    );
+
+    // L'utilisateur n'est pas connecté → redirection vers connexion
+    if(!isSignedIn) return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{background:'rgba(0,0,0,0.6)',backdropFilter:'blur(4px)'}}>
+        <div className="bg-white rounded-3xl p-8 w-[90%] max-w-sm shadow-2xl text-center">
+          <div className="text-4xl mb-3">🛵</div>
+          <h2 className="text-xl font-black mb-1" style={{color:'#065F46'}}>Bridge Livreur</h2>
+          <p className="text-xs mb-6" style={{color:'#9CA3AF'}}>Connectez-vous pour accéder au panneau</p>
+          <button onClick={()=>{onClose();navigate('/sign-in');}}
+            className="w-full py-3 rounded-xl font-black text-white text-sm mb-3"
+            style={{background:'linear-gradient(135deg,#065F46,#047857)'}}>
+            Se connecter avec mon compte →
+          </button>
+          <button onClick={onClose} className="w-full py-2 rounded-xl text-sm font-bold" style={{color:'#9CA3AF'}}>Annuler</button>
+        </div>
+      </div>
+    );
+
+    // Étape 1 — Prénom
+    if(driverStep==='name') return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{background:'rgba(0,0,0,0.6)',backdropFilter:'blur(4px)'}}>
+        <div className="bg-white rounded-3xl p-8 w-[90%] max-w-sm shadow-2xl">
+          <div className="text-4xl text-center mb-3">🛵</div>
+          <h2 className={`text-xl font-black text-center mb-1 ${fClass}`} style={{color:'#065F46'}}>Bridge Livreur</h2>
+          <p className="text-xs text-center mb-1" style={{color:'#9CA3AF'}}>Connecté : {user?.primaryEmailAddress?.emailAddress}</p>
+          <p className="text-xs text-center mb-5" style={{color:'#9CA3AF'}}>Espace réservé aux chauffeurs-livreurs</p>
+          <input value={driverInput} onChange={e=>setDriverInput(e.target.value)}
+            className="w-full border-2 rounded-xl px-4 py-3 text-sm font-bold mb-4 outline-none"
+            style={{borderColor:'#D9C5A0',color:'#1A2F23'}} placeholder="Votre prénom (ex: Youssef)"/>
+          <button onClick={()=>{if(!driverInput.trim())return;setDriverStep('code');}}
+            className="w-full py-3 rounded-xl font-black text-white text-sm"
+            style={{background:'linear-gradient(135deg,#065F46,#047857)'}}>
+            Continuer →
+          </button>
+          <button onClick={onClose} className="w-full mt-3 py-2 rounded-xl text-sm font-bold" style={{color:'#9CA3AF'}}>Annuler</button>
+        </div>
+      </div>
+    );
+
+    // Étape 2 — Code secret livreur
+    const verifyCode = async()=>{
+      if(!codeInput.trim()){setCodeErr('Entrez le code livreur');return;}
+      setCodeVerifying(true); setCodeErr('');
+      try{
+        const r = await fetch('/api/driver/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:codeInput.trim()})});
+        const d = await r.json();
+        if(d.ok){
+          localStorage.setItem('bridge_driver',driverInput.trim());
+          setDriverName(driverInput.trim());
+          setDriverStep('done');
+          try{audioCtxRef.current=new (window.AudioContext||(window as any).webkitAudioContext)();}catch(_){}
+        } else {
+          setCodeErr('Code incorrect — contactez Bridge Safi');
+        }
+      }catch(_){setCodeErr('Erreur réseau, réessayez');}
+      setCodeVerifying(false);
+    };
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{background:'rgba(0,0,0,0.6)',backdropFilter:'blur(4px)'}}>
+        <div className="bg-white rounded-3xl p-8 w-[90%] max-w-sm shadow-2xl">
+          <button onClick={()=>setDriverStep('name')} className="text-xs font-bold mb-4 flex items-center gap-1" style={{color:'#9CA3AF'}}>← Retour</button>
+          <div className="text-4xl text-center mb-3">🔐</div>
+          <h2 className={`text-xl font-black text-center mb-1 ${fClass}`} style={{color:'#065F46'}}>Code livreur</h2>
+          <p className="text-xs text-center mb-5" style={{color:'#9CA3AF'}}>Saisissez le code secret fourni par Bridge Safi</p>
+          <input value={codeInput} onChange={e=>{setCodeInput(e.target.value);setCodeErr('');}}
+            onKeyDown={e=>e.key==='Enter'&&verifyCode()}
+            type="password"
+            className="w-full border-2 rounded-xl px-4 py-3 text-sm font-bold mb-2 outline-none tracking-widest"
+            style={{borderColor:codeErr?'#DC2626':'#D9C5A0',color:'#1A2F23'}} placeholder="••••••••••••••••"/>
+          {codeErr&&<p className="text-xs mb-3 text-center font-bold" style={{color:'#DC2626'}}>{codeErr}</p>}
+          <button onClick={verifyCode} disabled={codeVerifying}
+            className="w-full py-3 rounded-xl font-black text-white text-sm mt-2"
+            style={{background:codeVerifying?'#9CA3AF':'linear-gradient(135deg,#065F46,#047857)'}}>
+            {codeVerifying?'Vérification…':'Accéder au tableau de bord →'}
+          </button>
+          <button onClick={onClose} className="w-full mt-3 py-2 rounded-xl text-sm font-bold" style={{color:'#9CA3AF'}}>Annuler</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`fixed inset-0 z-50 flex flex-col ${isAR?'rtl':'ltr'}`} style={{background:'#F9F7F2'}}>

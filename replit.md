@@ -11,10 +11,17 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **Package manager**: pnpm
 - **TypeScript version**: 5.9
 - **API framework**: Express 5
-- **Database**: PostgreSQL + Drizzle ORM
-- **Validation**: Zod (`zod/v4`), `drizzle-zod`
-- **API codegen**: Orval (from OpenAPI spec)
+- **Authentication**: Clerk (email/password + Google + social providers)
+- **Routing**: Wouter (client-side)
+- **State**: TanStack React Query
 - **Build**: esbuild (CJS bundle)
+
+## Authentication
+
+- **Customers**: Clerk — email/password, Google (configure providers in Auth pane)
+- **Drivers**: Clerk account + secret driver code (`DRIVER_CODE` env var, default: `BRIDGE-DRIVER-2025`)
+- Sign-in page: `/sign-in`, sign-up page: `/sign-up`
+- Checkout requires sign-in; driver panel requires sign-in + driver code
 
 ## Key Commands
 
