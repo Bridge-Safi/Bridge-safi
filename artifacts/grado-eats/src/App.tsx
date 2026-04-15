@@ -176,7 +176,7 @@ const T = {
     eta:'Arrivée estimée', etaTime:'18 min', courierName:'Youssef A.', courierRating:'4.9',
     contactTitle:"Besoin d'aide ?", contactSub:'Notre équipe est disponible 7j/7',
     whatsapp:'WhatsApp', phone:'Appeler', email:'Email', hours:'Horaires', hoursVal:'8h00 – 23h00',
-    navHome:'Accueil', navTrack:'Suivi', navContact:'Contact',
+    navHome:'Accueil', navTrack:'Suivi', navContact:'Contact', navCart:'Panier',
     footer:'© 2026 Bridge Eats · bridge-eats.com', plateau:'Plateau · Centre-Ville · Bouzidi',
     safiExcl:'Spécialité Safi', selected:'Sélectionné ✓',
     waMsgHeader:'🛍️ Nouvelle commande Bridge Eats\n\n📦 Articles:\n',
@@ -214,7 +214,7 @@ const T = {
     eta:'Estimated arrival', etaTime:'18 min', courierName:'Youssef A.', courierRating:'4.9',
     contactTitle:'Need help?', contactSub:'Our team is available 7 days a week',
     whatsapp:'WhatsApp', phone:'Call us', email:'Email', hours:'Hours', hoursVal:'8:00 AM – 11:00 PM',
-    navHome:'Home', navTrack:'Track', navContact:'Contact',
+    navHome:'Home', navTrack:'Track', navContact:'Contact', navCart:'Cart',
     footer:'© 2026 Bridge Eats · bridge-eats.com', plateau:'Plateau · City Center · Bouzidi',
     safiExcl:'Safi Special', selected:'Selected ✓',
     waMsgHeader:'🛍️ New Bridge Eats order\n\n📦 Items:\n',
@@ -253,7 +253,7 @@ const T = {
     contactTitle:'هل تحتاج مساعدة؟', contactSub:'فريقنا متاح 7 أيام في الأسبوع',
     whatsapp:'واتساب', phone:'اتصل بنا', email:'البريد الإلكتروني',
     hours:'ساعات العمل', hoursVal:'8:00 ص – 11:00 م',
-    navHome:'الرئيسية', navTrack:'تتبع', navContact:'تواصل',
+    navHome:'الرئيسية', navTrack:'تتبع', navContact:'تواصل', navCart:'السلة',
     footer:'© 2026 بريدج إيتس · bridge-eats.com', plateau:'الهضبة · وسط المدينة · بوزيدي',
     safiExcl:'تخصص آسفي', selected:'تم الاختيار ✓',
     waMsgHeader:'🛍️ طلب جديد من بريدج إيتس\n\n📦 الطلبات:\n',
@@ -292,7 +292,7 @@ const T = {
     contactTitle:'ⵜⵙⵔⴰ ⵜⵉⵡⵉⵙⵉ?', contactSub:'ⴰⴳⵔⴰⵡ ⴰⵏⵏ ⵉⵍⵍⴰ 7 ⵓⵙⵙⴰⵏ',
     whatsapp:'WhatsApp', phone:'ⵙⵓⵍ', email:'ⵉⵎⴰⵢⵍ',
     hours:'ⵜⴰⵙⵔⴰⵜ', hoursVal:'8:00 – 23:00',
-    navHome:'ⵜⴰⵣⵡⴰⵔⵜ', navTrack:'ⴰⵙⴽⵍⵙ', navContact:'ⴰⵎⵢⴰⵡⴰⴹ',
+    navHome:'ⵜⴰⵣⵡⴰⵔⵜ', navTrack:'ⴰⵙⴽⵍⵙ', navContact:'ⴰⵎⵢⴰⵡⴰⴹ', navCart:'ⴰⵙⵡⵉⵔ',
     footer:'© 2026 ⴱⵔⵉⴷⵊ ⵉⵢⵜⵙ · bridge-eats.com', plateau:'ⴰⴱⵍⴰⵟⵓ · ⵓⵍⵍⴰ ⵏ ⵜⵎⴷⵉⵏⵜ · ⴱⵓⵣⵉⴷⵉ',
     safiExcl:'ⵏ ⵙⴰⴼⵉ', selected:'ⵉⵜⵜⵓⴼⵔⴰ ✓',
     waMsgHeader:'🛍️ ⵜⴰⵖⵓⵍⵜ ⵜⴰⵎⴰⵢⵏⵓⵜ ⵏ ⴱⵔⵉⴷⵊ ⵉⵢⵜⵙ\n\n📦 ⵉⵙⴽⴰⵔⵏ:\n',
@@ -1795,25 +1795,15 @@ export default function App() {
   return (
     <div className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{color:'#1A2F23'}}>
 
-      {/* ── Top-left: Services back + Cart ── */}
-      <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'right-5':'left-5'}`}>
-        {/* Services switch button */}
+      {/* ── Top-left: Services back ── */}
+      <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
         <button onClick={()=>setService('none')}
           className="flex items-center gap-1 px-2.5 rounded-full font-black text-xs transition-all active:scale-90 hover:scale-110"
-          style={{...pillStyle, height:'38px', position:'relative'}}>
+          style={{...pillStyle, height:'38px'}}>
           <span style={{fontSize:'13px', lineHeight:1}}>←</span>
           <span style={{fontSize:'13px', lineHeight:1}}>🛵</span>
           <span style={{fontSize:'11px', color:'#D9C5A0', fontWeight:900}}>|</span>
           <span style={{fontSize:'13px', lineHeight:1}}>🚖</span>
-        </button>
-        {/* Cart */}
-        <button onClick={()=>setShowCart(true)}
-          className="flex items-center gap-1.5 px-3 rounded-full font-black text-sm transition-all active:scale-90 hover:scale-110"
-          style={pillStyle}>
-          🛒
-          {cartCount>0&&(
-            <span className="text-white text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center" style={{background:'#4F46E5'}}>{cartCount}</span>
-          )}
         </button>
       </div>
 
@@ -1877,6 +1867,19 @@ export default function App() {
               {tab.id==='home'&&page!=='restaurant'&&page==='home'&&<div className="w-5 h-0.5 rounded-full" style={{background:'#065F46'}}/>}
             </button>
           ))}
+          {/* Cart tab */}
+          <button onClick={()=>setShowCart(true)}
+            className="flex-1 flex flex-col items-center gap-1 py-3 transition-all active:scale-90 relative">
+            <span className="text-xl relative">
+              🛒
+              {cartCount>0&&(
+                <span className="absolute -top-1 -right-2 text-white text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center" style={{background:'#4F46E5'}}>{cartCount}</span>
+              )}
+            </span>
+            <span className={`text-[10px] font-black uppercase tracking-wide ${fClass}`} style={{color:cartCount>0?'#4F46E5':'#9CA3AF'}}>
+              {t.navCart||'Panier'}
+            </span>
+          </button>
         </div>
         <p className="text-center text-[9px] pb-2" style={{color:'#C9BFB2'}}>{t.footer}</p>
       </nav>
