@@ -100,6 +100,22 @@ function DeliveryMap({onSet,pin}:{onSet:(coords:string,inside:boolean)=>void; pi
   );
 }
 
+// ─── SWIPE HOOK ───────────────────────────────────────────────────────────────
+function useSwipe(onLeft?: ()=>void, onRight?: ()=>void, minDist=65) {
+  const x0=useRef(0), y0=useRef(0);
+  const onTouchStart=useCallback((e:React.TouchEvent)=>{
+    x0.current=e.touches[0].clientX;
+    y0.current=e.touches[0].clientY;
+  },[]);
+  const onTouchEnd=useCallback((e:React.TouchEvent)=>{
+    const dx=e.changedTouches[0].clientX-x0.current;
+    const dy=e.changedTouches[0].clientY-y0.current;
+    if(Math.abs(dx)<minDist||Math.abs(dx)<Math.abs(dy)*1.5) return;
+    if(dx<0) onLeft?.(); else onRight?.();
+  },[onLeft,onRight,minDist]);
+  return {onTouchStart,onTouchEnd};
+}
+
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 
 type Lang = 'fr' | 'en' | 'ar' | 'amz';
@@ -1825,8 +1841,10 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
     {label:{fr:'Panier',en:'Cart',ar:'السلة',amz:'ⴰⵙⵡⵉⵔ'},icon:'🛒'},
   ];
 
+  const swipeTaxi=useSwipe(undefined,onBack);
+
   return(
-    <div className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{background:'#FDFCF9',color:'#1A2F23'}}>
+    <div {...swipeTaxi} className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{background:'#FDFCF9',color:'#1A2F23'}}>
       <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
 
       {/* ── Top-left: back to services ── */}
@@ -2037,6 +2055,20 @@ export default function App() {
   const handleSelectRestaurant=(r:Restaurant)=>{setSelectedRestaurant(r);setPage('restaurant');};
   const handleBack=()=>{setPage('home');setSelectedRestaurant(null);};
 
+  const TABS:Page[]=['home','tracking','contact'];
+  const swipeLeft=useCallback(()=>{
+    if(page==='restaurant') return;
+    const idx=TABS.indexOf(page);
+    if(idx>=0&&idx<TABS.length-1) setPage(TABS[idx+1]);
+  },[page]);
+  const swipeRight=useCallback(()=>{
+    if(page==='restaurant'){setPage('home');setSelectedRestaurant(null);return;}
+    const idx=TABS.indexOf(page);
+    if(idx>0) setPage(TABS[idx-1]);
+    else setService('none');
+  },[page]);
+  const swipeDelivery=useSwipe(swipeLeft,swipeRight);
+
   if(showSplash) return <SplashScreen/>;
   if(service==='none') return <ServiceSelectPage onSelect={s=>setService(s)}/>;
   if(service==='taxi') return <TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
@@ -2048,7 +2080,7 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{color:'#1A2F23'}}>
+    <div {...swipeDelivery} className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{color:'#1A2F23'}}>
 
       {/* ── Top-left: Services back ── */}
       <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
