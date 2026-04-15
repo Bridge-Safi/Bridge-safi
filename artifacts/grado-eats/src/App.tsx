@@ -43,8 +43,22 @@ function MovingCourier({ step }: { step: number }) {
 // ─── DELIVERY ZONE ────────────────────────────────────────────────────────────
 
 const DELIVERY_ZONE: [number,number][] = [
-  [32.3418,-9.2216],[32.3171,-9.1859],[32.2776,-9.1830],
-  [32.2474,-9.2286],[32.2589,-9.2408],[32.2708,-9.2263],[32.3347,-9.2456],
+  [32.3080,-9.2570], // McDonald's (côte nord-ouest)
+  [32.3200,-9.2450], // Remontée nord
+  [32.3280,-9.2280], // Ijnnane nord
+  [32.3270,-9.2050], // Ijnnane nord-est
+  [32.3160,-9.1820], // R206 est
+  [32.3020,-9.1700], // Lamia nord
+  [32.2880,-9.1750], // Lamia / R204
+  [32.2720,-9.1950], // Azib Draï
+  [32.2580,-9.2120], // Azib Draï sud
+  [32.2420,-9.2310], // Descente sud
+  [32.2200,-9.2480], // P2303 / Route Nsa
+  [32.2100,-9.2600], // Pointe sud-ouest
+  [32.2350,-9.2720], // Côte sud
+  [32.2600,-9.2700], // Bordeaux / côte
+  [32.2820,-9.2650], // Korten
+  [32.3050,-9.2590], // Retour McDonald's
 ];
 
 function pointInPolygon(lat:number, lng:number, poly:[number,number][]): boolean {
