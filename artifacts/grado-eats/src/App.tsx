@@ -1174,7 +1174,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
               <button
                 onClick={()=>{
                   if(!payMethod)return;
-                  if(payMethod==='cash'){window.open(`https://wa.me/212600000000?text=${encodeURIComponent(buildWaMsg())}`,'_blank');setStep('success');}
+                  if(payMethod==='cash'){window.open(`https://wa.me/212764794856?text=${encodeURIComponent(buildWaMsg())}`,'_blank');setStep('success');}
                   else setStep('card');
                 }}
                 disabled={!payMethod}
@@ -1350,10 +1350,10 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
         </div>
       </div>
       {[
-        {href:'https://wa.me/212600000000',bg:'#DCFCE7',border:'#86EFAC',iconBg:'#25D366',icon:(
+        {href:'https://wa.me/212764794856',bg:'#DCFCE7',border:'#86EFAC',iconBg:'#25D366',icon:(
           <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.007-1.374l-.359-.214-3.728.977 1-3.647-.234-.374A9.818 9.818 0 112 12c0-5.422 4.396-9.818 9.818-9.818 5.421 0 9.818 4.396 9.818 9.818 0 5.421-4.397 9.818-9.818 9.818z"/></svg>
-        ),label:t.whatsapp,sub:'+212 6 00 00 00 00'},
-        {href:'tel:+212600000000',bg:'#FDFCF9',border:'#E5E1D8',iconBg:'#F0FDF4',iconBorder:'#BBF7D0',icon:<span className="text-xl">📞</span>,label:t.phone,sub:'+212 6 00 00 00 00'},
+        ),label:t.whatsapp,sub:'+212 7 64 79 48 56'},
+        {href:'tel:+212764794856',bg:'#FDFCF9',border:'#E5E1D8',iconBg:'#F0FDF4',iconBorder:'#BBF7D0',icon:<span className="text-xl">📞</span>,label:t.phone,sub:'+212 7 64 79 48 56'},
         {href:'mailto:contact@bridge-eats.com',bg:'#FDFCF9',border:'#E5E1D8',iconBg:'#FEF9EE',iconBorder:'#FDE68A',icon:<span className="text-xl">✉️</span>,label:t.email,sub:'contact@bridge-eats.com'},
       ].map((item,i)=>(
         <a key={i} href={item.href} target={item.href.startsWith('http')?'_blank':undefined} rel="noopener noreferrer"
@@ -1486,7 +1486,7 @@ export default function App() {
       </div>
 
       {/* ── WhatsApp float ── */}
-      <a href="https://wa.me/212600000000" target="_blank" rel="noopener noreferrer"
+      <a href="https://wa.me/212764794856" target="_blank" rel="noopener noreferrer"
         className={`fixed bottom-28 z-40 w-14 h-14 rounded-full flex items-center justify-center transition-all active:scale-90 hover:scale-110 ${isAR?'left-5':'right-5'}`}
         style={{background:'#25D366',boxShadow:'0 6px 24px rgba(37,211,102,0.4)'}}>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.007-1.374l-.359-.214-3.728.977 1-3.647-.234-.374A9.818 9.818 0 112 12c0-5.422 4.396-9.818 9.818-9.818 5.421 0 9.818 4.396 9.818 9.818 0 5.421-4.397 9.818-9.818 9.818z"/></svg>
