@@ -157,7 +157,7 @@ const T = {
     cartTitle:'Votre Panier', cartEmpty:'Votre panier est vide', total:'Total',
     checkout:'Commander', checkoutTitle:'Vos coordonnées',
     nameLabel:'Votre prénom', addrLabel:'Adresse à Safi', phoneLabel:'Numéro de téléphone',
-    namePh:'Ex: Youssef', addrPh:'Quartier, rue, numéro...', phonePh:'06 00 00 00 00',
+    namePh:'Ex: Youssef', addrPh:'Ex: Plateau, Av. Hassan II, Safi', phonePh:'06 00 00 00 00',
     fillAll:'Merci de remplir tous les champs', continueBtn:'Continuer →',
     payModeTitle:'Mode de Paiement',
     cashOption:'Paiement à la livraison', cashOptionDesc:'Payez en espèces à la réception · Gratuit',
@@ -214,7 +214,7 @@ const T = {
     cartTitle:'Your Cart', cartEmpty:'Your cart is empty', total:'Total',
     checkout:'Order Now', checkoutTitle:'Your Details',
     nameLabel:'Your name', addrLabel:'Address in Safi', phoneLabel:'Phone number',
-    namePh:'e.g. Youssef', addrPh:'Neighbourhood, street...', phonePh:'06 00 00 00 00',
+    namePh:'e.g. Youssef', addrPh:'e.g. Plateau, Av. Hassan II, Safi', phonePh:'06 00 00 00 00',
     fillAll:'Please fill in all fields', continueBtn:'Continue →',
     payModeTitle:'Payment Method',
     cashOption:'Cash on Delivery', cashOptionDesc:'Pay cash upon receipt · Free',
@@ -270,7 +270,7 @@ const T = {
     cartTitle:'سلة الطلبات', cartEmpty:'السلة فارغة', total:'المجموع',
     checkout:'اطلب الآن', checkoutTitle:'بياناتك',
     nameLabel:'اسمك', addrLabel:'عنوانك في آسفي', phoneLabel:'رقم الهاتف',
-    namePh:'مثال: يوسف', addrPh:'الحي، الشارع، الرقم...', phonePh:'06 00 00 00 00',
+    namePh:'مثال: يوسف', addrPh:'مثال: الهضبة، ش. الحسن الثاني، آسفي', phonePh:'06 00 00 00 00',
     fillAll:'يرجى ملء جميع الحقول', continueBtn:'متابعة →',
     payModeTitle:'طريقة الدفع',
     cashOption:'الدفع عند الاستلام', cashOptionDesc:'ادفع نقداً عند استلام طلبك · مجاني',
@@ -327,7 +327,7 @@ const T = {
     cartTitle:'ⵜⵓⴽⴽⵙⴰ', cartEmpty:'ⵜⵓⴽⴽⵙⴰ ⵉⵔⵉⵔⵉ', total:'ⴰⵎⵎⴰⵙ',
     checkout:'ⵔⵏⵓ ⴰⴷ', checkoutTitle:'ⵉⵙⴼⴰⵡⵏ ⵏⵏⴽ',
     nameLabel:'ⵉⵙⵎ ⵏⵏⴽ', addrLabel:'ⵜⴰⵙⵓⵏⵜ ⵖ ⵙⴰⴼⵉ', phoneLabel:'ⴰⵏⵓⵎⵔ ⵏ ⵓⵙⵓⵍ',
-    namePh:'ⴰⵎ: ⵢⵓⵙⴼ', addrPh:'ⵜⴰⵎⴷⵉⵏⵜ, ⵜⴰⵣⵇⵇⴰ...', phonePh:'06 00 00 00 00',
+    namePh:'ⴰⵎ: ⵢⵓⵙⴼ', addrPh:'ⴰⵎ: ⴰⴱⵍⴰⵟⵓ, ⵙⴰⴼⵉ', phonePh:'06 00 00 00 00',
     fillAll:'ⵎⵍⴰ ⵉⵍⵉⵙ ⴽⵓⵍⵍⵓ ⵉⴳⵎⴰⵎⵏ', continueBtn:'ⵙⴷⴷⵉⴷ →',
     payModeTitle:'ⴰⵏⴰⵡ ⵏ ⵓⵙⵙⴼⵍⵍⴷ',
     cashOption:'ⴰⴷⵔⵉⵎ ⵎⵎⵉ ⵢⴰⵙⵍⵎⴷ', cashOptionDesc:'ⵙⵙⴼⵍⵍⴷ ⵙ ⵓⴷⵔⵉⵎ · ⵉⵥⵍⵉ',
@@ -827,19 +827,26 @@ function AddressAutocomplete({label,value,onChange,placeholder,lang,error}:{
     timerRef.current=setTimeout(async()=>{
       setLoading(true);
       try{
-        const url=`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=6&lang=fr&lat=32.2994&lon=-9.2372&location_bias_scale=0.5&bbox=-9.35,32.15,-9.10,32.42`;
-        const res=await fetch(url);
-        const data=await res.json();
-        const items=(data.features||[]).map((f:any)=>{
-          const p=f.properties;
-          return [p.name,p.street,p.housenumber,p.city||'Safi'].filter(Boolean).join(', ');
-        }).filter(Boolean) as string[];
+        // Nominatim — filtré strictement sur Maroc (countrycodes=ma) + boîte Safi (bounded=1)
+        const url=`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+' Safi')}&format=json&countrycodes=ma&viewbox=-9.35,32.42,-9.10,32.15&bounded=1&limit=6&addressdetails=1&accept-language=fr`;
+        const res=await fetch(url,{headers:{'Accept-Language':'fr'}});
+        const data:any[]=await res.json();
+        const items=data.map((f:any)=>{
+          const a=f.address||{};
+          const parts=[
+            a.road||a.pedestrian||a.footway||'',
+            a.house_number||'',
+            a.suburb||a.quarter||a.neighbourhood||'',
+            a.city||a.town||a.village||'Safi',
+          ].filter(Boolean);
+          return parts.join(', ');
+        }).filter(Boolean);
         const unique=[...new Set(items)];
         setSuggestions(unique);
         setOpen(unique.length>0);
       }catch{setSuggestions([]);}
       finally{setLoading(false);}
-    },350);
+    },400);
   };
 
   return(
