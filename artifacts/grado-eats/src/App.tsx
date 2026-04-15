@@ -2269,6 +2269,38 @@ const NEXT_STATUS: Partial<Record<OrderStatus,OrderStatus>> = {
   pending:'preparing', preparing:'on_the_way', on_the_way:'delivered',
 };
 
+const PENDING_TIMEOUT_SEC = 5 * 60;
+
+function CountdownTimer({createdAt,onExpire}:{createdAt:string;onExpire:()=>void}) {
+  const deadline = new Date(createdAt).getTime() + PENDING_TIMEOUT_SEC*1000;
+  const calc = ()=>Math.max(0, Math.floor((deadline - Date.now())/1000));
+  const [rem, setRem] = useState(calc);
+  const firedRef = useRef(false);
+  useEffect(()=>{
+    const initial=calc();
+    if(initial<=0&&!firedRef.current){firedRef.current=true;onExpire();return;}
+    const id=setInterval(()=>{
+      const r=calc();
+      setRem(r);
+      if(r<=0&&!firedRef.current){firedRef.current=true;clearInterval(id);onExpire();}
+    },1000);
+    return()=>clearInterval(id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]);
+  const mins=Math.floor(rem/60);
+  const secs=rem%60;
+  const urgent=rem<90&&rem>0;
+  if(rem<=0) return <span className="text-[10px] font-black px-2 py-0.5 rounded-full" style={{background:'#FEE2E2',color:'#DC2626'}}>Expiré ✕</span>;
+  return (
+    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full flex-shrink-0"
+      style={{background:urgent?'#FEE2E2':'#ECFDF5',border:`1.5px solid ${urgent?'#FCA5A5':'#6EE7B7'}`}}>
+      <span style={{fontSize:'10px',fontWeight:900,color:urgent?'#DC2626':'#059669',fontVariantNumeric:'tabular-nums',letterSpacing:'0.02em'}}>
+        ⏱ {mins}:{secs.toString().padStart(2,'0')}
+      </span>
+    </div>
+  );
+}
+
 function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
   const [orders,setOrders] = useState<ApiOrder[]>([]);
   const [loading,setLoading] = useState(true);
@@ -2278,12 +2310,44 @@ function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
   const [loginDone,setLoginDone] = useState(!!driverName);
   const [updating,setUpdating] = useState<number|null>(null);
   const fClass=fontClass(lang); const isAR=lang==='ar';
+  const knownIdsRef = useRef<Set<number>>(new Set());
+  const audioCtxRef = useRef<AudioContext|null>(null);
+  const expiredIdsRef = useRef<Set<number>>(new Set());
+
+  const playRing = ()=>{
+    try{
+      if(!audioCtxRef.current) audioCtxRef.current = new (window.AudioContext||(window as any).webkitAudioContext)();
+      const ctx = audioCtxRef.current;
+      if(ctx.state==='suspended') ctx.resume();
+      const now = ctx.currentTime;
+      for(let i=0;i<3;i++){
+        const t = now + i*1.5;
+        [420,480].forEach(freq=>{
+          const osc=ctx.createOscillator();
+          const gain=ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.type='sine'; osc.frequency.value=freq;
+          gain.gain.setValueAtTime(0,t);
+          gain.gain.linearRampToValueAtTime(0.28, t+0.06);
+          gain.gain.setValueAtTime(0.28, t+0.75);
+          gain.gain.linearRampToValueAtTime(0, t+0.9);
+          osc.start(t); osc.stop(t+1.0);
+        });
+      }
+    }catch(_){}
+  };
 
   const fetchOrders=async()=>{
     try{
       const r=await fetch('/api/orders');
       const d=await r.json();
-      setOrders(d.orders||[]);
+      const fresh:ApiOrder[] = d.orders||[];
+      setOrders(prev=>{
+        const newPending = fresh.filter(o=>o.status==='pending'&&!knownIdsRef.current.has(o.id));
+        if(newPending.length>0) playRing();
+        fresh.forEach(o=>knownIdsRef.current.add(o.id));
+        return fresh;
+      });
     }catch(_){}
     setLoading(false);
   };
@@ -2303,6 +2367,12 @@ function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
     setUpdating(null);
   };
 
+  const handleExpire=(order:ApiOrder)=>{
+    if(expiredIdsRef.current.has(order.id)) return;
+    expiredIdsRef.current.add(order.id);
+    updateStatus(order,'cancelled');
+  };
+
   const filtered = filter==='all' ? orders : orders.filter(o=>o.status===filter);
   const pending = orders.filter(o=>o.status==='pending').length;
 
@@ -2315,7 +2385,7 @@ function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
         <input value={driverInput} onChange={e=>setDriverInput(e.target.value)}
           className="w-full border-2 rounded-xl px-4 py-3 text-sm font-bold mb-4 outline-none"
           style={{borderColor:'#D9C5A0',color:'#1A2F23'}} placeholder="Votre prénom (ex: Youssef)"/>
-        <button onClick={()=>{if(!driverInput.trim())return;localStorage.setItem('bridge_driver',driverInput.trim());setDriverName(driverInput.trim());setLoginDone(true);}}
+        <button onClick={()=>{if(!driverInput.trim())return;localStorage.setItem('bridge_driver',driverInput.trim());setDriverName(driverInput.trim());setLoginDone(true);try{audioCtxRef.current=new (window.AudioContext||(window as any).webkitAudioContext)();}catch(_){}}}
           className="w-full py-3 rounded-xl font-black text-white text-sm"
           style={{background:'linear-gradient(135deg,#065F46,#047857)'}}>
           Accéder au tableau de bord →
@@ -2342,7 +2412,7 @@ function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
         </div>
         {/* Filter pills */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {(['all','pending','preparing','on_the_way','delivered'] as const).map(f=>{
+          {(['all','pending','preparing','on_the_way','delivered','cancelled'] as const).map(f=>{
             const isActive=filter===f;
             const count=f==='all'?orders.length:orders.filter(o=>o.status===f).length;
             const label=f==='all'?'Tout':STATUS_LABELS[f as OrderStatus].fr;
@@ -2375,7 +2445,10 @@ function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
               {/* Top strip */}
               <div className="flex items-center justify-between px-4 py-2" style={{background:st.bg}}>
                 <span className="font-black text-xs" style={{color:st.color}}>#{order.ref} · {st.fr}</span>
-                <span className="text-xs font-bold" style={{color:st.color}}>{new Date(order.createdAt).toLocaleTimeString('fr-MA',{hour:'2-digit',minute:'2-digit'})}</span>
+                {order.status==='pending'
+                  ? <CountdownTimer key={`cd-${order.id}`} createdAt={order.createdAt} onExpire={()=>handleExpire(order)}/>
+                  : <span className="text-xs font-bold" style={{color:st.color}}>{new Date(order.createdAt).toLocaleTimeString('fr-MA',{hour:'2-digit',minute:'2-digit'})}</span>
+                }
               </div>
               <div className="px-4 py-3">
                 {/* Customer */}
