@@ -1428,6 +1428,9 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
         msg+=`\n🔵 Waze : https://waze.com/ul?q=${q}`;
       }
     }
+    // Lien direct vers le panneau livreur (admin reçoit ça dans WhatsApp)
+    const panelUrl = `${window.location.origin}?livreur=1`;
+    msg += `\n\n━━━━━━━━━━━━━━━━━━━━\n🛵 *Panneau livreur Bridge* :\n${panelUrl}`;
     return msg;
   };
 
@@ -2767,7 +2770,17 @@ export default function App() {
   const [cart,setCart]         = useState<CartItem[]>([]);
   const [showCart,setShowCart] = useState(false);
   const [showProfile,setShowProfile] = useState(false);
-  const [showDriver,setShowDriver] = useState(false);
+  const [showDriver,setShowDriver] = useState(()=>{
+    // Auto-ouvre le panneau livreur si ?livreur=1 dans l'URL
+    const hasParam = new URLSearchParams(window.location.search).has('livreur');
+    if(hasParam){
+      // Nettoie l'URL sans rechargement
+      const url = new URL(window.location.href);
+      url.searchParams.delete('livreur');
+      window.history.replaceState({},'',url.toString());
+    }
+    return hasParam;
+  });
   const [selectedRestaurant,setSelectedRestaurant] = useState<Restaurant|null>(
     saved?.restaurantId ? (RESTAURANTS.find(r=>r.id===saved.restaurantId)??null) : null
   );
