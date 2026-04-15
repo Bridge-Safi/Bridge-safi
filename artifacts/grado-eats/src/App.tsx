@@ -89,7 +89,8 @@ function MapClickLayer({onPick}:{onPick:(lat:number,lng:number,inside:boolean)=>
 function DeliveryMap({onSet,pin}:{onSet:(coords:string,inside:boolean)=>void; pin:[number,number]|null}) {
   return (
     <MapContainer center={[32.2994,-9.2372]} zoom={13}
-      style={{height:220,borderRadius:14,marginBottom:12,zIndex:0}} scrollWheelZoom={false}>
+      style={{height:220,borderRadius:14,marginBottom:12,zIndex:0}} scrollWheelZoom={false}
+      maxBounds={[[32.18,-9.265],[32.36,-9.13]]} maxBoundsViscosity={1.0} minZoom={12}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://osm.org">OpenStreetMap</a>'/>
       <Polygon positions={DELIVERY_ZONE} pathOptions={{color:'#065F46',fillColor:'#2ecc71',fillOpacity:0.18,weight:2,dashArray:'6,4'}}/>
@@ -680,6 +681,80 @@ function Field({label,value,onChange,placeholder,type='text',lang,error}:{label:
   );
 }
 
+// ─── ADDRESS AUTOCOMPLETE (Photon / OSM) ──────────────────────────────────────
+
+function AddressAutocomplete({label,value,onChange,placeholder,lang,error}:{
+  label:string; value:string; onChange:(v:string)=>void;
+  placeholder:string; lang:Lang; error?:boolean;
+}) {
+  const fClass=fontClass(lang);
+  const [suggestions,setSuggestions]=useState<string[]>([]);
+  const [open,setOpen]=useState(false);
+  const [loading,setLoading]=useState(false);
+  const timerRef=useRef<ReturnType<typeof setTimeout>|null>(null);
+  const wrapRef=useRef<HTMLDivElement>(null);
+
+  useEffect(()=>{
+    const h=(e:MouseEvent)=>{if(wrapRef.current&&!wrapRef.current.contains(e.target as Node))setOpen(false);};
+    document.addEventListener('mousedown',h);
+    return()=>document.removeEventListener('mousedown',h);
+  },[]);
+
+  const fetchSuggestions=(q:string)=>{
+    if(q.length<2){setSuggestions([]);setOpen(false);return;}
+    if(timerRef.current)clearTimeout(timerRef.current);
+    timerRef.current=setTimeout(async()=>{
+      setLoading(true);
+      try{
+        const url=`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=6&lang=fr&lat=32.2994&lon=-9.2372&location_bias_scale=0.5&bbox=-9.35,32.15,-9.10,32.42`;
+        const res=await fetch(url);
+        const data=await res.json();
+        const items=(data.features||[]).map((f:any)=>{
+          const p=f.properties;
+          return [p.name,p.street,p.housenumber,p.city||'Safi'].filter(Boolean).join(', ');
+        }).filter(Boolean) as string[];
+        const unique=[...new Set(items)];
+        setSuggestions(unique);
+        setOpen(unique.length>0);
+      }catch{setSuggestions([]);}
+      finally{setLoading(false);}
+    },350);
+  };
+
+  return(
+    <div className="mb-4 relative" ref={wrapRef}>
+      <label className={`block text-xs font-black mb-1.5 ${fClass}`} style={{color:'#065F46'}}>{label}</label>
+      <div className="relative">
+        <input type="text" value={value} autoComplete="off"
+          onChange={e=>{onChange(e.target.value);fetchSuggestions(e.target.value);}}
+          placeholder={placeholder}
+          className={`w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all ${fClass}`}
+          style={{background:error?'#FEF2F2':'#F9F7F2',border:`2px solid ${error?'#FCA5A5':'#E5E1D8'}`,color:'#1A2F23',paddingRight:'40px'}}
+          onFocus={e=>{e.currentTarget.style.borderColor='#065F46';}}
+          onBlur={e=>{e.currentTarget.style.borderColor=error?'#FCA5A5':'#E5E1D8';}}/>
+        {loading
+          ?<div className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 animate-spin" style={{borderColor:'#065F46',borderTopColor:'transparent'}}/>
+          :value&&<button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-base leading-none"
+              onClick={()=>{onChange('');setSuggestions([]);setOpen(false);}}>✕</button>
+        }
+      </div>
+      {open&&suggestions.length>0&&(
+        <div className="absolute z-[200] w-full mt-1 rounded-xl overflow-hidden"
+          style={{background:'#FDFCF9',border:'1.5px solid #E5E1D8',boxShadow:'0 8px 28px rgba(0,0,0,0.13)'}}>
+          {suggestions.map((s,i)=>(
+            <button key={i} type="button"
+              className={`w-full text-left px-4 py-3 text-xs font-medium transition-colors active:bg-green-50 hover:bg-green-50 ${fClass}`}
+              style={{color:'#1A2F23',borderBottom:i<suggestions.length-1?'1px solid #F3F4F6':'none'}}
+              onMouseDown={()=>{onChange(s);setOpen(false);setSuggestions([]);}}>
+              <span className="mr-1.5" style={{color:'#065F46'}}>📍</span>{s}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── RESTAURANT CARD (Home) ───────────────────────────────────────────────────
 
 function RestaurantCard({r,lang,t,onClick}:{r:Restaurant;lang:Lang;t:typeof T.fr;onClick:()=>void}) {
@@ -1213,7 +1288,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
                 </div>
               )}
               <Field label={t.nameLabel} value={name} onChange={v=>{setName(v);setErr('');}} placeholder={t.namePh} lang={lang} error={!!err&&!name.trim()}/>
-              <Field label={t.addrLabel} value={addr} onChange={v=>{setAddr(v);setErr('');}} placeholder={t.addrPh} lang={lang} error={!!err&&!addr.trim()}/>
+              <AddressAutocomplete label={t.addrLabel} value={addr} onChange={v=>{setAddr(v);setErr('');}} placeholder={t.addrPh} lang={lang} error={!!err&&!addr.trim()}/>
               <Field label={t.phoneLabel} value={phone} onChange={v=>{setPhone(v);setErr('');}} placeholder={t.phonePh} type="tel" lang={lang} error={!!err&&!phone.trim()}/>
               {err&&<p className="text-xs font-bold -mt-2 mb-3" style={{color:'#DC2626'}}>{err}</p>}
             </div>
