@@ -2354,6 +2354,7 @@ function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
   const knownIdsRef = useRef<Set<number>>(new Set());
   const audioCtxRef = useRef<AudioContext|null>(null);
   const expiredIdsRef = useRef<Set<number>>(new Set());
+  const [pushStatus, setPushStatus] = useState<'idle'|'loading'|'on'|'denied'|'unsupported'>('idle');
 
   const playRing = ()=>{
     try{
@@ -2395,36 +2396,46 @@ function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
 
   useEffect(()=>{if(loginDone){fetchOrders();const id=setInterval(fetchOrders,8000);return()=>clearInterval(id);}}, [loginDone]);
 
+  const enablePush = async()=>{
+    try{
+      if(!audioCtxRef.current) audioCtxRef.current = new (window.AudioContext||(window as any).webkitAudioContext)();
+      if(!('serviceWorker' in navigator)||!('PushManager' in window)){setPushStatus('unsupported');return;}
+      setPushStatus('loading');
+      const perm = await Notification.requestPermission();
+      if(perm==='denied'){setPushStatus('denied');return;}
+      if(perm!=='granted'){setPushStatus('idle');return;}
+      const reg = await navigator.serviceWorker.ready;
+      let sub = await reg.pushManager.getSubscription();
+      if(!sub){
+        const keyRes = await fetch('/api/push/vapid-key');
+        const {publicKey} = await keyRes.json();
+        const vapidKey = Uint8Array.from(
+          atob(publicKey.replace(/-/g,'+').replace(/_/g,'/')),
+          c=>c.charCodeAt(0)
+        );
+        sub = await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:vapidKey});
+      }
+      if(!sub){setPushStatus('idle');return;}
+      const rawKey  = sub.getKey('p256dh');
+      const rawAuth = sub.getKey('auth');
+      if(!rawKey||!rawAuth){setPushStatus('idle');return;}
+      const p256dh = btoa(String.fromCharCode(...new Uint8Array(rawKey)));
+      const auth   = btoa(String.fromCharCode(...new Uint8Array(rawAuth)));
+      const r = await fetch('/api/push/subscribe',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({endpoint:sub.endpoint, keys:{p256dh,auth}, driverName}),
+      });
+      if(r.ok){setPushStatus('on');}else{setPushStatus('idle');}
+    }catch(err){
+      console.error('Push subscription failed:', err);
+      setPushStatus('idle');
+    }
+  };
+
   useEffect(()=>{
     if(!loginDone) return;
-    const subscribePush = async()=>{
-      try{
-        if(!('serviceWorker' in navigator)||!('PushManager' in window)) return;
-        const perm = await Notification.requestPermission();
-        if(perm!=='granted') return;
-        const reg = await navigator.serviceWorker.ready;
-        const existing = await reg.pushManager.getSubscription();
-        let sub = existing;
-        if(!sub){
-          const keyRes = await fetch('/api/push/vapid-key');
-          const {publicKey} = await keyRes.json();
-          const vapidKey = Uint8Array.from(atob(publicKey.replace(/-/g,'+').replace(/_/g,'/')), c=>c.charCodeAt(0));
-          sub = await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:vapidKey});
-        }
-        if(!sub) return;
-        const rawKey  = sub.getKey('p256dh');
-        const rawAuth = sub.getKey('auth');
-        if(!rawKey||!rawAuth) return;
-        const p256dh = btoa(String.fromCharCode(...new Uint8Array(rawKey)));
-        const auth   = btoa(String.fromCharCode(...new Uint8Array(rawAuth)));
-        await fetch('/api/push/subscribe',{
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({endpoint:sub.endpoint, keys:{p256dh,auth}, driverName}),
-        });
-      }catch(_){}
-    };
-    subscribePush();
+    if(!('serviceWorker' in navigator)) return;
     const onMessage=(e:MessageEvent)=>{
       if(e.data?.type==='NEW_ORDER_PUSH'||e.data?.type==='NOTIFICATION_CLICKED'){
         playRing();
@@ -2432,6 +2443,11 @@ function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
       }
     };
     navigator.serviceWorker.addEventListener('message', onMessage);
+    navigator.serviceWorker.ready.then(reg=>
+      reg.pushManager.getSubscription()
+    ).then(sub=>{
+      if(sub) setPushStatus('on');
+    }).catch(()=>{});
     return()=>navigator.serviceWorker.removeEventListener('message', onMessage);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[loginDone]);
@@ -2488,6 +2504,19 @@ function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
           </div>
           <div className="flex items-center gap-2">
             {pending>0&&<div className="w-6 h-6 rounded-full bg-red-400 flex items-center justify-center text-white text-xs font-black">{pending}</div>}
+            {/* Push bell button */}
+            <button onClick={pushStatus==='on'?undefined:enablePush}
+              title={pushStatus==='on'?'Notifications actives':pushStatus==='denied'?'Permission refusée':'Activer les notifications'}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-lg transition-all active:scale-90"
+              style={{
+                background: pushStatus==='on'?'rgba(52,211,153,0.3)':pushStatus==='denied'?'rgba(239,68,68,0.3)':'rgba(255,255,255,0.15)',
+                border: pushStatus==='on'?'1.5px solid rgba(52,211,153,0.6)':pushStatus==='denied'?'1.5px solid rgba(239,68,68,0.4)':'1.5px solid rgba(255,255,255,0.15)',
+              }}>
+              {pushStatus==='loading'?<span style={{fontSize:'10px',color:'white'}}>…</span>
+               :pushStatus==='on'?'🔔'
+               :pushStatus==='denied'?'🔕'
+               :'🔕'}
+            </button>
             <button onClick={fetchOrders} className="w-8 h-8 rounded-full flex items-center justify-center text-white text-lg" style={{background:'rgba(255,255,255,0.15)'}}>↻</button>
             <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center text-white font-black" style={{background:'rgba(255,255,255,0.15)'}}>✕</button>
           </div>
@@ -2508,6 +2537,32 @@ function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
           })}
         </div>
       </div>
+
+      {/* Push activation banner */}
+      {pushStatus==='idle'&&(
+        <button onClick={enablePush}
+          className="flex-shrink-0 flex items-center gap-3 px-5 py-3 w-full text-left active:opacity-80"
+          style={{background:'#FEF3C7',borderBottom:'1px solid #FCD34D'}}>
+          <span className="text-xl">🔕</span>
+          <div className="flex-1">
+            <p className="font-black text-xs" style={{color:'#92400E'}}>Activer les sonneries push</p>
+            <p className="text-xs" style={{color:'#B45309'}}>Appuyez ici pour recevoir les alertes même écran verrouillé</p>
+          </div>
+          <span className="font-black text-xs px-3 py-1 rounded-full" style={{background:'#B45309',color:'white'}}>Activer</span>
+        </button>
+      )}
+      {pushStatus==='denied'&&(
+        <div className="flex-shrink-0 flex items-center gap-3 px-5 py-3" style={{background:'#FEE2E2',borderBottom:'1px solid #FCA5A5'}}>
+          <span className="text-xl">🔕</span>
+          <p className="text-xs font-bold" style={{color:'#DC2626'}}>Notifications bloquées — autorisez dans les réglages du navigateur</p>
+        </div>
+      )}
+      {pushStatus==='on'&&(
+        <div className="flex-shrink-0 flex items-center gap-3 px-5 py-2" style={{background:'#ECFDF5',borderBottom:'1px solid #6EE7B7'}}>
+          <span className="text-lg">🔔</span>
+          <p className="text-xs font-black" style={{color:'#065F46'}}>Sonneries push activées — vous serez alerté instantanément</p>
+        </div>
+      )}
 
       {/* Orders list */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
