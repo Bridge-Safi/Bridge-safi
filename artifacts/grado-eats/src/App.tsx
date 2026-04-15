@@ -1341,7 +1341,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
               <button
                 onClick={()=>{
                   if(!payMethod)return;
-                  if(payMethod==='cash'){window.open(`https://wa.me/212764794856?text=${encodeURIComponent(buildWaMsg())}`,'_blank');setStep('success');}
+                  if(payMethod==='cash'){window.open(`https://wa.me/212764794856?text=${encodeURIComponent(buildWaMsg()+'\n\n💵 Paiement : Espèces à la livraison')}`,'_blank');setStep('success');}
                   else setStep('card');
                 }}
                 disabled={!payMethod}
@@ -1387,7 +1387,14 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
               <div className="flex items-center justify-center gap-2 mb-3">
                 <span>🔒</span><p className="text-[10px]" style={{color:'#9CA3AF'}}>256-bit SSL · PCI DSS Compliant</p>
               </div>
-              <button onClick={()=>{if(!cardCVV||cardCVV.length<3){setCardErr(t.fillAll);return;}setCardErr('');setStep('success');}}
+              <button onClick={()=>{
+                if(!cardCVV||cardCVV.length<3){setCardErr(t.fillAll);return;}
+                setCardErr('');
+                const cardMsg=buildWaMsg()+'\n\n💳 Paiement : Carte Bancaire'+
+                  (cardName?`\n👤 Titulaire : ${cardName}`:'');
+                window.open(`https://wa.me/212764794856?text=${encodeURIComponent(cardMsg)}`,'_blank');
+                setStep('success');
+              }}
                 className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
                 style={{background:'#4F46E5',boxShadow:'0 6px 20px rgba(79,70,229,0.35)'}}>
                 {t.payNow} — {total} MAD
