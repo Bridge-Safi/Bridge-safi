@@ -1495,8 +1495,8 @@ export default function App() {
       {/* ── Header ── */}
       <header className="relative pt-14 pb-4 flex flex-col items-center"
         style={{borderBottom:'1px solid #E5E1D8',background:'rgba(253,252,249,0.93)',backdropFilter:'blur(14px)'}}>
-        <img src="/logo_new.png" alt="Bridge" className="h-14 w-14 object-contain"
-          style={{filter:'drop-shadow(0 2px 8px rgba(6,95,70,0.18))'}}/>
+        <img src="/logo.jpeg" alt="Bridge" className="h-14 w-14 rounded-full object-cover"
+          style={{border:'2.5px solid #D9C5A0',boxShadow:'0 4px 16px rgba(6,95,70,0.15)'}}/>
         <h1 className="mt-2 text-[11px] font-black tracking-[0.45em] uppercase" style={{color:'#065F46'}}>
           {isAMZ?'ⴱⵔⵉⴷⵊ':isAR?'بريدج':'Bridge'}
         </h1>
