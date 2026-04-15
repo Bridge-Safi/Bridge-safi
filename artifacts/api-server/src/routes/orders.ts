@@ -6,6 +6,68 @@ import { addSSEClient, removeSSEClient, broadcastOrder } from "../lib/sse";
 
 const router = Router();
 
+const BRIDGE_SECRET = "bridge-safi-8b269bba03fd8c0205116f3f";
+
+// ── Webhook entrant partenaire (ex: Grado Eats) ─────────────────────────────
+router.post("/orders/inbound", async (req, res) => {
+  try {
+    const secret = req.headers["x-bridge-secret"];
+    if (secret !== BRIDGE_SECRET) {
+      return res.status(401).json({ error: "Unauthorized — invalid secret" });
+    }
+
+    const {
+      customerName,
+      customerPhone,
+      deliveryAddress,
+      pickupAddress,
+      items,
+      total,
+      source,
+      paymentMethod,
+    } = req.body;
+
+    if (!customerName || !customerPhone || !deliveryAddress || !items || total === undefined) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const ref = `EXT-${Math.floor(1000 + Math.random() * 9000)}`;
+    const restaurantLabel = pickupAddress
+      ? `${pickupAddress}${source ? ` (${source})` : ""}`
+      : source || "Partenaire externe";
+
+    const [order] = await db.insert(ordersTable).values({
+      ref,
+      service: "delivery",
+      customerName,
+      customerPhone,
+      customerAddress: deliveryAddress,
+      items,
+      total: Number(total),
+      deliveryMode: "delivery",
+      paymentMethod: paymentMethod || "cash",
+      restaurantName: restaurantLabel,
+      status: "pending",
+    }).returning();
+
+    res.status(201).json({ ok: true, orderId: order.id, ref: order.ref });
+
+    // Diffusion instantanée aux livreurs connectés
+    broadcastOrder({ type: "NEW_ORDER", orderId: order.id, ref: order.ref, source });
+
+    notifyDrivers({
+      type: "NEW_ORDER",
+      title: `🛵 Commande ${source ? `[${source}]` : "externe"} !`,
+      body: `${customerName} · ${Number(total)} MAD · ${deliveryAddress}`,
+      data: { orderId: order.id, ref: order.ref, url: "/" },
+    }).catch(() => {});
+
+  } catch (err) {
+    console.error("Inbound webhook error:", err);
+    res.status(500).json({ error: "Failed to process inbound order" });
+  }
+});
+
 router.get("/orders", async (req, res) => {
   try {
     const { status, service } = req.query;
