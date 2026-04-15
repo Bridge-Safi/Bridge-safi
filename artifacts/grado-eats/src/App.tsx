@@ -166,6 +166,9 @@ const T = {
     successTitle:'Commande Confirmée ! 🎉', successSub:'Votre commande a bien été reçue.',
     trackingLabel:'Numéro de suivi', deliveryEta:'Livraison estimée dans 18–25 min', newOrder:'Nouvelle commande',
     autoFilled:'Rempli depuis votre profil ✓',
+    delivOption:'🚚 Livraison à domicile', delivOptionDesc:'Livré chez vous · Zone Safi',
+    collectOption:'🏪 Click & Collect', collectOptionDesc:'Retrait au restaurant · +2 MAD',
+    collectAddress:'Adresse retrait : Plateau, Safi (le restaurant vous contacte)',
     profileTitle:'Mon Profil', profileSub:'Vos informations enregistrées',
     profileSave:'Enregistrer le profil', profileSaved:'Profil enregistré ✓',
     savedPayment:'Carte bancaire enregistrée',
@@ -205,6 +208,9 @@ const T = {
     successTitle:'Order Confirmed! 🎉', successSub:'Your order has been received.',
     trackingLabel:'Tracking number', deliveryEta:'Estimated delivery in 18–25 min', newOrder:'New order',
     autoFilled:'Pre-filled from your profile ✓',
+    delivOption:'🚚 Home Delivery', delivOptionDesc:'Delivered to you · Safi zone',
+    collectOption:'🏪 Click & Collect', collectOptionDesc:'Pick up at restaurant · +2 MAD',
+    collectAddress:'Pick-up address: Plateau, Safi (restaurant will contact you)',
     profileTitle:'My Profile', profileSub:'Your saved information',
     profileSave:'Save profile', profileSaved:'Profile saved ✓', savedPayment:'Saved credit card',
     trackTitle:'Live GPS Tracking', trackZone:'SAFI · PLATEAU', trackLive:'LIVE',
@@ -243,6 +249,9 @@ const T = {
     successTitle:'تم تأكيد الطلب! 🎉', successSub:'تم استلام طلبك بنجاح.',
     trackingLabel:'رقم التتبع', deliveryEta:'التوصيل المتوقع خلال 18–25 دقيقة', newOrder:'طلب جديد',
     autoFilled:'مُعبَّأ من ملفك الشخصي ✓',
+    delivOption:'🚚 التوصيل للمنزل', delivOptionDesc:'يوصل إليك · منطقة آسفي',
+    collectOption:'🏪 Click & Collect', collectOptionDesc:'الاستلام من المطعم · +2 MAD',
+    collectAddress:'عنوان الاستلام : الهضبة، آسفي (سيتصل بك المطعم)',
     profileTitle:'ملفي الشخصي', profileSub:'معلوماتك المحفوظة',
     profileSave:'حفظ الملف الشخصي', profileSaved:'تم الحفظ ✓', savedPayment:'بطاقة بنكية محفوظة',
     trackTitle:'تتبع GPS مباشر', trackZone:'آسفي · الهضبة', trackLive:'مباشر',
@@ -282,6 +291,9 @@ const T = {
     successTitle:'ⵜⵜⵓⵙⵛⴷⵃ ⵜⴰⵖⵓⵍⵜ! 🎉', successSub:'ⵜⵜⵓⵙⵔⵖ ⵜⴰⵖⵓⵍⵜ ⵏⵏⴽ.',
     trackingLabel:'ⴰⵏⵓⵎⵔ ⵏ ⵓⵙⴽⵍⵙ', deliveryEta:'ⴰⵙⵍⵎⴷ ⵖ 18–25 ⵜⵉⵎⵉⵏⵉⵜⵉⵏ', newOrder:'ⵜⴰⵖⵓⵍⵜ ⵜⴰⵎⴰⵢⵏⵓⵜ',
     autoFilled:'ⵉⵜⵜⵓⵎⵍⴰ ⵙⴳ ⵓⵎⵍⵉ ⵏⵏⴽ ✓',
+    delivOption:'🚚 ⴰⵙⵙⵓⴼⵖ ⵙ ⵓⴽⴰⵎⴰⵢ', delivOptionDesc:'ⵉⵜⵜⵓⴽⵛⵎ ⵖⵉⴽ · ⵙⴰⴼⵉ',
+    collectOption:'🏪 Click & Collect', collectOptionDesc:'ⴰⵔⵣⵣⵓ ⴳ ⵓⵣⵉⴳⵣ · +2 MAD',
+    collectAddress:'ⵜⴰⵏⵙⴰ ⵏ ⵓⵔⵣⵣⵓ : ⴰⴱⵍⴰⵟⵓ, ⵙⴰⴼⵉ',
     profileTitle:'ⴰⵎⵍⵉ ⵏⵓ', profileSub:'ⵉⵙⴼⴰⵡⵏ ⵏⵏⴽ ⵉⵜⵜⵓⵙⵎⴷⵏ',
     profileSave:'ⵙⵎⴷ ⴰⵎⵍⵉ', profileSaved:'ⵜⵜⵓⵙⵎⴷ ✓', savedPayment:'ⵜⴰⴽⴰⵔⴷⵜ ⵉⵜⵜⵓⵙⵎⴷⵏ',
     trackTitle:'ⴰⵙⴽⵍⵙ GPS', trackZone:'ⵙⴰⴼⵉ · ⴰⴱⵍⴰⵟⵓ', trackLive:'ⴷⴷⴰⵡ',
@@ -1178,7 +1190,9 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
   profile:UserProfile; onClearCart:()=>void;
 }) {
   const t=T[lang]; const isAR=lang==='ar'; const fClass=fontClass(lang);
-  const total=cart.reduce((s,i)=>s+i.totalPerUnit*i.qty,0);
+  const [delivMode,setDelivMode]=useState<'delivery'|'collect'>('delivery');
+  const baseTotal=cart.reduce((s,i)=>s+i.totalPerUnit*i.qty,0);
+  const total=baseTotal+(delivMode==='collect'?2:0);
   const [step,setStep]=useState<CheckoutStep>('cart');
   const [name,setName]=useState(profile.name);
   const [addr,setAddr]=useState(profile.address);
@@ -1207,17 +1221,21 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
       if(opts.length>0) msg+=` (${opts.join(', ')})`;
       msg+='\n';
     });
-    msg+=t.waMsgFooter(total,name.trim(),addr.trim(),phone.trim());
-    if(gpsCoords){
-      const [lat,lng]=gpsCoords.split(',');
-      msg+=`\n\n📍 Navigation livreur :`;
-      msg+=`\n🗺️ Google Maps : https://maps.google.com/?q=${lat},${lng}`;
-      msg+=`\n🔵 Waze : https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
-    } else if(addr.trim()){
-      const q=encodeURIComponent(`${addr.trim()}, Safi, Maroc`);
-      msg+=`\n\n📍 Navigation livreur :`;
-      msg+=`\n🗺️ Google Maps : https://maps.google.com/?q=${q}`;
-      msg+=`\n🔵 Waze : https://waze.com/ul?q=${q}`;
+    if(delivMode==='collect'){
+      msg+=`\n💰 Total: ${total} MAD (dont 2 MAD frais Click & Collect)\n\n👤 Nom: ${name.trim()}\n📞 Tél: ${phone.trim()}\n\n🏪 Click & Collect — Retrait au restaurant\n${t.collectAddress}`;
+    } else {
+      msg+=t.waMsgFooter(total,name.trim(),addr.trim(),phone.trim());
+      if(gpsCoords){
+        const [lat,lng]=gpsCoords.split(',');
+        msg+=`\n\n📍 Navigation livreur :`;
+        msg+=`\n🗺️ Google Maps : https://maps.google.com/?q=${lat},${lng}`;
+        msg+=`\n🔵 Waze : https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
+      } else if(addr.trim()){
+        const q=encodeURIComponent(`${addr.trim()}, Safi, Maroc`);
+        msg+=`\n\n📍 Navigation livreur :`;
+        msg+=`\n🗺️ Google Maps : https://maps.google.com/?q=${q}`;
+        msg+=`\n🔵 Waze : https://waze.com/ul?q=${q}`;
+      }
     }
     return msg;
   };
@@ -1303,48 +1321,84 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
         {step==='form'&&(
           <>
             <div className="flex-1 overflow-y-auto px-5 py-4" style={{direction:isAR?'rtl':'ltr'}}>
+              {/* Delivery mode selector */}
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                {([
+                  {key:'delivery'as const,label:t.delivOption,desc:t.delivOptionDesc,color:'#065F46',selBg:'#D1FAE5',bg:'#F0FDF4'},
+                  {key:'collect'as const,label:t.collectOption,desc:t.collectOptionDesc,color:'#B45309',selBg:'#FEF3C7',bg:'#FFFBEB'},
+                ]).map(opt=>(
+                  <button key={opt.key} onClick={()=>{setDelivMode(opt.key);setErr('');}}
+                    className="flex flex-col items-start p-3 rounded-2xl text-left transition-all active:scale-95"
+                    style={{background:delivMode===opt.key?opt.selBg:opt.bg,border:`2px solid ${delivMode===opt.key?opt.color:'#E5E1D8'}`}}>
+                    <p className={`font-black text-xs leading-tight mb-0.5 ${fClass}`} style={{color:opt.color}}>{opt.label}</p>
+                    <p className={`text-[10px] leading-tight ${fClass}`} style={{color:'#9CA3AF'}}>{opt.desc}</p>
+                  </button>
+                ))}
+              </div>
+
+              {/* Click & Collect info box */}
+              {delivMode==='collect'&&(
+                <div className="flex items-start gap-2 px-3 py-3 rounded-xl mb-4" style={{background:'#FEF3C7',border:'1px solid #FDE68A'}}>
+                  <span className="text-lg flex-shrink-0">🏪</span>
+                  <div>
+                    <p className={`text-[11px] font-black mb-1 ${fClass}`} style={{color:'#B45309'}}>Click & Collect — +2 MAD</p>
+                    <p className={`text-[10px] ${fClass}`} style={{color:'#92400E'}}>{t.collectAddress}</p>
+                  </div>
+                </div>
+              )}
+
               {autoFilled&&(
                 <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-4" style={{background:'#F0FDF4',border:'1px solid #BBF7D0'}}>
                   <span>✨</span>
                   <p className={`text-[10px] font-bold ${fClass}`} style={{color:'#065F46'}}>{t.autoFilled}</p>
                 </div>
               )}
-              {/* Delivery map */}
-              <p className={`text-[10px] font-black uppercase tracking-wider mb-2 ${fClass}`} style={{color:'#065F46'}}>
-                {lang==='ar'?'📍 اختر موقعك على الخريطة':lang==='amz'?'📍 ⵙⵜⵜⵉ ⵜⴰⵙⵓⵏⵜ ⵖ ⵓⵙⴽⴽⵉⵍ':'📍 Cliquez sur la carte pour épingler votre adresse'}
-              </p>
-              <DeliveryMap
-                pin={mapPin}
-                onSet={(coords,inside)=>{
-                  const parts=coords.split(',');
-                  setMapPin([parseFloat(parts[0]),parseFloat(parts[1])]);
-                  setGpsCoords(coords);
-                  setOutsideZone(!inside);
-                }}
-              />
-              {outsideZone&&mapPin&&(
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-3" style={{background:'#FEF2F2',border:'1px solid #FECACA'}}>
-                  <span>⚠️</span>
-                  <p className={`text-[10px] font-bold ${fClass}`} style={{color:'#DC2626'}}>
-                    {lang==='ar'?'هذه المنطقة خارج نطاق التوصيل. يمكنك اختيار الاستلام من المطعم.':lang==='amz'?'ⵜⴰⵙⵓⵏⵜ ⴰⴷ ⵓⵔ ⵜⵍⵍⵉ ⵖ ⵜⴰⵙⵓⵏⵜ ⵏ ⵓⵙⵙⵓⴼⵖ.':'Zone non couverte par la livraison. Vous pouvez choisir le Click & Collect.'}
-                  </p>
-                </div>
-              )}
-              {mapPin&&!outsideZone&&(
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-3" style={{background:'#F0FDF4',border:'1px solid #BBF7D0'}}>
-                  <span>✅</span>
-                  <p className={`text-[10px] font-bold ${fClass}`} style={{color:'#065F46'}}>
-                    {lang==='ar'?'موقعك في منطقة التوصيل ✓':lang==='amz'?'ⵜⴰⵙⵓⵏⵜ ⵏⵏⴽ ⵖ ⵜⴰⵙⵓⵏⵜ ⵏ ⵓⵙⵙⵓⴼⵖ ✓':'Votre position est dans la zone de livraison ✓'}
-                  </p>
-                </div>
-              )}
+
+              {/* Delivery map (hidden in collect mode) */}
+              {delivMode==='delivery'&&(<>
+                <p className={`text-[10px] font-black uppercase tracking-wider mb-2 ${fClass}`} style={{color:'#065F46'}}>
+                  {lang==='ar'?'📍 اختر موقعك على الخريطة':lang==='amz'?'📍 ⵙⵜⵜⵉ ⵜⴰⵙⵓⵏⵜ ⵖ ⵓⵙⴽⴽⵉⵍ':'📍 Cliquez sur la carte pour épingler votre adresse'}
+                </p>
+                <DeliveryMap
+                  pin={mapPin}
+                  onSet={(coords,inside)=>{
+                    const parts=coords.split(',');
+                    setMapPin([parseFloat(parts[0]),parseFloat(parts[1])]);
+                    setGpsCoords(coords);
+                    setOutsideZone(!inside);
+                  }}
+                />
+                {outsideZone&&mapPin&&(
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-3" style={{background:'#FEF2F2',border:'1px solid #FECACA'}}>
+                    <span>⚠️</span>
+                    <p className={`text-[10px] font-bold ${fClass}`} style={{color:'#DC2626'}}>
+                      {lang==='ar'?'هذه المنطقة خارج نطاق التوصيل. يمكنك اختيار الاستلام من المطعم.':lang==='amz'?'ⵜⴰⵙⵓⵏⵜ ⴰⴷ ⵓⵔ ⵜⵍⵍⵉ ⵖ ⵜⴰⵙⵓⵏⵜ ⵏ ⵓⵙⵙⵓⴼⵖ.':'Zone non couverte par la livraison. Vous pouvez choisir le Click & Collect.'}
+                    </p>
+                  </div>
+                )}
+                {mapPin&&!outsideZone&&(
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-3" style={{background:'#F0FDF4',border:'1px solid #BBF7D0'}}>
+                    <span>✅</span>
+                    <p className={`text-[10px] font-bold ${fClass}`} style={{color:'#065F46'}}>
+                      {lang==='ar'?'موقعك في منطقة التوصيل ✓':lang==='amz'?'ⵜⴰⵙⵓⵏⵜ ⵏⵏⴽ ⵖ ⵜⴰⵙⵓⵏⵜ ⵏ ⵓⵙⵙⵓⴼⵖ ✓':'Votre position est dans la zone de livraison ✓'}
+                    </p>
+                  </div>
+                )}
+              </>)}
+
               <Field label={t.nameLabel} value={name} onChange={v=>{setName(v);setErr('');}} placeholder={t.namePh} lang={lang} error={!!err&&!name.trim()}/>
-              <AddressAutocomplete label={t.addrLabel} value={addr} onChange={v=>{setAddr(v);setErr('');}} placeholder={t.addrPh} lang={lang} error={!!err&&!addr.trim()}/>
+              {delivMode==='delivery'&&(
+                <AddressAutocomplete label={t.addrLabel} value={addr} onChange={v=>{setAddr(v);setErr('');}} placeholder={t.addrPh} lang={lang} error={!!err&&!addr.trim()}/>
+              )}
               <Field label={t.phoneLabel} value={phone} onChange={v=>{setPhone(v);setErr('');}} placeholder={t.phonePh} type="tel" lang={lang} error={!!err&&!phone.trim()}/>
               {err&&<p className="text-xs font-bold -mt-2 mb-3" style={{color:'#DC2626'}}>{err}</p>}
             </div>
             <div className="px-5 py-4 flex-shrink-0" style={{borderTop:'1px solid #E5E1D8'}}>
-              <button onClick={()=>{if(!name.trim()||!addr.trim()||!phone.trim()){setErr(t.fillAll);return;}setErr('');setStep('payment');}}
+              <button onClick={()=>{
+                const needAddr=delivMode==='delivery';
+                if(!name.trim()||(needAddr&&!addr.trim())||!phone.trim()){setErr(t.fillAll);return;}
+                setErr('');setStep('payment');
+              }}
                 className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
                 style={{background:'linear-gradient(135deg,#065F46,#047857)',boxShadow:'0 6px 20px rgba(6,95,70,0.3)'}}>
                 {t.continueBtn}
@@ -1364,6 +1418,12 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
                     <span className="font-black flex-shrink-0" style={{color:'#065F46'}}>{i.totalPerUnit*i.qty} MAD</span>
                   </div>
                 ))}
+                {delivMode==='collect'&&(
+                  <div className="flex justify-between text-xs pt-1 pb-1">
+                    <span className={`font-bold ${fClass}`} style={{color:'#B45309'}}>🏪 Click & Collect</span>
+                    <span className="font-bold" style={{color:'#B45309'}}>+2 MAD</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm mt-2 pt-2" style={{borderTop:'1px solid #E5E1D8'}}>
                   <span className={`font-black ${fClass}`} style={{color:'#065F46'}}>{t.total}</span>
                   <span className="font-black" style={{color:'#065F46'}}>{total} MAD</span>
