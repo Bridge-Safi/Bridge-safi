@@ -1386,20 +1386,20 @@ function SplashScreen() {
   const [progress,setProgress]=useState(0);
   useEffect(()=>{const iv=setInterval(()=>setProgress(p=>Math.min(p+1.8,100)),50);return()=>clearInterval(iv);},[]);
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center z-50" style={{background:'#000'}}>
+    <div className="fixed inset-0 flex flex-col items-center justify-center z-50" style={{background:'#FDFCF9'}}>
       <div className="flex flex-col items-center">
         <div className="relative mb-6">
           <div className="absolute inset-0 rounded-full animate-ping opacity-10" style={{background:'#D9C5A0',transform:'scale(1.5)'}}/>
           <img src="/logo_splash.jpeg" alt="Bridge" className="relative z-10 object-contain"
             style={{width:220,height:220}}/>
         </div>
-        <h1 className="font-black tracking-[0.45em] text-2xl mb-1" style={{color:'#D9C5A0'}}>BRIDGE</h1>
-        <p className="text-[10px] tracking-widest font-bold mb-1" style={{color:'#9CA3AF'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
+        <h1 className="font-black tracking-[0.45em] text-2xl mb-1" style={{color:'#065F46'}}>BRIDGE</h1>
+        <p className="text-[10px] tracking-widest font-bold mb-1" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
         <div className="flex items-center gap-2 mb-8 mt-2">
           <div className="w-8 h-px" style={{background:'#D9C5A0'}}/><div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/><div className="w-8 h-px" style={{background:'#D9C5A0'}}/>
         </div>
-        <div className="w-40 h-1.5 rounded-full overflow-hidden" style={{background:'#333'}}>
-          <div className="h-full rounded-full transition-all duration-75" style={{width:`${progress}%`,background:'linear-gradient(to right,#D9C5A0,#B8975A)'}}/>
+        <div className="w-40 h-1.5 rounded-full overflow-hidden" style={{background:'#E5E1D8'}}>
+          <div className="h-full rounded-full transition-all duration-75" style={{width:`${progress}%`,background:'linear-gradient(to right,#065F46,#059669)'}}/>
         </div>
       </div>
     </div>
