@@ -1830,11 +1830,11 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
         {/* Three service cards */}
         <div className="flex items-start justify-center gap-2 w-full">
           {([
-            {key:'delivery' as const, src:'/logo_delivery.jpeg', label:'Bridge Delivery', sub:t.deliverySub, emoji:'🛵',
+            {key:'delivery' as const, src:'/logo_delivery.jpeg', label:'Bridge Delivery', sub:t.deliverySub, emoji:'🛵', fallbackBg:'#D1FAE5',
              activeColor:'#065F46', activeShadow:'0 0 0 5px rgba(6,95,70,0.15),0 10px 28px rgba(6,95,70,0.3)', labelColor:'#065F46'},
-            {key:'taxi' as const, src:'/logo_taxi.jpeg', label:'Bridge Taxi', sub:t.taxiSub, emoji:'🚖',
+            {key:'taxi' as const, src:'/logo_taxi.jpeg', label:'Bridge Taxi', sub:t.taxiSub, emoji:'🚖', fallbackBg:'#FEF3C7',
              activeColor:'#B45309', activeShadow:'0 0 0 5px rgba(180,83,9,0.15),0 10px 28px rgba(180,83,9,0.25)', labelColor:'#B45309'},
-            {key:'tabac' as const, src:'/logo_tabac.jpeg', label:'Bridge Tabac', sub:t.tabacSub, emoji:'🚬',
+            {key:'tabac' as const, src:'/logo_tabac.jpeg', label:'Bridge Tabac', sub:t.tabacSub, emoji:'🚬', fallbackBg:'#7D4F2E',
              activeColor:'#7D4F2E', activeShadow:'0 0 0 5px rgba(125,79,46,0.15),0 10px 28px rgba(125,79,46,0.25)', labelColor:'#7D4F2E'},
           ]).reduce<React.ReactNode[]>((acc,item,i)=>{
             if(i>0) acc.push(
@@ -1853,6 +1853,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
                 <div className="relative flex-shrink-0" style={{width:S,height:S}}>
                   <div className="rounded-full overflow-hidden" style={{
                     width:S,height:S,
+                    background:item.fallbackBg,
                     border:isPressed?`3.5px solid ${item.activeColor}`:'3px solid #D9C5A0',
                     boxShadow:isPressed?item.activeShadow:'0 6px 22px rgba(6,95,70,0.15)',
                     transition:'all 0.25s',
@@ -2007,7 +2008,7 @@ function SplashScreen() {
             style={{background:'radial-gradient(circle,rgba(217,197,160,0.35) 0%,transparent 70%)',transform:'scale(1.55)'}}/>
           {/* Logo */}
           <div className="relative rounded-full overflow-hidden"
-            style={{width:120,height:120,border:'3px solid #D9C5A0',boxShadow:'0 12px 40px rgba(6,95,70,0.2)'}}>
+            style={{width:120,height:120,background:'#D1FAE5',border:'3px solid #D9C5A0',boxShadow:'0 12px 40px rgba(6,95,70,0.2)'}}>
             <img src="/logo_splash.jpeg" alt="Bridge"
               style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center',display:'block',transform:'scale(1.22)'}}/>
           </div>
