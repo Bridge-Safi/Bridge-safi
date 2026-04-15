@@ -1,7 +1,7 @@
 {
-  "name": "Bridge Eats",
-  "short_name": "Bridge Eats",
-  "description": "Livraison premium à Safi, Maroc",
+  "name": "Bridge Safi",
+  "short_name": "Bridge Safi",
+  "description": "Livraison de repas et taxi confort à Safi, Maroc",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FDFCF9",

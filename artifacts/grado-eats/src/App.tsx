@@ -144,7 +144,7 @@ function useProfile() {
 
 const T = {
   fr: {
-    appName:'Bridge Eats', zone:'Safi, Maroc',
+    appName:'Bridge Safi', zone:'Safi, Maroc',
     heroSub:'Vos restaurants préférés, livrés chez vous',
     restaurantsTitle:'Nos Restaurants', nearYou:'Près de vous · Safi',
     openNow:'Ouvert', minOrder:'Min.', delivMin:'min',
@@ -182,11 +182,11 @@ const T = {
     navHome:'Accueil', navTrack:'Suivi', navContact:'Contact', navCart:'Panier',
     footer:'© 2026 Bridge Safi · bridge-safi.com', plateau:'Plateau · Centre-Ville · Bouzidi',
     safiExcl:'Spécialité Safi', selected:'Sélectionné ✓',
-    waMsgHeader:'🛍️ Nouvelle commande Bridge Eats\n\n📦 Articles:\n',
+    waMsgHeader:'🛍️ Nouvelle commande Bridge Safi\n\n📦 Articles:\n',
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 Total: ${total} MAD\n\n👤 Nom: ${name}\n📍 Adresse: ${addr}, Safi\n📞 Tél: ${phone}\n\nMerci de confirmer ma commande ! 🙏`,
   },
   en: {
-    appName:'Bridge Eats', zone:'Safi, Morocco',
+    appName:'Bridge Safi', zone:'Safi, Morocco',
     heroSub:'Your favourite restaurants, delivered to you',
     restaurantsTitle:'Our Restaurants', nearYou:'Near you · Safi',
     openNow:'Open', minOrder:'Min.', delivMin:'min',
@@ -223,11 +223,11 @@ const T = {
     navHome:'Home', navTrack:'Track', navContact:'Contact', navCart:'Cart',
     footer:'© 2026 Bridge Safi · bridge-safi.com', plateau:'Plateau · City Center · Bouzidi',
     safiExcl:'Safi Special', selected:'Selected ✓',
-    waMsgHeader:'🛍️ New Bridge Eats order\n\n📦 Items:\n',
+    waMsgHeader:'🛍️ New Bridge Safi order\n\n📦 Items:\n',
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 Total: ${total} MAD\n\n👤 Name: ${name}\n📍 Address: ${addr}, Safi\n📞 Phone: ${phone}\n\nPlease confirm my order! 🙏`,
   },
   ar: {
-    appName:'بريدج إيتس', zone:'آسفي، المغرب',
+    appName:'بريدج سافي', zone:'آسفي، المغرب',
     heroSub:'مطاعمك المفضلة، نوصلها إليك',
     restaurantsTitle:'مطاعمنا', nearYou:'قريب منك · آسفي',
     openNow:'مفتوح', minOrder:'أدنى', delivMin:'دقيقة',
@@ -1089,7 +1089,7 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
     <div>
       {/* Hero banner */}
       <section className="relative mx-5 mb-6 rounded-3xl overflow-hidden" style={{boxShadow:'0 8px 32px rgba(6,95,70,0.18)'}}>
-        <img src="/hero.jpeg" alt="Bridge Eats" className="w-full h-52 object-cover"/>
+        <img src="/hero.jpeg" alt="Bridge Safi" className="w-full h-52 object-cover"/>
         <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.92) 0%,rgba(4,55,38,0.25) 60%,transparent 100%)'}}/>
         <div className="absolute bottom-0 left-0 right-0 p-5">
           <span className="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full inline-block mb-2" style={{background:'#D9C5A0',color:'#065F46'}}>SAFI · آسفي · ⵙⴰⴼⵉ</span>
@@ -1600,7 +1600,7 @@ function TrackingPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
         <div className="h-64">
           <MapContainer center={[32.2990,-9.2385]} zoom={15} style={{height:'100%',width:'100%'}} zoomControl attributionControl={false}>
             <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"/>
-            <Marker position={[32.3010,-9.2420]} icon={restaurantIcon}><Popup>🥘 Bridge Eats</Popup></Marker>
+            <Marker position={[32.3010,-9.2420]} icon={restaurantIcon}><Popup>🥘 Bridge Safi</Popup></Marker>
             <MovingCourier step={courierStep}/>
           </MapContainer>
         </div>
@@ -1627,7 +1627,7 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
   return (
     <div className="px-5">
       <div className="rounded-3xl overflow-hidden mb-5 relative" style={{border:'1.5px solid #E5E1D8'}}>
-        <img src="/logo.jpeg" className="w-full h-32 object-cover" alt="Bridge Eats"/>
+        <img src="/logo.jpeg" className="w-full h-32 object-cover" alt="Bridge Safi"/>
         <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.85) 0%,transparent 55%)'}}/>
         <div className="absolute bottom-0 left-0 right-0 p-4">
           <p className={`text-white font-black text-lg ${fClass}`}>{t.contactTitle}</p>
