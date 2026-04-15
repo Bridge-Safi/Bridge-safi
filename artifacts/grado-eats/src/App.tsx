@@ -1552,26 +1552,60 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
 function SplashScreen() {
   const [progress,setProgress]=useState(0);
   useEffect(()=>{const iv=setInterval(()=>setProgress(p=>Math.min(p+1.8,100)),50);return()=>clearInterval(iv);},[]);
-  return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center z-50" style={{background:'#FDFCF9'}}>
-      <div className="flex flex-col items-center">
-        <div className="relative mb-6">
-          <div className="absolute inset-0 rounded-full animate-ping opacity-10" style={{background:'#D9C5A0',transform:'scale(1.5)'}}/>
-          <div className="relative z-10 rounded-full overflow-hidden flex-shrink-0"
-            style={{width:220,height:220}}>
-            <img src="/logo_splash.jpeg" alt="Bridge"
-              style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.22)',display:'block'}}/>
-          </div>
+
+  const CircleCard=({src,title,sub,emoji}:{src:string;title:string;sub:string;emoji:string})=>(
+    <div className="flex flex-col items-center gap-3">
+      <div className="relative">
+        <div className="absolute inset-0 rounded-full animate-pulse opacity-20"
+          style={{background:'#D9C5A0',transform:'scale(1.12)'}}/>
+        <div className="relative rounded-full overflow-hidden flex-shrink-0"
+          style={{width:148,height:148,border:'3px solid #D9C5A0',boxShadow:'0 8px 28px rgba(6,95,70,0.18)'}}>
+          <img src={src} alt={title}
+            style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
         </div>
-        <h1 className="font-black tracking-[0.45em] text-2xl mb-1" style={{color:'#065F46'}}>BRIDGE</h1>
-        <p className="text-[10px] tracking-widest font-bold mb-1" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
-        <div className="flex items-center gap-2 mb-8 mt-2">
-          <div className="w-8 h-px" style={{background:'#D9C5A0'}}/><div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/><div className="w-8 h-px" style={{background:'#D9C5A0'}}/>
-        </div>
-        <div className="w-40 h-1.5 rounded-full overflow-hidden" style={{background:'#E5E1D8'}}>
-          <div className="h-full rounded-full transition-all duration-75" style={{width:`${progress}%`,background:'linear-gradient(to right,#065F46,#059669)'}}/>
+        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center text-base"
+          style={{background:'#FDFCF9',border:'2px solid #D9C5A0',boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
+          {emoji}
         </div>
       </div>
+      <div className="text-center mt-2">
+        <p className="font-black text-xs tracking-[0.15em] uppercase" style={{color:'#065F46'}}>{title}</p>
+        <p className="font-bold text-[10px] tracking-wider mt-0.5" style={{color:'#B45309'}}>{sub}</p>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="fixed inset-0 flex flex-col items-center justify-center z-50 px-6" style={{background:'#FDFCF9'}}>
+      {/* Header */}
+      <div className="flex flex-col items-center mb-8">
+        <h1 className="font-black tracking-[0.55em] text-3xl" style={{color:'#065F46'}}>BRIDGE</h1>
+        <p className="text-[10px] tracking-widest font-bold mt-1" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
+        <div className="flex items-center gap-2 mt-3">
+          <div className="w-10 h-px" style={{background:'#D9C5A0'}}/>
+          <div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/>
+          <div className="w-10 h-px" style={{background:'#D9C5A0'}}/>
+        </div>
+      </div>
+
+      {/* Two circles */}
+      <div className="flex items-start justify-center gap-5 mb-10">
+        <CircleCard src="/logo_delivery.jpeg" title="Bridge Delivery" sub="🛵 Livraison rapide" emoji="🛵"/>
+        {/* vertical divider */}
+        <div className="flex flex-col items-center self-center gap-1" style={{marginTop:'-8px'}}>
+          <div className="w-px h-10" style={{background:'#E5E1D8'}}/>
+          <div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/>
+          <div className="w-px h-10" style={{background:'#E5E1D8'}}/>
+        </div>
+        <CircleCard src="/logo_taxi.jpeg" title="Bridge Taxi" sub="🚖 Confort & style" emoji="🚖"/>
+      </div>
+
+      {/* Progress bar */}
+      <div className="w-52 h-1.5 rounded-full overflow-hidden" style={{background:'#E5E1D8'}}>
+        <div className="h-full rounded-full transition-all duration-75"
+          style={{width:`${progress}%`,background:'linear-gradient(to right,#065F46,#059669)'}}/>
+      </div>
+      <p className="text-[9px] tracking-widest font-bold mt-2" style={{color:'#9CA3AF'}}>CHARGEMENT...</p>
     </div>
   );
 }
