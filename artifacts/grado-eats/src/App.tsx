@@ -190,10 +190,12 @@ const T = {
     taxiSoon:'Service disponible très bientôt',
     taxiDesc:'Bridge Taxi Confort — trajets premium à Safi, en toute élégance.',
     taxiBook:'Réserver sur WhatsApp Business',
-    tabacSub:'Achat sur place',
+    tabacSub:'Livraison & retrait',
     tabacSoon:'Bientôt disponible',
     tabacDesc:'Bridge Tabac — cigarettes, boissons & produits premium au cœur de Safi.',
-    tabacBook:'Contacter sur WhatsApp Business',
+    tabacBook:'Envoyer via WhatsApp Business',
+    tabacCollectAddress:'Adresse retrait : Plateau, Safi (la boutique vous contacte)',
+    tabacSend:'Envoyer la commande 🚀',
   },
   en: {
     appName:'Bridge Safi', zone:'Safi, Morocco',
@@ -240,10 +242,12 @@ const T = {
     taxiSoon:'Service coming soon',
     taxiDesc:'Bridge Taxi Confort — premium rides in Safi, in pure elegance.',
     taxiBook:'Book on WhatsApp Business',
-    tabacSub:'In-store purchase',
+    tabacSub:'Delivery & pick-up',
     tabacSoon:'Coming soon',
     tabacDesc:'Bridge Tabac — cigarettes, drinks & premium products in Safi.',
-    tabacBook:'Contact on WhatsApp Business',
+    tabacBook:'Send via WhatsApp Business',
+    tabacCollectAddress:'Pick-up address: Plateau, Safi (the shop will contact you)',
+    tabacSend:'Send order 🚀',
   },
   ar: {
     appName:'بريدج سافي', zone:'آسفي، المغرب',
@@ -291,10 +295,12 @@ const T = {
     taxiSoon:'الخدمة قادمة قريباً',
     taxiDesc:'بريدج تاكسي كونفور — رحلات مميزة في آسفي بأناقة.',
     taxiBook:'احجز عبر واتساب بيزنس',
-    tabacSub:'شراء في المحل',
+    tabacSub:'توصيل واستلام',
     tabacSoon:'قريباً',
     tabacDesc:'بريدج طباق — سجائر، مشروبات ومنتجات مميزة في آسفي.',
-    tabacBook:'تواصل عبر واتساب بيزنس',
+    tabacBook:'إرسال عبر واتساب بيزنس',
+    tabacCollectAddress:'عنوان الاستلام : الهضبة، آسفي (ستتصل بك البوتيك)',
+    tabacSend:'إرسال الطلب 🚀',
   },
   amz: {
     appName:'ⴱⵔⵉⴷⵊ ⵉⵢⵜⵙ', zone:'ⵙⴰⴼⵉ, ⵍⵎⵖⵔⵉⴱ',
@@ -342,10 +348,12 @@ const T = {
     taxiSoon:'ⵜⴰⵎⵙⴽⴰⵔⵜ ⵜⴰⵖ ⴷ ⵓⴳⵉⵏ',
     taxiDesc:'ⴱⵔⵉⴷⵊ ⵜⴰⴽⵙⵉ — ⵜⵉⵔⴰⵡⵉⵏ ⵜⵉⴼⵓⵍⴽⵉⵏ ⵖ ⵙⴰⴼⵉ.',
     taxiBook:'ⵙⵇⵇⵔ ⵙ WhatsApp Business',
-    tabacSub:'ⴰⵙⵖ ⵖ ⵓⵙⵓⵔⵉⴼ',
+    tabacSub:'ⴰⵙⵙⵓⴼⵖ ⴷ ⵓⵔⵣⵣⵓ',
     tabacSoon:'ⵜⴰⵖ ⴷ ⵓⴳⵉⵏ',
     tabacDesc:'ⴱⵔⵉⴷⵊ ⵟⴱⴰⵇ — ⵜⵉⴳⴰⵔ, ⵉⵙⵡⵉⵡⵏ ⴷ ⵉⵙⴽⴰⵔⵏ ⵉⴼⵓⵍⴽⵉⵏ ⵖ ⵙⴰⴼⵉ.',
-    tabacBook:'ⵕⵕⴰ ⵙ WhatsApp Business',
+    tabacBook:'ⵙⵙⵉⴼⵍ ⵙ WhatsApp Business',
+    tabacCollectAddress:'ⵜⴰⵏⵙⴰ ⵏ ⵓⵔⵣⵣⵓ : ⴰⴱⵍⴰⵟⵓ, ⵙⴰⴼⵉ',
+    tabacSend:'ⵙⵙⵉⴼⵍ ⵜⴰⵖⵓⵍⵜ 🚀',
   },
 };
 
@@ -2037,15 +2045,44 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile}:{
   profile:UserProfile; saveProfile:(p:UserProfile)=>void;
 }) {
   const [showProfile,setShowProfile]=useState(false);
+  const [delivMode,setDelivMode]=useState<'delivery'|'collect'>('delivery');
+  const [name,setName]=useState(profile.name??'');
+  const [addr,setAddr]=useState(profile.address??'');
+  const [phone,setPhone]=useState(profile.phone??'');
+  const [err,setErr]=useState('');
+
   const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
+  const t=T[lang];
   const pillStyle:React.CSSProperties={
     background:'white',border:'2.5px solid #D9C5A0',color:'#065F46',
     boxShadow:'0 4px 20px rgba(6,95,70,0.15)',height:'44px',minWidth:'44px',
   };
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
+
+  const WA_SVG=<svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>;
+
+  const handleSend=()=>{
+    if(!name.trim()||!phone.trim()||(delivMode==='delivery'&&!addr.trim())){
+      setErr('*');return;
+    }
+    let msg=`🚬 Bridge Tabac — ${delivMode==='delivery'?t.delivOption:t.collectOption}\n\n`;
+    if(delivMode==='delivery'){
+      msg+=`👤 ${t.nameLabel}: ${name.trim()}\n📍 ${t.addrLabel}: ${addr.trim()}, Safi\n📞 ${t.phoneLabel}: ${phone.trim()}`;
+    } else {
+      msg+=`👤 ${t.nameLabel}: ${name.trim()}\n📞 ${t.phoneLabel}: ${phone.trim()}\n\n🏪 ${t.tabacCollectAddress}`;
+    }
+    msg+=`\n\n${t.tabacBook} 🙏`;
+    window.open(`https://wa.me/212764794856?text=${encodeURIComponent(msg)}`,'_blank','noopener,noreferrer');
+  };
+
+  const inputCls=`w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all ${fClass}`;
+  const inputStyle=(hasErr:boolean):React.CSSProperties=>({
+    background:'#F9F6F0',border:`1.5px solid ${hasErr?'#EF4444':'#E5E1D8'}`,color:'#1A2F23',
+  });
+
   return(
     <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`} style={{background:'#FDFCF9',color:'#1A2F23'}}>
-      {/* Header bar */}
+      {/* Header */}
       <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'right-5':'left-5'}`}>
         <button onClick={onBack}
           className={`rounded-full flex items-center gap-1.5 px-3 font-black text-sm transition-all active:scale-90 ${isAMZ?'font-tifinagh':''}`}
@@ -2066,35 +2103,72 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile}:{
         </button>
       </div>
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
-        {/* Logo placeholder */}
-        <div className="w-28 h-28 rounded-full overflow-hidden mb-6 flex items-center justify-center"
+      {/* Content */}
+      <div className="flex flex-col items-center px-5 pt-24 pb-12 max-w-sm mx-auto w-full">
+        {/* Logo */}
+        <div className="w-24 h-24 rounded-full overflow-hidden mb-4 flex items-center justify-center flex-shrink-0"
           style={{background:'linear-gradient(135deg,#7D4F2E 0%,#5C3317 100%)',boxShadow:'0 8px 32px rgba(125,79,46,0.3)',border:'3px solid #D9C5A0'}}>
-          <span style={{fontSize:'3.5rem'}}>🚬</span>
+          <span style={{fontSize:'3rem'}}>🚬</span>
         </div>
-        <h1 className={`font-black text-2xl tracking-wider mb-1 ${fClass}`} style={{color:'#7D4F2E'}}>BRIDGE TABAC</h1>
-        <p className="text-[11px] tracking-widest font-bold mb-6" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
-        <div className="flex items-center gap-2 mb-8">
-          <div className="w-10 h-px" style={{background:'#D9C5A0'}}/>
-          <div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/>
-          <div className="w-10 h-px" style={{background:'#D9C5A0'}}/>
+        <h1 className={`font-black text-xl tracking-wider mb-0.5 ${fClass}`} style={{color:'#7D4F2E'}}>BRIDGE TABAC</h1>
+        <p className="text-[10px] tracking-widest font-bold mb-5" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
+
+        {/* Mode selector */}
+        <div className="flex gap-2 w-full mb-5">
+          {([
+            {key:'delivery'as const, label:t.delivOption, desc:t.delivOptionDesc, color:'#065F46', selBg:'#D1FAE5', bg:'#F0FDF4'},
+            {key:'collect'as const,  label:t.collectOption, desc:t.collectOptionDesc, color:'#B45309', selBg:'#FEF3C7', bg:'#FFFBEB'},
+          ]).map(opt=>{
+            const sel=delivMode===opt.key;
+            return(
+              <button key={opt.key} onClick={()=>{setDelivMode(opt.key);setErr('');}}
+                className={`flex-1 rounded-2xl p-3 text-left transition-all duration-200 active:scale-95 ${isAR?'text-right':''}`}
+                style={{background:sel?opt.selBg:opt.bg,border:`2px solid ${sel?opt.color:'#E5E1D8'}`}}>
+                <p className={`font-black text-[11px] leading-tight ${fClass}`} style={{color:opt.color}}>{opt.label}</p>
+                <p className={`text-[9px] mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{opt.desc}</p>
+                {sel&&<div className="mt-1.5 w-3 h-3 rounded-full flex items-center justify-center" style={{background:opt.color}}>
+                  <svg width="7" height="7" viewBox="0 0 10 10" fill="white"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>
+                </div>}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Coming soon card */}
-        <div className="rounded-2xl p-5 mb-6 w-full max-w-sm" style={{background:'#FDF8F3',border:'1.5px solid #D9C5A0'}}>
-          <p className="text-4xl mb-3">🚬</p>
-          <p className={`font-black text-sm mb-1 ${fClass}`} style={{color:'#7D4F2E'}}>{T[lang].tabacSoon}</p>
-          <p className={`text-xs font-medium ${fClass}`} style={{color:'#78716C'}}>{T[lang].tabacDesc}</p>
+        {/* Form */}
+        <div className="w-full flex flex-col gap-3 mb-5">
+          <div>
+            <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:'#065F46'}}>👤 {t.nameLabel}</p>
+            <input className={inputCls} style={inputStyle(!!err&&!name.trim())}
+              placeholder={t.namePh} value={name} onChange={e=>{setName(e.target.value);setErr('');}}/>
+          </div>
+          {delivMode==='delivery'&&(
+            <div>
+              <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:'#065F46'}}>📍 {t.addrLabel}</p>
+              <input className={inputCls} style={inputStyle(!!err&&!addr.trim())}
+                placeholder={t.addrPh} value={addr} onChange={e=>{setAddr(e.target.value);setErr('');}}/>
+            </div>
+          )}
+          {delivMode==='collect'&&(
+            <div className="rounded-xl px-4 py-3" style={{background:'#FEF3C7',border:'1.5px solid #FDE68A'}}>
+              <p className={`text-[10px] font-medium ${fClass}`} style={{color:'#92400E'}}>🏪 {t.tabacCollectAddress}</p>
+            </div>
+          )}
+          <div>
+            <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:'#065F46'}}>📞 {t.phoneLabel}</p>
+            <input className={inputCls} style={inputStyle(!!err&&!phone.trim())}
+              placeholder={t.phonePh} value={phone} type="tel"
+              onChange={e=>{setPhone(e.target.value);setErr('');}}/>
+          </div>
+          {err&&<p className={`text-xs font-bold ${fClass}`} style={{color:'#EF4444'}}>⚠️ {lang==='ar'?'يرجى ملء جميع الحقول المطلوبة':lang==='en'?'Please fill in all required fields':lang==='amz'?'ⵔⵏⵓ ⵉⵙⵡⵓⵔⵉⵡⵏ ⵉⵍⴰⵎⵎⴰⵏ':'Veuillez remplir tous les champs requis'}</p>}
         </div>
 
-        <a href="https://wa.me/212764794856?text=Bonjour%2C%20je%20voudrais%20contacter%20Bridge%20Tabac%20%F0%9F%9A%AC"
-          target="_blank" rel="noopener noreferrer"
-          className="w-full max-w-sm py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 mb-3 active:scale-95 transition-all"
+        {/* Send button */}
+        <button onClick={handleSend}
+          className={`w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 active:scale-95 transition-all ${fClass}`}
           style={{background:'#25D366',boxShadow:'0 6px 20px rgba(37,211,102,0.3)'}}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
-          <span className={fClass}>{T[lang].tabacBook}</span>
-        </a>
+          {WA_SVG}
+          {t.tabacSend}
+        </button>
       </div>
 
       {showProfile&&<ProfileModal lang={lang} profile={profile} saveProfile={saveProfile} onClose={()=>setShowProfile(false)}/>}
