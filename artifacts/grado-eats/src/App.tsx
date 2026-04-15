@@ -757,9 +757,47 @@ function AddressAutocomplete({label,value,onChange,placeholder,lang,error}:{
 
 // ─── RESTAURANT CARD (Home) ───────────────────────────────────────────────────
 
-function RestaurantCard({r,lang,t,onClick}:{r:Restaurant;lang:Lang;t:typeof T.fr;onClick:()=>void}) {
+function RestaurantCard({r,lang,t,onClick,compact=false}:{r:Restaurant;lang:Lang;t:typeof T.fr;onClick:()=>void;compact?:boolean}) {
   const fClass=fontClass(lang);
   const isFeatured = r.id === 'mcdonalds-safi';
+  if(compact){
+    return(
+      <button onClick={onClick}
+        className="w-full text-left rounded-2xl overflow-hidden transition-all active:scale-95"
+        style={{background:'#FDFCF9',border:`1.5px solid ${isFeatured?'#D9C5A0':'#E5E1D8'}`,boxShadow:'0 4px 14px rgba(0,0,0,0.08)'}}>
+        <div className="relative h-28 overflow-hidden">
+          <img src={r.cover} alt={r.name} className="w-full h-full object-cover" loading="lazy"/>
+          <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.9) 0%,rgba(4,55,38,0.05) 60%,transparent 100%)'}}/>
+          <div className="absolute top-2 left-2 w-8 h-8 rounded-xl flex items-center justify-center text-lg"
+            style={{background:'rgba(253,252,249,0.95)',backdropFilter:'blur(8px)',boxShadow:'0 2px 8px rgba(0,0,0,0.15)'}}>
+            {r.logo}
+          </div>
+          {isFeatured&&(
+            <div className="absolute top-2 right-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full" style={{background:'#D9C5A0'}}>
+              <span className="text-[9px]">⭐</span>
+              <span className="text-[9px] font-black" style={{color:'#065F46'}}>#1</span>
+            </div>
+          )}
+          <div className="absolute bottom-0 left-0 right-0 px-2.5 pb-2">
+            <h3 className={`font-black text-white text-xs leading-tight mb-0.5 ${fClass}`}>{r.name}</h3>
+            <p className={`text-white/65 text-[10px] leading-tight line-clamp-1 ${fClass}`}>{r.tagline[lang]}</p>
+          </div>
+        </div>
+        <div className="px-2.5 py-2 flex items-center justify-between gap-1">
+          <div className="flex items-center gap-1 flex-wrap">
+            <span className="text-yellow-400 text-xs">★</span>
+            <span className="text-[10px] font-black" style={{color:'#1A2F23'}}>{r.rating}</span>
+            <div className="w-0.5 h-0.5 rounded-full mx-0.5" style={{background:'#D9C5A0'}}/>
+            <span className="text-[10px]" style={{color:'#6B7280'}}>⏱{r.deliveryTime}{t.delivMin}</span>
+          </div>
+          <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{background:'#F0FDF4'}}>
+            <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"/>
+            <span className="text-[9px] font-black" style={{color:'#065F46'}}>{t.openNow}</span>
+          </div>
+        </div>
+      </button>
+    );
+  }
   return (
     <button onClick={onClick}
       className="w-full text-left rounded-3xl overflow-hidden transition-all active:scale-95 hover:shadow-2xl"
@@ -767,12 +805,10 @@ function RestaurantCard({r,lang,t,onClick}:{r:Restaurant;lang:Lang;t:typeof T.fr
       <div className="relative h-44 overflow-hidden">
         <img src={r.cover} alt={r.name} className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" loading="lazy"/>
         <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.85) 0%,rgba(4,55,38,0.1) 55%,transparent 100%)'}}/>
-        {/* Logo badge */}
         <div className="absolute top-3 left-3 w-12 h-12 rounded-2xl flex items-center justify-center text-3xl"
           style={{background:'rgba(253,252,249,0.95)',backdropFilter:'blur(8px)',boxShadow:'0 4px 12px rgba(0,0,0,0.15)'}}>
           {r.logo}
         </div>
-        {/* Open badge + Featured badge */}
         <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
           {isFeatured&&(
             <div className="flex items-center gap-1 px-2 py-1 rounded-full" style={{background:'#D9C5A0'}}>
@@ -1056,11 +1092,16 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
         <p className={`text-[11px] font-black uppercase tracking-widest ${fClass}`} style={{color:'#065F46'}}>{t.nearYou}</p>
       </div>
 
-      {/* Restaurant cards */}
-      <div className="px-5 flex flex-col gap-4 mb-6">
-        {RESTAURANTS.map(r=>(
-          <RestaurantCard key={r.id} r={r} lang={lang} t={t} onClick={()=>onSelectRestaurant(r)}/>
-        ))}
+      {/* Restaurant cards — 2-column grid, featured full-width */}
+      <div className="px-4 grid grid-cols-2 gap-3 mb-6">
+        {RESTAURANTS.map(r=>{
+          const isFeatured=r.id==='mcdonalds-safi';
+          return(
+            <div key={r.id} className={isFeatured?'col-span-2':''}>
+              <RestaurantCard r={r} lang={lang} t={t} onClick={()=>onSelectRestaurant(r)} compact={!isFeatured}/>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
