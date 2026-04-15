@@ -1795,8 +1795,18 @@ export default function App() {
   return (
     <div className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{color:'#1A2F23'}}>
 
-      {/* ── Top-left: Cart ── */}
-      <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
+      {/* ── Top-left: Services back + Cart ── */}
+      <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'right-5':'left-5'}`}>
+        {/* Services switch button */}
+        <button onClick={()=>setService('none')}
+          className="flex items-center gap-1 px-2.5 rounded-full font-black text-xs transition-all active:scale-90 hover:scale-110"
+          style={{...pillStyle, height:'38px', position:'relative'}}>
+          <span style={{fontSize:'13px', lineHeight:1}}>←</span>
+          <span style={{fontSize:'13px', lineHeight:1}}>🛵</span>
+          <span style={{fontSize:'11px', color:'#D9C5A0', fontWeight:900}}>|</span>
+          <span style={{fontSize:'13px', lineHeight:1}}>🚖</span>
+        </button>
+        {/* Cart */}
         <button onClick={()=>setShowCart(true)}
           className="flex items-center gap-1.5 px-3 rounded-full font-black text-sm transition-all active:scale-90 hover:scale-110"
           style={pillStyle}>
@@ -1867,12 +1877,6 @@ export default function App() {
               {tab.id==='home'&&page!=='restaurant'&&page==='home'&&<div className="w-5 h-0.5 rounded-full" style={{background:'#065F46'}}/>}
             </button>
           ))}
-          {/* Services button */}
-          <button onClick={()=>setService('none')}
-            className="flex-1 flex flex-col items-center gap-1 py-3 transition-all active:scale-90">
-            <span className="text-xl">🔀</span>
-            <span className="text-[10px] font-black uppercase tracking-wide" style={{color:'#9CA3AF'}}>Services</span>
-          </button>
         </div>
         <p className="text-center text-[9px] pb-2" style={{color:'#C9BFB2'}}>{t.footer}</p>
       </nav>
