@@ -1933,7 +1933,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
                     boxShadow:isPressed?item.activeShadow:'0 6px 22px rgba(6,95,70,0.15)',
                     transition:'all 0.25s',
                   }}>
-                    <img src={item.key==='tabac'?'/bridge-tabac-logo.jpeg':item.src} alt={item.label} style={{width:'100%',height:'100%',objectFit:item.key==='tabac'?'fill':'cover',objectPosition:'center top',display:'block'}}/>
+                    <img src={item.key==='tabac'?'/bridge-tabac-logo.jpeg':item.src} alt={item.label} style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:item.key==='tabac'?'center center':'center top',display:'block'}}/>
                   </div>
                   {/* "En attente" badge — red pill at top of circle */}
                   {item.pending&&(
@@ -2215,7 +2215,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile}:{
         {/* Logo */}
         <div className="w-24 h-24 rounded-full overflow-hidden mb-4 flex-shrink-0"
           style={{boxShadow:'0 8px 32px rgba(125,79,46,0.3)',border:'3px solid #D9C5A0'}}>
-          <img src="/bridge-tabac-logo.jpeg" alt="Bridge Tabac" style={{width:'100%',height:'100%',objectFit:'fill',display:'block'}}/>
+          <img src="/bridge-tabac-logo.jpeg" alt="Bridge Tabac" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center center',display:'block'}}/>
         </div>
         <h1 className={`font-black text-xl tracking-wider mb-0.5 ${fClass}`} style={{color:'#7D4F2E'}}>BRIDGE TABAC</h1>
         <p className="text-[10px] tracking-widest font-bold mb-5" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
