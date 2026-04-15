@@ -1767,10 +1767,10 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
         <button onClick={onBack}
           className="flex items-center gap-1 px-2.5 rounded-full font-black text-xs transition-all active:scale-90 hover:scale-110"
           style={{...pillStyle,height:'38px'}}>
-          <span style={{fontSize:'13px',lineHeight:1}}>←</span>
           <span style={{fontSize:'13px',lineHeight:1}}>🛵</span>
           <span style={{fontSize:'11px',color:'#D9C5A0',fontWeight:900}}>|</span>
           <span style={{fontSize:'13px',lineHeight:1}}>🚖</span>
+          <span style={{fontSize:'13px',lineHeight:1}}>←</span>
         </button>
       </div>
 
@@ -1988,10 +1988,10 @@ export default function App() {
         <button onClick={()=>setService('none')}
           className="flex items-center gap-1 px-2.5 rounded-full font-black text-xs transition-all active:scale-90 hover:scale-110"
           style={{...pillStyle, height:'38px'}}>
-          <span style={{fontSize:'13px', lineHeight:1}}>←</span>
           <span style={{fontSize:'13px', lineHeight:1}}>🛵</span>
           <span style={{fontSize:'11px', color:'#D9C5A0', fontWeight:900}}>|</span>
           <span style={{fontSize:'13px', lineHeight:1}}>🚖</span>
+          <span style={{fontSize:'13px', lineHeight:1}}>←</span>
         </button>
       </div>
 
