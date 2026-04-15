@@ -1926,7 +1926,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
                     boxShadow:isPressed?item.activeShadow:'0 6px 22px rgba(6,95,70,0.15)',
                     transition:'all 0.25s',
                   }}>
-                    <img src={item.key==='tabac'?'/bridge-tabac-logo.jpeg':item.src} alt={item.label} style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center',display:'block'}}/>
+                    <img src={item.key==='tabac'?'/bridge-tabac-logo.jpeg':item.src} alt={item.label} style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:item.key==='tabac'?'center':'center top',display:'block'}}/>
                   </div>
                   {/* "En attente" badge — red pill at top of circle */}
                   {item.pending&&(
