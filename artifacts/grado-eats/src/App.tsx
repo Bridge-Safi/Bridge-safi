@@ -206,6 +206,10 @@ const T = {
     taxiSoon:'Service disponible très bientôt',
     taxiDesc:'Bridge Taxi Confort — trajets premium à Safi, en toute élégance.',
     taxiBook:'Réserver sur WhatsApp Business',
+    tabacSub:'Achat sur place',
+    tabacSoon:'Bientôt disponible',
+    tabacDesc:'Bridge Tabac — cigarettes, boissons & produits premium au cœur de Safi.',
+    tabacBook:'Contacter sur WhatsApp Business',
   },
   en: {
     appName:'Bridge Safi', zone:'Safi, Morocco',
@@ -252,6 +256,10 @@ const T = {
     taxiSoon:'Service coming soon',
     taxiDesc:'Bridge Taxi Confort — premium rides in Safi, in pure elegance.',
     taxiBook:'Book on WhatsApp Business',
+    tabacSub:'In-store purchase',
+    tabacSoon:'Coming soon',
+    tabacDesc:'Bridge Tabac — cigarettes, drinks & premium products in Safi.',
+    tabacBook:'Contact on WhatsApp Business',
   },
   ar: {
     appName:'بريدج سافي', zone:'آسفي، المغرب',
@@ -299,6 +307,10 @@ const T = {
     taxiSoon:'الخدمة قادمة قريباً',
     taxiDesc:'بريدج تاكسي كونفور — رحلات مميزة في آسفي بأناقة.',
     taxiBook:'احجز عبر واتساب بيزنس',
+    tabacSub:'شراء في المحل',
+    tabacSoon:'قريباً',
+    tabacDesc:'بريدج طباق — سجائر، مشروبات ومنتجات مميزة في آسفي.',
+    tabacBook:'تواصل عبر واتساب بيزنس',
   },
   amz: {
     appName:'ⴱⵔⵉⴷⵊ ⵉⵢⵜⵙ', zone:'ⵙⴰⴼⵉ, ⵍⵎⵖⵔⵉⴱ',
@@ -346,6 +358,10 @@ const T = {
     taxiSoon:'ⵜⴰⵎⵙⴽⴰⵔⵜ ⵜⴰⵖ ⴷ ⵓⴳⵉⵏ',
     taxiDesc:'ⴱⵔⵉⴷⵊ ⵜⴰⴽⵙⵉ — ⵜⵉⵔⴰⵡⵉⵏ ⵜⵉⴼⵓⵍⴽⵉⵏ ⵖ ⵙⴰⴼⵉ.',
     taxiBook:'ⵙⵇⵇⵔ ⵙ WhatsApp Business',
+    tabacSub:'ⴰⵙⵖ ⵖ ⵓⵙⵓⵔⵉⴼ',
+    tabacSoon:'ⵜⴰⵖ ⴷ ⵓⴳⵉⵏ',
+    tabacDesc:'ⴱⵔⵉⴷⵊ ⵟⴱⴰⵇ — ⵜⵉⴳⴰⵔ, ⵉⵙⵡⵉⵡⵏ ⴷ ⵉⵙⴽⴰⵔⵏ ⵉⴼⵓⵍⴽⵉⵏ ⵖ ⵙⴰⴼⵉ.',
+    tabacBook:'ⵕⵕⴰ ⵙ WhatsApp Business',
   },
 };
 
@@ -1770,11 +1786,11 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
 
 // ─── SERVICE SELECT PAGE ──────────────────────────────────────────────────────
 
-function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'taxi')=>void;lang:Lang;cycleLang:()=>void}) {
-  const [pressed,setPressed]=useState<'delivery'|'taxi'|null>(null);
+function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'taxi'|'tabac')=>void;lang:Lang;cycleLang:()=>void}) {
+  const [pressed,setPressed]=useState<'delivery'|'taxi'|'tabac'|null>(null);
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
-  const choose=(s:'delivery'|'taxi')=>{setPressed(s);setTimeout(()=>onSelect(s),320);};
+  const choose=(s:'delivery'|'taxi'|'tabac')=>{setPressed(s);setTimeout(()=>onSelect(s),320);};
   const swipeSelect=useSwipe(()=>choose('taxi'),()=>choose('delivery'));
   return(
     <div {...swipeSelect} className={`fixed inset-0 flex flex-col items-center justify-center z-40 px-6 ${isAR?'rtl':'ltr'}`}
@@ -1804,44 +1820,49 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
           {t.chooseService}
         </p>
 
-        {/* Two service cards — identical structure & fixed size */}
-        <div className="flex items-start justify-center gap-4 w-full">
+        {/* Three service cards */}
+        <div className="flex items-start justify-center gap-2 w-full">
           {([
             {key:'delivery' as const, src:'/logo_delivery.jpeg', label:'Bridge Delivery', sub:t.deliverySub, emoji:'🛵',
-             activeColor:'#065F46', activeShadow:'0 0 0 6px rgba(6,95,70,0.15),0 12px 36px rgba(6,95,70,0.3)', labelColor:'#065F46'},
+             activeColor:'#065F46', activeShadow:'0 0 0 5px rgba(6,95,70,0.15),0 10px 28px rgba(6,95,70,0.3)', labelColor:'#065F46'},
             {key:'taxi' as const, src:'/logo_taxi.jpeg', label:'Bridge Taxi', sub:t.taxiSub, emoji:'🚖',
-             activeColor:'#B45309', activeShadow:'0 0 0 6px rgba(180,83,9,0.15),0 12px 36px rgba(180,83,9,0.25)', labelColor:'#B45309'},
+             activeColor:'#B45309', activeShadow:'0 0 0 5px rgba(180,83,9,0.15),0 10px 28px rgba(180,83,9,0.25)', labelColor:'#B45309'},
+            {key:'tabac' as const, src:'/logo_tabac.jpeg', label:'Bridge Tabac', sub:t.tabacSub, emoji:'🚬',
+             activeColor:'#7D4F2E', activeShadow:'0 0 0 5px rgba(125,79,46,0.15),0 10px 28px rgba(125,79,46,0.25)', labelColor:'#7D4F2E'},
           ]).reduce<React.ReactNode[]>((acc,item,i)=>{
             if(i>0) acc.push(
-              <div key="div" className="flex flex-col items-center gap-1.5 flex-shrink-0" style={{marginTop:'64px'}}>
-                <div className="w-px h-8" style={{background:'#E5E1D8'}}/>
+              <div key={`div${i}`} className="flex flex-col items-center gap-1 flex-shrink-0" style={{marginTop:'52px'}}>
+                <div className="w-px h-6" style={{background:'#E5E1D8'}}/>
                 <div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/>
-                <div className="w-px h-8" style={{background:'#E5E1D8'}}/>
+                <div className="w-px h-6" style={{background:'#E5E1D8'}}/>
               </div>
             );
             const isPressed=pressed===item.key;
+            const S=104;
             acc.push(
               <button key={item.key} onClick={()=>choose(item.key)}
-                className="flex flex-col items-center gap-3 flex-shrink-0 transition-all duration-300 active:scale-95"
-                style={{transform:isPressed?'scale(0.93)':'scale(1)',width:148}}>
-                <div className="relative flex-shrink-0" style={{width:148,height:148}}>
+                className="flex flex-col items-center gap-2.5 flex-shrink-0 transition-all duration-300 active:scale-95"
+                style={{transform:isPressed?'scale(0.93)':'scale(1)',width:S}}>
+                <div className="relative flex-shrink-0" style={{width:S,height:S}}>
                   <div className="rounded-full overflow-hidden" style={{
-                    width:148,height:148,
-                    border:isPressed?`4px solid ${item.activeColor}`:'3.5px solid #D9C5A0',
-                    boxShadow:isPressed?item.activeShadow:'0 8px 28px rgba(6,95,70,0.15)',
+                    width:S,height:S,
+                    border:isPressed?`3.5px solid ${item.activeColor}`:'3px solid #D9C5A0',
+                    boxShadow:isPressed?item.activeShadow:'0 6px 22px rgba(6,95,70,0.15)',
                     transition:'all 0.25s',
                   }}>
-                    <img src={item.src} alt={item.label}
-                      style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
+                    {item.src==='/logo_tabac.jpeg'
+                      ? <div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#7D4F2E 0%,#5C3317 100%)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'2.5rem'}}>🚬</div>
+                      : <img src={item.src} alt={item.label} style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
+                    }
                   </div>
-                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center text-base"
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full flex items-center justify-center text-sm"
                     style={{background:'#FDFCF9',border:'2px solid #D9C5A0',boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
                     {item.emoji}
                   </div>
                 </div>
                 <div className="text-center mt-1">
-                  <p className="font-black text-xs tracking-[0.12em] uppercase" style={{color:item.labelColor}}>{item.label}</p>
-                  <p className="font-bold text-[10px] tracking-wide mt-0.5" style={{color:'#9CA3AF'}}>{item.sub}</p>
+                  <p className={`font-black text-[10px] tracking-[0.1em] uppercase ${fClass}`} style={{color:item.labelColor}}>{item.label}</p>
+                  <p className={`font-bold text-[9px] tracking-wide mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{item.sub}</p>
                 </div>
               </button>
             );
@@ -2026,11 +2047,84 @@ const LANG_CYCLE:Lang[]=['fr','en','ar','amz'];
 const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
 
 const NAV_KEY='bridge_nav_state';
+// ─── TABAC PAGE ───────────────────────────────────────────────────────────────
+
+function TabacPage({onBack,lang,cycleLang,profile,saveProfile}:{
+  onBack:()=>void; lang:Lang; cycleLang:()=>void;
+  profile:UserProfile; saveProfile:(p:UserProfile)=>void;
+}) {
+  const [showProfile,setShowProfile]=useState(false);
+  const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
+  const pillStyle:React.CSSProperties={
+    background:'white',border:'2.5px solid #D9C5A0',color:'#065F46',
+    boxShadow:'0 4px 20px rgba(6,95,70,0.15)',height:'44px',minWidth:'44px',
+  };
+  const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
+  const swipeBack=useSwipe(undefined,()=>onBack());
+  return(
+    <div {...swipeBack} className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`} style={{background:'#FDFCF9',color:'#1A2F23'}}>
+      {/* Header bar */}
+      <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'right-5':'left-5'}`}>
+        <button onClick={onBack}
+          className={`rounded-full flex items-center gap-1.5 px-3 font-black text-sm transition-all active:scale-90 ${isAMZ?'font-tifinagh':''}`}
+          style={{...pillStyle,fontSize:'13px'}}>
+          🛵 | 🚬 ←
+        </button>
+      </div>
+      <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
+        <button onClick={cycleLang}
+          className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 px-3 ${isAMZ?'font-tifinagh':''}`}
+          style={{...pillStyle,fontSize:'13px'}}>
+          {LANG_LABELS[lang]}
+        </button>
+        <button onClick={()=>setShowProfile(true)}
+          className="rounded-full flex items-center justify-center font-black text-xl transition-all active:scale-90 hover:scale-110"
+          style={{...pillStyle,width:'44px',padding:0}}>
+          👤
+        </button>
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-12">
+        {/* Logo placeholder */}
+        <div className="w-28 h-28 rounded-full overflow-hidden mb-6 flex items-center justify-center"
+          style={{background:'linear-gradient(135deg,#7D4F2E 0%,#5C3317 100%)',boxShadow:'0 8px 32px rgba(125,79,46,0.3)',border:'3px solid #D9C5A0'}}>
+          <span style={{fontSize:'3.5rem'}}>🚬</span>
+        </div>
+        <h1 className={`font-black text-2xl tracking-wider mb-1 ${fClass}`} style={{color:'#7D4F2E'}}>BRIDGE TABAC</h1>
+        <p className="text-[11px] tracking-widest font-bold mb-6" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
+        <div className="flex items-center gap-2 mb-8">
+          <div className="w-10 h-px" style={{background:'#D9C5A0'}}/>
+          <div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/>
+          <div className="w-10 h-px" style={{background:'#D9C5A0'}}/>
+        </div>
+
+        {/* Coming soon card */}
+        <div className="rounded-2xl p-5 mb-6 w-full max-w-sm" style={{background:'#FDF8F3',border:'1.5px solid #D9C5A0'}}>
+          <p className="text-4xl mb-3">🚬</p>
+          <p className={`font-black text-sm mb-1 ${fClass}`} style={{color:'#7D4F2E'}}>{T[lang].tabacSoon}</p>
+          <p className={`text-xs font-medium ${fClass}`} style={{color:'#78716C'}}>{T[lang].tabacDesc}</p>
+        </div>
+
+        <a href="https://wa.me/212764794856?text=Bonjour%2C%20je%20voudrais%20contacter%20Bridge%20Tabac%20%F0%9F%9A%AC"
+          target="_blank" rel="noopener noreferrer"
+          className="w-full max-w-sm py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 mb-3 active:scale-95 transition-all"
+          style={{background:'#25D366',boxShadow:'0 6px 20px rgba(37,211,102,0.3)'}}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+          <span className={fClass}>{T[lang].tabacBook}</span>
+        </a>
+      </div>
+
+      {showProfile&&<ProfileModal lang={lang} profile={profile} saveProfile={saveProfile} onClose={()=>setShowProfile(false)}/>}
+    </div>
+  );
+}
+
 function loadNav() {
   try {
     const raw=localStorage.getItem(NAV_KEY);
     if(!raw) return null;
-    return JSON.parse(raw) as {lang:Lang;service:'none'|'delivery'|'taxi';page:Page;restaurantId:string|null};
+    return JSON.parse(raw) as {lang:Lang;service:'none'|'delivery'|'taxi'|'tabac';page:Page;restaurantId:string|null};
   } catch { return null; }
 }
 
@@ -2041,7 +2135,7 @@ export default function App() {
   const [page,setPage]         = useState<Page>(saved?.page??'home');
   // Show splash on every load/refresh/restart
   const [showSplash,setShowSplash] = useState(true);
-  const [service,setService]       = useState<'none'|'delivery'|'taxi'>(saved?.service??'none');
+  const [service,setService]       = useState<'none'|'delivery'|'taxi'|'tabac'>(saved?.service??'none');
   const [cart,setCart]         = useState<CartItem[]>([]);
   const [showCart,setShowCart] = useState(false);
   const [showProfile,setShowProfile] = useState(false);
@@ -2104,6 +2198,7 @@ export default function App() {
   if(showSplash) return <SplashScreen/>;
   if(service==='none') return <ServiceSelectPage onSelect={s=>setService(s)} lang={lang} cycleLang={cycleLang}/>;
   if(service==='taxi') return <TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
+  if(service==='tabac') return <TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={
