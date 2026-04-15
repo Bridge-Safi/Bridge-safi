@@ -453,7 +453,7 @@ const OPT = {
 const MCD = {
   menuSize: ():OptionGroup => ({ id:'menu_size', names:{fr:'Format du Menu',en:'Menu Size',ar:'حجم الوجبة',amz:'ⴰⵎⵔⴰⵡ'}, type:'radio', required:true, choices:[
     {id:'medium',names:{fr:'Menu Medium',en:'Medium Meal',ar:'وجبة وسط',amz:'ⵎⵉⴷⵢⵓⵎ'},price:0},
-    {id:'maxi',  names:{fr:'Menu Maxi (+15 MAD)',en:'Large Meal (+15 MAD)',ar:'وجبة كبيرة (+15)',amz:'ⵎⴰⴽⵙⵉ (+15)'},price:15},
+    {id:'maxi',  names:{fr:'Menu Large (+7 MAD)',en:'Large Meal (+7 MAD)',ar:'وجبة كبيرة (+7)',amz:'ⵎⴰⴽⵙⵉ (+7)'},price:7},
   ]}),
   menuDrink: ():OptionGroup => ({ id:'menu_drink', names:{fr:'Boisson',en:'Drink',ar:'المشروب',amz:'ⴰⵙⵡ'}, type:'radio', required:true, choices:[
     {id:'cola',   names:{fr:'Coca-Cola',      en:'Coca-Cola',      ar:'كوكا كولا',   amz:'ⴽⵓⵍⴰ'},       price:0},
@@ -503,13 +503,27 @@ const MCD = {
   ]}),
 };
 
-const MCDO_COVER = '/mcdo_cover.jpg';
-const MCDO_BURGER = '/mcdo_burger.jpg';
-const MCDO_NUGGETS = 'https://images.unsplash.com/photo-1562967914-608f82629710?w=400&q=80';
-const MCDO_FRIES = 'https://images.unsplash.com/photo-1576107232684-1279f55e14cf?w=400&q=80';
-const MCDO_DRINK = 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&q=80';
-const MCDO_DESSERT = 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&q=80';
-const MCDO_HAPPY = 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80';
+const MCDO_COVER   = '/mcdo_cover.jpg';
+const MCDO_BIGMAC  = '/mcdo_burger.jpg';
+const MCDO_CHICKEN = 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=600&q=80';
+const MCDO_CRISPY  = 'https://images.unsplash.com/photo-1596956470007-2bf6095e7e16?w=600&q=80';
+const MCDO_CHEESE  = 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&q=80';
+const MCDO_FISH    = 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=600&q=80';
+const MCDO_SIGN    = 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=600&q=80';
+const MCDO_NUGGETS = 'https://images.unsplash.com/photo-1562967914-608f82629710?w=600&q=80';
+const MCDO_WINGS   = 'https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=600&q=80';
+const MCDO_FRIES   = 'https://images.unsplash.com/photo-1576107232684-1279f55e14cf?w=600&q=80';
+const MCDO_WEDGES  = 'https://images.unsplash.com/photo-1630431341973-02e1b662ec35?w=600&q=80';
+const MCDO_HAPPY   = 'https://images.unsplash.com/photo-1619881589316-24831c9e0b2d?w=600&q=80';
+const MCDO_MCFLURRY= 'https://images.unsplash.com/photo-1576039638882-cc2ca1d23c4f?w=600&q=80';
+const MCDO_SUNDAE  = 'https://images.unsplash.com/photo-1614088685112-0a760b71a3c8?w=600&q=80';
+const MCDO_PIE     = 'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=600&q=80';
+const MCDO_MILK    = 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&q=80';
+const MCDO_COOKIE  = 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&q=80';
+const MCDO_COLA    = 'https://images.unsplash.com/photo-1574914629385-46448b488c3c?w=600&q=80';
+const MCDO_JUICE   = 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=600&q=80';
+const MCDO_COFFEE  = 'https://images.unsplash.com/photo-1509785307050-d4066910ec1e?w=600&q=80';
+const MCDO_WATER   = 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=600&q=80';
 
 const RESTAURANTS: Restaurant[] = [
   // ─── McDONALD'S SAFI (Featured · Pinned #1) ──────────────────────────────
@@ -527,60 +541,87 @@ const RESTAURANTS: Restaurant[] = [
         id:'menus', emoji:'🥡',
         names:{fr:'Menus',en:'Meals',ar:'الوجبات الكاملة',amz:'ⵉⵎⵏⵓⵏ'},
         items:[
-          {id:'mc1',names:{fr:'Menu Big Mac',en:'Big Mac Meal',ar:'وجبة بيج ماك',amz:'ⴱⵉⴳ ⵎⴰⴽ ⵎⵉⵏⵓ'},price:59,photo:MCDO_BURGER,options:[MCD.menuSize(),MCD.menuDrink(),MCD.removals()]},
-          {id:'mc2',names:{fr:'Menu McChicken',en:'McChicken Meal',ar:'وجبة ماك تشيكن',amz:'ⵎⴽⵜⵛⵉⴽⵏ ⵎⵉⵏⵓ'},price:54,photo:MCDO_BURGER,options:[MCD.menuSize(),MCD.menuDrink(),MCD.removals()]},
-          {id:'mc3',names:{fr:'Menu Double Cheeseburger',en:'Double Cheeseburger Meal',ar:'وجبة دبل تشيزبرغر',amz:'ⴷⴱⵍ ⵛⵉⵣⴱⵓⵔⴳⵔ ⵎⵉⵏⵓ'},price:49,photo:MCDO_BURGER,options:[MCD.menuSize(),MCD.menuDrink(),MCD.removals()]},
-          {id:'mc4',names:{fr:'Menu Filet-O-Fish',en:'Filet-O-Fish Meal',ar:'وجبة فيليه أو فيش',amz:'ⴼⵉⵍⵉⵜ ⵎⵉⵏⵓ'},price:54,photo:MCDO_BURGER,options:[MCD.menuSize(),MCD.menuDrink(),MCD.removals()]},
-          {id:'mc5',names:{fr:'Menu McBacon',en:'McBacon Meal',ar:'وجبة ماك بيكون',amz:'ⵎⴽⴱⴰⴽⵓⵏ ⵎⵉⵏⵓ'},price:59,photo:MCDO_BURGER,options:[MCD.menuSize(),MCD.menuDrink(),MCD.removals()]},
-          {id:'mc6',names:{fr:'Menu McBacon Double',en:'Double McBacon Meal',ar:'وجبة دبل ماك بيكون',amz:'ⴷⴱⵍ ⵎⴽⴱⴰⴽⵓⵏ ⵎⵉⵏⵓ'},price:64,photo:MCDO_BURGER,options:[MCD.menuSize(),MCD.menuDrink(),MCD.removals()]},
+          {id:'mc1',names:{fr:'Menu Big Mac',en:'Big Mac Meal',ar:'وجبة بيج ماك',amz:'ⴱⵉⴳ ⵎⴰⴽ ⵎⵉⵏⵓ'},price:69,photo:MCDO_BIGMAC,options:[MCD.menuSize(),MCD.menuDrink(),MCD.removals()]},
+          {id:'mc2',names:{fr:'Menu McChicken',en:'McChicken Meal',ar:'وجبة ماك تشيكن',amz:'ⵎⴽⵜⵛⵉⴽⵏ ⵎⵉⵏⵓ'},price:67,photo:MCDO_CHICKEN,options:[MCD.menuSize(),MCD.menuDrink(),MCD.removals()]},
+          {id:'mc3',names:{fr:'Menu Double Cheeseburger',en:'Double Cheeseburger Meal',ar:'وجبة دبل تشيزبرغر',amz:'ⴷⴱⵍ ⵛⵉⵣⴱⵓⵔⴳⵔ ⵎⵉⵏⵓ'},price:56,photo:MCDO_CHEESE,options:[MCD.menuSize(),MCD.menuDrink(),MCD.removals()]},
+          {id:'mc4',names:{fr:'Menu Filet-O-Fish',en:'Filet-O-Fish Meal',ar:'وجبة فيليه أو فيش',amz:'ⴼⵉⵍⵉⵜ ⵎⵉⵏⵓ'},price:62,photo:MCDO_FISH,options:[MCD.menuSize(),MCD.menuDrink(),MCD.removals()]},
+          {id:'mc5',names:{fr:'Menu Grand Chicken Classic',en:'Grand Chicken Classic Meal',ar:'وجبة غراند تشيكن كلاسيك',amz:'ⴳⵔⴰⵏⴷ ⵛⵉⴽⵏ ⵎⵉⵏⵓ'},price:81,photo:MCDO_CRISPY,options:[MCD.menuSize(),MCD.menuDrink(),MCD.removals()]},
+          {id:'mc6',names:{fr:'Menu McNuggets 9 pcs',en:'9 McNuggets Meal',ar:'وجبة ماك نجتس 9 قطع',amz:'ⵏⴳⵜⵙ 9 ⵎⵉⵏⵓ'},price:66,photo:MCDO_NUGGETS,options:[MCD.menuSize(),MCD.menuDrink(),MCD.dipSauce()]},
+          {id:'mc7',names:{fr:'Menu Signature Smoky BBQ',en:'Signature Smoky BBQ Meal',ar:'وجبة سيغنيتشر سموكي',amz:'ⵙⵉⴳⵏⵉⵜⵛⵔ ⵎⵉⵏⵓ'},price:99,photo:MCDO_SIGN,options:[MCD.menuDrink(),MCD.removals()]},
         ],
       },
       {
         id:'sandwiches', emoji:'🍔',
         names:{fr:'Sandwiches',en:'Sandwiches',ar:'الساندويشات',amz:'ⵉⵙⵙⴰⵏⴷⵡⵉⵜⵛⵏ'},
         items:[
-          {id:'ms1',names:{fr:'Big Mac',en:'Big Mac',ar:'بيج ماك',amz:'ⴱⵉⴳ ⵎⴰⴽ'},price:44,photo:MCDO_BURGER,options:[MCD.removals()]},
-          {id:'ms2',names:{fr:'McChicken',en:'McChicken',ar:'ماك تشيكن',amz:'ⵎⴽⵜⵛⵉⴽⵏ'},price:39,photo:MCDO_BURGER,options:[MCD.removals()]},
-          {id:'ms3',names:{fr:'Double Cheeseburger',en:'Double Cheeseburger',ar:'دبل تشيزبرغر',amz:'ⴷⴱⵍ ⵛⵉⵣⴱⵓⵔⴳⵔ'},price:34,photo:MCDO_BURGER,options:[MCD.removals()]},
-          {id:'ms4',names:{fr:'Filet-O-Fish',en:'Filet-O-Fish',ar:'فيليه أو فيش',amz:'ⴼⵉⵍⵉⵜ'},price:39,photo:MCDO_BURGER,options:[MCD.removals()]},
-          {id:'ms5',names:{fr:'McBacon',en:'McBacon',ar:'ماك بيكون',amz:'ⵎⴽⴱⴰⴽⵓⵏ'},price:44,photo:MCDO_BURGER,options:[MCD.removals()]},
-          {id:'ms6',names:{fr:'McBacon Double',en:'Double McBacon',ar:'دبل ماك بيكون',amz:'ⴷⴱⵍ ⵎⴽⴱⴰⴽⵓⵏ'},price:49,photo:MCDO_BURGER,options:[MCD.removals()]},
-          {id:'ms7',names:{fr:'Crispy Chicken',en:'Crispy Chicken',ar:'كريسبي تشيكن',amz:'ⴽⵔⵉⵙⴱⵉ ⵜⵛⵉⴽⵏ'},price:42,photo:MCDO_BURGER,options:[MCD.removals()]},
+          {id:'ms1',names:{fr:'Big Mac',en:'Big Mac',ar:'بيج ماك',amz:'ⴱⵉⴳ ⵎⴰⴽ'},price:52,photo:MCDO_BIGMAC,options:[MCD.removals()]},
+          {id:'ms2',names:{fr:'McChicken',en:'McChicken',ar:'ماك تشيكن',amz:'ⵎⴽⵜⵛⵉⴽⵏ'},price:50,photo:MCDO_CHICKEN,options:[MCD.removals()]},
+          {id:'ms3',names:{fr:'Double Cheeseburger',en:'Double Cheeseburger',ar:'دبل تشيزبرغر',amz:'ⴷⴱⵍ ⵛⵉⵣⴱⵓⵔⴳⵔ'},price:33,photo:MCDO_CHEESE,options:[MCD.removals()]},
+          {id:'ms4',names:{fr:'Cheeseburger',en:'Cheeseburger',ar:'تشيزبرغر',amz:'ⵛⵉⵣⴱⵓⵔⴳⵔ'},price:19,photo:MCDO_CHEESE,options:[MCD.removals()]},
+          {id:'ms5',names:{fr:'Chicken Burger',en:'Chicken Burger',ar:'برغر دجاج',amz:'ⵛⵉⴽⵏ ⴱⵓⵔⴳⵔ'},price:19,photo:MCDO_CHICKEN,options:[MCD.removals()]},
+          {id:'ms6',names:{fr:'Filet-O-Fish',en:'Filet-O-Fish',ar:'فيليه أو فيش',amz:'ⴼⵉⵍⵉⵜ'},price:45,photo:MCDO_FISH,options:[MCD.removals()]},
+          {id:'ms7',names:{fr:'Grand Chicken Classic',en:'Grand Chicken Classic',ar:'غراند تشيكن كلاسيك',amz:'ⴳⵔⴰⵏⴷ ⵛⵉⴽⵏ'},price:64,photo:MCDO_CRISPY,options:[MCD.removals()]},
+          {id:'ms8',names:{fr:'Grand Chicken Special',en:'Grand Chicken Special',ar:'غراند تشيكن سبيشال',amz:'ⴳⵔⴰⵏⴷ ⵛⵉⴽⵏ ⵙⴱⵉⵛⴰⵍ'},price:69,photo:MCDO_CRISPY,options:[MCD.removals()]},
+          {id:'ms9',names:{fr:'Signature Smoky BBQ',en:'Signature Smoky BBQ',ar:'سيغنيتشر سموكي BBQ',amz:'ⵙⵉⴳⵏⵉⵜⵛⵔ ⴱⴱⵇ'},price:82,photo:MCDO_SIGN,options:[MCD.removals()]},
+        ],
+      },
+      {
+        id:'nuggets_wings', emoji:'🍗',
+        names:{fr:'Nuggets & Wings',en:'Nuggets & Wings',ar:'نجتس والأجنحة',amz:'ⵏⴳⵜⵙ ⴷ ⵉⴱⵓⵔⵎⴰⵏ'},
+        items:[
+          {id:'mnw1',names:{fr:'McNuggets 6 pcs',en:'6 McNuggets',ar:'ماك نجتس 6 قطع',amz:'ⵏⴳⵜⵙ 6'},price:39,photo:MCDO_NUGGETS,options:[MCD.dipSauce()]},
+          {id:'mnw2',names:{fr:'McNuggets 9 pcs',en:'9 McNuggets',ar:'ماك نجتس 9 قطع',amz:'ⵏⴳⵜⵙ 9'},price:49,photo:MCDO_NUGGETS,options:[MCD.dipSauce()]},
+          {id:'mnw3',names:{fr:'Chicken Wings 4 pcs',en:'4 Chicken Wings',ar:'أجنحة دجاج 4 قطع',amz:'ⵉⴱⵓⵔⵎⴰⵏ 4'},price:32,photo:MCDO_WINGS,options:[MCD.dipSauce()]},
+          {id:'mnw4',names:{fr:'Chicken Wings 6 pcs',en:'6 Chicken Wings',ar:'أجنحة دجاج 6 قطع',amz:'ⵉⴱⵓⵔⵎⴰⵏ 6'},price:44,photo:MCDO_WINGS,options:[MCD.dipSauce()]},
+          {id:'mnw5',names:{fr:'Mixed Box Nuggets & Wings',en:'Mixed Nuggets & Wings Box',ar:'صندوق مشكل نجتس وأجنحة',amz:'ⴱⵓⴽⵙ ⵎⵉⴽⵙ'},price:75,photo:MCDO_NUGGETS,options:[MCD.dipSauce()]},
         ],
       },
       {
         id:'happy_meal', emoji:'🎉',
         names:{fr:'Happy Meal',en:'Happy Meal',ar:'هابي ميل',amz:'ⵀⴰⴱⵉ ⵎⵉⵍ'},
         items:[
-          {id:'mhm1',names:{fr:'Happy Meal Hamburger',en:'Hamburger Happy Meal',ar:'هابي ميل همبرغر',amz:'ⵀⴰⴱⵉ ⵎⵉⵍ ⵀⴰⵎⴱⵓⵔⴳⵔ'},price:44,photo:MCDO_HAPPY,options:[MCD.menuDrink(),MCD.happyMealDessert(),MCD.happyMealToy()]},
-          {id:'mhm2',names:{fr:'Happy Meal McChicken',en:'McChicken Happy Meal',ar:'هابي ميل ماك تشيكن',amz:'ⵀⴰⴱⵉ ⵎⵉⵍ ⵎⴽⵜⵛⵉⴽⵏ'},price:44,photo:MCDO_HAPPY,options:[MCD.menuDrink(),MCD.happyMealDessert(),MCD.happyMealToy()]},
-          {id:'mhm3',names:{fr:'Happy Meal McNuggets 4 pcs',en:'4 McNuggets Happy Meal',ar:'هابي ميل ماك نجتس 4 قطع',amz:'ⵀⴰⴱⵉ ⵎⵉⵍ ⵏⴳⵜⵙ 4'},price:44,photo:MCDO_NUGGETS,options:[MCD.menuDrink(),MCD.dipSauce(),MCD.happyMealDessert(),MCD.happyMealToy()]},
+          {id:'mhm1',names:{fr:'Happy Meal Cheeseburger',en:'Cheeseburger Happy Meal',ar:'هابي ميل تشيزبرغر',amz:'ⵀⴰⴱⵉ ⵎⵉⵍ ⵛⵉⵣ'},price:35,photo:MCDO_HAPPY,options:[MCD.menuDrink(),MCD.happyMealDessert(),MCD.happyMealToy()]},
+          {id:'mhm2',names:{fr:'Happy Meal Chicken Burger',en:'Chicken Burger Happy Meal',ar:'هابي ميل برغر دجاج',amz:'ⵀⴰⴱⵉ ⵎⵉⵍ ⵛⵉⴽⵏ'},price:35,photo:MCDO_HAPPY,options:[MCD.menuDrink(),MCD.happyMealDessert(),MCD.happyMealToy()]},
+          {id:'mhm3',names:{fr:'Happy Meal McNuggets',en:'McNuggets Happy Meal',ar:'هابي ميل ماك نجتس',amz:'ⵀⴰⴱⵉ ⵎⵉⵍ ⵏⴳⵜⵙ'},price:35,photo:MCDO_NUGGETS,options:[MCD.menuDrink(),MCD.dipSauce(),MCD.happyMealDessert(),MCD.happyMealToy()]},
         ],
       },
       {
         id:'sides', emoji:'🍟',
         names:{fr:'Accompagnements',en:'Sides',ar:'المشتهيات',amz:'ⵉⵙⴳⵓⵎⴰⵏ'},
         items:[
-          {id:'msi1',names:{fr:'Frites Medium',en:'Medium Fries',ar:'بطاطس وسط',amz:'ⴼⵔⵉⵜⵙ ⵎⵉⴷⵢⵓⵎ'},price:19,photo:MCDO_FRIES},
-          {id:'msi2',names:{fr:'Frites Large',en:'Large Fries',ar:'بطاطس كبير',amz:'ⴼⵔⵉⵜⵙ ⵍⴰⵔⵊ'},price:24,photo:MCDO_FRIES},
-          {id:'msi3',names:{fr:'McNuggets',en:'McNuggets',ar:'ماك نجتس',amz:'ⵎⴽⵏⴳⵜⵙ'},price:34,photo:MCDO_NUGGETS,options:[MCD.nuggetsQty(),MCD.dipSauce()]},
-          {id:'msi4',names:{fr:'Apple Pie',en:'Apple Pie',ar:'فطيرة التفاح',amz:'ⴰⴱⵍⴰ ⴱⵉ'},price:19,photo:MCDO_DESSERT},
-          {id:'msi5',names:{fr:'McFlurry Oreo',en:'McFlurry Oreo',ar:'ماك فلوري أوريو',amz:'ⵎⴽⴼⵍⵓⵔⵉ ⵓⵔⵉⵢⵓ'},price:25,photo:MCDO_DESSERT},
-          {id:'msi6',names:{fr:'McFlurry Caramel',en:'McFlurry Caramel',ar:'ماك فلوري كراميل',amz:'ⵎⴽⴼⵍⵓⵔⵉ ⴽⴰⵔⴰⵎⵉⵍ'},price:25,photo:MCDO_DESSERT},
-          {id:'msi7',names:{fr:'Glace Vanille',en:'Vanilla Cone',ar:'بوظة فانيلا',amz:'ⵜⴰⵍⴰⵢⵜ'},price:10,photo:MCDO_DESSERT},
+          {id:'msi1',names:{fr:'Frites Small',en:'Small Fries',ar:'بطاطس صغير',amz:'ⴼⵔⵉⵜⵙ ⵙⵎⴰⵍ'},price:18,photo:MCDO_FRIES},
+          {id:'msi2',names:{fr:'Frites Medium',en:'Medium Fries',ar:'بطاطس وسط',amz:'ⴼⵔⵉⵜⵙ ⵎⵉⴷⵢⵓⵎ'},price:24,photo:MCDO_FRIES},
+          {id:'msi3',names:{fr:'Frites Large',en:'Large Fries',ar:'بطاطس كبير',amz:'ⴼⵔⵉⵜⵙ ⵍⴰⵔⵊ'},price:29,photo:MCDO_FRIES},
+          {id:'msi4',names:{fr:'Potato Wedges',en:'Potato Wedges',ar:'قطع البطاطا',amz:'ⴱⵓⵍⵉⵢⵢⴰ'},price:26,photo:MCDO_WEDGES},
+        ],
+      },
+      {
+        id:'desserts_mcd', emoji:'🍨',
+        names:{fr:'Desserts',en:'Desserts',ar:'الحلويات',amz:'ⵉⵎⴰⴳⴰⵏ'},
+        items:[
+          {id:'mde1',names:{fr:'McFlurry Oreo',en:'McFlurry Oreo',ar:'ماك فلوري أوريو',amz:'ⵎⴽⴼⵍⵓⵔⵉ ⵓⵔⵉⵢⵓ'},price:32,photo:MCDO_MCFLURRY},
+          {id:'mde2',names:{fr:'McFlurry KitKat',en:'McFlurry KitKat',ar:'ماك فلوري كيت كات',amz:'ⵎⴽⴼⵍⵓⵔⵉ ⴽⵉⵜⴽⴰⵜ'},price:32,photo:MCDO_MCFLURRY},
+          {id:'mde3',names:{fr:'McFlurry Smarties',en:'McFlurry Smarties',ar:'ماك فلوري سمارتيز',amz:'ⵎⴽⴼⵍⵓⵔⵉ ⵙⵎⴰⵔⵜⵉⵣ'},price:32,photo:MCDO_MCFLURRY},
+          {id:'mde4',names:{fr:'Sundae Chocolat',en:'Chocolate Sundae',ar:'سانداي شوكولاتة',amz:'ⵙⴰⵏⴷⴰⵢ ⵛⵓⴽⵓⵍⴰ'},price:22,photo:MCDO_SUNDAE},
+          {id:'mde5',names:{fr:'Sundae Caramel',en:'Caramel Sundae',ar:'سانداي كراميل',amz:'ⵙⴰⵏⴷⴰⵢ ⴽⴰⵔⴰⵎⵉⵍ'},price:22,photo:MCDO_SUNDAE},
+          {id:'mde6',names:{fr:'Sundae Fraise',en:'Strawberry Sundae',ar:'سانداي فراولة',amz:'ⵙⴰⵏⴷⴰⵢ ⵜⴰⴽⵍⵉⵎⵜ'},price:22,photo:MCDO_SUNDAE},
+          {id:'mde7',names:{fr:'Apple Pie',en:'Apple Pie',ar:'فطيرة التفاح',amz:'ⴰⴱⵍⴰ ⴱⵉ'},price:16,photo:MCDO_PIE},
+          {id:'mde8',names:{fr:'Milkshake Vanille',en:'Vanilla Milkshake',ar:'ميلكشيك فانيلا',amz:'ⵎⵉⵍⴽⵛⵉⴽ ⴼⴰⵏⵉⵍⴰ'},price:25,photo:MCDO_MILK},
+          {id:'mde9',names:{fr:'Milkshake Chocolat',en:'Chocolate Milkshake',ar:'ميلكشيك شوكولا',amz:'ⵎⵉⵍⴽⵛⵉⴽ ⵛⵓⴽⵓⵍⴰ'},price:25,photo:MCDO_MILK},
+          {id:'mde10',names:{fr:'Milkshake Fraise',en:'Strawberry Milkshake',ar:'ميلكشيك فراولة',amz:'ⵎⵉⵍⴽⵛⵉⴽ ⵜⴰⴽⵍⵉⵎⵜ'},price:25,photo:MCDO_MILK},
+          {id:'mde11',names:{fr:'Cookie',en:'Cookie',ar:'كوكي',amz:'ⴽⵓⴽⵉ'},price:18,photo:MCDO_COOKIE},
         ],
       },
       {
         id:'drinks_mcd', emoji:'🥤',
         names:{fr:'Boissons',en:'Drinks',ar:'المشروبات',amz:'ⴰⵙⵡ'},
         items:[
-          {id:'mdr1',names:{fr:'Coca-Cola',en:'Coca-Cola',ar:'كوكا كولا',amz:'ⴽⵓⵍⴰ'},price:14,photo:MCDO_DRINK,options:[MCD.drinkSize(),MCD.drinkIce()]},
-          {id:'mdr2',names:{fr:'Fanta Orange',en:'Fanta Orange',ar:'فانتا برتقال',amz:'ⴼⴰⵏⵜⴰ'},price:14,photo:MCDO_DRINK,options:[MCD.drinkSize(),MCD.drinkIce()]},
-          {id:'mdr3',names:{fr:'Sprite',en:'Sprite',ar:'سبرايت',amz:'ⵙⴱⵔⵉⵜ'},price:14,photo:MCDO_DRINK,options:[MCD.drinkSize(),MCD.drinkIce()]},
-          {id:'mdr4',names:{fr:'Milkshake Vanille',en:'Vanilla Milkshake',ar:'ميلكشيك فانيلا',amz:'ⵎⵉⵍⴽⵛⵉⴽ ⴼⴰⵏⵉⵍⴰ'},price:25,photo:MCDO_DESSERT},
-          {id:'mdr5',names:{fr:'Milkshake Chocolat',en:'Chocolate Milkshake',ar:'ميلكشيك شوكولا',amz:'ⵎⵉⵍⴽⵛⵉⴽ ⵛⵓⴽⵓⵍⴰ'},price:25,photo:MCDO_DESSERT},
-          {id:'mdr6',names:{fr:'Café McCafé',en:'McCafé Coffee',ar:'قهوة ماك كافيه',amz:'ⵇⴰⵀⵡⴰ'},price:18,photo:MCDO_DRINK},
-          {id:'mdr7',names:{fr:'Eau Minérale',en:'Still Water',ar:'ماء معدني',amz:'ⴰⵎⴰⵏ'},price:8,photo:MCDO_DRINK},
+          {id:'mdr1',names:{fr:'Coca-Cola',en:'Coca-Cola',ar:'كوكا كولا',amz:'ⴽⵓⵍⴰ'},price:17,photo:MCDO_COLA,options:[MCD.drinkSize(),MCD.drinkIce()]},
+          {id:'mdr2',names:{fr:'Fanta Orange',en:'Fanta Orange',ar:'فانتا برتقال',amz:'ⴼⴰⵏⵜⴰ'},price:17,photo:MCDO_COLA,options:[MCD.drinkSize(),MCD.drinkIce()]},
+          {id:'mdr3',names:{fr:'Sprite',en:'Sprite',ar:'سبرايت',amz:'ⵙⴱⵔⵉⵜ'},price:17,photo:MCDO_COLA,options:[MCD.drinkSize(),MCD.drinkIce()]},
+          {id:'mdr4',names:{fr:'Jus d\'Orange',en:'Orange Juice',ar:'عصير برتقال',amz:'ⵜⴰⵎⵓⵖⵓⵏⵜ'},price:22,photo:MCDO_JUICE},
+          {id:'mdr5',names:{fr:'Café Espresso',en:'Espresso',ar:'إسبريسو',amz:'ⵇⴰⵀⵡⴰ'},price:15,photo:MCDO_COFFEE},
+          {id:'mdr6',names:{fr:'Eau Sidi Ali',en:'Sidi Ali Water',ar:'سيدي علي',amz:'ⴰⵎⴰⵏ ⵙⵉⴷⵉ ⵄⵍⵉ'},price:10,photo:MCDO_WATER},
         ],
       },
     ],
