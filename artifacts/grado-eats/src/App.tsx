@@ -196,6 +196,10 @@ const T = {
     tabacBook:'Envoyer via WhatsApp Business',
     tabacCollectAddress:'Adresse retrait : Plateau, Safi (la boutique vous contacte)',
     tabacSend:'Envoyer la commande 🚀',
+    paymentCash:'💵 Paiement : Espèces à la livraison',
+    paymentCard:'💳 Paiement : Carte Bancaire',
+    sslBadge:'256-bit SSL · Paiement 100% sécurisé',
+    cardHolderLabel:'👤 Titulaire',
   },
   en: {
     appName:'Bridge Safi', zone:'Safi, Morocco',
@@ -248,6 +252,10 @@ const T = {
     tabacBook:'Send via WhatsApp Business',
     tabacCollectAddress:'Pick-up address: Plateau, Safi (the shop will contact you)',
     tabacSend:'Send order 🚀',
+    paymentCash:'💵 Payment: Cash on delivery',
+    paymentCard:'💳 Payment: Credit Card',
+    sslBadge:'256-bit SSL · 100% Secure Payment',
+    cardHolderLabel:'👤 Cardholder',
   },
   ar: {
     appName:'بريدج سافي', zone:'آسفي، المغرب',
@@ -301,6 +309,10 @@ const T = {
     tabacBook:'إرسال عبر واتساب بيزنس',
     tabacCollectAddress:'عنوان الاستلام : الهضبة، آسفي (ستتصل بك البوتيك)',
     tabacSend:'إرسال الطلب 🚀',
+    paymentCash:'💵 الدفع: نقداً عند الاستلام',
+    paymentCard:'💳 الدفع: بطاقة بنكية',
+    sslBadge:'256-bit SSL · دفع آمن 100%',
+    cardHolderLabel:'👤 حامل البطاقة',
   },
   amz: {
     appName:'ⴱⵔⵉⴷⵊ ⵉⵢⵜⵙ', zone:'ⵙⴰⴼⵉ, ⵍⵎⵖⵔⵉⴱ',
@@ -354,6 +366,10 @@ const T = {
     tabacBook:'ⵙⵙⵉⴼⵍ ⵙ WhatsApp Business',
     tabacCollectAddress:'ⵜⴰⵏⵙⴰ ⵏ ⵓⵔⵣⵣⵓ : ⴰⴱⵍⴰⵟⵓ, ⵙⴰⴼⵉ',
     tabacSend:'ⵙⵙⵉⴼⵍ ⵜⴰⵖⵓⵍⵜ 🚀',
+    paymentCash:'💵 ⴰⴷⴼⴰⵏ: ⴰⴷⵔⵉⵎ ⵎⵎⵉ ⵢⴰⵙⵍⵎⴷ',
+    paymentCard:'💳 ⴰⴷⴼⴰⵏ: ⵜⴰⴽⴰⵔⴷⵜ',
+    sslBadge:'256-bit SSL · ⴰⴷⴼⴰⵏ ⵉⵣⴷⵉⴳⵏ 100%',
+    cardHolderLabel:'👤 ⴰⵎⵙⴽⴽⵉ',
   },
 };
 
@@ -1556,14 +1572,14 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
                 </button>
               ))}
               <div className="flex items-center gap-2 px-3 py-2 rounded-xl mt-2" style={{background:'#F9F7F2'}}>
-                <span>🔒</span><p className="text-[10px]" style={{color:'#9CA3AF'}}>256-bit SSL · Paiement 100% sécurisé</p>
+                <span>🔒</span><p className="text-[10px]" style={{color:'#9CA3AF'}}>{t.sslBadge}</p>
               </div>
             </div>
             <div className="px-5 py-4 flex-shrink-0" style={{borderTop:'1px solid #E5E1D8'}}>
               <button
                 onClick={()=>{
                   if(!payMethod)return;
-                  if(payMethod==='cash'){window.open(`https://wa.me/212764794856?text=${encodeURIComponent(buildWaMsg()+'\n\n💵 Paiement : Espèces à la livraison')}`,'_blank');setStep('success');}
+                  if(payMethod==='cash'){window.open(`https://wa.me/212764794856?text=${encodeURIComponent(buildWaMsg()+'\n\n'+t.paymentCash)}`,'_blank');setStep('success');}
                   else setStep('card');
                 }}
                 disabled={!payMethod}
@@ -1607,13 +1623,13 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
             </div>
             <div className="px-5 py-4 flex-shrink-0" style={{borderTop:'1px solid #E5E1D8'}}>
               <div className="flex items-center justify-center gap-2 mb-3">
-                <span>🔒</span><p className="text-[10px]" style={{color:'#9CA3AF'}}>256-bit SSL · PCI DSS Compliant</p>
+                <span>🔒</span><p className="text-[10px]" style={{color:'#9CA3AF'}}>{t.sslBadge} · PCI DSS</p>
               </div>
               <button onClick={()=>{
                 if(!cardCVV||cardCVV.length<3){setCardErr(t.fillAll);return;}
                 setCardErr('');
-                const cardMsg=buildWaMsg()+'\n\n💳 Paiement : Carte Bancaire'+
-                  (cardName?`\n👤 Titulaire : ${cardName}`:'');
+                const cardMsg=buildWaMsg()+'\n\n'+t.paymentCard+
+                  (cardName?`\n${t.cardHolderLabel} : ${cardName}`:'');
                 window.open(`https://wa.me/212764794856?text=${encodeURIComponent(cardMsg)}`,'_blank');
                 setStep('success');
               }}
