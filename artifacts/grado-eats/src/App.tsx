@@ -1854,11 +1854,11 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
         {/* Three service cards */}
         <div className="flex items-start justify-center gap-2 w-full">
           {([
-            {key:'delivery' as const, src:'/logo_delivery.jpeg', label:'Bridge Delivery', sub:t.deliverySub, emoji:'🛵', fallbackBg:'#D1FAE5',
+            {key:'delivery' as const, src:'/logo_delivery.jpeg', label:'Bridge Delivery', sub:t.deliverySub, emoji:'🛵', fallbackBg:'#D1FAE5', pending:false,
              activeColor:'#065F46', activeShadow:'0 0 0 5px rgba(6,95,70,0.15),0 10px 28px rgba(6,95,70,0.3)', labelColor:'#065F46'},
-            {key:'taxi' as const, src:'/logo_taxi.jpeg', label:'Bridge Taxi', sub:t.taxiSub, emoji:'🚖', fallbackBg:'#FEF3C7',
+            {key:'taxi' as const, src:'/logo_taxi.jpeg', label:'Bridge Taxi', sub:t.taxiSub, emoji:'🚖', fallbackBg:'#FEF3C7', pending:true,
              activeColor:'#B45309', activeShadow:'0 0 0 5px rgba(180,83,9,0.15),0 10px 28px rgba(180,83,9,0.25)', labelColor:'#B45309'},
-            {key:'tabac' as const, src:'/logo_tabac.jpeg', label:'Bridge Tabac', sub:t.tabacSub, emoji:'🚬', fallbackBg:'#7D4F2E',
+            {key:'tabac' as const, src:'/logo_tabac.jpeg', label:'Bridge Tabac', sub:t.tabacSub, emoji:'🚬', fallbackBg:'#7D4F2E', pending:true,
              activeColor:'#7D4F2E', activeShadow:'0 0 0 5px rgba(125,79,46,0.15),0 10px 28px rgba(125,79,46,0.25)', labelColor:'#7D4F2E'},
           ]).reduce<React.ReactNode[]>((acc,item,i)=>{
             if(i>0) acc.push(
@@ -1873,7 +1873,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
             acc.push(
               <button key={item.key} onClick={()=>choose(item.key)}
                 className="flex flex-col items-center gap-2.5 flex-shrink-0 transition-all duration-300 active:scale-95"
-                style={{transform:isPressed?'scale(0.93)':'scale(1)',width:S}}>
+                style={{transform:isPressed?'scale(0.93)':'scale(1)',width:S,opacity:item.pending?0.82:1}}>
                 <div className="relative flex-shrink-0" style={{width:S,height:S}}>
                   <div className="rounded-full overflow-hidden" style={{
                     width:S,height:S,
@@ -1887,13 +1887,21 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
                       : <img src={item.src} alt={item.label} style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
                     }
                   </div>
+                  {/* "En attente" badge — red pill at top of circle */}
+                  {item.pending&&(
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full flex items-center gap-1 whitespace-nowrap"
+                      style={{background:'#DC2626',boxShadow:'0 2px 8px rgba(220,38,38,0.45)'}}>
+                      <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"/>
+                      <span className="text-white font-black" style={{fontSize:'8px',letterSpacing:'0.05em'}}>EN ATTENTE</span>
+                    </div>
+                  )}
                   <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full flex items-center justify-center text-sm"
                     style={{background:'#FDFCF9',border:'2px solid #D9C5A0',boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
                     {item.emoji}
                   </div>
                 </div>
                 <div className="text-center mt-1">
-                  <p className={`font-black text-[10px] tracking-[0.1em] uppercase ${fClass}`} style={{color:item.labelColor}}>{item.label}</p>
+                  <p className={`font-black text-[10px] tracking-[0.1em] uppercase ${fClass}`} style={{color:item.pending?'#9CA3AF':item.labelColor}}>{item.label}</p>
                   <p className={`font-bold text-[9px] tracking-wide mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{item.sub}</p>
                 </div>
               </button>
