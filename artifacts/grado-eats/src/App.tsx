@@ -1942,20 +1942,20 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
                   }}>
                     <img src={item.key==='tabac'?'/bridge-tabac-logo.jpeg':item.src} alt={item.label} style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
                   </div>
-                  {/* "En attente" badge — small dot */}
+                  {/* "En attente" badge */}
                   {item.pending&&(
-                    <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 px-1.5 py-px rounded-full flex items-center gap-0.5 whitespace-nowrap"
-                      style={{background:'#DC2626',boxShadow:'0 1px 5px rgba(220,38,38,0.5)'}}>
-                      <div className="w-1 h-1 rounded-full bg-white animate-pulse"/>
-                      <span className="text-white font-black" style={{fontSize:'6px',letterSpacing:'0.03em'}}>EN ATTENTE</span>
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-full flex items-center gap-1 whitespace-nowrap"
+                      style={{background:'#DC2626',boxShadow:'0 2px 8px rgba(220,38,38,0.5)'}}>
+                      <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"/>
+                      <span className="text-white font-black" style={{fontSize:'9px',letterSpacing:'0.05em'}}>EN ATTENTE</span>
                     </div>
                   )}
-                  {/* "Activé" badge — small dot */}
+                  {/* "Activé" badge */}
                   {!item.pending&&(item as any).active&&(
-                    <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 px-1.5 py-px rounded-full flex items-center gap-0.5 whitespace-nowrap"
-                      style={{background:'#059669',boxShadow:'0 1px 5px rgba(5,150,105,0.55)'}}>
-                      <div className="w-1 h-1 rounded-full bg-white animate-pulse"/>
-                      <span className="text-white font-black" style={{fontSize:'6px',letterSpacing:'0.03em'}}>ACTIVÉ</span>
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-full flex items-center gap-1 whitespace-nowrap"
+                      style={{background:'#059669',boxShadow:'0 2px 8px rgba(5,150,105,0.55)'}}>
+                      <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"/>
+                      <span className="text-white font-black" style={{fontSize:'9px',letterSpacing:'0.05em'}}>ACTIVÉ</span>
                     </div>
                   )}
                   <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full flex items-center justify-center text-sm"
