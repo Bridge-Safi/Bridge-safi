@@ -112,6 +112,7 @@ interface MenuCategory { id: string; emoji: string; names: ML; items: MenuItem[]
 interface Restaurant   {
   id: string; name: string; tagline: ML; logo: string; cover: string;
   cuisine: ML; rating: number; deliveryTime: string; minOrder: number;
+  tags: string[];
   categories: MenuCategory[];
 }
 
@@ -459,6 +460,7 @@ const RESTAURANTS: Restaurant[] = [
     logo:'🍟',
     cover: MCDO_COVER,
     cuisine:{fr:'Burgers · Menus · Fast Food',en:'Burgers · Meals · Fast Food',ar:'برغر · وجبات · فاست فود',amz:'ⴱⵓⵔⴳⵔ · ⵎⵉⵏⵓ'},
+    tags:['burger','fast-food'],
     rating:4.5, deliveryTime:'20–30', minOrder:49,
     categories:[
       {
@@ -530,6 +532,7 @@ const RESTAURANTS: Restaurant[] = [
     tagline:{fr:'Pizzas artisanales & Tacos généreux',en:'Artisan pizzas & generous tacos',ar:'بيتزا حرفية وتاكو كريم',amz:'ⴱⵉⵜⵣⴰ ⵏ ⵓⵣⵣⵓⵔⵉ ⴷ ⵜⴰⴽⵓⵙ'},
     logo:'🍕', cover:'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=700&q=80',
     cuisine:{fr:'Pizzas · Tacos · Italien',en:'Pizzas · Tacos · Italian',ar:'بيتزا · تاكو · إيطالي',amz:'ⴱⵉⵜⵣⴰ · ⵜⴰⴽⵓⵙ'},
+    tags:['pizza','tacos'],
     rating:4.8, deliveryTime:'20–30', minOrder:35,
     categories:[
       { id:'appetizers', emoji:'🥗', names:{fr:'Entrées',en:'Appetizers',ar:'مقبلات',amz:'ⵉⴼⵔⴰⵏ'}, items:[
@@ -566,6 +569,7 @@ const RESTAURANTS: Restaurant[] = [
     tagline:{fr:'Les trésors de la mer d\'Atlantique',en:'Atlantic Ocean seafood treasures',ar:'كنوز المحيط الأطلسي',amz:'ⵉⵙⴰⵙ ⵏ ⵡⴰⵟⵍⴰⵙ'},
     logo:'🦞', cover:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=700&q=80',
     cuisine:{fr:'Poissons · Fruits de mer · Marocain',en:'Fish · Seafood · Moroccan',ar:'سمك · بحريات · مغربي',amz:'ⵉⵙⴰⵙ · ⵎⴰⵕⵕⵓⴽⵉ'},
+    tags:['seafood'],
     rating:4.9, deliveryTime:'25–35', minOrder:40,
     categories:[
       { id:'appetizers', emoji:'🥗', names:{fr:'Entrées',en:'Appetizers',ar:'مقبلات',amz:'ⵉⴼⵔⴰⵏ'}, items:[
@@ -601,6 +605,7 @@ const RESTAURANTS: Restaurant[] = [
     tagline:{fr:'Sandwichs généreux & grillades au feu de bois',en:'Generous sandwiches & wood-fired grills',ar:'ساندويشات سخية ومشاوي',amz:'ⵙⴰⵏⴷⵡⵉⵜⵛ ⴷ ⵉⵣⵎⵎⵉⵡⵏ'},
     logo:'🌯', cover:'https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=700&q=80',
     cuisine:{fr:'Kebab · Sandwichs · Grillades',en:'Kebab · Sandwiches · Grills',ar:'كباب · ساندويش · مشاوي',amz:'ⴽⴱⴰⴱ · ⵙⴰⵏⴷⵡⵉⵜⵛ'},
+    tags:['kebab'],
     rating:4.7, deliveryTime:'15–25', minOrder:30,
     categories:[
       { id:'appetizers', emoji:'🥗', names:{fr:'Entrées',en:'Appetizers',ar:'مقبلات',amz:'ⵉⴼⵔⴰⵏ'}, items:[
@@ -632,6 +637,7 @@ const RESTAURANTS: Restaurant[] = [
     tagline:{fr:'Burgers XXL & milkshakes gourmands',en:'XXL burgers & indulgent milkshakes',ar:'برغر XXL وميلكشيك شهي',amz:'ⴱⵓⵔⴳⵔ XXL ⴷ ⵎⵉⵍⴽⵛⵉⴽ'},
     logo:'🍔', cover:'https://images.unsplash.com/photo-1550547660-d9450f859349?w=700&q=80',
     cuisine:{fr:'Burgers · Américain · Fast Food',en:'Burgers · American · Fast Food',ar:'برغر · أمريكي',amz:'ⴱⵓⵔⴳⵔ · ⴰⵎⵉⵔⵉⴽⴰⵏⵉ'},
+    tags:['burger','fast-food'],
     rating:4.6, deliveryTime:'20–30', minOrder:35,
     categories:[
       { id:'appetizers', emoji:'🥗', names:{fr:'Entrées',en:'Appetizers',ar:'مقبلات',amz:'ⵉⴼⵔⴰⵏ'}, items:[
@@ -1083,12 +1089,30 @@ function RestaurantPage({restaurant,lang,t,onBack,onAddToCart}:{
 
 // ─── HOME PAGE ────────────────────────────────────────────────────────────────
 
+const CUISINE_FILTERS = [
+  {id:'all',    emoji:'⭐', label:{fr:'Tout',       en:'All',      ar:'الكل',    amz:'ⴽⵓⵍⵍ'}},
+  {id:'burger', emoji:'🍔', label:{fr:'Burger',     en:'Burger',   ar:'برغر',    amz:'ⴱⵓⵔⴳⵔ'}},
+  {id:'pizza',  emoji:'🍕', label:{fr:'Pizza',      en:'Pizza',    ar:'بيتزا',   amz:'ⴱⵉⵜⵣⴰ'}},
+  {id:'kebab',  emoji:'🌯', label:{fr:'Kebab',      en:'Kebab',    ar:'كباب',    amz:'ⴽⴱⴰⴱ'}},
+  {id:'tacos',  emoji:'🌮', label:{fr:'Tacos',      en:'Tacos',    ar:'تاكو',    amz:'ⵜⴰⴽⵓⵙ'}},
+  {id:'seafood',emoji:'🦞', label:{fr:'Mer',        en:'Seafood',  ar:'بحريات',  amz:'ⵉⵙⴰⵙ'}},
+  {id:'fast-food',emoji:'🍟',label:{fr:'Fast Food', en:'Fast Food',ar:'فاست فود',amz:'ⴼⴰⵙⵜ'}},
+] as const;
+
+type FilterId = typeof CUISINE_FILTERS[number]['id'];
+
 function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectRestaurant:(r:Restaurant)=>void}) {
   const fClass=fontClass(lang);
+  const [activeFilter,setActiveFilter]=useState<FilterId>('all');
+
+  const filtered = activeFilter==='all'
+    ? RESTAURANTS
+    : RESTAURANTS.filter(r=>r.tags.includes(activeFilter));
+
   return (
     <div>
       {/* Hero banner */}
-      <section className="relative mx-5 mb-6 rounded-3xl overflow-hidden" style={{boxShadow:'0 8px 32px rgba(6,95,70,0.18)'}}>
+      <section className="relative mx-5 mb-5 rounded-3xl overflow-hidden" style={{boxShadow:'0 8px 32px rgba(6,95,70,0.18)'}}>
         <img src="/hero.jpeg" alt="Bridge Safi" className="w-full h-52 object-cover"/>
         <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.92) 0%,rgba(4,55,38,0.25) 60%,transparent 100%)'}}/>
         <div className="absolute bottom-0 left-0 right-0 p-5">
@@ -1098,23 +1122,66 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
         </div>
       </section>
 
+      {/* Category filter chips */}
+      <div className="mb-4" style={{overflowX:'auto',WebkitOverflowScrolling:'touch',scrollbarWidth:'none'}}>
+        <div className="flex gap-2 px-4" style={{width:'max-content'}}>
+          {CUISINE_FILTERS.map(f=>{
+            const isActive=activeFilter===f.id;
+            return (
+              <button
+                key={f.id}
+                onClick={()=>setActiveFilter(f.id as FilterId)}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all duration-200 select-none ${fClass}`}
+                style={isActive
+                  ? {background:'#065F46',color:'#FDFCF9',boxShadow:'0 4px 14px rgba(6,95,70,0.35)',transform:'scale(1.06)'}
+                  : {background:'#F0EDE6',color:'#374151',boxShadow:'0 2px 6px rgba(0,0,0,0.06)'}
+                }
+              >
+                <span style={{fontSize:'15px',lineHeight:1}}>{f.emoji}</span>
+                <span>{f.label[lang]}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Near you label */}
-      <div className="px-5 mb-4 flex items-center gap-2">
+      <div className="px-5 mb-3 flex items-center gap-2">
         <span className="text-base">📍</span>
         <p className={`text-[11px] font-black uppercase tracking-widest ${fClass}`} style={{color:'#065F46'}}>{t.nearYou}</p>
+        {activeFilter!=='all' && (
+          <span className="ml-auto text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{background:'#D9C5A0',color:'#065F46'}}>
+            {filtered.length} resto{filtered.length>1?'s':''}
+          </span>
+        )}
       </div>
 
       {/* Restaurant cards — 2-column grid, featured full-width */}
-      <div className="px-4 grid grid-cols-2 gap-3 mb-6">
-        {RESTAURANTS.map(r=>{
-          const isFeatured=r.id==='mcdonalds-safi';
-          return(
-            <div key={r.id} className={isFeatured?'col-span-2':''}>
-              <RestaurantCard r={r} lang={lang} t={t} onClick={()=>onSelectRestaurant(r)} compact={!isFeatured}/>
-            </div>
-          );
-        })}
-      </div>
+      {filtered.length===0
+        ? (
+          <div className="mx-5 py-10 flex flex-col items-center gap-3 rounded-2xl" style={{background:'#F0EDE6'}}>
+            <span style={{fontSize:'40px'}}>🍽️</span>
+            <p className={`text-sm font-semibold text-center ${fClass}`} style={{color:'#374151'}}>
+              {lang==='fr'?'Aucun restaurant dans cette catégorie'
+               :lang==='en'?'No restaurants in this category'
+               :lang==='ar'?'لا يوجد مطعم في هذه الفئة'
+               :'ⵓⵔ ⵍⵍⵉ ⵉⵎⵟⵟⴰⵡⵏ'}
+            </p>
+          </div>
+        )
+        : (
+          <div className="px-4 grid grid-cols-2 gap-3 mb-6">
+            {filtered.map(r=>{
+              const isFeatured=r.id==='mcdonalds-safi' && activeFilter==='all';
+              return(
+                <div key={r.id} className={isFeatured?'col-span-2':''}>
+                  <RestaurantCard r={r} lang={lang} t={t} onClick={()=>onSelectRestaurant(r)} compact={!isFeatured}/>
+                </div>
+              );
+            })}
+          </div>
+        )
+      }
     </div>
   );
 }
