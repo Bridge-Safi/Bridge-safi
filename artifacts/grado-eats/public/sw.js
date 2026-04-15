@@ -1,4 +1,4 @@
-const CACHE = 'bridge-safi-v2';
+const CACHE = 'bridge-safi-v3';
 const ASSETS = ['/', '/manifest.json', '/logo.jpeg', '/logo_splash.jpeg', '/logo_delivery.jpeg', '/logo_taxi.jpeg'];
 
 self.addEventListener('install', e => {
@@ -11,6 +11,8 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  // Never intercept API calls or SSE streams
+  if (e.request.url.includes('/api/')) return;
   e.respondWith(
     caches.match(e.request).then(cached => {
       const net = fetch(e.request).then(res => {

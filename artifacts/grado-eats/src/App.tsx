@@ -2395,7 +2395,44 @@ function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
     setLoading(false);
   };
 
-  useEffect(()=>{if(loginDone){fetchOrders();const id=setInterval(fetchOrders,8000);return()=>clearInterval(id);}}, [loginDone]);
+  useEffect(()=>{
+    if(!loginDone) return;
+    fetchOrders();
+
+    // SSE — instant real-time updates from server
+    let es: EventSource | null = null;
+    let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const connectSSE = ()=>{
+      try{
+        es = new EventSource('/api/orders/stream');
+        es.onmessage = (e)=>{
+          try{
+            const d = JSON.parse(e.data);
+            if(d.type==='NEW_ORDER'){
+              fetchOrders();
+            }
+          }catch(_){}
+        };
+        es.onerror = ()=>{
+          es?.close();
+          es = null;
+          reconnectTimer = setTimeout(connectSSE, 4000);
+        };
+      }catch(_){}
+    };
+    connectSSE();
+
+    // Fallback polling every 15s (handles missed SSE events)
+    const fallback = setInterval(fetchOrders, 15000);
+
+    return()=>{
+      es?.close();
+      if(reconnectTimer) clearTimeout(reconnectTimer);
+      clearInterval(fallback);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[loginDone]);
 
   const enablePush = async()=>{
     try{

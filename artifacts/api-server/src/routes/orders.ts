@@ -2,6 +2,7 @@ import { Router } from "express";
 import { db, ordersTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
 import { notifyDrivers } from "./push";
+import { addSSEClient, removeSSEClient, broadcastOrder } from "../lib/sse";
 
 const router = Router();
 
@@ -18,6 +19,30 @@ router.get("/orders", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch orders" });
   }
+});
+
+// SSE — MUST be before /:id to avoid "stream" being parsed as an id
+router.get("/orders/stream", (req, res) => {
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
+  res.flushHeaders();
+
+  // Initial ping to confirm connection
+  res.write(`data: ${JSON.stringify({ type: "connected" })}\n\n`);
+
+  // Heartbeat every 25s to keep connection alive through proxies
+  const heartbeat = setInterval(() => {
+    try { res.write(": ping\n\n"); } catch (_) { clearInterval(heartbeat); }
+  }, 25000);
+
+  addSSEClient(res);
+
+  req.on("close", () => {
+    clearInterval(heartbeat);
+    removeSSEClient(res);
+  });
 });
 
 router.get("/orders/:id", async (req, res) => {
@@ -54,6 +79,10 @@ router.post("/orders", async (req, res) => {
 
     res.status(201).json({ order });
 
+    // Instant push to all connected driver panels via SSE
+    broadcastOrder({ type: "NEW_ORDER", orderId: order.id, ref: order.ref });
+
+    // Push notification to phones (for locked screens)
     notifyDrivers({
       type: "NEW_ORDER",
       title: "🛵 Nouvelle commande !",
