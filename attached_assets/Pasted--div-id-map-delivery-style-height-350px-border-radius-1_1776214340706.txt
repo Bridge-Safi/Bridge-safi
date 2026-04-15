@@ -1,0 +1,49 @@
+<div id="map-delivery" style="height: 350px; border-radius: 10px; margin-bottom: 20px;"></div>
+
+<input type="hidden" id="client_latlng" name="client_latlng">
+
+<script>
+// 1. Définir le "Cerveau" de la carte (coordonnées de départ : centre de Safi)
+var myMap = L.map('map-delivery').setView([32.2994, -9.2372], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(myMap);
+
+// 2. Coordonnées précises de la zone dessinée sur ton image (Le Polygone)
+// J'ai recréé les points pour correspondre à ton dessin à Safi.
+var polygonPoints = [
+    [32.3160, -9.2311], // Point le plus au nord (Ijnnane)
+    [32.3069, -9.2154], // Virage est (Lamia)
+    [32.2892, -9.2118], // Virage sud-est (Azib Draï)
+    [32.2741, -9.2330], // Point sud-ouest (Route Nsa)
+    [32.2858, -9.2384], // Bord de mer (Bordeaux / Korten)
+    [32.2965, -9.2361], // Près de McDonalds
+    [32.3082, -9.2393]  // Remontée nord-ouest
+];
+
+// 3. Dessiner la zone verte sur la carte
+var deliveryZone = L.polygon(polygonPoints, {
+    color: 'green',        // Couleur de la bordure
+    fillColor: '#2ecc71',   // Couleur de remplissage (vert clair)
+    fillOpacity: 0.2        // Transparence
+}).addTo(myMap);
+
+// 4. Gérer le clic du client pour choisir son adresse
+var clientMarker;
+
+myMap.on('click', function(e) {
+    // Vérifier si le point cliqué est DANS la zone verte
+    var isInside = deliveryZone.getBounds().contains(e.latlng);
+
+    if (isInside) {
+        // Supprimer l'ancien marqueur s'il existe
+        if (clientMarker) { myMap.removeLayer(clientMarker); }
+        // Ajouter le nouveau marqueur
+        clientMarker = L.marker(e.latlng).addTo(myMap);
+        // Stocker les coordonnées GPS pour la commande
+        document.getElementById('client_latlng').value = e.latlng.lat + ',' + e.latlng.lng;
+        alert("Zone de livraison couverte par Grado Eats ✅");
+    } else {
+        alert("Désolé, cette zone n'est pas encore desservie pour la livraison. Vous pouvez choisir le Click & Collect !");
+        // Tu peux désactiver le bouton de soumission ici
+    }
+});
+</script>

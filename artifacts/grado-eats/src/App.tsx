@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, Polygon, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -38,6 +38,51 @@ function MovingCourier({ step }: { step: number }) {
     return () => { m.remove(); };
   }, []);
   return null;
+}
+
+// ─── DELIVERY ZONE ────────────────────────────────────────────────────────────
+
+const DELIVERY_ZONE: [number,number][] = [
+  [32.3160,-9.2311],[32.3069,-9.2154],[32.2892,-9.2118],
+  [32.2741,-9.2330],[32.2858,-9.2384],[32.2965,-9.2361],[32.3082,-9.2393],
+];
+
+function pointInPolygon(lat:number, lng:number, poly:[number,number][]): boolean {
+  let inside=false;
+  for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+    const [xi,yi]=poly[i]; const [xj,yj]=poly[j];
+    if(((yi>lng)!==(yj>lng))&&(lat<(xj-xi)*(lng-yi)/(yj-yi)+xi)) inside=!inside;
+  }
+  return inside;
+}
+
+const clientPinIcon = L.divIcon({
+  className:'',
+  html:`<div style="width:32px;height:32px;border-radius:50%;background:#4F46E5;border:3px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(79,70,229,0.5);font-size:15px;">📍</div>`,
+  iconSize:[32,32],iconAnchor:[16,16],
+});
+
+function MapClickLayer({onPick}:{onPick:(lat:number,lng:number,inside:boolean)=>void}) {
+  useMapEvents({
+    click(e){
+      const inside=pointInPolygon(e.latlng.lat,e.latlng.lng,DELIVERY_ZONE);
+      onPick(e.latlng.lat,e.latlng.lng,inside);
+    }
+  });
+  return null;
+}
+
+function DeliveryMap({onSet,pin}:{onSet:(coords:string,inside:boolean)=>void; pin:[number,number]|null}) {
+  return (
+    <MapContainer center={[32.2994,-9.2372]} zoom={13}
+      style={{height:220,borderRadius:14,marginBottom:12,zIndex:0}} scrollWheelZoom={false}>
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://osm.org">OpenStreetMap</a>'/>
+      <Polygon positions={DELIVERY_ZONE} pathOptions={{color:'#065F46',fillColor:'#2ecc71',fillOpacity:0.18,weight:2,dashArray:'6,4'}}/>
+      <MapClickLayer onPick={(lat,lng,inside)=>{onSet(`${lat.toFixed(5)},${lng.toFixed(5)}`,inside);}}/>
+      {pin&&<Marker position={pin} icon={clientPinIcon}/>}
+    </MapContainer>
+  );
 }
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
@@ -1009,6 +1054,9 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
   const [addr,setAddr]=useState(profile.address);
   const [phone,setPhone]=useState(profile.phone);
   const [err,setErr]=useState('');
+  const [gpsCoords,setGpsCoords]=useState('');
+  const [mapPin,setMapPin]=useState<[number,number]|null>(null);
+  const [outsideZone,setOutsideZone]=useState(false);
   const [payMethod,setPayMethod]=useState<'cash'|'card'|null>(null);
   const [cardNum,setCardNum]=useState('');
   const [cardExp,setCardExp]=useState(profile.cardExpiry);
@@ -1030,6 +1078,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
       msg+='\n';
     });
     msg+=t.waMsgFooter(total,name.trim(),addr.trim(),phone.trim());
+    if(gpsCoords) msg+=`\n🗺️ GPS: https://maps.google.com/?q=${gpsCoords}`;
     return msg;
   };
 
@@ -1118,6 +1167,35 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
                 <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-4" style={{background:'#F0FDF4',border:'1px solid #BBF7D0'}}>
                   <span>✨</span>
                   <p className={`text-[10px] font-bold ${fClass}`} style={{color:'#065F46'}}>{t.autoFilled}</p>
+                </div>
+              )}
+              {/* Delivery map */}
+              <p className={`text-[10px] font-black uppercase tracking-wider mb-2 ${fClass}`} style={{color:'#065F46'}}>
+                {lang==='ar'?'📍 اختر موقعك على الخريطة':lang==='amz'?'📍 ⵙⵜⵜⵉ ⵜⴰⵙⵓⵏⵜ ⵖ ⵓⵙⴽⴽⵉⵍ':'📍 Cliquez sur la carte pour épingler votre adresse'}
+              </p>
+              <DeliveryMap
+                pin={mapPin}
+                onSet={(coords,inside)=>{
+                  const parts=coords.split(',');
+                  setMapPin([parseFloat(parts[0]),parseFloat(parts[1])]);
+                  setGpsCoords(coords);
+                  setOutsideZone(!inside);
+                }}
+              />
+              {outsideZone&&mapPin&&(
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-3" style={{background:'#FEF2F2',border:'1px solid #FECACA'}}>
+                  <span>⚠️</span>
+                  <p className={`text-[10px] font-bold ${fClass}`} style={{color:'#DC2626'}}>
+                    {lang==='ar'?'هذه المنطقة خارج نطاق التوصيل. يمكنك اختيار الاستلام من المطعم.':lang==='amz'?'ⵜⴰⵙⵓⵏⵜ ⴰⴷ ⵓⵔ ⵜⵍⵍⵉ ⵖ ⵜⴰⵙⵓⵏⵜ ⵏ ⵓⵙⵙⵓⴼⵖ.':'Zone non couverte par la livraison. Vous pouvez choisir le Click & Collect.'}
+                  </p>
+                </div>
+              )}
+              {mapPin&&!outsideZone&&(
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-3" style={{background:'#F0FDF4',border:'1px solid #BBF7D0'}}>
+                  <span>✅</span>
+                  <p className={`text-[10px] font-bold ${fClass}`} style={{color:'#065F46'}}>
+                    {lang==='ar'?'موقعك في منطقة التوصيل ✓':lang==='amz'?'ⵜⴰⵙⵓⵏⵜ ⵏⵏⴽ ⵖ ⵜⴰⵙⵓⵏⵜ ⵏ ⵓⵙⵙⵓⴼⵖ ✓':'Votre position est dans la zone de livraison ✓'}
+                  </p>
                 </div>
               )}
               <Field label={t.nameLabel} value={name} onChange={v=>{setName(v);setErr('');}} placeholder={t.namePh} lang={lang} error={!!err&&!name.trim()}/>
