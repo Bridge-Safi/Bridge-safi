@@ -1838,11 +1838,6 @@ export default function App() {
           {isAMZ?'ⴱⵔⵉⴷⵊ':isAR?'بريدج':'Bridge'}
         </h1>
         <p className={`text-[9px] tracking-widest mt-0.5 ${fClass}`} style={{color:'#B45309'}}>{t.zone}</p>
-        <button onClick={()=>setService('none')}
-          className="mt-1.5 text-[9px] font-bold px-3 py-0.5 rounded-full transition-all active:scale-95"
-          style={{color:'#9CA3AF',border:'1px solid #E5E1D8',background:'transparent'}}>
-          ← Services
-        </button>
       </header>
 
       {/* ── Main content ── */}
@@ -1872,6 +1867,12 @@ export default function App() {
               {tab.id==='home'&&page!=='restaurant'&&page==='home'&&<div className="w-5 h-0.5 rounded-full" style={{background:'#065F46'}}/>}
             </button>
           ))}
+          {/* Services button */}
+          <button onClick={()=>setService('none')}
+            className="flex-1 flex flex-col items-center gap-1 py-3 transition-all active:scale-90">
+            <span className="text-xl">🔀</span>
+            <span className="text-[10px] font-black uppercase tracking-wide" style={{color:'#9CA3AF'}}>Services</span>
+          </button>
         </div>
         <p className="text-center text-[9px] pb-2" style={{color:'#C9BFB2'}}>{t.footer}</p>
       </nav>
