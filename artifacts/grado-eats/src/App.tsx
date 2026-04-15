@@ -100,22 +100,6 @@ function DeliveryMap({onSet,pin}:{onSet:(coords:string,inside:boolean)=>void; pi
   );
 }
 
-// ─── SWIPE HOOK ───────────────────────────────────────────────────────────────
-function useSwipe(onLeft?: ()=>void, onRight?: ()=>void, minDist=65) {
-  const x0=useRef(0), y0=useRef(0);
-  const onTouchStart=useCallback((e:React.TouchEvent)=>{
-    x0.current=e.touches[0].clientX;
-    y0.current=e.touches[0].clientY;
-  },[]);
-  const onTouchEnd=useCallback((e:React.TouchEvent)=>{
-    const dx=e.changedTouches[0].clientX-x0.current;
-    const dy=e.changedTouches[0].clientY-y0.current;
-    if(Math.abs(dx)<minDist||Math.abs(dx)<Math.abs(dy)*1.5) return;
-    if(dx<0) onLeft?.(); else onRight?.();
-  },[onLeft,onRight,minDist]);
-  return {onTouchStart,onTouchEnd};
-}
-
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 
 type Lang = 'fr' | 'en' | 'ar' | 'amz';
@@ -1791,9 +1775,8 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
   const choose=(s:'delivery'|'taxi'|'tabac')=>{setPressed(s);setTimeout(()=>onSelect(s),320);};
-  const swipeSelect=useSwipe(()=>choose('taxi'),()=>choose('delivery'));
   return(
-    <div {...swipeSelect} className={`fixed inset-0 flex flex-col items-center justify-center z-40 px-6 ${isAR?'rtl':'ltr'}`}
+    <div className={`fixed inset-0 flex flex-col items-center justify-center z-40 px-6 ${isAR?'rtl':'ltr'}`}
       style={{background:'#FDFCF9'}}>
       {/* Background watermark */}
       <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
@@ -1894,10 +1877,10 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
     {label:{fr:'Panier',en:'Cart',ar:'السلة',amz:'ⴰⵙⵡⵉⵔ'},icon:'🛒'},
   ];
 
-  const swipeTaxi=useSwipe(undefined,onBack);
+
 
   return(
-    <div {...swipeTaxi} className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{background:'#FDFCF9',color:'#1A2F23'}}>
+    <div className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{background:'#FDFCF9',color:'#1A2F23'}}>
       <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
 
       {/* ── Top-left: back to services ── */}
@@ -2060,9 +2043,8 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile}:{
     boxShadow:'0 4px 20px rgba(6,95,70,0.15)',height:'44px',minWidth:'44px',
   };
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
-  const swipeBack=useSwipe(undefined,()=>onBack());
   return(
-    <div {...swipeBack} className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`} style={{background:'#FDFCF9',color:'#1A2F23'}}>
+    <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`} style={{background:'#FDFCF9',color:'#1A2F23'}}>
       {/* Header bar */}
       <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'right-5':'left-5'}`}>
         <button onClick={onBack}
@@ -2182,19 +2164,6 @@ export default function App() {
   const handleBack=()=>{setPage('home');setSelectedRestaurant(null);};
 
   const TABS:Page[]=['home','tracking','contact'];
-  const swipeLeft=useCallback(()=>{
-    if(page==='restaurant') return;
-    const idx=TABS.indexOf(page);
-    if(idx>=0&&idx<TABS.length-1) setPage(TABS[idx+1]);
-  },[page]);
-  const swipeRight=useCallback(()=>{
-    if(page==='restaurant'){setPage('home');setSelectedRestaurant(null);return;}
-    const idx=TABS.indexOf(page);
-    if(idx>0) setPage(TABS[idx-1]);
-    else setService('none');
-  },[page]);
-  const swipeDelivery=useSwipe(swipeLeft,swipeRight);
-
   if(showSplash) return <SplashScreen/>;
   if(service==='none') return <ServiceSelectPage onSelect={s=>setService(s)} lang={lang} cycleLang={cycleLang}/>;
   if(service==='taxi') return <TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
@@ -2207,7 +2176,7 @@ export default function App() {
   };
 
   return (
-    <div {...swipeDelivery} className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{color:'#1A2F23'}}>
+    <div className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{color:'#1A2F23'}}>
 
       {/* ── Top-left: Services back ── */}
       <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
