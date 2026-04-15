@@ -1894,12 +1894,12 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
       {/* ── Top-left: back to services ── */}
       <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
         <button onClick={onBack}
-          className="flex items-center gap-0.5 px-2 rounded-full font-black text-xs transition-all active:scale-90 hover:scale-110"
-          style={{...pillStyle,height:'30px',minWidth:'unset'}}>
-          <span style={{fontSize:'10px',lineHeight:1}}>🛵</span>
-          <span style={{fontSize:'9px',color:'#D9C5A0',fontWeight:900}}>|</span>
-          <span style={{fontSize:'10px',lineHeight:1}}>🚖</span>
-          <span style={{fontSize:'10px',lineHeight:1}}>←</span>
+          className="flex items-center gap-0.5 px-1.5 rounded-full transition-all active:scale-90 hover:scale-110"
+          style={{...pillStyle,height:'24px',minWidth:'unset'}}>
+          <span style={{fontSize:'9px',lineHeight:1}}>🛵</span>
+          <span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
+          <span style={{fontSize:'9px',lineHeight:1}}>🚬</span>
+          <span style={{fontSize:'8px',lineHeight:1,color:'#9CA3AF'}}>←</span>
         </button>
       </div>
 
@@ -2085,12 +2085,12 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile}:{
       {/* Header */}
       <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
         <button onClick={onBack}
-          className="flex items-center gap-0.5 px-2 rounded-full font-black text-xs transition-all active:scale-90 hover:scale-110"
-          style={{...pillStyle,height:'30px',minWidth:'unset'}}>
-          <span style={{fontSize:'10px',lineHeight:1}}>🛵</span>
-          <span style={{fontSize:'9px',color:'#D9C5A0',fontWeight:900}}>|</span>
-          <span style={{fontSize:'10px',lineHeight:1}}>🚬</span>
-          <span style={{fontSize:'10px',lineHeight:1}}>←</span>
+          className="flex items-center gap-0.5 px-1.5 rounded-full transition-all active:scale-90 hover:scale-110"
+          style={{...pillStyle,height:'24px',minWidth:'unset'}}>
+          <span style={{fontSize:'9px',lineHeight:1}}>🛵</span>
+          <span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
+          <span style={{fontSize:'9px',lineHeight:1}}>🚖</span>
+          <span style={{fontSize:'8px',lineHeight:1,color:'#9CA3AF'}}>←</span>
         </button>
       </div>
       <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
@@ -2258,12 +2258,12 @@ export default function App() {
       {/* ── Top-left: Services back ── */}
       <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
         <button onClick={()=>setService('none')}
-          className="flex items-center gap-0.5 px-2 rounded-full font-black text-xs transition-all active:scale-90 hover:scale-110"
-          style={{...pillStyle, height:'30px', minWidth:'unset'}}>
-          <span style={{fontSize:'10px', lineHeight:1}}>🛵</span>
-          <span style={{fontSize:'9px', color:'#D9C5A0', fontWeight:900}}>|</span>
-          <span style={{fontSize:'10px', lineHeight:1}}>🚖</span>
-          <span style={{fontSize:'10px', lineHeight:1}}>←</span>
+          className="flex items-center gap-0.5 px-1.5 rounded-full transition-all active:scale-90 hover:scale-110"
+          style={{...pillStyle, height:'24px', minWidth:'unset'}}>
+          <span style={{fontSize:'9px', lineHeight:1}}>🚬</span>
+          <span style={{fontSize:'8px', color:'#D9C5A0', fontWeight:900}}>|</span>
+          <span style={{fontSize:'9px', lineHeight:1}}>🚖</span>
+          <span style={{fontSize:'8px', lineHeight:1, color:'#9CA3AF'}}>←</span>
         </button>
       </div>
 
