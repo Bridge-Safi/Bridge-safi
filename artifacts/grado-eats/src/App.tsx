@@ -201,6 +201,11 @@ const T = {
     safiExcl:'Spécialité Safi', selected:'Sélectionné ✓',
     waMsgHeader:'🛍️ Nouvelle commande Bridge Safi\n\n📦 Articles:\n',
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 Total: ${total} MAD\n\n👤 Nom: ${name}\n📍 Adresse: ${addr}, Safi\n📞 Tél: ${phone}\n\nMerci de confirmer ma commande ! 🙏`,
+    chooseService:'Choisissez votre service',
+    deliverySub:'Livraison rapide', taxiSub:'Confort & style',
+    taxiSoon:'Service disponible très bientôt',
+    taxiDesc:'Bridge Taxi Confort — trajets premium à Safi, en toute élégance.',
+    taxiBook:'Réserver sur WhatsApp Business',
   },
   en: {
     appName:'Bridge Safi', zone:'Safi, Morocco',
@@ -242,6 +247,11 @@ const T = {
     safiExcl:'Safi Special', selected:'Selected ✓',
     waMsgHeader:'🛍️ New Bridge Safi order\n\n📦 Items:\n',
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 Total: ${total} MAD\n\n👤 Name: ${name}\n📍 Address: ${addr}, Safi\n📞 Phone: ${phone}\n\nPlease confirm my order! 🙏`,
+    chooseService:'Choose your service',
+    deliverySub:'Fast delivery', taxiSub:'Comfort & style',
+    taxiSoon:'Service coming soon',
+    taxiDesc:'Bridge Taxi Confort — premium rides in Safi, in pure elegance.',
+    taxiBook:'Book on WhatsApp Business',
   },
   ar: {
     appName:'بريدج سافي', zone:'آسفي، المغرب',
@@ -284,6 +294,11 @@ const T = {
     safiExcl:'تخصص آسفي', selected:'تم الاختيار ✓',
     waMsgHeader:'🛍️ طلب جديد من بريدج إيتس\n\n📦 الطلبات:\n',
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 المجموع: ${total} MAD\n\n👤 الاسم: ${name}\n📍 العنوان: ${addr}، آسفي\n📞 الهاتف: ${phone}\n\nأرجو تأكيد طلبي! 🙏`,
+    chooseService:'اختر خدمتك',
+    deliverySub:'توصيل سريع', taxiSub:'راحة وأناقة',
+    taxiSoon:'الخدمة قادمة قريباً',
+    taxiDesc:'بريدج تاكسي كونفور — رحلات مميزة في آسفي بأناقة.',
+    taxiBook:'احجز عبر واتساب بيزنس',
   },
   amz: {
     appName:'ⴱⵔⵉⴷⵊ ⵉⵢⵜⵙ', zone:'ⵙⴰⴼⵉ, ⵍⵎⵖⵔⵉⴱ',
@@ -326,6 +341,11 @@ const T = {
     safiExcl:'ⵏ ⵙⴰⴼⵉ', selected:'ⵉⵜⵜⵓⴼⵔⴰ ✓',
     waMsgHeader:'🛍️ ⵜⴰⵖⵓⵍⵜ ⵜⴰⵎⴰⵢⵏⵓⵜ ⵏ ⴱⵔⵉⴷⵊ ⵉⵢⵜⵙ\n\n📦 ⵉⵙⴽⴰⵔⵏ:\n',
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 ⴰⵎⵎⴰⵙ: ${total} MAD\n\n👤 ⵉⵙⵎ: ${name}\n📍 ⵜⴰⵙⵓⵏⵜ: ${addr}, ⵙⴰⴼⵉ\n📞 ⴰⵙⵓⵍ: ${phone}\n\nⵙⵛⴷ ⵜⴰⵖⵓⵍⵜ ⵉⵏⵓ! 🙏`,
+    chooseService:'ⴼⵔ ⵜⴰⵎⵙⴽⴰⵔⵜ',
+    deliverySub:'ⴰⵙⵙⵓⴼⵖ ⵣⵔⵉⵔⵉ', taxiSub:'ⵓⵏⵍⵍⵉ ⴷ ⵓⵙⵏⴼⵍ',
+    taxiSoon:'ⵜⴰⵎⵙⴽⴰⵔⵜ ⵜⴰⵖ ⴷ ⵓⴳⵉⵏ',
+    taxiDesc:'ⴱⵔⵉⴷⵊ ⵜⴰⴽⵙⵉ — ⵜⵉⵔⴰⵡⵉⵏ ⵜⵉⴼⵓⵍⴽⵉⵏ ⵖ ⵙⴰⴼⵉ.',
+    taxiBook:'ⵙⵇⵇⵔ ⵙ WhatsApp Business',
   },
 };
 
@@ -1750,14 +1770,26 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
 
 // ─── SERVICE SELECT PAGE ──────────────────────────────────────────────────────
 
-function ServiceSelectPage({onSelect}:{onSelect:(s:'delivery'|'taxi')=>void}) {
+function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'taxi')=>void;lang:Lang;cycleLang:()=>void}) {
   const [pressed,setPressed]=useState<'delivery'|'taxi'|null>(null);
+  const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
+  const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
   const choose=(s:'delivery'|'taxi')=>{setPressed(s);setTimeout(()=>onSelect(s),320);};
+  const swipeSelect=useSwipe(()=>choose('taxi'),()=>choose('delivery'));
   return(
-    <div className="fixed inset-0 flex flex-col items-center justify-center z-40 px-6"
+    <div {...swipeSelect} className={`fixed inset-0 flex flex-col items-center justify-center z-40 px-6 ${isAR?'rtl':'ltr'}`}
       style={{background:'#FDFCF9'}}>
       {/* Background watermark */}
       <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
+
+      {/* Language button */}
+      <div className={`absolute top-5 z-50 ${isAR?'left-5':'right-5'}`}>
+        <button onClick={cycleLang}
+          className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 px-3 ${lang==='amz'?'font-tifinagh':''}`}
+          style={{background:'white',border:'2.5px solid #D9C5A0',color:'#065F46',boxShadow:'0 4px 20px rgba(6,95,70,0.15)',height:'38px',fontSize:'13px'}}>
+          {LANG_LABELS[lang]}
+        </button>
+      </div>
 
       <div className="relative flex flex-col items-center w-full max-w-sm">
         {/* Title */}
@@ -1768,16 +1800,16 @@ function ServiceSelectPage({onSelect}:{onSelect:(s:'delivery'|'taxi')=>void}) {
           <div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/>
           <div className="w-10 h-px" style={{background:'#D9C5A0'}}/>
         </div>
-        <p className="text-[11px] font-black tracking-widest uppercase mb-8" style={{color:'#6B7280'}}>
-          Choisissez votre service
+        <p className={`text-[11px] font-black tracking-widest uppercase mb-8 ${fClass}`} style={{color:'#6B7280'}}>
+          {t.chooseService}
         </p>
 
         {/* Two service cards — identical structure & fixed size */}
         <div className="flex items-start justify-center gap-4 w-full">
           {([
-            {key:'delivery' as const, src:'/logo_delivery.jpeg', label:'Bridge Delivery', sub:'Livraison rapide', emoji:'🛵',
+            {key:'delivery' as const, src:'/logo_delivery.jpeg', label:'Bridge Delivery', sub:t.deliverySub, emoji:'🛵',
              activeColor:'#065F46', activeShadow:'0 0 0 6px rgba(6,95,70,0.15),0 12px 36px rgba(6,95,70,0.3)', labelColor:'#065F46'},
-            {key:'taxi' as const, src:'/logo_taxi.jpeg', label:'Bridge Taxi', sub:'Confort & style', emoji:'🚖',
+            {key:'taxi' as const, src:'/logo_taxi.jpeg', label:'Bridge Taxi', sub:t.taxiSub, emoji:'🚖',
              activeColor:'#B45309', activeShadow:'0 0 0 6px rgba(180,83,9,0.15),0 12px 36px rgba(180,83,9,0.25)', labelColor:'#B45309'},
           ]).reduce<React.ReactNode[]>((acc,item,i)=>{
             if(i>0) acc.push(
@@ -1890,15 +1922,15 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
           </div>
           <div className="rounded-2xl p-5 mb-6 w-full" style={{background:'#FEF9EE',border:'1.5px solid #FDE68A'}}>
             <p className="text-4xl mb-3">🚖</p>
-            <p className="font-black text-sm mb-1" style={{color:'#B45309'}}>Service disponible très bientôt</p>
-            <p className="text-xs font-medium" style={{color:'#78716C'}}>Bridge Taxi Confort — trajets premium à Safi, en toute élégance.</p>
+            <p className={`font-black text-sm mb-1 ${fClass}`} style={{color:'#B45309'}}>{T[lang].taxiSoon}</p>
+            <p className={`text-xs font-medium ${fClass}`} style={{color:'#78716C'}}>{T[lang].taxiDesc}</p>
           </div>
           <a href="https://wa.me/212764794856?text=Bonjour%2C%20je%20voudrais%20r%C3%A9server%20un%20Bridge%20Taxi%20Confort%20%F0%9F%9A%96"
             target="_blank" rel="noopener noreferrer"
             className="w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 mb-3 active:scale-95 transition-all"
             style={{background:'#25D366',boxShadow:'0 6px 20px rgba(37,211,102,0.3)'}}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
-            Réserver sur WhatsApp Business
+            {T[lang].taxiBook}
           </a>
         </div>
       </div>
@@ -2070,7 +2102,7 @@ export default function App() {
   const swipeDelivery=useSwipe(swipeLeft,swipeRight);
 
   if(showSplash) return <SplashScreen/>;
-  if(service==='none') return <ServiceSelectPage onSelect={s=>setService(s)}/>;
+  if(service==='none') return <ServiceSelectPage onSelect={s=>setService(s)} lang={lang} cycleLang={cycleLang}/>;
   if(service==='taxi') return <TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
 
   // Pill button style (shared between lang + profile)
