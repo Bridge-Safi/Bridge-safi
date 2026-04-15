@@ -1386,9 +1386,10 @@ function SplashScreen() {
   const [progress,setProgress]=useState(0);
   useEffect(()=>{const iv=setInterval(()=>setProgress(p=>Math.min(p+1.8,100)),50);return()=>clearInterval(iv);},[]);
   return (
-    <div className="fixed inset-0 z-50 flex flex-col" style={{background:'#FDFCF9'}}>
-      <img src="/logo_new.png" alt="Bridge" className="flex-1 w-full object-cover"/>
-      <div className="flex flex-col items-center pb-10 pt-5" style={{background:'#FDFCF9'}}>
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center" style={{background:'#FDFCF9'}}>
+      <div className="flex flex-col items-center">
+        <img src="/logo_new.png" alt="Bridge" className="mb-8 object-cover rounded-full"
+          style={{width:220,height:220,boxShadow:'0 8px 40px rgba(6,95,70,0.18)'}}/>
         <div className="w-48 h-1.5 rounded-full overflow-hidden" style={{background:'#E5E1D8'}}>
           <div className="h-full rounded-full transition-all duration-75"
             style={{width:`${progress}%`,background:'linear-gradient(to right,#065F46,#059669)'}}/>
