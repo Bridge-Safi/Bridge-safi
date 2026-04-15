@@ -2395,6 +2395,47 @@ function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
 
   useEffect(()=>{if(loginDone){fetchOrders();const id=setInterval(fetchOrders,8000);return()=>clearInterval(id);}}, [loginDone]);
 
+  useEffect(()=>{
+    if(!loginDone) return;
+    const subscribePush = async()=>{
+      try{
+        if(!('serviceWorker' in navigator)||!('PushManager' in window)) return;
+        const perm = await Notification.requestPermission();
+        if(perm!=='granted') return;
+        const reg = await navigator.serviceWorker.ready;
+        const existing = await reg.pushManager.getSubscription();
+        let sub = existing;
+        if(!sub){
+          const keyRes = await fetch('/api/push/vapid-key');
+          const {publicKey} = await keyRes.json();
+          const vapidKey = Uint8Array.from(atob(publicKey.replace(/-/g,'+').replace(/_/g,'/')), c=>c.charCodeAt(0));
+          sub = await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:vapidKey});
+        }
+        if(!sub) return;
+        const rawKey  = sub.getKey('p256dh');
+        const rawAuth = sub.getKey('auth');
+        if(!rawKey||!rawAuth) return;
+        const p256dh = btoa(String.fromCharCode(...new Uint8Array(rawKey)));
+        const auth   = btoa(String.fromCharCode(...new Uint8Array(rawAuth)));
+        await fetch('/api/push/subscribe',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({endpoint:sub.endpoint, keys:{p256dh,auth}, driverName}),
+        });
+      }catch(_){}
+    };
+    subscribePush();
+    const onMessage=(e:MessageEvent)=>{
+      if(e.data?.type==='NEW_ORDER_PUSH'||e.data?.type==='NOTIFICATION_CLICKED'){
+        playRing();
+        fetchOrders();
+      }
+    };
+    navigator.serviceWorker.addEventListener('message', onMessage);
+    return()=>navigator.serviceWorker.removeEventListener('message', onMessage);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[loginDone]);
+
   const updateStatus=async(order:ApiOrder, newStatus:OrderStatus)=>{
     setUpdating(order.id);
     try{

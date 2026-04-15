@@ -1,0 +1,70 @@
+import { Router } from "express";
+import webpush from "web-push";
+import { db, pushSubscriptionsTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
+import { VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_CONTACT } from "../lib/vapid";
+
+webpush.setVapidDetails(VAPID_CONTACT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+
+const router = Router();
+
+router.get("/push/vapid-key", (_req, res) => {
+  res.json({ publicKey: VAPID_PUBLIC_KEY });
+});
+
+router.post("/push/subscribe", async (req, res) => {
+  try {
+    const { endpoint, keys, driverName } = req.body;
+    if (!endpoint || !keys?.p256dh || !keys?.auth) {
+      return res.status(400).json({ error: "Missing subscription fields" });
+    }
+    await db
+      .insert(pushSubscriptionsTable)
+      .values({ endpoint, p256dh: keys.p256dh, auth: keys.auth, driverName: driverName || null })
+      .onConflictDoUpdate({
+        target: pushSubscriptionsTable.endpoint,
+        set: { p256dh: keys.p256dh, auth: keys.auth, driverName: driverName || null },
+      });
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to save subscription" });
+  }
+});
+
+router.delete("/push/subscribe", async (req, res) => {
+  try {
+    const { endpoint } = req.body;
+    if (!endpoint) return res.status(400).json({ error: "Missing endpoint" });
+    await db.delete(pushSubscriptionsTable).where(eq(pushSubscriptionsTable.endpoint, endpoint));
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to remove subscription" });
+  }
+});
+
+export async function notifyDrivers(payload: object) {
+  try {
+    const subs = await db.select().from(pushSubscriptionsTable);
+    const results = await Promise.allSettled(
+      subs.map(sub =>
+        webpush.sendNotification(
+          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+          JSON.stringify(payload),
+        )
+      )
+    );
+    const failed = results.filter(r => r.status === "rejected").length;
+    if (failed > 0) {
+      const deadEndpoints = subs
+        .filter((_, i) => results[i].status === "rejected")
+        .map(s => s.endpoint);
+      await Promise.allSettled(
+        deadEndpoints.map(ep =>
+          db.delete(pushSubscriptionsTable).where(eq(pushSubscriptionsTable.endpoint, ep))
+        )
+      );
+    }
+  } catch (_) {}
+}
+
+export default router;

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { db, ordersTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
+import { notifyDrivers } from "./push";
 
 const router = Router();
 
@@ -50,7 +51,20 @@ router.post("/orders", async (req, res) => {
       restaurantName: restaurantName || null,
       status: "pending",
     }).returning();
+
     res.status(201).json({ order });
+
+    notifyDrivers({
+      type: "NEW_ORDER",
+      title: "🛵 Nouvelle commande !",
+      body: `${customerName} · ${Number(total)} MAD${restaurantName ? ` · ${restaurantName}` : ""}`,
+      data: {
+        orderId: order.id,
+        ref: order.ref,
+        url: "/",
+      },
+    }).catch(() => {});
+
   } catch (err) {
     res.status(500).json({ error: "Failed to create order" });
   }
