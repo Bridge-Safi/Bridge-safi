@@ -2350,6 +2350,7 @@ function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
   const [driverInput,setDriverInput] = useState(driverName);
   const [loginDone,setLoginDone] = useState(!!driverName);
   const [updating,setUpdating] = useState<number|null>(null);
+  const [navModal,setNavModal] = useState<ApiOrder|null>(null);
   const fClass=fontClass(lang); const isAR=lang==='ar';
   const knownIdsRef = useRef<Set<number>>(new Set());
   const audioCtxRef = useRef<AudioContext|null>(null);
@@ -2564,6 +2565,79 @@ function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
         </div>
       )}
 
+      {/* GPS Navigation Modal */}
+      {navModal&&(()=>{
+        const addr = encodeURIComponent((navModal.customerAddress||'')+', Safi, Maroc');
+        const gpsOptions = [
+          {
+            name:'Google Maps',
+            icon:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Google_Maps_icon_%282020%29.svg/48px-Google_Maps_icon_%282020%29.svg.png',
+            color:'#4285F4',
+            bg:'#EFF6FF',
+            url:`https://www.google.com/maps/dir/?api=1&destination=${addr}&travelmode=driving`,
+          },
+          {
+            name:'Waze',
+            icon:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Waze_icon.svg/48px-Waze_icon.svg.png',
+            color:'#05C8F7',
+            bg:'#F0FDFE',
+            url:`https://waze.com/ul?q=${addr}&navigate=yes`,
+          },
+          {
+            name:'Apple Plans',
+            icon:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/AppleMaps_logo.svg/48px-AppleMaps_logo.svg.png',
+            color:'#1C1C1E',
+            bg:'#F5F5F7',
+            url:`https://maps.apple.com/?daddr=${addr}&dirflg=d`,
+          },
+        ];
+        return (
+          <div className="fixed inset-0 z-[60] flex flex-col justify-end" style={{background:'rgba(0,0,0,0.55)',backdropFilter:'blur(4px)'}}>
+            <div className="bg-white rounded-t-3xl px-5 pt-5 pb-8 shadow-2xl" style={{maxHeight:'80vh'}}>
+              {/* Handle */}
+              <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{background:'#E5E1D8'}}/>
+
+              {/* Title */}
+              <div className="mb-1">
+                <h3 className="font-black text-base" style={{color:'#1A2F23'}}>🧭 Choisir la navigation</h3>
+                <p className="text-xs mt-0.5 font-medium" style={{color:'#9CA3AF'}}>Commande #{navModal.ref} · {navModal.customerName}</p>
+              </div>
+
+              {/* Address pill */}
+              <div className="flex items-start gap-2 px-3 py-2 rounded-xl mb-5 mt-3" style={{background:'#F9F7F2',border:'1px solid #E5E1D8'}}>
+                <span className="mt-0.5">📍</span>
+                <p className="text-xs flex-1 font-medium leading-relaxed" style={{color:'#4B5563'}}>{navModal.customerAddress}</p>
+              </div>
+
+              {/* GPS Buttons */}
+              <div className="flex flex-col gap-3">
+                {gpsOptions.map(g=>(
+                  <button key={g.name}
+                    onClick={()=>{
+                      window.open(g.url,'_blank');
+                      updateStatus(navModal,'on_the_way');
+                      setNavModal(null);
+                    }}
+                    className="flex items-center gap-4 w-full px-4 py-3 rounded-2xl font-black text-sm transition-all active:scale-95"
+                    style={{background:g.bg, border:`1.5px solid ${g.color}22`}}>
+                    <img src={g.icon} alt={g.name} className="w-8 h-8 rounded-lg object-contain flex-shrink-0"
+                      onError={(e)=>{(e.target as HTMLImageElement).style.display='none';}}/>
+                    <span style={{color:g.color}}>{g.name}</span>
+                    <span className="ml-auto text-lg">→</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Cancel */}
+              <button onClick={()=>setNavModal(null)}
+                className="w-full mt-4 py-3 rounded-2xl text-sm font-bold" style={{color:'#9CA3AF',background:'#F9F7F2'}}>
+                Annuler
+              </button>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Orders list */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
         {loading&&<div className="text-center py-10 text-gray-400 font-bold">Chargement...</div>}
@@ -2626,7 +2700,9 @@ function DriverPanel({lang,onClose}:{lang:Lang;onClose:()=>void}) {
                       className="flex-1 py-2 rounded-xl text-xs font-black text-center text-white"
                       style={{background:'#25D366'}}>💬 WhatsApp</a>
                     {next&&(
-                      <button onClick={()=>updateStatus(order,next)} disabled={isUpdating}
+                      <button
+                        onClick={()=>{ if(next==='on_the_way'){setNavModal(order);}else{updateStatus(order,next);} }}
+                        disabled={isUpdating}
                         className="flex-1 py-2 rounded-xl text-xs font-black text-white transition-all active:scale-95"
                         style={{background:isUpdating?'#E5E1D8':'linear-gradient(135deg,#065F46,#047857)'}}>
                         {isUpdating?'...':next==='preparing'?'▶ Préparer':next==='on_the_way'?'🛵 Partir':next==='delivered'?'✅ Livré':'→'}
