@@ -36,3 +36,21 @@ id = "8UEI2cmlFYBIHnS2AhMji"
 uri = "file://attached_assets/stock_images/mcdo_bigmac_3.jpg"
 type = "image"
 title = "Big Mac hamburger close-up with sesame bun, cheese, lettuce, pickles, fast food restaurant"
+
+[[outputs]]
+id = "a2lgUQguvKq89W7kb7yS7"
+uri = "file://attached_assets/stock_images/mcdo_exterior_1.jpg"
+type = "image"
+title = "McDonald's restaurant exterior golden arches sign at night, iconic fast food brand"
+
+[[outputs]]
+id = "_brbx7I7hXPFOGFffNuQC"
+uri = "file://attached_assets/stock_images/mcdo_exterior_2.jpg"
+type = "image"
+title = "McDonald's restaurant exterior golden arches sign at night, iconic fast food brand"
+
+[[outputs]]
+id = "EU_UdT7mde67RVkQ3xxky"
+uri = "file://attached_assets/stock_images/mcdo_exterior_3.jpg"
+type = "image"
+title = "McDonald's restaurant exterior golden arches sign at night, iconic fast food brand"
