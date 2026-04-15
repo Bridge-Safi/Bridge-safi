@@ -1922,8 +1922,8 @@ export default function App() {
 
   const [lang,setLang]         = useState<Lang>(saved?.lang??'fr');
   const [page,setPage]         = useState<Page>(saved?.page??'home');
-  // Show splash only on very first visit; skip on any reload/reconnection
-  const [showSplash,setShowSplash] = useState(saved===null);
+  // Show splash on every load/refresh/restart
+  const [showSplash,setShowSplash] = useState(true);
   const [service,setService]       = useState<'none'|'delivery'|'taxi'>(saved?.service??'none');
   const [cart,setCart]         = useState<CartItem[]>([]);
   const [showCart,setShowCart] = useState(false);
