@@ -315,7 +315,143 @@ const OPT = {
 
 // ─── RESTAURANT DATA ──────────────────────────────────────────────────────────
 
+// ─── McDONALD'S OPTION GROUPS ─────────────────────────────────────────────────
+
+const MCD = {
+  menuSize: ():OptionGroup => ({ id:'menu_size', names:{fr:'Format du Menu',en:'Menu Size',ar:'حجم الوجبة',amz:'ⴰⵎⵔⴰⵡ'}, type:'radio', required:true, choices:[
+    {id:'medium',names:{fr:'Menu Medium',en:'Medium Meal',ar:'وجبة وسط',amz:'ⵎⵉⴷⵢⵓⵎ'},price:0},
+    {id:'maxi',  names:{fr:'Menu Maxi (+15 MAD)',en:'Large Meal (+15 MAD)',ar:'وجبة كبيرة (+15)',amz:'ⵎⴰⴽⵙⵉ (+15)'},price:15},
+  ]}),
+  menuDrink: ():OptionGroup => ({ id:'menu_drink', names:{fr:'Boisson',en:'Drink',ar:'المشروب',amz:'ⴰⵙⵡ'}, type:'radio', required:true, choices:[
+    {id:'cola',   names:{fr:'Coca-Cola',      en:'Coca-Cola',      ar:'كوكا كولا',   amz:'ⴽⵓⵍⴰ'},       price:0},
+    {id:'fanta',  names:{fr:'Fanta Orange',   en:'Fanta Orange',   ar:'فانتا برتقال',amz:'ⴼⴰⵏⵜⴰ'},      price:0},
+    {id:'sprite', names:{fr:'Sprite',         en:'Sprite',         ar:'سبرايت',      amz:'ⵙⴱⵔⵉⵜ'},      price:0},
+    {id:'7up',    names:{fr:'7UP',            en:'7UP',            ar:'7UP',          amz:'7UP'},          price:0},
+    {id:'nestea', names:{fr:'Nestea',         en:'Nestea',         ar:'نيستي',        amz:'ⵏⵉⵙⵜⵉ'},      price:0},
+    {id:'eau',    names:{fr:'Eau Minérale',   en:'Still Water',    ar:'ماء معدني',   amz:'ⴰⵎⴰⵏ'},        price:0},
+  ]}),
+  removals: ():OptionGroup => ({ id:'removals', names:{fr:'Retirer (optionnel)',en:'Remove (optional)',ar:'إزالة (اختياري)',amz:'ⵙⵔⵔⵓ'}, type:'checkbox', required:false, choices:[
+    {id:'no_pickle', names:{fr:'Sans cornichons',  en:'No pickles',   ar:'بدون خيار',     amz:'ⵓⵔ ⵉⴼⵔⵓⵔⵏ'},  price:0},
+    {id:'no_onion',  names:{fr:'Sans oignons',     en:'No onions',    ar:'بدون بصل',      amz:'ⵓⵔ ⵜⵉⴱⵙⵍⵉⵏ'}, price:0},
+    {id:'no_salad',  names:{fr:'Sans salade',      en:'No lettuce',   ar:'بدون خس',       amz:'ⵓⵔ ⵓⵍⵓⴼ'},    price:0},
+    {id:'no_tomato', names:{fr:'Sans tomate',      en:'No tomato',    ar:'بدون طماطم',    amz:'ⵓⵔ ⴰⵎⵥⵢⴰⵏ'},   price:0},
+    {id:'no_sauce',  names:{fr:'Sans sauce',       en:'No sauce',     ar:'بدون صلصة',     amz:'ⵓⵔ ⴰⵙⴰⴽ'},    price:0},
+    {id:'no_cheese', names:{fr:'Sans fromage',     en:'No cheese',    ar:'بدون جبن',      amz:'ⵓⵔ ⴰⴼⵔⵓⵎⴰⵊ'}, price:0},
+  ]}),
+  dipSauce: ():OptionGroup => ({ id:'dip', names:{fr:'Sauce Dip',en:'Dipping Sauce',ar:'صلصة التغميس',amz:'ⴰⵙⴰⴽ'}, type:'radio', required:true, choices:[
+    {id:'ketchup',  names:{fr:'Ketchup',       en:'Ketchup',       ar:'كاتشاب',     amz:'ⴽⵉⵜⵛⵓⴱ'},    price:0},
+    {id:'bbq',      names:{fr:'Barbecue',      en:'BBQ',           ar:'باربيكيو',   amz:'BBQ'},          price:0},
+    {id:'honey',    names:{fr:'Miel-Moutarde', en:'Honey Mustard', ar:'عسل خردل',   amz:'ⴰⵎⵎⵉⵙ'},      price:0},
+    {id:'curry',    names:{fr:'Sauce Curry',   en:'Curry Sauce',   ar:'كاري',       amz:'ⴽⴰⵔⵉ'},       price:0},
+    {id:'sweet',    names:{fr:'Sweet Chili',   en:'Sweet Chili',   ar:'تشيلي حلو',  amz:'ⵜⵛⵉⵍⵉ'},     price:0},
+  ]}),
+  nuggetsQty: ():OptionGroup => ({ id:'nuggets_qty', names:{fr:'Nombre de pièces',en:'Number of pieces',ar:'عدد القطع',amz:'ⴰⵏⵓⵎⵔ'}, type:'radio', required:true, choices:[
+    {id:'6', names:{fr:'6 pièces',en:'6 pieces',ar:'6 قطع',amz:'6'},price:0},
+    {id:'9', names:{fr:'9 pièces (+15 MAD)',en:'9 pieces (+15 MAD)',ar:'9 قطع (+15)',amz:'9 (+15)'},price:15},
+    {id:'20',names:{fr:'20 pièces (+55 MAD)',en:'20 pieces (+55 MAD)',ar:'20 قطع (+55)',amz:'20 (+55)'},price:55},
+  ]}),
+  happyMealDessert: ():OptionGroup => ({ id:'hm_dessert', names:{fr:'Dessert',en:'Dessert',ar:'الحلوى',amz:'ⴰⵎⴰⴳⵓ'}, type:'radio', required:true, choices:[
+    {id:'icecream',names:{fr:'Glace Vanille',   en:'Vanilla Ice Cream', ar:'بوظة فانيلا', amz:'ⵜⴰⵍⴰⵢⵜ'},price:0},
+    {id:'apple',   names:{fr:'Apple Pie',       en:'Apple Pie',         ar:'فطيرة التفاح', amz:'ⴰⴱⵍⴰ'},   price:0},
+    {id:'mcflurry',names:{fr:'McFlurry Oreo',   en:'McFlurry Oreo',     ar:'ماك فلوري أوريو',amz:'ⵎⴽⴼⵍⵓⵔⵉ'},price:5},
+  ]}),
+  happyMealToy: ():OptionGroup => ({ id:'hm_toy', names:{fr:'Jouet Happy Meal',en:'Happy Meal Toy',ar:'لعبة وجبة الأطفال',amz:'ⴰⵣⴰⵡⴰⵏ'}, type:'radio', required:true, choices:[
+    {id:'boy',  names:{fr:'Garçon',en:"Boy's toy",ar:'ولد',amz:'ⴰⵣⴰⵡⴰⵏ ⵏ ⵢⵉⵖⵔⵎ'},price:0},
+    {id:'girl', names:{fr:'Fille', en:"Girl's toy",ar:'بنت',amz:'ⴰⵣⴰⵡⴰⵏ ⵏ ⵜⴼⴰⵜ'}, price:0},
+  ]}),
+  drinkSize: ():OptionGroup => ({ id:'drink_size', names:{fr:'Format',en:'Size',ar:'الحجم',amz:'ⴰⵎⵔⴰⵡ'}, type:'radio', required:true, choices:[
+    {id:'s', names:{fr:'Small (30cl)',   en:'Small (30cl)',   ar:'صغير (30cl)',  amz:'ⴰⵎⵥⵢⴰⵏ'},  price:0},
+    {id:'m', names:{fr:'Medium (50cl)', en:'Medium (50cl)', ar:'وسط (50cl)',   amz:'ⴰⵎⵎⴰⵙ (+5)'},price:5},
+    {id:'l', names:{fr:'Large (1L)',    en:'Large (1L)',     ar:'كبير (1L +10)',amz:'ⵜⴰⵎⵇⵇⵔⴰⵏⵜ (+10)'},price:10},
+  ]}),
+  drinkIce: ():OptionGroup => ({ id:'ice', names:{fr:'Glaçons',en:'Ice',ar:'الثلج',amz:'ⴰⵎⴽⵙⴰ'}, type:'radio', required:false, choices:[
+    {id:'with_ice',  names:{fr:'Avec glaçons',  en:'With ice',    ar:'مع ثلج',     amz:'ⵙ ⵓⵎⴽⵙⴰ'},   price:0},
+    {id:'no_ice',    names:{fr:'Sans glaçons',  en:'Without ice', ar:'بدون ثلج',   amz:'ⵓⵔ ⵓⵎⴽⵙⴰ'},  price:0},
+  ]}),
+};
+
+const MCDO_COVER = 'https://images.unsplash.com/photo-1552526881-721b7ec8b4f4?w=700&q=80';
+const MCDO_BURGER = 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&q=80';
+const MCDO_NUGGETS = 'https://images.unsplash.com/photo-1562967914-608f82629710?w=400&q=80';
+const MCDO_FRIES = 'https://images.unsplash.com/photo-1576107232684-1279f55e14cf?w=400&q=80';
+const MCDO_DRINK = 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&q=80';
+const MCDO_DESSERT = 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&q=80';
+const MCDO_HAPPY = 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80';
+
 const RESTAURANTS: Restaurant[] = [
+  // ─── McDONALD'S SAFI (Featured · Pinned #1) ──────────────────────────────
+  {
+    id:'mcdonalds-safi',
+    name:"McDonald's Safi",
+    tagline:{fr:'Le goût que vous aimez, livré à Safi',en:'The taste you love, delivered in Safi',ar:'الطعم الذي تحبه، يُوصَّل إليك في آسفي',amz:'ⴰⵥⵡⴰⵏ ⵉⵃⵎⵍⵏ, ⴷ ⵙⴰⴼⵉ'},
+    logo:'🍟',
+    cover: MCDO_COVER,
+    cuisine:{fr:'Burgers · Menus · Fast Food',en:'Burgers · Meals · Fast Food',ar:'برغر · وجبات · فاست فود',amz:'ⴱⵓⵔⴳⵔ · ⵎⵉⵏⵓ'},
+    rating:4.5, deliveryTime:'20–30', minOrder:49,
+    categories:[
+      {
+        id:'menus', emoji:'🥡',
+        names:{fr:'Menus',en:'Meals',ar:'الوجبات الكاملة',amz:'ⵉⵎⵏⵓⵏ'},
+        items:[
+          {id:'mc1',names:{fr:'Menu Big Mac',en:'Big Mac Meal',ar:'وجبة بيج ماك',amz:'ⴱⵉⴳ ⵎⴰⴽ ⵎⵉⵏⵓ'},price:59,photo:MCDO_BURGER,options:[MCD.menuSize(),MCD.menuDrink(),MCD.removals()]},
+          {id:'mc2',names:{fr:'Menu McChicken',en:'McChicken Meal',ar:'وجبة ماك تشيكن',amz:'ⵎⴽⵜⵛⵉⴽⵏ ⵎⵉⵏⵓ'},price:54,photo:MCDO_BURGER,options:[MCD.menuSize(),MCD.menuDrink(),MCD.removals()]},
+          {id:'mc3',names:{fr:'Menu Double Cheeseburger',en:'Double Cheeseburger Meal',ar:'وجبة دبل تشيزبرغر',amz:'ⴷⴱⵍ ⵛⵉⵣⴱⵓⵔⴳⵔ ⵎⵉⵏⵓ'},price:49,photo:MCDO_BURGER,options:[MCD.menuSize(),MCD.menuDrink(),MCD.removals()]},
+          {id:'mc4',names:{fr:'Menu Filet-O-Fish',en:'Filet-O-Fish Meal',ar:'وجبة فيليه أو فيش',amz:'ⴼⵉⵍⵉⵜ ⵎⵉⵏⵓ'},price:54,photo:MCDO_BURGER,options:[MCD.menuSize(),MCD.menuDrink(),MCD.removals()]},
+          {id:'mc5',names:{fr:'Menu McBacon',en:'McBacon Meal',ar:'وجبة ماك بيكون',amz:'ⵎⴽⴱⴰⴽⵓⵏ ⵎⵉⵏⵓ'},price:59,photo:MCDO_BURGER,options:[MCD.menuSize(),MCD.menuDrink(),MCD.removals()]},
+          {id:'mc6',names:{fr:'Menu McBacon Double',en:'Double McBacon Meal',ar:'وجبة دبل ماك بيكون',amz:'ⴷⴱⵍ ⵎⴽⴱⴰⴽⵓⵏ ⵎⵉⵏⵓ'},price:64,photo:MCDO_BURGER,options:[MCD.menuSize(),MCD.menuDrink(),MCD.removals()]},
+        ],
+      },
+      {
+        id:'sandwiches', emoji:'🍔',
+        names:{fr:'Sandwiches',en:'Sandwiches',ar:'الساندويشات',amz:'ⵉⵙⵙⴰⵏⴷⵡⵉⵜⵛⵏ'},
+        items:[
+          {id:'ms1',names:{fr:'Big Mac',en:'Big Mac',ar:'بيج ماك',amz:'ⴱⵉⴳ ⵎⴰⴽ'},price:44,photo:MCDO_BURGER,options:[MCD.removals()]},
+          {id:'ms2',names:{fr:'McChicken',en:'McChicken',ar:'ماك تشيكن',amz:'ⵎⴽⵜⵛⵉⴽⵏ'},price:39,photo:MCDO_BURGER,options:[MCD.removals()]},
+          {id:'ms3',names:{fr:'Double Cheeseburger',en:'Double Cheeseburger',ar:'دبل تشيزبرغر',amz:'ⴷⴱⵍ ⵛⵉⵣⴱⵓⵔⴳⵔ'},price:34,photo:MCDO_BURGER,options:[MCD.removals()]},
+          {id:'ms4',names:{fr:'Filet-O-Fish',en:'Filet-O-Fish',ar:'فيليه أو فيش',amz:'ⴼⵉⵍⵉⵜ'},price:39,photo:MCDO_BURGER,options:[MCD.removals()]},
+          {id:'ms5',names:{fr:'McBacon',en:'McBacon',ar:'ماك بيكون',amz:'ⵎⴽⴱⴰⴽⵓⵏ'},price:44,photo:MCDO_BURGER,options:[MCD.removals()]},
+          {id:'ms6',names:{fr:'McBacon Double',en:'Double McBacon',ar:'دبل ماك بيكون',amz:'ⴷⴱⵍ ⵎⴽⴱⴰⴽⵓⵏ'},price:49,photo:MCDO_BURGER,options:[MCD.removals()]},
+          {id:'ms7',names:{fr:'Crispy Chicken',en:'Crispy Chicken',ar:'كريسبي تشيكن',amz:'ⴽⵔⵉⵙⴱⵉ ⵜⵛⵉⴽⵏ'},price:42,photo:MCDO_BURGER,options:[MCD.removals()]},
+        ],
+      },
+      {
+        id:'happy_meal', emoji:'🎉',
+        names:{fr:'Happy Meal',en:'Happy Meal',ar:'هابي ميل',amz:'ⵀⴰⴱⵉ ⵎⵉⵍ'},
+        items:[
+          {id:'mhm1',names:{fr:'Happy Meal Hamburger',en:'Hamburger Happy Meal',ar:'هابي ميل همبرغر',amz:'ⵀⴰⴱⵉ ⵎⵉⵍ ⵀⴰⵎⴱⵓⵔⴳⵔ'},price:44,photo:MCDO_HAPPY,options:[MCD.menuDrink(),MCD.happyMealDessert(),MCD.happyMealToy()]},
+          {id:'mhm2',names:{fr:'Happy Meal McChicken',en:'McChicken Happy Meal',ar:'هابي ميل ماك تشيكن',amz:'ⵀⴰⴱⵉ ⵎⵉⵍ ⵎⴽⵜⵛⵉⴽⵏ'},price:44,photo:MCDO_HAPPY,options:[MCD.menuDrink(),MCD.happyMealDessert(),MCD.happyMealToy()]},
+          {id:'mhm3',names:{fr:'Happy Meal McNuggets 4 pcs',en:'4 McNuggets Happy Meal',ar:'هابي ميل ماك نجتس 4 قطع',amz:'ⵀⴰⴱⵉ ⵎⵉⵍ ⵏⴳⵜⵙ 4'},price:44,photo:MCDO_NUGGETS,options:[MCD.menuDrink(),MCD.dipSauce(),MCD.happyMealDessert(),MCD.happyMealToy()]},
+        ],
+      },
+      {
+        id:'sides', emoji:'🍟',
+        names:{fr:'Accompagnements',en:'Sides',ar:'المشتهيات',amz:'ⵉⵙⴳⵓⵎⴰⵏ'},
+        items:[
+          {id:'msi1',names:{fr:'Frites Medium',en:'Medium Fries',ar:'بطاطس وسط',amz:'ⴼⵔⵉⵜⵙ ⵎⵉⴷⵢⵓⵎ'},price:19,photo:MCDO_FRIES},
+          {id:'msi2',names:{fr:'Frites Large',en:'Large Fries',ar:'بطاطس كبير',amz:'ⴼⵔⵉⵜⵙ ⵍⴰⵔⵊ'},price:24,photo:MCDO_FRIES},
+          {id:'msi3',names:{fr:'McNuggets',en:'McNuggets',ar:'ماك نجتس',amz:'ⵎⴽⵏⴳⵜⵙ'},price:34,photo:MCDO_NUGGETS,options:[MCD.nuggetsQty(),MCD.dipSauce()]},
+          {id:'msi4',names:{fr:'Apple Pie',en:'Apple Pie',ar:'فطيرة التفاح',amz:'ⴰⴱⵍⴰ ⴱⵉ'},price:19,photo:MCDO_DESSERT},
+          {id:'msi5',names:{fr:'McFlurry Oreo',en:'McFlurry Oreo',ar:'ماك فلوري أوريو',amz:'ⵎⴽⴼⵍⵓⵔⵉ ⵓⵔⵉⵢⵓ'},price:25,photo:MCDO_DESSERT},
+          {id:'msi6',names:{fr:'McFlurry Caramel',en:'McFlurry Caramel',ar:'ماك فلوري كراميل',amz:'ⵎⴽⴼⵍⵓⵔⵉ ⴽⴰⵔⴰⵎⵉⵍ'},price:25,photo:MCDO_DESSERT},
+          {id:'msi7',names:{fr:'Glace Vanille',en:'Vanilla Cone',ar:'بوظة فانيلا',amz:'ⵜⴰⵍⴰⵢⵜ'},price:10,photo:MCDO_DESSERT},
+        ],
+      },
+      {
+        id:'drinks_mcd', emoji:'🥤',
+        names:{fr:'Boissons',en:'Drinks',ar:'المشروبات',amz:'ⴰⵙⵡ'},
+        items:[
+          {id:'mdr1',names:{fr:'Coca-Cola',en:'Coca-Cola',ar:'كوكا كولا',amz:'ⴽⵓⵍⴰ'},price:14,photo:MCDO_DRINK,options:[MCD.drinkSize(),MCD.drinkIce()]},
+          {id:'mdr2',names:{fr:'Fanta Orange',en:'Fanta Orange',ar:'فانتا برتقال',amz:'ⴼⴰⵏⵜⴰ'},price:14,photo:MCDO_DRINK,options:[MCD.drinkSize(),MCD.drinkIce()]},
+          {id:'mdr3',names:{fr:'Sprite',en:'Sprite',ar:'سبرايت',amz:'ⵙⴱⵔⵉⵜ'},price:14,photo:MCDO_DRINK,options:[MCD.drinkSize(),MCD.drinkIce()]},
+          {id:'mdr4',names:{fr:'Milkshake Vanille',en:'Vanilla Milkshake',ar:'ميلكشيك فانيلا',amz:'ⵎⵉⵍⴽⵛⵉⴽ ⴼⴰⵏⵉⵍⴰ'},price:25,photo:MCDO_DESSERT},
+          {id:'mdr5',names:{fr:'Milkshake Chocolat',en:'Chocolate Milkshake',ar:'ميلكشيك شوكولا',amz:'ⵎⵉⵍⴽⵛⵉⴽ ⵛⵓⴽⵓⵍⴰ'},price:25,photo:MCDO_DESSERT},
+          {id:'mdr6',names:{fr:'Café McCafé',en:'McCafé Coffee',ar:'قهوة ماك كافيه',amz:'ⵇⴰⵀⵡⴰ'},price:18,photo:MCDO_DRINK},
+          {id:'mdr7',names:{fr:'Eau Minérale',en:'Still Water',ar:'ماء معدني',amz:'ⴰⵎⴰⵏ'},price:8,photo:MCDO_DRINK},
+        ],
+      },
+    ],
+  },
+  // ─── OTHER RESTAURANTS ────────────────────────────────────────────────────
   {
     id:'bridge-pizza',
     name:'Bridge Pizza & Tacos',
@@ -489,10 +625,11 @@ function Field({label,value,onChange,placeholder,type='text',lang,error}:{label:
 
 function RestaurantCard({r,lang,t,onClick}:{r:Restaurant;lang:Lang;t:typeof T.fr;onClick:()=>void}) {
   const fClass=fontClass(lang);
+  const isFeatured = r.id === 'mcdonalds-safi';
   return (
     <button onClick={onClick}
       className="w-full text-left rounded-3xl overflow-hidden transition-all active:scale-95 hover:shadow-2xl"
-      style={{background:'#FDFCF9',border:'1.5px solid #E5E1D8',boxShadow:'0 4px 16px rgba(0,0,0,0.07)'}}>
+      style={{background:'#FDFCF9',border:`1.5px solid ${isFeatured?'#D9C5A0':'#E5E1D8'}`,boxShadow:isFeatured?'0 6px 24px rgba(217,197,160,0.35)':'0 4px 16px rgba(0,0,0,0.07)'}}>
       <div className="relative h-44 overflow-hidden">
         <img src={r.cover} alt={r.name} className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" loading="lazy"/>
         <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.85) 0%,rgba(4,55,38,0.1) 55%,transparent 100%)'}}/>
@@ -501,11 +638,19 @@ function RestaurantCard({r,lang,t,onClick}:{r:Restaurant;lang:Lang;t:typeof T.fr
           style={{background:'rgba(253,252,249,0.95)',backdropFilter:'blur(8px)',boxShadow:'0 4px 12px rgba(0,0,0,0.15)'}}>
           {r.logo}
         </div>
-        {/* Open badge */}
-        <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full"
-          style={{background:'rgba(253,252,249,0.95)',backdropFilter:'blur(8px)'}}>
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"/>
-          <span className="text-[10px] font-black" style={{color:'#065F46'}}>{t.openNow}</span>
+        {/* Open badge + Featured badge */}
+        <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
+          {isFeatured&&(
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full" style={{background:'#D9C5A0'}}>
+              <span className="text-[10px]">⭐</span>
+              <span className="text-[10px] font-black" style={{color:'#065F46'}}>Safi #1</span>
+            </div>
+          )}
+          <div className="flex items-center gap-1 px-2 py-1 rounded-full"
+            style={{background:'rgba(253,252,249,0.95)',backdropFilter:'blur(8px)'}}>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"/>
+            <span className="text-[10px] font-black" style={{color:'#065F46'}}>{t.openNow}</span>
+          </div>
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-4">
           <h3 className="font-black text-white text-base leading-tight mb-0.5">{r.name}</h3>
@@ -1244,11 +1389,11 @@ function SplashScreen() {
     <div className="fixed inset-0 flex flex-col items-center justify-center z-50" style={{background:'#FDFCF9'}}>
       <div className="flex flex-col items-center">
         <div className="relative mb-6">
-          <div className="absolute inset-0 rounded-full animate-ping opacity-15" style={{background:'#065F46',transform:'scale(1.4)'}}/>
-          <img src="/logo.jpeg" alt="Bridge Eats" className="w-28 h-28 rounded-full object-cover relative z-10"
-            style={{border:'4px solid #D9C5A0',boxShadow:'0 0 0 8px rgba(217,197,160,0.15),0 16px 48px rgba(6,95,70,0.25)'}}/>
+          <div className="absolute inset-0 rounded-full animate-ping opacity-10" style={{background:'#D9C5A0',transform:'scale(1.5)'}}/>
+          <img src="/logo_new.png" alt="Bridge" className="relative z-10 object-contain"
+            style={{width:200,height:200,filter:'drop-shadow(0 12px 40px rgba(6,95,70,0.22))'}}/>
         </div>
-        <h1 className="font-black tracking-[0.45em] text-xl mb-1" style={{color:'#065F46'}}>BRIDGE EATS</h1>
+        <h1 className="font-black tracking-[0.45em] text-2xl mb-1" style={{color:'#065F46'}}>BRIDGE</h1>
         <p className="text-[10px] tracking-widest font-bold mb-1" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
         <div className="flex items-center gap-2 mb-8 mt-2">
           <div className="w-8 h-px" style={{background:'#D9C5A0'}}/><div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/><div className="w-8 h-px" style={{background:'#D9C5A0'}}/>
@@ -1347,10 +1492,10 @@ export default function App() {
       {/* ── Header ── */}
       <header className="relative pt-14 pb-4 flex flex-col items-center"
         style={{borderBottom:'1px solid #E5E1D8',background:'rgba(253,252,249,0.93)',backdropFilter:'blur(14px)'}}>
-        <img src="/logo.jpeg" className="h-14 w-14 rounded-full object-cover" alt="Bridge Eats"
-          style={{border:'2.5px solid #D9C5A0',boxShadow:'0 4px 16px rgba(6,95,70,0.15)'}}/>
+        <img src="/logo_new.png" alt="Bridge" className="h-14 w-14 object-contain"
+          style={{filter:'drop-shadow(0 2px 8px rgba(6,95,70,0.18))'}}/>
         <h1 className="mt-2 text-[11px] font-black tracking-[0.45em] uppercase" style={{color:'#065F46'}}>
-          {isAMZ?'ⴱⵔⵉⴷⵊ ⵉⵢⵜⵙ':isAR?'بريدج إيتس':'Bridge Eats'}
+          {isAMZ?'ⴱⵔⵉⴷⵊ':isAR?'بريدج':'Bridge'}
         </h1>
         <p className={`text-[9px] tracking-widest mt-0.5 ${fClass}`} style={{color:'#B45309'}}>{t.zone}</p>
       </header>
