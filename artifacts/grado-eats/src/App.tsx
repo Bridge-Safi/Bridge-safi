@@ -1854,7 +1854,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
         {/* Three service cards */}
         <div className="flex items-start justify-center gap-2 w-full">
           {([
-            {key:'delivery' as const, src:'/logo_delivery.jpeg', label:'Bridge Delivery', sub:t.deliverySub, emoji:'🛵', fallbackBg:'#D1FAE5', pending:false,
+            {key:'delivery' as const, src:'/logo_delivery.jpeg', label:'Bridge Delivery', sub:t.deliverySub, emoji:'🛵', fallbackBg:'#D1FAE5', pending:false, active:true,
              activeColor:'#065F46', activeShadow:'0 0 0 5px rgba(6,95,70,0.15),0 10px 28px rgba(6,95,70,0.3)', labelColor:'#065F46'},
             {key:'taxi' as const, src:'/logo_taxi.jpeg', label:'Bridge Taxi', sub:t.taxiSub, emoji:'🚖', fallbackBg:'#FEF3C7', pending:true,
              activeColor:'#B45309', activeShadow:'0 0 0 5px rgba(180,83,9,0.15),0 10px 28px rgba(180,83,9,0.25)', labelColor:'#B45309'},
@@ -1893,6 +1893,14 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
                       style={{background:'#DC2626',boxShadow:'0 2px 8px rgba(220,38,38,0.45)'}}>
                       <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"/>
                       <span className="text-white font-black" style={{fontSize:'8px',letterSpacing:'0.05em'}}>EN ATTENTE</span>
+                    </div>
+                  )}
+                  {/* "Activé" badge — green pill at top of circle */}
+                  {!item.pending&&(item as any).active&&(
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full flex items-center gap-1 whitespace-nowrap"
+                      style={{background:'#059669',boxShadow:'0 2px 8px rgba(5,150,105,0.5)'}}>
+                      <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"/>
+                      <span className="text-white font-black" style={{fontSize:'8px',letterSpacing:'0.05em'}}>ACTIVÉ</span>
                     </div>
                   )}
                   <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full flex items-center justify-center text-sm"
