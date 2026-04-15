@@ -168,7 +168,7 @@ const T = {
     trackingLabel:'Numéro de suivi', deliveryEta:'Livraison estimée dans 18–25 min', newOrder:'Nouvelle commande',
     autoFilled:'Rempli depuis votre profil ✓',
     delivOption:'🚚 Livraison à domicile', delivOptionDesc:'Livré chez vous · Zone Safi',
-    collectOption:'🏪 Click & Collect', collectOptionDesc:'Retrait au restaurant · +2 MAD',
+    collectOption:'🏪 Click & Collect', collectOptionDesc:'Retrait au restaurant · +2.99 MAD',
     collectAddress:'Adresse retrait : Plateau, Safi (le restaurant vous contacte)',
     profileTitle:'Mon Profil', profileSub:'Vos informations enregistrées',
     profileSave:'Enregistrer le profil', profileSaved:'Profil enregistré ✓',
@@ -210,7 +210,7 @@ const T = {
     trackingLabel:'Tracking number', deliveryEta:'Estimated delivery in 18–25 min', newOrder:'New order',
     autoFilled:'Pre-filled from your profile ✓',
     delivOption:'🚚 Home Delivery', delivOptionDesc:'Delivered to you · Safi zone',
-    collectOption:'🏪 Click & Collect', collectOptionDesc:'Pick up at restaurant · +2 MAD',
+    collectOption:'🏪 Click & Collect', collectOptionDesc:'Pick up at restaurant · +2.99 MAD',
     collectAddress:'Pick-up address: Plateau, Safi (restaurant will contact you)',
     profileTitle:'My Profile', profileSub:'Your saved information',
     profileSave:'Save profile', profileSaved:'Profile saved ✓', savedPayment:'Saved credit card',
@@ -251,7 +251,7 @@ const T = {
     trackingLabel:'رقم التتبع', deliveryEta:'التوصيل المتوقع خلال 18–25 دقيقة', newOrder:'طلب جديد',
     autoFilled:'مُعبَّأ من ملفك الشخصي ✓',
     delivOption:'🚚 التوصيل للمنزل', delivOptionDesc:'يوصل إليك · منطقة آسفي',
-    collectOption:'🏪 Click & Collect', collectOptionDesc:'الاستلام من المطعم · +2 MAD',
+    collectOption:'🏪 Click & Collect', collectOptionDesc:'الاستلام من المطعم · +2.99 MAD',
     collectAddress:'عنوان الاستلام : الهضبة، آسفي (سيتصل بك المطعم)',
     profileTitle:'ملفي الشخصي', profileSub:'معلوماتك المحفوظة',
     profileSave:'حفظ الملف الشخصي', profileSaved:'تم الحفظ ✓', savedPayment:'بطاقة بنكية محفوظة',
@@ -293,7 +293,7 @@ const T = {
     trackingLabel:'ⴰⵏⵓⵎⵔ ⵏ ⵓⵙⴽⵍⵙ', deliveryEta:'ⴰⵙⵍⵎⴷ ⵖ 18–25 ⵜⵉⵎⵉⵏⵉⵜⵉⵏ', newOrder:'ⵜⴰⵖⵓⵍⵜ ⵜⴰⵎⴰⵢⵏⵓⵜ',
     autoFilled:'ⵉⵜⵜⵓⵎⵍⴰ ⵙⴳ ⵓⵎⵍⵉ ⵏⵏⴽ ✓',
     delivOption:'🚚 ⴰⵙⵙⵓⴼⵖ ⵙ ⵓⴽⴰⵎⴰⵢ', delivOptionDesc:'ⵉⵜⵜⵓⴽⵛⵎ ⵖⵉⴽ · ⵙⴰⴼⵉ',
-    collectOption:'🏪 Click & Collect', collectOptionDesc:'ⴰⵔⵣⵣⵓ ⴳ ⵓⵣⵉⴳⵣ · +2 MAD',
+    collectOption:'🏪 Click & Collect', collectOptionDesc:'ⴰⵔⵣⵣⵓ ⴳ ⵓⵣⵉⴳⵣ · +2.99 MAD',
     collectAddress:'ⵜⴰⵏⵙⴰ ⵏ ⵓⵔⵣⵣⵓ : ⴰⴱⵍⴰⵟⵓ, ⵙⴰⴼⵉ',
     profileTitle:'ⴰⵎⵍⵉ ⵏⵓ', profileSub:'ⵉⵙⴼⴰⵡⵏ ⵏⵏⴽ ⵉⵜⵜⵓⵙⵎⴷⵏ',
     profileSave:'ⵙⵎⴷ ⴰⵎⵍⵉ', profileSaved:'ⵜⵜⵓⵙⵎⴷ ✓', savedPayment:'ⵜⴰⴽⴰⵔⴷⵜ ⵉⵜⵜⵓⵙⵎⴷⵏ',
@@ -1259,7 +1259,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
   const t=T[lang]; const isAR=lang==='ar'; const fClass=fontClass(lang);
   const [delivMode,setDelivMode]=useState<'delivery'|'collect'>('delivery');
   const baseTotal=cart.reduce((s,i)=>s+i.totalPerUnit*i.qty,0);
-  const total=baseTotal+(delivMode==='collect'?2:0);
+  const total=baseTotal+(delivMode==='collect'?2.99:0);
   const [step,setStep]=useState<CheckoutStep>('cart');
   const [name,setName]=useState(profile.name);
   const [addr,setAddr]=useState(profile.address);
@@ -1289,7 +1289,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
       msg+='\n';
     });
     if(delivMode==='collect'){
-      msg+=`\n💰 Total: ${total} MAD (dont 2 MAD frais Click & Collect)\n\n👤 Nom: ${name.trim()}\n📞 Tél: ${phone.trim()}\n\n🏪 Click & Collect — Retrait au restaurant\n${t.collectAddress}`;
+      msg+=`\n💰 Total: ${total} MAD (dont 2.99 MAD frais Click & Collect)\n\n👤 Nom: ${name.trim()}\n📞 Tél: ${phone.trim()}\n\n🏪 Click & Collect — Retrait au restaurant\n${t.collectAddress}`;
     } else {
       msg+=t.waMsgFooter(total,name.trim(),addr.trim(),phone.trim());
       if(gpsCoords){
@@ -1408,7 +1408,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
                 <div className="flex items-start gap-2 px-3 py-3 rounded-xl mb-4" style={{background:'#FEF3C7',border:'1px solid #FDE68A'}}>
                   <span className="text-lg flex-shrink-0">🏪</span>
                   <div>
-                    <p className={`text-[11px] font-black mb-1 ${fClass}`} style={{color:'#B45309'}}>Click & Collect — +2 MAD</p>
+                    <p className={`text-[11px] font-black mb-1 ${fClass}`} style={{color:'#B45309'}}>Click & Collect — +2.99 MAD</p>
                     <p className={`text-[10px] ${fClass}`} style={{color:'#92400E'}}>{t.collectAddress}</p>
                   </div>
                 </div>
@@ -1488,7 +1488,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart}:{
                 {delivMode==='collect'&&(
                   <div className="flex justify-between text-xs pt-1 pb-1">
                     <span className={`font-bold ${fClass}`} style={{color:'#B45309'}}>🏪 Click & Collect</span>
-                    <span className="font-bold" style={{color:'#B45309'}}>+2 MAD</span>
+                    <span className="font-bold" style={{color:'#B45309'}}>+2.99 MAD</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm mt-2 pt-2" style={{borderTop:'1px solid #E5E1D8'}}>
