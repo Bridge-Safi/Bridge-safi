@@ -1388,42 +1388,18 @@ function SplashScreen() {
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center z-50" style={{background:'#FDFCF9'}}>
       <div className="flex flex-col items-center">
-        {/* Circle glow + logo — matching the original splash style */}
-        <div className="relative flex items-center justify-center mb-8" style={{width:220,height:220}}>
-          {/* Outer soft glow ring */}
-          <div className="absolute inset-0 rounded-full" style={{background:'rgba(180,210,195,0.22)',transform:'scale(1.08)'}}/>
-          {/* Main mint circle */}
-          <div className="absolute inset-0 rounded-full" style={{background:'rgba(163,198,183,0.38)',boxShadow:'0 0 60px 20px rgba(6,95,70,0.08)'}}/>
-          {/* Logo */}
-          <img src="/logo.jpeg" alt="Bridge" className="relative z-10 rounded-full object-cover"
-            style={{width:148,height:148,border:'4px solid rgba(255,255,255,0.85)',boxShadow:'0 8px 32px rgba(6,95,70,0.22)'}}/>
+        <div className="relative mb-6">
+          <div className="absolute inset-0 rounded-full animate-ping opacity-10" style={{background:'#D9C5A0',transform:'scale(1.5)'}}/>
+          <img src="/logo_new.png" alt="Bridge" className="relative z-10 object-contain"
+            style={{width:200,height:200,filter:'drop-shadow(0 12px 40px rgba(6,95,70,0.22))'}}/>
         </div>
-
-        {/* "B R I D G E" — wide tracked, matching screenshot style */}
-        <h1 style={{
-          color:'#065F46',
-          fontWeight:900,
-          fontSize:'1.55rem',
-          letterSpacing:'0.55em',
-          textTransform:'uppercase',
-          marginBottom:'6px',
-          fontFamily:'"Inter", system-ui, sans-serif',
-        }}>BRIDGE</h1>
-
-        <p style={{fontSize:'10px',letterSpacing:'0.18em',fontWeight:700,color:'#B45309',marginBottom:'10px'}}>
-          SAFI · MAROC · آسفي · ⵙⴰⴼⵉ
-        </p>
-
-        {/* Gold divider */}
-        <div className="flex items-center gap-3 mb-8">
-          <div style={{width:36,height:1,background:'#D9C5A0'}}/>
-          <div style={{width:7,height:7,background:'#D9C5A0',transform:'rotate(45deg)'}}/>
-          <div style={{width:36,height:1,background:'#D9C5A0'}}/>
+        <h1 className="font-black tracking-[0.45em] text-2xl mb-1" style={{color:'#065F46'}}>BRIDGE</h1>
+        <p className="text-[10px] tracking-widest font-bold mb-1" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
+        <div className="flex items-center gap-2 mb-8 mt-2">
+          <div className="w-8 h-px" style={{background:'#D9C5A0'}}/><div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/><div className="w-8 h-px" style={{background:'#D9C5A0'}}/>
         </div>
-
-        {/* Progress bar */}
-        <div style={{width:160,height:6,borderRadius:99,background:'#E5E1D8',overflow:'hidden'}}>
-          <div style={{height:'100%',borderRadius:99,width:`${progress}%`,background:'linear-gradient(to right,#065F46,#059669)',transition:'width 75ms linear'}}/>
+        <div className="w-40 h-1.5 rounded-full overflow-hidden" style={{background:'#E5E1D8'}}>
+          <div className="h-full rounded-full transition-all duration-75" style={{width:`${progress}%`,background:'linear-gradient(to right,#065F46,#059669)'}}/>
         </div>
       </div>
     </div>
