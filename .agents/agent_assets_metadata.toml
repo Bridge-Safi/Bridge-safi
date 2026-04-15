@@ -1,0 +1,38 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "G9G60-JZhU4aRGL1NUv5E"
+uri = "file://attached_assets/stock_images/mcdo_cover_1.jpg"
+type = "image"
+title = "McDonald's burger meal with fries and drink on tray, professional food photography, appetizing"
+
+[[outputs]]
+id = "nGqCCjIlyeJEZ81zWhjdV"
+uri = "file://attached_assets/stock_images/mcdo_cover_2.jpg"
+type = "image"
+title = "McDonald's burger meal with fries and drink on tray, professional food photography, appetizing"
+
+[[outputs]]
+id = "IdQpckRfr6zlbjVAvBkPJ"
+uri = "file://attached_assets/stock_images/mcdo_cover_3.jpg"
+type = "image"
+title = "McDonald's burger meal with fries and drink on tray, professional food photography, appetizing"
+
+[[outputs]]
+id = "YDiFRhP_Oyvv1-GzCwQl9"
+uri = "file://attached_assets/stock_images/mcdo_bigmac_1.jpg"
+type = "image"
+title = "Big Mac hamburger close-up with sesame bun, cheese, lettuce, pickles, fast food restaurant"
+
+[[outputs]]
+id = "1sCNvaipxiz3qFdddUbeb"
+uri = "file://attached_assets/stock_images/mcdo_bigmac_2.jpg"
+type = "image"
+title = "Big Mac hamburger close-up with sesame bun, cheese, lettuce, pickles, fast food restaurant"
+
+[[outputs]]
+id = "8UEI2cmlFYBIHnS2AhMji"
+uri = "file://attached_assets/stock_images/mcdo_bigmac_3.jpg"
+type = "image"
+title = "Big Mac hamburger close-up with sesame bun, cheese, lettuce, pickles, fast food restaurant"

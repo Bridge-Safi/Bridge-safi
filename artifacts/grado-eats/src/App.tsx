@@ -370,8 +370,8 @@ const MCD = {
   ]}),
 };
 
-const MCDO_COVER = 'https://images.unsplash.com/photo-1552526881-721b7ec8b4f4?w=700&q=80';
-const MCDO_BURGER = 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&q=80';
+const MCDO_COVER = '/mcdo_cover.jpg';
+const MCDO_BURGER = '/mcdo_burger.jpg';
 const MCDO_NUGGETS = 'https://images.unsplash.com/photo-1562967914-608f82629710?w=400&q=80';
 const MCDO_FRIES = 'https://images.unsplash.com/photo-1576107232684-1279f55e14cf?w=400&q=80';
 const MCDO_DRINK = 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&q=80';
