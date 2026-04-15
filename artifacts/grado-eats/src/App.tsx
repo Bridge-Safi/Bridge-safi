@@ -1643,39 +1643,102 @@ function ServiceSelectPage({onSelect}:{onSelect:(s:'delivery'|'taxi')=>void}) {
 
 // ─── TAXI PAGE ────────────────────────────────────────────────────────────────
 
-function TaxiPage({onBack}:{onBack:()=>void}) {
+function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
+  onBack:()=>void; lang:Lang; cycleLang:()=>void;
+  profile:UserProfile; saveProfile:(p:UserProfile)=>void;
+}) {
+  const [showProfile,setShowProfile]=useState(false);
+  const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
+  const pillStyle:React.CSSProperties={
+    background:'white',border:'2.5px solid #D9C5A0',color:'#065F46',
+    boxShadow:'0 4px 20px rgba(6,95,70,0.15)',height:'44px',minWidth:'44px',
+  };
+  const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
+  const navItems=[
+    {label:{fr:'Accueil',en:'Home',ar:'الرئيسية',amz:'ⵜⴰⵣⵡⴰⵔⵜ'},icon:'🏠'},
+    {label:{fr:'Suivi',en:'Track',ar:'تتبع',amz:'ⴰⵙⴽⵍⵙ'},icon:'📍'},
+    {label:{fr:'Contact',en:'Contact',ar:'تواصل',amz:'ⴰⵎⵢⴰⵡⴰⴹ'},icon:'💬'},
+    {label:{fr:'Panier',en:'Cart',ar:'السلة',amz:'ⴰⵙⵡⵉⵔ'},icon:'🛒'},
+  ];
+
   return(
-    <div className="fixed inset-0 flex flex-col items-center justify-center z-40 px-6"
-      style={{background:'#FDFCF9'}}>
+    <div className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{background:'#FDFCF9',color:'#1A2F23'}}>
       <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
-      <div className="relative flex flex-col items-center w-full max-w-sm text-center">
-        <div className="rounded-full overflow-hidden mb-6" style={{width:160,height:160,border:'3px solid #D9C5A0',boxShadow:'0 10px 36px rgba(180,83,9,0.2)'}}>
-          <img src="/logo_taxi.jpeg" alt="Bridge Taxi"
-            style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
-        </div>
-        <h1 className="font-black tracking-[0.35em] text-xl mb-1" style={{color:'#B45309'}}>BRIDGE TAXI</h1>
-        <p className="font-black text-sm tracking-widest mb-1" style={{color:'#065F46'}}>CONFORT</p>
-        <div className="flex items-center gap-2 mb-6 mt-2">
-          <div className="w-8 h-px" style={{background:'#D9C5A0'}}/><div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/><div className="w-8 h-px" style={{background:'#D9C5A0'}}/>
-        </div>
-        <div className="rounded-2xl p-5 mb-6 w-full" style={{background:'#FEF9EE',border:'1.5px solid #FDE68A'}}>
-          <p className="text-4xl mb-3">🚖</p>
-          <p className="font-black text-sm mb-1" style={{color:'#B45309'}}>Service disponible très bientôt</p>
-          <p className="text-xs font-medium" style={{color:'#78716C'}}>Bridge Taxi Confort — trajets premium à Safi, en toute élégance.</p>
-        </div>
-        <a href="https://wa.me/212764794856?text=Bonjour%2C%20je%20voudrais%20r%C3%A9server%20un%20Bridge%20Taxi%20Confort%20%F0%9F%9A%96"
-          target="_blank" rel="noopener noreferrer"
-          className="w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 mb-3 active:scale-95 transition-all"
-          style={{background:'#25D366',boxShadow:'0 6px 20px rgba(37,211,102,0.3)'}}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
-          Réserver sur WhatsApp
-        </a>
+
+      {/* ── Top-left: back to services ── */}
+      <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
         <button onClick={onBack}
-          className="text-xs font-bold py-2 px-6 rounded-full transition-all active:scale-95"
-          style={{color:'#6B7280',border:'1.5px solid #E5E1D8'}}>
-          ← Retour aux services
+          className="flex items-center gap-1 px-2.5 rounded-full font-black text-xs transition-all active:scale-90 hover:scale-110"
+          style={{...pillStyle,height:'38px'}}>
+          <span style={{fontSize:'13px',lineHeight:1}}>←</span>
+          <span style={{fontSize:'13px',lineHeight:1}}>🛵</span>
+          <span style={{fontSize:'11px',color:'#D9C5A0',fontWeight:900}}>|</span>
+          <span style={{fontSize:'13px',lineHeight:1}}>🚖</span>
         </button>
       </div>
+
+      {/* ── Top-right: profile + lang ── */}
+      <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
+        <button onClick={()=>setShowProfile(true)}
+          className="rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 relative"
+          style={{...pillStyle,width:'44px',fontSize:'18px'}}>
+          👤
+          {profile.name&&<span className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{background:'#10B981'}}/>}
+        </button>
+        <button onClick={cycleLang}
+          className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 px-3 ${isAMZ?'font-tifinagh':''}`}
+          style={{...pillStyle,fontSize:'13px'}}>
+          {LANG_LABELS[lang]}
+        </button>
+      </div>
+
+      {/* ── Content ── */}
+      <div className="relative flex flex-col items-center justify-center min-h-screen px-6 pt-20 pb-28">
+        <div className="w-full max-w-sm text-center">
+          <div className="rounded-full overflow-hidden mx-auto mb-6" style={{width:160,height:160,border:'3px solid #D9C5A0',boxShadow:'0 10px 36px rgba(180,83,9,0.2)'}}>
+            <img src="/logo_taxi.jpeg" alt="Bridge Taxi"
+              style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
+          </div>
+          <h1 className="font-black tracking-[0.35em] text-xl mb-1" style={{color:'#B45309'}}>BRIDGE TAXI</h1>
+          <p className="font-black text-sm tracking-widest mb-1" style={{color:'#065F46'}}>CONFORT</p>
+          <div className="flex items-center justify-center gap-2 mb-6 mt-2">
+            <div className="w-8 h-px" style={{background:'#D9C5A0'}}/>
+            <div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/>
+            <div className="w-8 h-px" style={{background:'#D9C5A0'}}/>
+          </div>
+          <div className="rounded-2xl p-5 mb-6 w-full" style={{background:'#FEF9EE',border:'1.5px solid #FDE68A'}}>
+            <p className="text-4xl mb-3">🚖</p>
+            <p className="font-black text-sm mb-1" style={{color:'#B45309'}}>Service disponible très bientôt</p>
+            <p className="text-xs font-medium" style={{color:'#78716C'}}>Bridge Taxi Confort — trajets premium à Safi, en toute élégance.</p>
+          </div>
+          <a href="https://wa.me/212764794856?text=Bonjour%2C%20je%20voudrais%20r%C3%A9server%20un%20Bridge%20Taxi%20Confort%20%F0%9F%9A%96"
+            target="_blank" rel="noopener noreferrer"
+            className="w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 mb-3 active:scale-95 transition-all"
+            style={{background:'#25D366',boxShadow:'0 6px 20px rgba(37,211,102,0.3)'}}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+            Réserver sur WhatsApp
+          </a>
+        </div>
+      </div>
+
+      {/* ── Bottom nav (same as delivery) ── */}
+      <nav className="fixed bottom-0 inset-x-0 z-40"
+        style={{background:'rgba(253,252,249,0.97)',backdropFilter:'blur(20px)',borderTop:'1px solid #E5E1D8'}}>
+        <div className="max-w-md mx-auto flex">
+          {navItems.map((tab,i)=>(
+            <button key={i}
+              className="flex-1 flex flex-col items-center gap-1 py-3 transition-all active:scale-90">
+              <span className="text-xl">{tab.icon}</span>
+              <span className={`text-[10px] font-black uppercase tracking-wide ${fClass}`} style={{color:'#9CA3AF'}}>
+                {tab.label[lang]}
+              </span>
+            </button>
+          ))}
+        </div>
+        <p className="text-center text-[9px] pb-2" style={{color:'#C9BFB2'}}>© 2026 Bridge Eats · bridge-eats.com</p>
+      </nav>
+
+      {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
     </div>
   );
 }
@@ -1783,7 +1846,7 @@ export default function App() {
 
   if(showSplash) return <SplashScreen/>;
   if(service==='none') return <ServiceSelectPage onSelect={s=>setService(s)}/>;
-  if(service==='taxi') return <TaxiPage onBack={()=>setService('none')}/> ;
+  if(service==='taxi') return <TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={
