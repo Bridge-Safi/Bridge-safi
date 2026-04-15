@@ -1390,8 +1390,11 @@ function SplashScreen() {
       <div className="flex flex-col items-center">
         <div className="relative mb-6">
           <div className="absolute inset-0 rounded-full animate-ping opacity-10" style={{background:'#D9C5A0',transform:'scale(1.5)'}}/>
-          <img src="/logo_splash.jpeg" alt="Bridge" className="relative z-10 object-cover rounded-full"
-            style={{width:220,height:220}}/>
+          <div className="relative z-10 rounded-full overflow-hidden flex-shrink-0"
+            style={{width:220,height:220}}>
+            <img src="/logo_splash.jpeg" alt="Bridge"
+              style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.22)',display:'block'}}/>
+          </div>
         </div>
         <h1 className="font-black tracking-[0.45em] text-2xl mb-1" style={{color:'#065F46'}}>BRIDGE</h1>
         <p className="text-[10px] tracking-widest font-bold mb-1" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
