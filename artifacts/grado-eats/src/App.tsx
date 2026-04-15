@@ -175,7 +175,7 @@ const T = {
     orderStatus:'Statut de votre commande', orderNum:'Commande #BE-2847',
     eta:'Arrivée estimée', etaTime:'18 min', courierName:'Youssef A.', courierRating:'4.9',
     contactTitle:"Besoin d'aide ?", contactSub:'Notre équipe est disponible 7j/7',
-    whatsapp:'WhatsApp', phone:'Appeler', email:'Email', hours:'Horaires', hoursVal:'8h00 – 23h00',
+    whatsapp:'WhatsApp Business', phone:'Appeler', email:'Email', hours:'Horaires', hoursVal:'8h00 – 23h00',
     navHome:'Accueil', navTrack:'Suivi', navContact:'Contact', navCart:'Panier',
     footer:'© 2026 Bridge Eats · bridge-eats.com', plateau:'Plateau · Centre-Ville · Bouzidi',
     safiExcl:'Spécialité Safi', selected:'Sélectionné ✓',
@@ -213,7 +213,7 @@ const T = {
     orderStatus:'Your order status', orderNum:'Order #BE-2847',
     eta:'Estimated arrival', etaTime:'18 min', courierName:'Youssef A.', courierRating:'4.9',
     contactTitle:'Need help?', contactSub:'Our team is available 7 days a week',
-    whatsapp:'WhatsApp', phone:'Call us', email:'Email', hours:'Hours', hoursVal:'8:00 AM – 11:00 PM',
+    whatsapp:'WhatsApp Business', phone:'Call us', email:'Email', hours:'Hours', hoursVal:'8:00 AM – 11:00 PM',
     navHome:'Home', navTrack:'Track', navContact:'Contact', navCart:'Cart',
     footer:'© 2026 Bridge Eats · bridge-eats.com', plateau:'Plateau · City Center · Bouzidi',
     safiExcl:'Safi Special', selected:'Selected ✓',
@@ -251,7 +251,7 @@ const T = {
     orderStatus:'حالة طلبك', orderNum:'الطلب #BE-2847',
     eta:'وقت الوصول المتوقع', etaTime:'18 دقيقة', courierName:'يوسف أ.', courierRating:'4.9',
     contactTitle:'هل تحتاج مساعدة؟', contactSub:'فريقنا متاح 7 أيام في الأسبوع',
-    whatsapp:'واتساب', phone:'اتصل بنا', email:'البريد الإلكتروني',
+    whatsapp:'واتساب بيزنس', phone:'اتصل بنا', email:'البريد الإلكتروني',
     hours:'ساعات العمل', hoursVal:'8:00 ص – 11:00 م',
     navHome:'الرئيسية', navTrack:'تتبع', navContact:'تواصل', navCart:'السلة',
     footer:'© 2026 بريدج إيتس · bridge-eats.com', plateau:'الهضبة · وسط المدينة · بوزيدي',
@@ -290,7 +290,7 @@ const T = {
     orderStatus:'ⴰⵙⵉⵡⴷ ⵏ ⵜⴰⵖⵓⵍⵜ', orderNum:'ⵜⴰⵖⵓⵍⵜ #BE-2847',
     eta:'ⴰⴽⵓⴷ ⵏ ⵓⵙⵍⵎⴷ', etaTime:'18 ⵜⵉⵎⵉⵏⵉⵜⵉⵏ', courierName:'ⵢⵓⵙⴼ ⴰ.', courierRating:'4.9',
     contactTitle:'ⵜⵙⵔⴰ ⵜⵉⵡⵉⵙⵉ?', contactSub:'ⴰⴳⵔⴰⵡ ⴰⵏⵏ ⵉⵍⵍⴰ 7 ⵓⵙⵙⴰⵏ',
-    whatsapp:'WhatsApp', phone:'ⵙⵓⵍ', email:'ⵉⵎⴰⵢⵍ',
+    whatsapp:'WA Business', phone:'ⵙⵓⵍ', email:'ⵉⵎⴰⵢⵍ',
     hours:'ⵜⴰⵙⵔⴰⵜ', hoursVal:'8:00 – 23:00',
     navHome:'ⵜⴰⵣⵡⴰⵔⵜ', navTrack:'ⴰⵙⴽⵍⵙ', navContact:'ⴰⵎⵢⴰⵡⴰⴹ', navCart:'ⴰⵙⵡⵉⵔ',
     footer:'© 2026 ⴱⵔⵉⴷⵊ ⵉⵢⵜⵙ · bridge-eats.com', plateau:'ⴰⴱⵍⴰⵟⵓ · ⵓⵍⵍⴰ ⵏ ⵜⵎⴷⵉⵏⵜ · ⴱⵓⵣⵉⴷⵉ',
@@ -1695,7 +1695,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
             className="w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 mb-3 active:scale-95 transition-all"
             style={{background:'#25D366',boxShadow:'0 6px 20px rgba(37,211,102,0.3)'}}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
-            Réserver sur WhatsApp
+            Réserver sur WhatsApp Business
           </a>
         </div>
       </div>
