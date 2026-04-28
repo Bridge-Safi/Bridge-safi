@@ -2121,7 +2121,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
              activeColor:'#B45309', activeShadow:'0 0 0 5px rgba(180,83,9,0.15),0 10px 28px rgba(180,83,9,0.25)', labelColor:'#B45309'},
             {key:'tabac' as const, src:'/logo_tabac.jpeg', label:'Bridge Tabac', sub:t.tabacSub, emoji:'🚬', fallbackBg:'#7D4F2E', pending:true,
              activeColor:'#7D4F2E', activeShadow:'0 0 0 5px rgba(125,79,46,0.15),0 10px 28px rgba(125,79,46,0.25)', labelColor:'#7D4F2E'},
-            {key:'fleurs' as const, src:'', label:'Bridge Fleurs', sub:t.fleursSub, emoji:'🌸', fallbackBg:'linear-gradient(135deg,#FCE7F3,#FDE8F5)', pending:true,
+            {key:'fleurs' as const, src:'', label:'Bridge Fleurs', sub:t.fleursSub, emoji:'🌹', fallbackBg:'linear-gradient(135deg,#FCE7F3,#FDE8F5)', pending:true,
              activeColor:'#DB2777', activeShadow:'0 0 0 5px rgba(219,39,119,0.15),0 10px 28px rgba(219,39,119,0.25)', labelColor:'#DB2777'},
           ]).reduce<React.ReactNode[]>((acc,item,i)=>{
             if(i>0) acc.push(
@@ -2147,7 +2147,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
                   }}>
                     {item.key==='fleurs'
                       ?<div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#FCE7F3,#FDE8F5)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:4}}>
-                          <span style={{fontSize:32}}>🌸</span>
+                          <span style={{fontSize:32}}>🌹</span>
                           <span style={{fontSize:9,fontWeight:900,color:'#DB2777',letterSpacing:'0.08em'}}>BRIDGE</span>
                         </div>
                       :<img src={item.key==='tabac'?'/bridge-tabac-logo.jpeg':item.src} alt={item.label} style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
@@ -2221,6 +2221,8 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
           <span style={{fontSize:'9px',lineHeight:1}}>🛵</span>
           <span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
           <span style={{fontSize:'9px',lineHeight:1}}>🚬</span>
+          <span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
+          <span style={{fontSize:'9px',lineHeight:1}}>🌹</span>
           <span style={{fontSize:'8px',lineHeight:1,color:'#9CA3AF'}}>←</span>
         </button>
       </div>
@@ -2524,6 +2526,8 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile}:{
           <span style={{fontSize:'9px',lineHeight:1}}>🛵</span>
           <span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
           <span style={{fontSize:'9px',lineHeight:1}}>🚖</span>
+          <span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
+          <span style={{fontSize:'9px',lineHeight:1}}>🌹</span>
           <span style={{fontSize:'8px',lineHeight:1,color:'#9CA3AF'}}>←</span>
         </button>
       </div>
@@ -2722,6 +2726,8 @@ export default function App() {
           <span style={{fontSize:'9px', lineHeight:1}}>🚬</span>
           <span style={{fontSize:'8px', color:'#D9C5A0', fontWeight:900}}>|</span>
           <span style={{fontSize:'9px', lineHeight:1}}>🚖</span>
+          <span style={{fontSize:'8px', color:'#D9C5A0', fontWeight:900}}>|</span>
+          <span style={{fontSize:'9px', lineHeight:1}}>🌹</span>
           <span style={{fontSize:'8px', lineHeight:1, color:'#9CA3AF'}}>←</span>
         </button>
         <button onClick={()=>setShowDriver(true)}
