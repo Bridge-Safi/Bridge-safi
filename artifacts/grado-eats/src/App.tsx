@@ -2233,6 +2233,7 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
 
 function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'taxi'|'tabac'|'fleurs')=>void;lang:Lang;cycleLang:()=>void}) {
   const [pressed,setPressed]=useState<'delivery'|'taxi'|'tabac'|'fleurs'|null>(null);
+  const [,navigate]=useLocation();
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
   const choose=(s:'delivery'|'taxi'|'tabac'|'fleurs')=>{setPressed(s);setTimeout(()=>onSelect(s),320);};
@@ -2241,6 +2242,26 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
       style={{background:'#FDFCF9'}}>
       {/* Background watermark */}
       <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
+
+      {/* Game promo widget — top LEFT */}
+      <div className={`absolute top-4 z-50 ${isAR?'right-4':'left-4'}`}>
+        <button onClick={()=>navigate('/game')}
+          style={{display:'flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#071A10,#0D3020)',border:'1.5px solid rgba(74,222,128,0.4)',borderRadius:14,padding:'7px 11px 7px 7px',boxShadow:'0 4px 18px rgba(6,95,70,0.35)',cursor:'pointer'}}>
+          {/* Circular logo */}
+          <div style={{width:36,height:36,borderRadius:'50%',overflow:'hidden',border:'1.5px solid #D9C5A0',flexShrink:0,boxShadow:'0 0 12px rgba(74,222,128,0.3)'}}>
+            <img src="/logo_splash.jpeg" alt="Game" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.15)'}}/>
+          </div>
+          {/* Description */}
+          <div style={{textAlign:'left'}}>
+            <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:2}}>
+              <span style={{color:'#D9C5A0',fontSize:8,fontWeight:900,letterSpacing:'0.18em'}}>BRIDGE</span>
+              <span style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.55)',borderRadius:4,padding:'1px 5px',color:'#4ADE80',fontSize:7,fontWeight:900,letterSpacing:'0.12em'}}>GAME</span>
+            </div>
+            <p style={{color:'#FDE047',fontSize:8,fontWeight:700,margin:'0 0 2px',lineHeight:1.2}}>💎 Gagnez des diamants</p>
+            <p style={{color:'rgba(255,255,255,0.5)',fontSize:7,margin:0}}>Jouer maintenant →</p>
+          </div>
+        </button>
+      </div>
 
       {/* Language button */}
       <div className={`absolute top-5 z-50 ${isAR?'left-5':'right-5'}`}>
