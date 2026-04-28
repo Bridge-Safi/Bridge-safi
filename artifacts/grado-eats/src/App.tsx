@@ -179,6 +179,11 @@ const T = {
     profileSave:'Enregistrer le profil', profileSaved:'Profil enregistré ✓',
     savedPayment:'Carte bancaire enregistrée', signOut:'🚪 Se déconnecter',
     gameId:'ID Joueur', gamePts:'pts', gameTitle:'Bridge Game',
+    errName:'Entrez votre prénom et nom (ex: Mohamed Alaoui)',
+    errPhone:'Numéro invalide (ex: +212 612 345 678 ou 0612345678)',
+    errCard:'Numéro de carte invalide (16 chiffres requis)',
+    errExpiry:'Date invalide (format MM/AA, non expirée)',
+    errCardName:'Nom du titulaire requis (comme sur la carte)',
     trackTitle:'Suivi GPS en Direct', trackZone:'SAFI · PLATEAU', trackLive:'EN DIRECT',
     stages:['Reçue','En préparation','En chemin','Livrée'],
     stagesSub:['Commande confirmée',"Le chef s'affaire",'Votre livreur arrive','Bon appétit !'],
@@ -246,6 +251,11 @@ const T = {
     profileTitle:'My Profile', profileSub:'Your saved information',
     profileSave:'Save profile', profileSaved:'Profile saved ✓', savedPayment:'Saved credit card', signOut:'🚪 Sign out',
     gameId:'Player ID', gamePts:'pts', gameTitle:'Bridge Game',
+    errName:'Enter your first and last name (e.g. Mohamed Alaoui)',
+    errPhone:'Invalid number (e.g. +212 612 345 678 or 0612345678)',
+    errCard:'Invalid card number (16 digits required)',
+    errExpiry:'Invalid date (MM/YY format, not expired)',
+    errCardName:'Cardholder name required (as on the card)',
     trackTitle:'Live GPS Tracking', trackZone:'SAFI · PLATEAU', trackLive:'LIVE',
     stages:['Received','Preparing','On the way','Delivered'],
     stagesSub:['Order confirmed','Chef is cooking','Courier en route','Enjoy your meal!'],
@@ -313,6 +323,11 @@ const T = {
     profileTitle:'ملفي الشخصي', profileSub:'معلوماتك المحفوظة',
     profileSave:'حفظ الملف الشخصي', profileSaved:'تم الحفظ ✓', savedPayment:'بطاقة بنكية محفوظة', signOut:'🚪 تسجيل الخروج',
     gameId:'معرّف اللاعب', gamePts:'نقاط', gameTitle:'Bridge Game',
+    errName:'أدخل اسمك الكامل (مثال: محمد العلوي)',
+    errPhone:'رقم غير صالح (مثال: 212612345678+ أو 0612345678)',
+    errCard:'رقم البطاقة غير صالح (مطلوب 16 رقماً)',
+    errExpiry:'تاريخ غير صالح (صيغة MM/AA وغير منتهية)',
+    errCardName:'اسم حامل البطاقة مطلوب',
     trackTitle:'تتبع GPS مباشر', trackZone:'آسفي · الهضبة', trackLive:'مباشر',
     stages:['مستلمة','قيد التحضير','في الطريق','تم التوصيل'],
     stagesSub:['تم تأكيد الطلب','الطاهي يعمل','المندوب في الطريق','بالهناء والشفاء!'],
@@ -381,6 +396,11 @@ const T = {
     profileTitle:'ⴰⵎⵍⵉ ⵏⵓ', profileSub:'ⵉⵙⴼⴰⵡⵏ ⵏⵏⴽ ⵉⵜⵜⵓⵙⵎⴷⵏ',
     profileSave:'ⵙⵎⴷ ⴰⵎⵍⵉ', profileSaved:'ⵜⵜⵓⵙⵎⴷ ✓', savedPayment:'ⵜⴰⴽⴰⵔⴷⵜ ⵉⵜⵜⵓⵙⵎⴷⵏ', signOut:'🚪 ⴼⴼⵖ',
     gameId:'ⴰⵡⵏⴰⴽ', gamePts:'ⵜⵉⵏⵓⴹⵉⵡⵉⵏ', gameTitle:'Bridge Game',
+    errName:'ⵙⵎⴷ ⵉⵙⵎ ⵏⵏⴽ ⴰⵎⴰⵜⴰⵢ (ex: Mohamed Alaoui)',
+    errPhone:'ⴰⵏⵎⵔ ⵓⵔ ⵉⵙⵀⵡⴰ (ex: +212 612 345 678)',
+    errCard:'ⵜⴰⴽⴰⵔⴷⵜ ⵓⵔ ⵜⵙⵀⵡⴰ (16 ⵉⵏⵎⵎⴰⵔⵏ)',
+    errExpiry:'ⴰⵣⵎⵣ ⵓⵔ ⵉⵙⵀⵡⴰ (MM/AA)',
+    errCardName:'ⵉⵙⵎ ⵏ ⵓⵎⵙⴽⴽⵉ ⵉⵍⵍⴰ',
     trackTitle:'ⴰⵙⴽⵍⵙ GPS', trackZone:'ⵙⴰⴼⵉ · ⴰⴱⵍⴰⵟⵓ', trackLive:'ⴷⴷⴰⵡ',
     stages:['ⵜⵜⵓⵙⵔⵖⴰ','ⵜⴻⵜⵜⵓⵙⴽⴰⵔ','ⵖ ⵓⵣⵔⵉⵔⵉ','ⵜⵜⵓⵙⵍⵎⴷ'],
     stagesSub:['ⵜⵜⵓⵙⵛⴷⵃ ⵜⴰⵖⵓⵍⵜ','ⴰⵎⵓⵙⵙⵓ ⵉⵜⵜⵓⵙⴽⴰⵔ','ⴰⵎⵥⵍⵉ ⵉⵜⵜⴰⵡⵙ','ⵜⵙⴼⵓⵍⵍⵓ!'],
@@ -835,16 +855,19 @@ function GoldDivider() {
     </div>
   );
 }
-function Field({label,value,onChange,placeholder,type='text',lang,error}:{label:string;value:string;onChange:(v:string)=>void;placeholder:string;type?:string;lang:Lang;error?:boolean}) {
+function Field({label,value,onChange,placeholder,type='text',lang,error,errorMsg,required:req}:{label:string;value:string;onChange:(v:string)=>void;placeholder:string;type?:string;lang:Lang;error?:boolean;errorMsg?:string;required?:boolean}) {
   const fClass=fontClass(lang);
   return (
     <div className="mb-4">
-      <label className={`block text-xs font-black mb-1.5 ${fClass}`} style={{color:'#065F46'}}>{label}</label>
+      <label className={`block text-xs font-black mb-1.5 ${fClass}`} style={{color:'#065F46'}}>
+        {label}{req&&<span style={{color:'#DC2626',marginLeft:3}}>*</span>}
+      </label>
       <input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder}
         className={`w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all ${fClass}`}
         style={{background:error?'#FEF2F2':'#F9F7F2',border:`2px solid ${error?'#FCA5A5':'#E5E1D8'}`,color:'#1A2F23'}}
         onFocus={e=>{e.currentTarget.style.borderColor='#065F46';}}
         onBlur={e=>{e.currentTarget.style.borderColor=error?'#FCA5A5':'#E5E1D8';}}/>
+      {error&&errorMsg&&<p style={{color:'#DC2626',fontSize:10,fontWeight:700,marginTop:4,marginBottom:0}}>⚠ {errorMsg}</p>}
     </div>
   );
 }
@@ -1352,6 +1375,7 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
   const { signOut } = useClerk();
   const [, navigate] = useLocation();
   const { user } = useUser();
+  const [errs,setErrs]=useState<Record<string,boolean>>({});
 
   // Generate deterministic game ID from Clerk userId
   const gameId = user?.id
@@ -1364,7 +1388,30 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
     try { return parseInt(localStorage.getItem(ptsKey)||'0',10); } catch { return 0; }
   });
 
-  const handleSave=()=>{onSave(form);setSaved(true);setTimeout(()=>setSaved(false),2000);};
+  // ── Validation helpers ──────────────────────────────────────────────────────
+  const validateName=(v:string)=>v.trim().length>=3&&/\s/.test(v.trim());
+  const validatePhone=(v:string)=>{const d=v.replace(/\D/g,'');return (d.length===9&&/^[67]/.test(d))||(d.length===10&&/^0[67]/.test(d))||(d.length===12&&/^212[67]/.test(d));};
+  const validateCard=(v:string)=>v.replace(/\D/g,'').length===16;
+  const validateExpiry=(v:string)=>{
+    const m=v.match(/^(\d{2})\/(\d{2})$/);
+    if(!m) return false;
+    const mo=parseInt(m[1],10),yr=parseInt(m[2],10)+2000;
+    const now=new Date(); const ny=now.getFullYear(),nm=now.getMonth()+1;
+    return mo>=1&&mo<=12&&(yr>ny||(yr===ny&&mo>=nm));
+  };
+  const validateCardName=(v:string)=>v.trim().length>=2;
+
+  const handleSave=()=>{
+    const e:Record<string,boolean>={};
+    if(!validateName(form.name))       e.name=true;
+    if(!validatePhone(form.phone))     e.phone=true;
+    if(!validateCard(form.cardNumber)) e.card=true;
+    if(!validateExpiry(form.cardExpiry)) e.expiry=true;
+    if(!validateCardName(form.cardName)) e.cardName=true;
+    setErrs(e);
+    if(Object.keys(e).length>0) return;
+    onSave(form);setSaved(true);setTimeout(()=>setSaved(false),2000);
+  };
   const handleSignOut=async()=>{ await signOut(); navigate('/sign-in'); onClose(); };
   const set=(k:keyof UserProfile)=>(v:string)=>setForm(f=>({...f,[k]:v}));
   const fmtCard=(v:string)=>v.replace(/\D/g,'').slice(0,16).replace(/(.{4})/g,'$1 ').trim();
@@ -1402,15 +1449,15 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
           <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center font-black flex-shrink-0" style={{background:'#F3F4F6',color:'#6B7280',fontSize:14}}>✕</button>
         </div>
         <div className="px-5 py-5" style={{direction:isAR?'rtl':'ltr'}}>
-          <div className="rounded-2xl p-4 mb-5" style={{background:'#F0FDF4',border:'1px solid #BBF7D0'}}>
+          <div className="rounded-2xl p-4 mb-5" style={{background:errs.name||errs.phone?'#FFF5F5':'#F0FDF4',border:`1px solid ${errs.name||errs.phone?'#FCA5A5':'#BBF7D0'}`,transition:'all 0.2s'}}>
             <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#065F46'}}>👤 {t.nameLabel}</p>
-            <Field label={t.nameLabel} value={form.name} onChange={set('name')} placeholder={t.namePh} lang={lang}/>
+            <Field label={t.nameLabel} value={form.name} onChange={v=>{set('name')(v);if(errs.name&&validateName(v))setErrs(e=>({...e,name:false}));}} placeholder={t.namePh} lang={lang} required error={errs.name} errorMsg={t.errName}/>
             <Field label={t.addrLabel} value={form.address} onChange={set('address')} placeholder={t.addrPh} lang={lang}/>
-            <Field label={t.phoneLabel} value={form.phone} onChange={set('phone')} placeholder={t.phonePh} type="tel" lang={lang}/>
+            <Field label={t.phoneLabel} value={form.phone} onChange={v=>{set('phone')(v);if(errs.phone&&validatePhone(v))setErrs(e=>({...e,phone:false}));}} placeholder={t.phonePh} type="tel" lang={lang} required error={errs.phone} errorMsg={t.errPhone}/>
           </div>
-          <div className="rounded-2xl p-4 mb-5" style={{background:'#EEF2FF',border:'1px solid #C7D2FE'}}>
+          <div className="rounded-2xl p-4 mb-5" style={{background:errs.card||errs.expiry||errs.cardName?'#F5F3FF':'#EEF2FF',border:`1px solid ${errs.card||errs.expiry||errs.cardName?'#C4B5FD':'#C7D2FE'}`,transition:'all 0.2s'}}>
             <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#4F46E5'}}>💳 {t.savedPayment}</p>
-            {form.cardNumber&&(
+            {form.cardNumber&&validateCard(form.cardNumber)&&(
               <div className="rounded-2xl p-4 mb-4 relative overflow-hidden" style={{background:'linear-gradient(135deg,#065F46,#047857)',minHeight:100}}>
                 <div className="absolute inset-0 opacity-10" style={{backgroundImage:'repeating-linear-gradient(45deg,white 0,white 1px,transparent 0,transparent 50%)',backgroundSize:'8px 8px'}}/>
                 <p className="text-white/60 text-[10px] font-bold mb-2">💳 BRIDGE EATS</p>
@@ -1421,12 +1468,12 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
                 </div>
               </div>
             )}
-            <Field label={t.cardNumberLabel} value={fmtCard(form.cardNumber)} onChange={v=>set('cardNumber')(v.replace(/\s/g,''))} placeholder={t.cardNumberPh} type="tel" lang={lang}/>
+            <Field label={t.cardNumberLabel} value={fmtCard(form.cardNumber)} onChange={v=>{const raw=v.replace(/\s/g,'');set('cardNumber')(raw);if(errs.card&&validateCard(raw))setErrs(e=>({...e,card:false}));}} placeholder={t.cardNumberPh} type="tel" lang={lang} required error={errs.card} errorMsg={t.errCard}/>
             <div className="grid grid-cols-2 gap-3">
-              <Field label={t.cardExpiryLabel} value={form.cardExpiry} onChange={v=>set('cardExpiry')(fmtExp(v))} placeholder={t.cardExpiryPh} type="tel" lang={lang}/>
+              <Field label={t.cardExpiryLabel} value={form.cardExpiry} onChange={v=>{const f=fmtExp(v);set('cardExpiry')(f);if(errs.expiry&&validateExpiry(f))setErrs(e=>({...e,expiry:false}));}} placeholder={t.cardExpiryPh} type="tel" lang={lang} required error={errs.expiry} errorMsg={t.errExpiry}/>
               <Field label={t.cardCVVLabel} value={form.cardNumber?'•••':''} onChange={()=>{}} placeholder={t.cardCVVPh} type="password" lang={lang}/>
             </div>
-            <Field label={t.cardNameLabel} value={form.cardName} onChange={v=>set('cardName')(v.toUpperCase())} placeholder={t.cardNamePh} lang={lang}/>
+            <Field label={t.cardNameLabel} value={form.cardName} onChange={v=>{set('cardName')(v.toUpperCase());if(errs.cardName&&validateCardName(v))setErrs(e=>({...e,cardName:false}));}} placeholder={t.cardNamePh} lang={lang} required error={errs.cardName} errorMsg={t.errCardName}/>
           </div>
           <button onClick={handleSave}
             className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
