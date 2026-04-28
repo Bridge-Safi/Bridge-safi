@@ -1734,6 +1734,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
           deliveryMode:delivMode,
           paymentMethod,
           restaurantName:restaurantName||null,
+          collectCode:delivMode==='collect'?collectCode:null,
         }),
       });
     }catch(_){/* silent */}
@@ -1750,7 +1751,8 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
       const navLink=gpsCoords
         ?` | GPS: https://maps.google.com/?q=${gpsCoords}`
         :addr.trim()?` | Maps: https://maps.google.com/?q=${encodeURIComponent(addr.trim()+', Safi, Maroc')}`:'';
-      const notes=`🛒 ${itemsList}\n💰 Total: ${total} MAD\n💳 ${payLabel}${navLink}`;
+      const collectLine=delivMode==='collect'?`\n🏪 Click & Collect — CODE CLIENT : ${collectCode}`:'';
+      const notes=`🛒 ${itemsList}\n💰 Total: ${total} MAD\n💳 ${payLabel}${navLink}${collectLine}`;
       const r=await fetch(`${DRIVER_APP_URL}/api/deliveries`,{
         method:'POST',
         headers:{'Content-Type':'application/json'},
@@ -1760,10 +1762,11 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
           customerPhone:phone.trim(),
           pickupAddress:restaurantName?`${restaurantName} — Safi`:"McDonald's Safi",
           deliveryAddress:delivMode==='collect'
-            ?`Click & Collect — Retrait au restaurant${addr.trim()?` (${addr.trim()})`:''}`
+            ?`🏪 Click & Collect — CODE : ${collectCode}${addr.trim()?` (${addr.trim()})`:''}`
             :`${addr.trim()}, Safi, Maroc`,
           priority:'normal',
           notes,
+          collectCode:delivMode==='collect'?collectCode:undefined,
         }),
       });
       if(!r.ok) console.warn('[Bridge→Livreur] non-OK',r.status,await r.text().catch(()=>''));
