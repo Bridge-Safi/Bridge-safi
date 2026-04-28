@@ -725,14 +725,9 @@ function GamePage() {
       {/* Background zellige pattern */}
       <div style={{position:'absolute',inset:0,opacity:0.04,backgroundImage:'repeating-linear-gradient(45deg,#ffffff 0,#ffffff 1px,transparent 0,transparent 50%)',backgroundSize:'20px 20px',pointerEvents:'none'}}/>
 
-      {/* ── Top bar: back left · logo-poster right ── */}
+      {/* ── Top bar: logo-poster left · back right ── */}
       <div style={{position:'absolute',top:0,left:0,right:0,display:'flex',alignItems:'flex-start',justifyContent:'space-between',padding:'16px 16px 0'}}>
-        <button onClick={()=>navigate('/')}
-          style={{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',color:'#fff',borderRadius:12,padding:'8px 16px',fontSize:13,fontWeight:800,cursor:'pointer',backdropFilter:'blur(8px)'}}>
-          ← Retour
-        </button>
-
-        {/* Mini poster / logo stamp */}
+        {/* Mini poster / logo stamp — top LEFT */}
         <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:16,padding:'8px 12px',backdropFilter:'blur(8px)'}}>
           <div style={{width:52,height:52,borderRadius:'50%',overflow:'hidden',border:'2px solid #D9C5A0',boxShadow:'0 0 20px rgba(217,197,160,0.3)'}}>
             <img src="/logo_splash.jpeg" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.1)'}}/>
@@ -742,6 +737,12 @@ function GamePage() {
             <span style={{color:'#4ADE80',fontSize:7,fontWeight:900,letterSpacing:'0.15em'}}>GAME</span>
           </div>
         </div>
+
+        {/* Back button — top RIGHT */}
+        <button onClick={()=>navigate('/')}
+          style={{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',color:'#fff',borderRadius:12,padding:'8px 16px',fontSize:13,fontWeight:800,cursor:'pointer',backdropFilter:'blur(8px)'}}>
+          ← Retour
+        </button>
       </div>
 
       {/* Shark mascot */}
