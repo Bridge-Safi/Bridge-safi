@@ -2133,15 +2133,13 @@ function ProfileOnboardingScreen({lang,profile,saveProfile,onDone}:{
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const [phone,setPhone]=useState(profile.phone||'');
   const [address,setAddress]=useState(profile.address||'');
-  const [cardNumber,setCardNumber]=useState(profile.cardNumber||'');
-  const [cardExpiry,setCardExpiry]=useState(profile.cardExpiry||'');
-  const [cardName,setCardName]=useState(profile.cardName||'');
-  const [open,setOpen]=useState<string|null>(null);
+  const [openSection,setOpenSection]=useState<'phone'|'addr'|null>('phone');
 
-  const completedCount=[phone,address,cardNumber].filter(Boolean).length;
+  const completedCount=[phone,address].filter(Boolean).length;
+  const total=2;
 
   const handleSave=()=>{
-    saveProfile({...profile,phone,address,cardNumber,cardExpiry,cardName,onboardingComplete:true});
+    saveProfile({...profile,phone,address,onboardingComplete:true});
     onDone();
   };
   const handleSkip=()=>{
@@ -2149,33 +2147,36 @@ function ProfileOnboardingScreen({lang,profile,saveProfile,onDone}:{
     onDone();
   };
 
-  const Section=({id,icon,title,sub,children}:{id:string;icon:string;title:string;sub:string;children:React.ReactNode})=>{
-    const isOpen=open===id;
+  const Section=({id,icon,title,sub,done,children}:{id:'phone'|'addr';icon:string;title:string;sub:string;done:boolean;children:React.ReactNode})=>{
+    const isOpen=openSection===id;
     return (
       <div style={{
         background:'#FDFCF9',border:'2px solid',
-        borderColor:isOpen?'#065F46':'#E5E1D8',
-        borderRadius:18,marginBottom:12,overflow:'hidden',
-        transition:'border-color 0.2s',
-        boxShadow:isOpen?'0 4px 20px rgba(6,95,70,0.12)':'none',
+        borderColor:isOpen?'#065F46':done?'#6EE7B7':'#E5E1D8',
+        borderRadius:20,marginBottom:14,overflow:'hidden',
+        transition:'all 0.2s',
+        boxShadow:isOpen?'0 6px 24px rgba(6,95,70,0.15)':done?'0 2px 8px rgba(110,231,183,0.2)':'none',
       }}>
-        <button onClick={()=>setOpen(isOpen?null:id)} className="w-full"
-          style={{display:'flex',alignItems:'center',gap:12,padding:'14px 16px',background:'none',border:'none',cursor:'pointer',textAlign:isAR?'right':'left'}}>
-          <div style={{width:44,height:44,borderRadius:14,background:isOpen?'#065F46':'#F0FDF4',
-            display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,flexShrink:0,
-            border:'2px solid',borderColor:isOpen?'#047857':'#D1FAE5',transition:'all 0.2s'}}>
-            {icon}
+        <button onClick={()=>setOpenSection(isOpen?null:id)} className="w-full"
+          style={{display:'flex',alignItems:'center',gap:14,padding:'16px 18px',background:'none',border:'none',cursor:'pointer',textAlign:isAR?'right':'left'}}>
+          <div style={{width:48,height:48,borderRadius:16,
+            background:isOpen?'#065F46':done?'#D1FAE5':'#F0FDF4',
+            display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,flexShrink:0,
+            border:'2px solid',borderColor:isOpen?'#047857':done?'#34D399':'#D1FAE5',transition:'all 0.2s'}}>
+            {done&&!isOpen?'✓':icon}
           </div>
-          <div style={{flex:1}}>
-            <p className={`font-black text-sm ${fClass}`} style={{color:'#1A2F23',margin:0}}>{title}</p>
-            <p className={`text-[10px] ${fClass}`} style={{color:'#9CA3AF',margin:'2px 0 0'}}>{sub}</p>
+          <div style={{flex:1,textAlign:isAR?'right':'left'}}>
+            <p className={`font-black text-sm ${fClass}`} style={{color:done&&!isOpen?'#065F46':'#1A2F23',margin:0}}>{title}</p>
+            <p className={`text-[10px] ${fClass}`} style={{color:done?'#10B981':'#9CA3AF',margin:'3px 0 0'}}>
+              {done?'✓ Enregistré':sub}
+            </p>
           </div>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2.5"
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={done?'#10B981':'#9CA3AF'} strokeWidth="2.5"
             style={{transform:isOpen?'rotate(180deg)':'rotate(0deg)',transition:'transform 0.2s',flexShrink:0}}>
             <path d="M6 9l6 6 6-6"/>
           </svg>
         </button>
-        {isOpen&&<div style={{padding:'0 16px 16px'}}>{children}</div>}
+        {isOpen&&<div style={{padding:'0 18px 18px'}}>{children}</div>}
       </div>
     );
   };
@@ -2183,95 +2184,95 @@ function ProfileOnboardingScreen({lang,profile,saveProfile,onDone}:{
   return (
     <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`}
       style={{background:'linear-gradient(160deg,#011c15 0%,#054130 30%,#065F46 60%,#033d2c 100%)'}}>
-      {/* Background pattern */}
+
+      {/* Background zellige pattern */}
       <div style={{position:'fixed',inset:0,opacity:0.04,
         backgroundImage:`url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23D9C5A0'%3E%3Cpath d='M30 0L0 30L30 60L60 30L30 0zm0 10L50 30L30 50L10 30L30 10z'/%3E%3C/g%3E%3C/svg%3E")`,
         backgroundSize:'60px 60px',pointerEvents:'none'}}/>
 
       {/* Header */}
-      <div className="relative z-10 flex flex-col items-center pt-10 pb-6 px-5">
-        <div style={{width:64,height:64,borderRadius:'50%',overflow:'hidden',
-          border:'3px solid #D9C5A0',boxShadow:'0 8px 32px rgba(0,0,0,0.35)',marginBottom:12}}>
+      <div className="relative z-10 flex flex-col items-center pt-12 pb-8 px-5">
+        <div style={{width:68,height:68,borderRadius:'50%',overflow:'hidden',
+          border:'3px solid #D9C5A0',
+          boxShadow:'0 0 0 6px rgba(217,197,160,0.12),0 12px 40px rgba(0,0,0,0.4)',
+          marginBottom:14}}>
           <img src="/logo_splash.jpeg" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.2)'}}/>
         </div>
         <h2 className={`font-black text-white text-2xl tracking-tight ${fClass}`} style={{margin:0}}>{t.onboardTitle}</h2>
-        <p className={`text-[#D9C5A0] text-xs mt-1 ${fClass}`} style={{opacity:0.85}}>{t.onboardSub}</p>
+        <p className={`text-xs mt-1 ${fClass}`} style={{color:'rgba(217,197,160,0.8)'}}>{t.onboardSub}</p>
 
-        {/* Progress */}
-        <div style={{display:'flex',gap:6,marginTop:16,alignItems:'center'}}>
-          {[0,1,2].map(i=>(
-            <div key={i} style={{width:i<completedCount?24:8,height:8,borderRadius:4,
-              background:i<completedCount?'#D9C5A0':'rgba(255,255,255,0.2)',transition:'all 0.3s'}}/>
+        {/* Progress bar */}
+        <div style={{display:'flex',gap:8,marginTop:18,alignItems:'center'}}>
+          {Array.from({length:total},(_,i)=>(
+            <div key={i} style={{
+              width:i<completedCount?32:10,height:8,borderRadius:4,
+              background:i<completedCount?'#D9C5A0':'rgba(255,255,255,0.15)',
+              transition:'all 0.4s cubic-bezier(0.34,1.56,0.64,1)',
+            }}/>
           ))}
-          <span style={{color:'rgba(255,255,255,0.5)',fontSize:'0.6rem',marginLeft:4}}>{completedCount}/3</span>
+          <span style={{color:'rgba(255,255,255,0.4)',fontSize:'0.58rem',marginLeft:4,fontWeight:700}}>
+            {completedCount}/{total}
+          </span>
         </div>
       </div>
 
-      {/* Cards */}
-      <div className="relative z-10 flex-1 px-4 pb-6" style={{maxWidth:480,margin:'0 auto',width:'100%'}}>
+      {/* Sections */}
+      <div className="relative z-10 flex-1 px-4 pb-8" style={{maxWidth:460,margin:'0 auto',width:'100%'}}>
 
-        <Section id="phone" icon="📱" title={t.onboardPhone} sub={t.onboardPhoneSub}>
+        <Section id="phone" icon="📱" title={t.onboardPhone} sub={t.onboardPhoneSub} done={!!phone}>
           <Field label={t.onboardPhone} value={phone} onChange={setPhone}
             placeholder="06 00 00 00 00" type="tel" lang={lang}/>
+          {phone&&(
+            <button onClick={()=>setOpenSection('addr')}
+              style={{width:'100%',height:42,borderRadius:14,background:'#065F46',color:'white',
+                border:'none',cursor:'pointer',fontSize:'0.8rem',fontWeight:800,marginTop:4}}>
+              Suivant — Adresse →
+            </button>
+          )}
         </Section>
 
-        <Section id="addr" icon="📍" title={t.onboardAddr} sub={t.onboardAddrSub}>
+        <Section id="addr" icon="📍" title={t.onboardAddr} sub={t.onboardAddrSub} done={!!address}>
           <AddressAutocomplete label={t.onboardAddr} value={address} onChange={setAddress}
             placeholder="Ex: Plateau, Av. Hassan II, Safi" lang={lang}/>
         </Section>
 
-        <Section id="card" icon="💳" title={t.onboardCard} sub={t.onboardCardSub}>
-          <div style={{background:'linear-gradient(135deg,#065F46,#047857)',borderRadius:16,padding:'18px 18px 14px',marginBottom:12}}>
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
-              <div style={{color:'rgba(255,255,255,0.6)',fontSize:'0.6rem',letterSpacing:'0.2em',fontWeight:800}}>BRIDGE PAY</div>
-              <div style={{color:'#D9C5A0',fontSize:'1rem'}}>💳</div>
-            </div>
-            <div style={{color:'white',fontSize:'1rem',letterSpacing:'0.25em',fontWeight:900,marginBottom:12,minHeight:22}}>
-              {cardNumber||'•••• •••• •••• ••••'}
-            </div>
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end'}}>
-              <div>
-                <div style={{color:'rgba(255,255,255,0.5)',fontSize:'0.5rem',letterSpacing:'0.15em'}}>TITULAIRE</div>
-                <div style={{color:'white',fontSize:'0.7rem',fontWeight:700}}>{cardName||'NOM PRÉNOM'}</div>
-              </div>
-              <div style={{textAlign:'right'}}>
-                <div style={{color:'rgba(255,255,255,0.5)',fontSize:'0.5rem',letterSpacing:'0.15em'}}>EXPIRE</div>
-                <div style={{color:'white',fontSize:'0.7rem',fontWeight:700}}>{cardExpiry||'MM/AA'}</div>
-              </div>
-            </div>
+        {/* Info card */}
+        <div style={{
+          background:'rgba(255,255,255,0.07)',border:'1px solid rgba(217,197,160,0.2)',
+          borderRadius:16,padding:'14px 16px',marginBottom:16,display:'flex',gap:12,alignItems:'center',
+        }}>
+          <div style={{fontSize:22,flexShrink:0}}>💳 🪪</div>
+          <div>
+            <p style={{color:'rgba(255,255,255,0.7)',fontSize:'0.72rem',margin:0,fontWeight:700}}>
+              Carte & Identité dans votre Profil
+            </p>
+            <p style={{color:'rgba(255,255,255,0.4)',fontSize:'0.62rem',margin:'3px 0 0'}}>
+              Ajoutez-les plus tard depuis l'icône 👤
+            </p>
           </div>
-          <Field label={t.onboardCardNum} value={cardNumber} onChange={v=>setCardNumber(v.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim().slice(0,19))}
-            placeholder="1234 5678 9012 3456" lang={lang}/>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
-            <Field label={t.onboardCardExp} value={cardExpiry} onChange={v=>setCardExpiry(v.replace(/[^0-9/]/g,'').slice(0,5))}
-              placeholder="MM/AA" lang={lang}/>
-            <Field label={t.onboardCardHolder} value={cardName} onChange={v=>setCardName(v.toUpperCase())}
-              placeholder="NOM PRÉNOM" lang={lang}/>
-          </div>
-        </Section>
-
-        <Section id="id" icon="🪪" title={t.onboardId} sub={t.onboardIdSub}>
-          <div style={{background:'#F0FDF4',borderRadius:14,padding:14,textAlign:'center'}}>
-            <div style={{fontSize:32,marginBottom:8}}>🔒</div>
-            <p className={`text-sm font-medium ${fClass}`} style={{color:'#065F46',margin:0}}>{t.onboardIdNote}</p>
-          </div>
-        </Section>
-
-        {/* Buttons */}
-        <div style={{display:'flex',flexDirection:'column',gap:10,marginTop:8}}>
-          <button onClick={handleSave}
-            className={`w-full font-black text-sm tracking-widest ${fClass}`}
-            style={{height:52,borderRadius:18,background:'linear-gradient(135deg,#D9C5A0,#C9B48C)',color:'#1A2F23',
-              border:'none',cursor:'pointer',boxShadow:'0 8px 32px rgba(217,197,160,0.35)'}}>
-            ✓ {t.onboardSave}
-          </button>
-          <button onClick={handleSkip}
-            className={`w-full text-xs ${fClass}`}
-            style={{height:40,borderRadius:14,background:'rgba(255,255,255,0.08)',color:'rgba(255,255,255,0.55)',
-              border:'1px solid rgba(255,255,255,0.12)',cursor:'pointer'}}>
-            {t.onboardSkip} →
-          </button>
         </div>
+
+        {/* Action buttons */}
+        <button onClick={handleSave}
+          className={`w-full font-black text-sm tracking-wider ${fClass}`}
+          style={{height:54,borderRadius:18,
+            background:completedCount===total
+              ?'linear-gradient(135deg,#D9C5A0,#C9B48C)'
+              :'rgba(217,197,160,0.35)',
+            color:completedCount===total?'#1A2F23':'rgba(255,255,255,0.6)',
+            border:`2px solid ${completedCount===total?'transparent':'rgba(217,197,160,0.3)'}`,
+            cursor:'pointer',
+            boxShadow:completedCount===total?'0 8px 32px rgba(217,197,160,0.3)':'none',
+            transition:'all 0.3s',marginBottom:10}}>
+          {completedCount===total?`✓ ${t.onboardSave}`:`${t.onboardSave} (${completedCount}/${total})`}
+        </button>
+
+        <button onClick={handleSkip}
+          className={`w-full text-xs ${fClass}`}
+          style={{height:40,borderRadius:14,background:'transparent',
+            color:'rgba(255,255,255,0.4)',border:'1px solid rgba(255,255,255,0.1)',cursor:'pointer'}}>
+          {t.onboardSkip} →
+        </button>
       </div>
     </div>
   );
