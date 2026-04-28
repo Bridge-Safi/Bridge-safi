@@ -104,6 +104,9 @@ function DeliveryMap({onSet,pin}:{onSet:(coords:string,inside:boolean)=>void; pi
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 
+// URL du site livreur Bridge Logistique (où arrivent toutes les commandes)
+const DRIVER_APP_URL = 'https://406ae05e-3483-4224-927f-5b1b34d56fb4-00-1ym1ya1fn7mhc.worf.replit.dev';
+
 type Lang = 'fr' | 'en' | 'ar' | 'amz';
 type ML   = Record<Lang, string>;
 
@@ -165,7 +168,7 @@ const T = {
     cardFormTitle:'Données de Carte', cardNumberLabel:'Numéro de carte',
     cardExpiryLabel:"Date d'expiration", cardCVVLabel:'CVV', cardNameLabel:'Nom sur la carte',
     cardNumberPh:'1234 5678 9012 3456', cardExpiryPh:'MM/AA', cardCVVPh:'123', cardNamePh:'YOUSSEF ALAMI',
-    payNow:'Payer maintenant 🔒', confirmWhatsApp:'Confirmer via WhatsApp 🚀',
+    payNow:'Payer maintenant 🔒', confirmWhatsApp:'Confirmer la commande 🚀',
     successTitle:'Commande Confirmée ! 🎉', successSub:'Votre commande a bien été reçue.',
     trackingLabel:'Numéro de suivi', deliveryEta:'Livraison estimée dans 18–25 min', newOrder:'Nouvelle commande',
     autoFilled:'Rempli depuis votre profil ✓',
@@ -222,7 +225,7 @@ const T = {
     cardFormTitle:'Card Details', cardNumberLabel:'Card number',
     cardExpiryLabel:'Expiry date', cardCVVLabel:'CVV', cardNameLabel:'Name on card',
     cardNumberPh:'1234 5678 9012 3456', cardExpiryPh:'MM/YY', cardCVVPh:'123', cardNamePh:'YOUSSEF ALAMI',
-    payNow:'Pay now 🔒', confirmWhatsApp:'Confirm via WhatsApp 🚀',
+    payNow:'Pay now 🔒', confirmWhatsApp:'Confirm order 🚀',
     successTitle:'Order Confirmed! 🎉', successSub:'Your order has been received.',
     trackingLabel:'Tracking number', deliveryEta:'Estimated delivery in 18–25 min', newOrder:'New order',
     autoFilled:'Pre-filled from your profile ✓',
@@ -278,7 +281,7 @@ const T = {
     cardFormTitle:'بيانات البطاقة', cardNumberLabel:'رقم البطاقة',
     cardExpiryLabel:'تاريخ الانتهاء', cardCVVLabel:'CVV', cardNameLabel:'الاسم على البطاقة',
     cardNumberPh:'1234 5678 9012 3456', cardExpiryPh:'MM/AA', cardCVVPh:'123', cardNamePh:'YOUSSEF ALAMI',
-    payNow:'ادفع الآن 🔒', confirmWhatsApp:'تأكيد عبر واتساب 🚀',
+    payNow:'ادفع الآن 🔒', confirmWhatsApp:'تأكيد الطلب 🚀',
     successTitle:'تم تأكيد الطلب! 🎉', successSub:'تم استلام طلبك بنجاح.',
     trackingLabel:'رقم التتبع', deliveryEta:'التوصيل المتوقع خلال 18–25 دقيقة', newOrder:'طلب جديد',
     autoFilled:'مُعبَّأ من ملفك الشخصي ✓',
@@ -335,7 +338,7 @@ const T = {
     cardFormTitle:'ⵉⵙⴼⴰⵡⵏ ⵏ ⵜⴽⴰⵔⴷⵜ', cardNumberLabel:'ⴰⵏⵓⵎⵔ ⵏ ⵜⴽⴰⵔⴷⵜ',
     cardExpiryLabel:'ⴰⵙⵙ ⵏ ⵓⵙⵓⵔⴼ', cardCVVLabel:'CVV', cardNameLabel:'ⵉⵙⵎ ⵖ ⵜⴽⴰⵔⴷⵜ',
     cardNumberPh:'1234 5678 9012 3456', cardExpiryPh:'MM/AA', cardCVVPh:'123', cardNamePh:'YOUSSEF ALAMI',
-    payNow:'ⵙⵙⴼⵍⵍⴷ ⴷⵉⵖ 🔒', confirmWhatsApp:'ⵙⵛⴷ ⵙ WhatsApp 🚀',
+    payNow:'ⵙⵙⴼⵍⵍⴷ ⴷⵉⵖ 🔒', confirmWhatsApp:'ⵙⵛⴷ ⵉⴽⴽⵉⵏ 🚀',
     successTitle:'ⵜⵜⵓⵙⵛⴷⵃ ⵜⴰⵖⵓⵍⵜ! 🎉', successSub:'ⵜⵜⵓⵙⵔⵖ ⵜⴰⵖⵓⵍⵜ ⵏⵏⴽ.',
     trackingLabel:'ⴰⵏⵓⵎⵔ ⵏ ⵓⵙⴽⵍⵙ', deliveryEta:'ⴰⵙⵍⵎⴷ ⵖ 18–25 ⵜⵉⵎⵉⵏⵉⵜⵉⵏ', newOrder:'ⵜⴰⵖⵓⵍⵜ ⵜⴰⵎⴰⵢⵏⵓⵜ',
     autoFilled:'ⵉⵜⵜⵓⵎⵍⴰ ⵙⴳ ⵓⵎⵍⵉ ⵏⵏⴽ ✓',
@@ -1409,38 +1412,42 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
           restaurantName:restaurantName||null,
         }),
       });
-    }catch(_){/* silent — WhatsApp is still sent */}
+    }catch(_){/* silent */}
+  };
+
+  // Envoie la commande directement au site livreur Bridge Logistique
+  const sendOrderToDriverApp=async(paymentMethod:string)=>{
+    try{
+      const itemsList=cart.map(i=>{
+        const opts=Object.entries(i.selectedOptions).flatMap(([,ids])=>ids);
+        return `${i.item.names['fr']} x${i.qty}${opts.length>0?` (${opts.join(', ')})`:''}`;
+      }).join(' | ');
+      const payLabel=paymentMethod==='cash'?'Espèces à la livraison':'Carte bancaire (payé)';
+      const navLink=gpsCoords
+        ?` | GPS: https://maps.google.com/?q=${gpsCoords}`
+        :addr.trim()?` | Maps: https://maps.google.com/?q=${encodeURIComponent(addr.trim()+', Safi, Maroc')}`:'';
+      const notes=`🛒 ${itemsList}\n💰 Total: ${total} MAD\n💳 ${payLabel}${navLink}`;
+      const r=await fetch(`${DRIVER_APP_URL}/api/deliveries`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          trackingNumber:orderRef,
+          customerName:name.trim(),
+          customerPhone:phone.trim(),
+          pickupAddress:restaurantName?`${restaurantName} — Safi`:"McDonald's Safi",
+          deliveryAddress:delivMode==='collect'
+            ?`Click & Collect — Retrait au restaurant${addr.trim()?` (${addr.trim()})`:''}`
+            :`${addr.trim()}, Safi, Maroc`,
+          priority:'normal',
+          notes,
+        }),
+      });
+      if(!r.ok) console.warn('[Bridge→Livreur] non-OK',r.status,await r.text().catch(()=>''));
+    }catch(e){console.warn('[Bridge→Livreur] envoi échoué',e);}
   };
 
   const fmtCard=(v:string)=>v.replace(/\D/g,'').slice(0,16).replace(/(.{4})/g,'$1 ').trim();
   const fmtExp=(v:string)=>{const d=v.replace(/\D/g,'').slice(0,4);return d.length>2?`${d.slice(0,2)}/${d.slice(2)}`:d;};
-
-  const buildWaMsg=()=>{
-    let msg=t.waMsgHeader;
-    cart.forEach(i=>{
-      msg+=`- ${i.item.names[lang]} x${i.qty} = ${i.totalPerUnit*i.qty} MAD`;
-      const opts=Object.entries(i.selectedOptions).flatMap(([,ids])=>ids);
-      if(opts.length>0) msg+=` (${opts.join(', ')})`;
-      msg+='\n';
-    });
-    if(delivMode==='collect'){
-      msg+=`\n💰 Total: ${total} MAD (dont 2.99 MAD frais Click & Collect)\n\n👤 Nom: ${name.trim()}\n📞 Tél: ${phone.trim()}\n\n🏪 Click & Collect — Retrait au restaurant\n${t.collectAddress}`;
-    } else {
-      msg+=t.waMsgFooter(total,name.trim(),addr.trim(),phone.trim());
-      if(gpsCoords){
-        const [lat,lng]=gpsCoords.split(',');
-        msg+=`\n\n📍 Navigation livreur :`;
-        msg+=`\n🗺️ Google Maps : https://maps.google.com/?q=${lat},${lng}`;
-        msg+=`\n🔵 Waze : https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
-      } else if(addr.trim()){
-        const q=encodeURIComponent(`${addr.trim()}, Safi, Maroc`);
-        msg+=`\n\n📍 Navigation livreur :`;
-        msg+=`\n🗺️ Google Maps : https://maps.google.com/?q=${q}`;
-        msg+=`\n🔵 Waze : https://waze.com/ul?q=${q}`;
-      }
-    }
-    return msg;
-  };
 
   const STEP_BACK:Partial<Record<CheckoutStep,CheckoutStep>>={form:'cart',payment:'form',card:'payment'};
 
@@ -1657,7 +1664,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
               <button
                 onClick={()=>{
                   if(!payMethod)return;
-                  if(payMethod==='cash'){sendOrderToAPI('cash');window.open(`https://wa.me/212764794856?text=${encodeURIComponent(buildWaMsg()+'\n\n'+t.paymentCash)}`,'_blank');setStep('success');}
+                  if(payMethod==='cash'){sendOrderToAPI('cash');sendOrderToDriverApp('cash');setStep('success');}
                   else setStep('card');
                 }}
                 disabled={!payMethod}
@@ -1707,9 +1714,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                 if(!cardCVV||cardCVV.length<3){setCardErr(t.fillAll);return;}
                 setCardErr('');
                 sendOrderToAPI('card');
-                const cardMsg=buildWaMsg()+'\n\n'+t.paymentCard+
-                  (cardName?`\n${t.cardHolderLabel} : ${cardName}`:'');
-                window.open(`https://wa.me/212764794856?text=${encodeURIComponent(cardMsg)}`,'_blank');
+                sendOrderToDriverApp('card');
                 setStep('success');
               }}
                 className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
