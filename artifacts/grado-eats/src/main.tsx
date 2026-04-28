@@ -341,6 +341,7 @@ const STAY_KEY = 'bridge_stay_signed_in';
 
 function SignInPage() {
   const clerk = useClerk();
+  const { isLoaded, isSignedIn } = useUser();
   const [, navigate] = useLocation();
   const [step, setStep] = useState<'credentials' | 'otp'>('credentials');
   const [identifier, setIdentifier] = useState('');
@@ -352,6 +353,11 @@ function SignInPage() {
     const v = localStorage.getItem(STAY_KEY);
     return v === null ? true : v === 'true';
   });
+
+  // Already signed in → go straight to the app
+  useEffect(() => {
+    if (isLoaded && isSignedIn) navigate(basePath || '/');
+  }, [isLoaded, isSignedIn, navigate]);
   // What factor/strategy Clerk is waiting for
   const [factorKind, setFactorKind] = useState<FactorKind>('second');
   const [factorStrategy, setFactorStrategy] = useState<FactorStrategy>('email_code');
@@ -536,6 +542,7 @@ function SignInPage() {
 
 function SignUpPage() {
   const clerk = useClerk();
+  const { isLoaded, isSignedIn } = useUser();
   const [, navigate] = useLocation();
   const [step, setStep] = useState<'form' | 'verify'>('form');
   const [firstName, setFirstName] = useState('');
@@ -544,6 +551,11 @@ function SignUpPage() {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Already signed in → go straight to the app
+  useEffect(() => {
+    if (isLoaded && isSignedIn) navigate(basePath || '/');
+  }, [isLoaded, isSignedIn, navigate]);
 
   const isPhone = /^\+?[0-9\s]{7,}$/.test(identifier.trim());
 
