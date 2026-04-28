@@ -178,6 +178,7 @@ const T = {
     profileTitle:'Mon Profil', profileSub:'Vos informations enregistrées',
     profileSave:'Enregistrer le profil', profileSaved:'Profil enregistré ✓',
     savedPayment:'Carte bancaire enregistrée', signOut:'🚪 Se déconnecter',
+    gameId:'ID Joueur', gamePts:'pts', gameTitle:'Bridge Game',
     trackTitle:'Suivi GPS en Direct', trackZone:'SAFI · PLATEAU', trackLive:'EN DIRECT',
     stages:['Reçue','En préparation','En chemin','Livrée'],
     stagesSub:['Commande confirmée',"Le chef s'affaire",'Votre livreur arrive','Bon appétit !'],
@@ -244,6 +245,7 @@ const T = {
     collectAddress:'Pick-up address: Plateau, Safi (restaurant will contact you)',
     profileTitle:'My Profile', profileSub:'Your saved information',
     profileSave:'Save profile', profileSaved:'Profile saved ✓', savedPayment:'Saved credit card', signOut:'🚪 Sign out',
+    gameId:'Player ID', gamePts:'pts', gameTitle:'Bridge Game',
     trackTitle:'Live GPS Tracking', trackZone:'SAFI · PLATEAU', trackLive:'LIVE',
     stages:['Received','Preparing','On the way','Delivered'],
     stagesSub:['Order confirmed','Chef is cooking','Courier en route','Enjoy your meal!'],
@@ -310,6 +312,7 @@ const T = {
     collectAddress:'عنوان الاستلام : الهضبة، آسفي (سيتصل بك المطعم)',
     profileTitle:'ملفي الشخصي', profileSub:'معلوماتك المحفوظة',
     profileSave:'حفظ الملف الشخصي', profileSaved:'تم الحفظ ✓', savedPayment:'بطاقة بنكية محفوظة', signOut:'🚪 تسجيل الخروج',
+    gameId:'معرّف اللاعب', gamePts:'نقاط', gameTitle:'Bridge Game',
     trackTitle:'تتبع GPS مباشر', trackZone:'آسفي · الهضبة', trackLive:'مباشر',
     stages:['مستلمة','قيد التحضير','في الطريق','تم التوصيل'],
     stagesSub:['تم تأكيد الطلب','الطاهي يعمل','المندوب في الطريق','بالهناء والشفاء!'],
@@ -377,6 +380,7 @@ const T = {
     collectAddress:'ⵜⴰⵏⵙⴰ ⵏ ⵓⵔⵣⵣⵓ : ⴰⴱⵍⴰⵟⵓ, ⵙⴰⴼⵉ',
     profileTitle:'ⴰⵎⵍⵉ ⵏⵓ', profileSub:'ⵉⵙⴼⴰⵡⵏ ⵏⵏⴽ ⵉⵜⵜⵓⵙⵎⴷⵏ',
     profileSave:'ⵙⵎⴷ ⴰⵎⵍⵉ', profileSaved:'ⵜⵜⵓⵙⵎⴷ ✓', savedPayment:'ⵜⴰⴽⴰⵔⴷⵜ ⵉⵜⵜⵓⵙⵎⴷⵏ', signOut:'🚪 ⴼⴼⵖ',
+    gameId:'ⴰⵡⵏⴰⴽ', gamePts:'ⵜⵉⵏⵓⴹⵉⵡⵉⵏ', gameTitle:'Bridge Game',
     trackTitle:'ⴰⵙⴽⵍⵙ GPS', trackZone:'ⵙⴰⴼⵉ · ⴰⴱⵍⴰⵟⵓ', trackLive:'ⴷⴷⴰⵡ',
     stages:['ⵜⵜⵓⵙⵔⵖⴰ','ⵜⴻⵜⵜⵓⵙⴽⴰⵔ','ⵖ ⵓⵣⵔⵉⵔⵉ','ⵜⵜⵓⵙⵍⵎⴷ'],
     stagesSub:['ⵜⵜⵓⵙⵛⴷⵃ ⵜⴰⵖⵓⵍⵜ','ⴰⵎⵓⵙⵙⵓ ⵉⵜⵜⵓⵙⴽⴰⵔ','ⴰⵎⵥⵍⵉ ⵉⵜⵜⴰⵡⵙ','ⵜⵙⴼⵓⵍⵍⵓ!'],
@@ -1347,6 +1351,18 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
   const [saved,setSaved]=useState(false);
   const { signOut } = useClerk();
   const [, navigate] = useLocation();
+  const { user } = useUser();
+
+  // Generate deterministic game ID from Clerk userId
+  const gameId = user?.id
+    ? 'BR-' + user.id.replace(/[^a-z0-9]/gi,'').slice(-7).toUpperCase()
+    : 'BR-???????';
+
+  // Diamond points stored per user
+  const ptsKey = `bridge_game_pts_${user?.id||'guest'}`;
+  const [gamePoints] = useState(() => {
+    try { return parseInt(localStorage.getItem(ptsKey)||'0',10); } catch { return 0; }
+  });
 
   const handleSave=()=>{onSave(form);setSaved(true);setTimeout(()=>setSaved(false),2000);};
   const handleSignOut=async()=>{ await signOut(); navigate('/sign-in'); onClose(); };
@@ -1358,12 +1374,29 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
     <div className="fixed inset-0 z-50 modal-overlay" style={{background:'rgba(10,30,20,0.55)',backdropFilter:'blur(6px)'}} onClick={onClose}>
       <div className="absolute right-0 top-0 bottom-0 w-full max-w-sm h-full overflow-y-auto"
         style={{background:'#FDFCF9',boxShadow:'-8px 0 40px rgba(0,0,0,0.15)',animation:'slideInRight 0.28s cubic-bezier(0.34,1,0.64,1)'}} onClick={e=>e.stopPropagation()}>
-        <div className="sticky top-0 z-10 px-5 py-4 flex items-center justify-between" style={{background:'rgba(253,252,249,0.96)',backdropFilter:'blur(12px)',borderBottom:'1px solid #E5E1D8'}}>
-          <div>
-            <p className={`font-black text-base ${fClass}`} style={{color:'#065F46'}}>👤 {t.profileTitle}</p>
+        <div className="sticky top-0 z-10 px-4 py-3 flex items-center gap-2" style={{background:'rgba(253,252,249,0.96)',backdropFilter:'blur(12px)',borderBottom:'1px solid #E5E1D8'}}>
+          {/* Left: profile title */}
+          <div className="flex-1 min-w-0">
+            <p className={`font-black text-sm ${fClass}`} style={{color:'#065F46'}}>👤 {t.profileTitle}</p>
             <p className={`text-[10px] mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{t.profileSub}</p>
           </div>
-          <button onClick={onClose} className="w-9 h-9 rounded-full flex items-center justify-center font-black" style={{background:'#F3F4F6',color:'#6B7280',fontSize:16}}>✕</button>
+          {/* Center: shark mascot + game ID + points */}
+          <div className="flex flex-col items-center gap-0.5 flex-shrink-0">
+            <div className="relative">
+              <img src="/bridge-shark.png" alt="Bridge Shark"
+                style={{width:44,height:44,objectFit:'cover',objectPosition:'center top',borderRadius:'50%',border:'2px solid #065F46',boxShadow:'0 2px 8px rgba(6,95,70,0.35)',background:'#0A1A12'}}/>
+              <span style={{position:'absolute',bottom:-3,left:'50%',transform:'translateX(-50%)',background:'#065F46',color:'#fff',fontSize:7,fontWeight:900,padding:'1px 5px',borderRadius:8,whiteSpace:'nowrap',letterSpacing:0.5}}>
+                {t.gameTitle}
+              </span>
+            </div>
+            <span style={{fontSize:9,fontWeight:900,color:'#065F46',letterSpacing:0.5,marginTop:5}}>{gameId}</span>
+            <div style={{display:'flex',alignItems:'center',gap:3,background:'#FEF9C3',border:'1px solid #FDE047',borderRadius:8,padding:'2px 7px'}}>
+              <span style={{fontSize:12}}>💎</span>
+              <span style={{fontSize:9,fontWeight:900,color:'#92400E'}}>{gamePoints} {t.gamePts}</span>
+            </div>
+          </div>
+          {/* Right: close button */}
+          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center font-black flex-shrink-0" style={{background:'#F3F4F6',color:'#6B7280',fontSize:14}}>✕</button>
         </div>
         <div className="px-5 py-5" style={{direction:isAR?'rtl':'ltr'}}>
           <div className="rounded-2xl p-4 mb-5" style={{background:'#F0FDF4',border:'1px solid #BBF7D0'}}>
