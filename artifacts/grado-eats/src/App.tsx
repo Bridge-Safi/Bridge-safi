@@ -2112,77 +2112,73 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
           {t.chooseService}
         </p>
 
-        {/* Three service cards */}
-        <div className="flex items-start justify-center gap-2 w-full">
-          {([
-            {key:'delivery' as const, src:'/logo_delivery.jpeg', label:'Bridge Delivery', sub:t.deliverySub, emoji:'🛵', fallbackBg:'#D1FAE5', pending:false, active:true,
+        {/* 2×2 service grid */}
+        {(()=>{
+          const S=112;
+          const items=[
+            {key:'delivery' as const, src:'/logo_delivery.jpeg', label:'Bridge Eats',  sub:t.deliverySub, emoji:'🛵', fallbackBg:'#D1FAE5', pending:false, active:true,
              activeColor:'#065F46', activeShadow:'0 0 0 5px rgba(6,95,70,0.15),0 10px 28px rgba(6,95,70,0.3)', labelColor:'#065F46'},
-            {key:'taxi' as const, src:'/logo_taxi.jpeg', label:'Bridge Taxi', sub:t.taxiSub, emoji:'🚖', fallbackBg:'#FEF3C7', pending:true,
+            {key:'taxi'     as const, src:'/logo_taxi.jpeg',     label:'Bridge Taxi',   sub:t.taxiSub,     emoji:'🚖', fallbackBg:'#FEF3C7', pending:true,
              activeColor:'#B45309', activeShadow:'0 0 0 5px rgba(180,83,9,0.15),0 10px 28px rgba(180,83,9,0.25)', labelColor:'#B45309'},
-            {key:'tabac' as const, src:'/logo_tabac.jpeg', label:'Bridge Tabac', sub:t.tabacSub, emoji:'🚬', fallbackBg:'#7D4F2E', pending:true,
-             activeColor:'#7D4F2E', activeShadow:'0 0 0 5px rgba(125,79,46,0.15),0 10px 28px rgba(125,79,46,0.25)', labelColor:'#7D4F2E'},
-            {key:'fleurs' as const, src:'', label:'Bridge Fleurs', sub:t.fleursSub, emoji:'🌹', fallbackBg:'linear-gradient(135deg,#FCE7F3,#FDE8F5)', pending:true,
+            {key:'fleurs'   as const, src:'',                    label:'Bridge Fleurs', sub:t.fleursSub,   emoji:'🌹', fallbackBg:'linear-gradient(135deg,#FCE7F3,#FDE8F5)', pending:true,
              activeColor:'#DB2777', activeShadow:'0 0 0 5px rgba(219,39,119,0.15),0 10px 28px rgba(219,39,119,0.25)', labelColor:'#DB2777'},
-          ]).reduce<React.ReactNode[]>((acc,item,i)=>{
-            if(i>0) acc.push(
-              <div key={`div${i}`} className="flex flex-col items-center gap-1 flex-shrink-0" style={{marginTop:'52px'}}>
-                <div className="w-px h-6" style={{background:'#E5E1D8'}}/>
-                <div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/>
-                <div className="w-px h-6" style={{background:'#E5E1D8'}}/>
-              </div>
-            );
-            const isPressed=pressed===item.key;
-            const S=104;
-            acc.push(
-              <button key={item.key} onClick={()=>choose(item.key)}
-                className="flex flex-col items-center gap-2.5 flex-shrink-0 transition-all duration-300 active:scale-95"
-                style={{transform:isPressed?'scale(0.93)':'scale(1)',width:S,opacity:item.pending?0.82:1}}>
-                <div className="relative flex-shrink-0" style={{width:S,height:S}}>
-                  <div className="rounded-full overflow-hidden" style={{
-                    width:S,height:S,
-                    background:item.fallbackBg,
-                    border:isPressed?`3.5px solid ${item.activeColor}`:'3px solid #D9C5A0',
-                    boxShadow:isPressed?item.activeShadow:'0 6px 22px rgba(6,95,70,0.15)',
-                    transition:'all 0.25s',
-                  }}>
-                    {item.key==='fleurs'
-                      ?<div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#FCE7F3,#FDE8F5)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:4}}>
-                          <span style={{fontSize:32}}>🌹</span>
-                          <span style={{fontSize:9,fontWeight:900,color:'#DB2777',letterSpacing:'0.08em'}}>BRIDGE</span>
+            {key:'tabac'    as const, src:'/logo_tabac.jpeg',    label:'Bridge Tabac',  sub:t.tabacSub,    emoji:'🚬', fallbackBg:'#7D4F2E', pending:true,
+             activeColor:'#7D4F2E', activeShadow:'0 0 0 5px rgba(125,79,46,0.15),0 10px 28px rgba(125,79,46,0.25)', labelColor:'#7D4F2E'},
+          ];
+          return(
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'28px 20px',width:'100%',maxWidth:300}}>
+              {items.map(item=>{
+                const isPressed=pressed===item.key;
+                return(
+                  <button key={item.key} onClick={()=>choose(item.key)}
+                    className="flex flex-col items-center gap-2.5 transition-all duration-300 active:scale-95"
+                    style={{transform:isPressed?'scale(0.93)':'scale(1)',opacity:item.pending?0.84:1,background:'none',border:'none',cursor:'pointer',padding:0}}>
+                    <div className="relative" style={{width:S,height:S}}>
+                      <div className="rounded-full overflow-hidden" style={{
+                        width:S,height:S,background:item.fallbackBg,
+                        border:isPressed?`3.5px solid ${item.activeColor}`:'3px solid #D9C5A0',
+                        boxShadow:isPressed?item.activeShadow:'0 6px 22px rgba(6,95,70,0.15)',
+                        transition:'all 0.25s',
+                      }}>
+                        {item.key==='fleurs'
+                          ?<div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#FCE7F3,#FDE8F5)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:4}}>
+                              <span style={{fontSize:36}}>🌹</span>
+                              <span style={{fontSize:9,fontWeight:900,color:'#DB2777',letterSpacing:'0.08em'}}>BRIDGE</span>
+                            </div>
+                          :<img src={item.key==='tabac'?'/bridge-tabac-logo.jpeg':item.src} alt={item.label}
+                              style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
+                        }
+                      </div>
+                      {/* Badge EN ATTENTE / ACTIVÉ */}
+                      {item.pending?(
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full flex items-center gap-1 whitespace-nowrap"
+                          style={{background:'#DC2626',boxShadow:'0 2px 8px rgba(220,38,38,0.5)'}}>
+                          <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"/>
+                          <span className="text-white font-black" style={{fontSize:'8px',letterSpacing:'0.05em'}}>EN ATTENTE</span>
                         </div>
-                      :<img src={item.key==='tabac'?'/bridge-tabac-logo.jpeg':item.src} alt={item.label} style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
-                    }
-                  </div>
-                  {/* "En attente" badge */}
-                  {item.pending&&(
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-full flex items-center gap-1 whitespace-nowrap"
-                      style={{background:'#DC2626',boxShadow:'0 2px 8px rgba(220,38,38,0.5)'}}>
-                      <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"/>
-                      <span className="text-white font-black" style={{fontSize:'9px',letterSpacing:'0.05em'}}>EN ATTENTE</span>
+                      ):( (item as any).active&&(
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full flex items-center gap-1 whitespace-nowrap"
+                          style={{background:'#059669',boxShadow:'0 2px 8px rgba(5,150,105,0.55)'}}>
+                          <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"/>
+                          <span className="text-white font-black" style={{fontSize:'8px',letterSpacing:'0.05em'}}>ACTIVÉ</span>
+                        </div>
+                      ))}
+                      {/* Emoji badge bottom-center */}
+                      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full flex items-center justify-center text-sm"
+                        style={{background:'#FDFCF9',border:'2px solid #D9C5A0',boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
+                        {item.emoji}
+                      </div>
                     </div>
-                  )}
-                  {/* "Activé" badge */}
-                  {!item.pending&&(item as any).active&&(
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-full flex items-center gap-1 whitespace-nowrap"
-                      style={{background:'#059669',boxShadow:'0 2px 8px rgba(5,150,105,0.55)'}}>
-                      <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"/>
-                      <span className="text-white font-black" style={{fontSize:'9px',letterSpacing:'0.05em'}}>ACTIVÉ</span>
+                    <div className="text-center mt-1">
+                      <p className={`font-black text-[10px] tracking-[0.08em] uppercase ${fClass}`} style={{color:item.pending?'#9CA3AF':item.labelColor}}>{item.label}</p>
+                      <p className={`font-bold text-[9px] tracking-wide mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{item.sub}</p>
                     </div>
-                  )}
-                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full flex items-center justify-center text-sm"
-                    style={{background:'#FDFCF9',border:'2px solid #D9C5A0',boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
-                    {item.emoji}
-                  </div>
-                </div>
-                <div className="text-center mt-1">
-                  <p className={`font-black text-[10px] tracking-[0.1em] uppercase ${fClass}`} style={{color:item.pending?'#9CA3AF':item.labelColor}}>{item.label}</p>
-                  <p className={`font-bold text-[9px] tracking-wide mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{item.sub}</p>
-                </div>
-              </button>
-            );
-            return acc;
-          },[])}
-        </div>
+                  </button>
+                );
+              })}
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
