@@ -2517,12 +2517,7 @@ export default function App() {
   const showSplash = !splashDone || !isLoaded;
   if(showSplash) return <SplashScreen/>;
 
-  // Force login immediately after splash
-  if(!isSignedIn) return (
-    <div style={{minHeight:'100vh'}}>
-      <SignInPage />
-    </div>
-  );
+  if(!isSignedIn) return <SignInPage />;
 
   // Profile onboarding after first sign-in
   if(!profile.onboardingComplete) return (
