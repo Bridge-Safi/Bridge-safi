@@ -215,6 +215,10 @@ function FocusInput({ label: labelText, type = 'text', value, onChange, placehol
 
 // ─── SIGN-IN PAGE (custom — email/phone + password, single screen) ─────────
 
+// Factor state shared across sign-in steps
+type FactorKind = 'first' | 'second';
+type FactorStrategy = 'email_code' | 'phone_code' | 'totp' | string;
+
 function SignInPage() {
   const clerk = useClerk();
   const [, navigate] = useLocation();
@@ -224,6 +228,27 @@ function SignInPage() {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  // What factor/strategy Clerk is waiting for
+  const [factorKind, setFactorKind] = useState<FactorKind>('second');
+  const [factorStrategy, setFactorStrategy] = useState<FactorStrategy>('email_code');
+  const [factorDest, setFactorDest] = useState(''); // e.g. "khalidou@icloud.com" or "+212..."
+
+  // Pick the best available factor from a list and return prep params
+  const pickFactor = (factors: any[]): { strategy: FactorStrategy; dest: string; prepParams: any } | null => {
+    // Priority: email_code > phone_code > totp
+    const order: FactorStrategy[] = ['email_code', 'phone_code', 'totp'];
+    for (const s of order) {
+      const f = factors?.find((x: any) => x.strategy === s);
+      if (!f) continue;
+      const prepParams: any = { strategy: s };
+      let dest = '';
+      if (f.safeIdentifier) dest = f.safeIdentifier;
+      if (f.emailAddressId) prepParams.emailAddressId = f.emailAddressId;
+      if (f.phoneNumberId) prepParams.phoneNumberId = f.phoneNumberId;
+      return { strategy: s, dest, prepParams };
+    }
+    return null;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -238,23 +263,25 @@ function SignInPage() {
         await clerk.setActive({ session: result.createdSessionId });
         navigate(basePath || '/');
       } else if (result.status === 'needs_second_factor') {
-        // 2FA — prepare TOTP or phone code
-        try {
-          await clerk.client.signIn.prepareSecondFactor({ strategy: 'phone_code' });
-        } catch {
-          // TOTP doesn't need prepare; ignore error and show OTP screen
+        const picked = pickFactor((result as any).supportedSecondFactors || []);
+        if (picked) {
+          setFactorKind('second');
+          setFactorStrategy(picked.strategy);
+          setFactorDest(picked.dest);
+          if (picked.strategy !== 'totp') {
+            await clerk.client.signIn.prepareSecondFactor(picked.prepParams);
+          }
         }
         setStep('otp');
       } else if (result.status === 'needs_first_factor') {
-        // Email / phone code required after password
-        const factor = result.supportedFirstFactors?.find(
-          (f: any) => f.strategy === 'email_code' || f.strategy === 'phone_code'
-        ) as any;
-        if (factor) {
-          const prepParams: any = { strategy: factor.strategy };
-          if (factor.emailAddressId) prepParams.emailAddressId = factor.emailAddressId;
-          if (factor.phoneNumberId) prepParams.phoneNumberId = factor.phoneNumberId;
-          await clerk.client.signIn.prepareFirstFactor(prepParams);
+        const picked = pickFactor((result as any).supportedFirstFactors || []);
+        if (picked) {
+          setFactorKind('first');
+          setFactorStrategy(picked.strategy);
+          setFactorDest(picked.dest);
+          if (picked.strategy !== 'totp') {
+            await clerk.client.signIn.prepareFirstFactor(picked.prepParams);
+          }
         }
         setStep('otp');
       } else {
@@ -274,13 +301,11 @@ function SignInPage() {
     if (loading) return;
     setLoading(true); setError('');
     try {
-      // Try second factor first, then first factor
       let result: any;
-      try {
-        result = await clerk.client.signIn.attemptSecondFactor({ strategy: 'phone_code', code });
-      } catch {
-        // Not a phone second factor — try email first factor
-        result = await clerk.client.signIn.attemptFirstFactor({ strategy: 'email_code', code });
+      if (factorKind === 'second') {
+        result = await clerk.client.signIn.attemptSecondFactor({ strategy: factorStrategy as any, code });
+      } else {
+        result = await clerk.client.signIn.attemptFirstFactor({ strategy: factorStrategy as any, code });
       }
       if (result.status === 'complete') {
         await clerk.setActive({ session: result.createdSessionId });
@@ -290,8 +315,8 @@ function SignInPage() {
       }
     } catch (err: any) {
       const msg = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || '';
-      if (msg.toLowerCase().includes('incorrect') || msg.toLowerCase().includes('invalid')) {
-        setError('Code incorrect. Vérifiez et réessayez.');
+      if (msg.toLowerCase().includes('incorrect') || msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('expired')) {
+        setError('Code incorrect ou expiré. Réessayez.');
       } else {
         setError(msg || 'Code incorrect. Réessayez.');
       }
@@ -299,16 +324,29 @@ function SignInPage() {
     setLoading(false);
   };
 
+  // Build the OTP subtitle based on where the code was sent
+  const otpSub = factorStrategy === 'totp'
+    ? 'Code depuis votre application authenticator (TOTP)'
+    : factorStrategy === 'phone_code'
+    ? `SMS envoyé au ${factorDest || 'votre téléphone'}`
+    : `Email envoyé à ${factorDest || identifier.trim()}`;
+
   if (step === 'otp') return (
     <AuthPageWrapper>
-      <AuthCardHeader
-        title="Vérification · Verify"
-        sub={`Code de sécurité envoyé à ${identifier.trim()}`}
-      />
+      <AuthCardHeader title="Vérification · Verify" sub={otpSub} />
       <form onSubmit={handleOtp} style={{ display: 'flex', flexDirection: 'column' }}>
-        <FocusInput label="Code de vérification (6 chiffres)" value={code} onChange={setCode}
-          placeholder="123456" autoComplete="one-time-code" type="tel" />
+        <FocusInput
+          label={factorStrategy === 'totp' ? 'Code authenticator (6 chiffres)' : 'Code de vérification (6 chiffres)'}
+          value={code} onChange={setCode} placeholder="123456"
+          autoComplete="one-time-code" type="tel"
+        />
         {error && <div style={errStyle}>{error}</div>}
+        {/* Hint for totp */}
+        {factorStrategy === 'totp' && (
+          <p style={{ fontSize: '0.72rem', color: '#9CA3AF', textAlign: 'center', margin: '-4px 0 10px' }}>
+            Ouvrez Google Authenticator ou Authy pour obtenir le code
+          </p>
+        )}
         <button type="submit" style={{...btn, opacity: loading ? 0.7 : 1}} disabled={loading}>
           {loading ? 'Vérification...' : 'Confirmer →'}
         </button>
