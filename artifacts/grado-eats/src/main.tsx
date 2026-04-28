@@ -665,11 +665,24 @@ function GamePage() {
       {/* Background zellige pattern */}
       <div style={{position:'absolute',inset:0,opacity:0.04,backgroundImage:'repeating-linear-gradient(45deg,#ffffff 0,#ffffff 1px,transparent 0,transparent 50%)',backgroundSize:'20px 20px',pointerEvents:'none'}}/>
 
-      {/* Back button */}
-      <button onClick={()=>navigate('/')}
-        style={{position:'absolute',top:20,left:20,background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',color:'#fff',borderRadius:12,padding:'8px 16px',fontSize:13,fontWeight:800,cursor:'pointer',backdropFilter:'blur(8px)'}}>
-        ← Retour
-      </button>
+      {/* ── Top bar: back left · logo-poster right ── */}
+      <div style={{position:'absolute',top:0,left:0,right:0,display:'flex',alignItems:'flex-start',justifyContent:'space-between',padding:'16px 16px 0'}}>
+        <button onClick={()=>navigate('/')}
+          style={{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',color:'#fff',borderRadius:12,padding:'8px 16px',fontSize:13,fontWeight:800,cursor:'pointer',backdropFilter:'blur(8px)'}}>
+          ← Retour
+        </button>
+
+        {/* Mini poster / logo stamp */}
+        <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:16,padding:'8px 12px',backdropFilter:'blur(8px)'}}>
+          <div style={{width:52,height:52,borderRadius:'50%',overflow:'hidden',border:'2px solid #D9C5A0',boxShadow:'0 0 20px rgba(217,197,160,0.3)'}}>
+            <img src="/logo_splash.jpeg" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.1)'}}/>
+          </div>
+          <span style={{color:'#D9C5A0',fontSize:8,fontWeight:900,letterSpacing:'0.25em'}}>BRIDGE</span>
+          <div style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.5)',borderRadius:6,padding:'2px 7px'}}>
+            <span style={{color:'#4ADE80',fontSize:7,fontWeight:900,letterSpacing:'0.15em'}}>GAME</span>
+          </div>
+        </div>
+      </div>
 
       {/* Shark mascot */}
       <div style={{position:'relative',marginBottom:'1.5rem'}}>

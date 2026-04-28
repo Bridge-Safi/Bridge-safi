@@ -202,7 +202,7 @@ const T = {
     waMsgHeader:'🛍️ Nouvelle commande Bridge Safi\n\n📦 Articles:\n',
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 Total: ${total} MAD\n\n👤 Nom: ${name}\n📍 Adresse: ${addr}, Safi\n📞 Tél: ${phone}\n\nMerci de confirmer ma commande ! 🙏`,
     chooseService:'Choisissez votre service',
-    deliverySub:'Livraison rapide', taxiSub:'Confort & style',
+    deliverySub:'Livraison rapide', taxiSub:'Confort & style', fleursSub:'Fleurs & cadeaux',
     taxiSoon:'Service disponible très bientôt',
     taxiDesc:'Bridge Taxi Confort — trajets premium à Safi, en toute élégance.',
     taxiBook:'Réserver sur WhatsApp Business',
@@ -279,7 +279,7 @@ const T = {
     waMsgHeader:'🛍️ New Bridge Safi order\n\n📦 Items:\n',
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 Total: ${total} MAD\n\n👤 Name: ${name}\n📍 Address: ${addr}, Safi\n📞 Phone: ${phone}\n\nPlease confirm my order! 🙏`,
     chooseService:'Choose your service',
-    deliverySub:'Fast delivery', taxiSub:'Comfort & style',
+    deliverySub:'Fast delivery', taxiSub:'Comfort & style', fleursSub:'Flowers & gifts',
     taxiSoon:'Service coming soon',
     taxiDesc:'Bridge Taxi Confort — premium rides in Safi, in pure elegance.',
     taxiBook:'Book on WhatsApp Business',
@@ -357,7 +357,7 @@ const T = {
     waMsgHeader:'🛍️ طلب جديد من بريدج إيتس\n\n📦 الطلبات:\n',
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 المجموع: ${total} MAD\n\n👤 الاسم: ${name}\n📍 العنوان: ${addr}، آسفي\n📞 الهاتف: ${phone}\n\nأرجو تأكيد طلبي! 🙏`,
     chooseService:'اختر خدمتك',
-    deliverySub:'توصيل سريع', taxiSub:'راحة وأناقة',
+    deliverySub:'توصيل سريع', taxiSub:'راحة وأناقة', fleursSub:'ورود وهدايا',
     taxiSoon:'الخدمة قادمة قريباً',
     taxiDesc:'بريدج تاكسي كونفور — رحلات مميزة في آسفي بأناقة.',
     taxiBook:'احجز عبر واتساب بيزنس',
@@ -435,7 +435,7 @@ const T = {
     waMsgHeader:'🛍️ ⵜⴰⵖⵓⵍⵜ ⵜⴰⵎⴰⵢⵏⵓⵜ ⵏ ⴱⵔⵉⴷⵊ ⵉⵢⵜⵙ\n\n📦 ⵉⵙⴽⴰⵔⵏ:\n',
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 ⴰⵎⵎⴰⵙ: ${total} MAD\n\n👤 ⵉⵙⵎ: ${name}\n📍 ⵜⴰⵙⵓⵏⵜ: ${addr}, ⵙⴰⴼⵉ\n📞 ⴰⵙⵓⵍ: ${phone}\n\nⵙⵛⴷ ⵜⴰⵖⵓⵍⵜ ⵉⵏⵓ! 🙏`,
     chooseService:'ⴼⵔ ⵜⴰⵎⵙⴽⴰⵔⵜ',
-    deliverySub:'ⴰⵙⵙⵓⴼⵖ ⵣⵔⵉⵔⵉ', taxiSub:'ⵓⵏⵍⵍⵉ ⴷ ⵓⵙⵏⴼⵍ',
+    deliverySub:'ⴰⵙⵙⵓⴼⵖ ⵣⵔⵉⵔⵉ', taxiSub:'ⵓⵏⵍⵍⵉ ⴷ ⵓⵙⵏⴼⵍ', fleursSub:'ⵉⵣⵓⵍⴰⵏ ⴷ ⵉⵡⴰⵔⴳⵉⵡⵏ',
     taxiSoon:'ⵜⴰⵎⵙⴽⴰⵔⵜ ⵜⴰⵖ ⴷ ⵓⴳⵉⵏ',
     taxiDesc:'ⴱⵔⵉⴷⵊ ⵜⴰⴽⵙⵉ — ⵜⵉⵔⴰⵡⵉⵏ ⵜⵉⴼⵓⵍⴽⵉⵏ ⵖ ⵙⴰⴼⵉ.',
     taxiBook:'ⵙⵇⵇⵔ ⵙ WhatsApp Business',
@@ -2079,11 +2079,11 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
 
 // ─── SERVICE SELECT PAGE ──────────────────────────────────────────────────────
 
-function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'taxi'|'tabac')=>void;lang:Lang;cycleLang:()=>void}) {
-  const [pressed,setPressed]=useState<'delivery'|'taxi'|'tabac'|null>(null);
+function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'taxi'|'tabac'|'fleurs')=>void;lang:Lang;cycleLang:()=>void}) {
+  const [pressed,setPressed]=useState<'delivery'|'taxi'|'tabac'|'fleurs'|null>(null);
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
-  const choose=(s:'delivery'|'taxi'|'tabac')=>{setPressed(s);setTimeout(()=>onSelect(s),320);};
+  const choose=(s:'delivery'|'taxi'|'tabac'|'fleurs')=>{setPressed(s);setTimeout(()=>onSelect(s),320);};
   return(
     <div className={`fixed inset-0 flex flex-col items-center justify-center z-40 px-6 ${isAR?'rtl':'ltr'}`}
       style={{background:'#FDFCF9'}}>
@@ -2121,6 +2121,8 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
              activeColor:'#B45309', activeShadow:'0 0 0 5px rgba(180,83,9,0.15),0 10px 28px rgba(180,83,9,0.25)', labelColor:'#B45309'},
             {key:'tabac' as const, src:'/logo_tabac.jpeg', label:'Bridge Tabac', sub:t.tabacSub, emoji:'🚬', fallbackBg:'#7D4F2E', pending:true,
              activeColor:'#7D4F2E', activeShadow:'0 0 0 5px rgba(125,79,46,0.15),0 10px 28px rgba(125,79,46,0.25)', labelColor:'#7D4F2E'},
+            {key:'fleurs' as const, src:'', label:'Bridge Fleurs', sub:t.fleursSub, emoji:'🌸', fallbackBg:'linear-gradient(135deg,#FCE7F3,#FDE8F5)', pending:true,
+             activeColor:'#DB2777', activeShadow:'0 0 0 5px rgba(219,39,119,0.15),0 10px 28px rgba(219,39,119,0.25)', labelColor:'#DB2777'},
           ]).reduce<React.ReactNode[]>((acc,item,i)=>{
             if(i>0) acc.push(
               <div key={`div${i}`} className="flex flex-col items-center gap-1 flex-shrink-0" style={{marginTop:'52px'}}>
@@ -2143,7 +2145,13 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
                     boxShadow:isPressed?item.activeShadow:'0 6px 22px rgba(6,95,70,0.15)',
                     transition:'all 0.25s',
                   }}>
-                    <img src={item.key==='tabac'?'/bridge-tabac-logo.jpeg':item.src} alt={item.label} style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
+                    {item.key==='fleurs'
+                      ?<div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#FCE7F3,#FDE8F5)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:4}}>
+                          <span style={{fontSize:32}}>🌸</span>
+                          <span style={{fontSize:9,fontWeight:900,color:'#DB2777',letterSpacing:'0.08em'}}>BRIDGE</span>
+                        </div>
+                      :<img src={item.key==='tabac'?'/bridge-tabac-logo.jpeg':item.src} alt={item.label} style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
+                    }
                   </div>
                   {/* "En attente" badge */}
                   {item.pending&&(
@@ -2609,7 +2617,7 @@ function loadNav() {
   try {
     const raw=localStorage.getItem(NAV_KEY);
     if(!raw) return null;
-    return JSON.parse(raw) as {lang:Lang;service:'none'|'delivery'|'taxi'|'tabac';page:Page;restaurantId:string|null};
+    return JSON.parse(raw) as {lang:Lang;service:'none'|'delivery'|'taxi'|'tabac'|'fleurs';page:Page;restaurantId:string|null};
   } catch { return null; }
 }
 
@@ -2622,7 +2630,7 @@ export default function App() {
   const [page,setPage]         = useState<Page>(saved?.page??'home');
   // splashDone becomes true after 3s; we also wait for Clerk to load
   const [splashDone,setSplashDone] = useState(false);
-  const [service,setService]       = useState<'none'|'delivery'|'taxi'|'tabac'>(saved?.service??'none');
+  const [service,setService]       = useState<'none'|'delivery'|'taxi'|'tabac'|'fleurs'>(saved?.service??'none');
   const [cart,setCart]         = useState<CartItem[]>([]);
   const [showCart,setShowCart] = useState(false);
   const [showProfile,setShowProfile] = useState(false);
@@ -2695,6 +2703,7 @@ export default function App() {
   if(service==='none') return <ServiceSelectPage onSelect={s=>setService(s)} lang={lang} cycleLang={cycleLang}/>;
   if(service==='taxi') return <TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
   if(service==='tabac') return <TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
+  if(service==='fleurs') return <TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={
