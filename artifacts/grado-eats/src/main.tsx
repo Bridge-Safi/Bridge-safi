@@ -673,7 +673,7 @@ function GamePage() {
 
       {/* Shark mascot */}
       <div style={{position:'relative',marginBottom:'1.5rem'}}>
-        <div style={{width:160,height:160,borderRadius:'50%',overflow:'hidden',border:'3px solid #065F46',boxShadow:'0 0 60px rgba(6,95,70,0.6), 0 0 120px rgba(6,95,70,0.2)',background:'#0A1A12'}}>
+        <div style={{width:210,height:210,borderRadius:'50%',overflow:'hidden',border:'3px solid #065F46',boxShadow:'0 0 60px rgba(6,95,70,0.6), 0 0 120px rgba(6,95,70,0.2)',background:'#0A1A12'}}>
           <img src="/bridge-shark.png" alt="Bridge Shark"
             style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top'}}/>
         </div>
