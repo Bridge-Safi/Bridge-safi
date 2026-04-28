@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createRoot } from "react-dom/client";
-import { ClerkProvider, SignIn, SignUp, useClerk } from '@clerk/react';
+import { ClerkProvider, useClerk } from '@clerk/react';
 import { Switch, Route, useLocation, Router as WouterRouter } from 'wouter';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import App from "./App";
@@ -37,18 +37,24 @@ const clerkAppearance = {
   elements: {
     rootBox: 'w-full',
     card: 'shadow-none p-0 bg-transparent border-none',
-    headerTitle: 'hidden',
-    headerSubtitle: 'hidden',
-    header: 'hidden',
+    headerTitle: '!hidden',
+    headerSubtitle: '!hidden',
+    header: '!hidden',
+    // Hide all social/OAuth buttons (Google, Apple, etc.)
+    socialButtonsRoot: '!hidden',
+    socialButtonsBlockButton: '!hidden',
+    socialButtonsBlockButtonText: '!hidden',
+    socialButtonsIconButton: '!hidden',
+    // Hide the "or" divider between social and email form
+    dividerRow: '!hidden',
+    dividerText: '!hidden',
+    // Hide "use another method" link
+    alternativeMethodsBlockButton: '!hidden',
     formFieldAction: 'text-[#065F46] font-bold hover:text-[#047857]',
-    socialButtonsBlockButton: 'border-2 border-[#E5E1D8] rounded-2xl font-semibold hover:border-[#065F46] hover:bg-[#F0FDF4] transition-all h-12',
-    socialButtonsBlockButtonText: 'font-semibold text-sm text-[#1A2F23]',
     formFieldInput: 'rounded-2xl border-2 border-[#E5E1D8] focus:border-[#065F46] bg-[#F9F7F2] text-sm h-12 px-4',
     formFieldLabel: 'text-xs font-black text-[#065F46] uppercase tracking-wider',
     formButtonPrimary: 'bg-[#065F46] hover:bg-[#047857] rounded-2xl h-12 text-sm font-black tracking-widest transition-all shadow-lg shadow-green-900/20',
     footerActionLink: 'text-[#065F46] font-bold hover:text-[#047857]',
-    dividerRow: 'my-2',
-    dividerText: 'text-gray-400 text-xs',
     identityPreviewText: 'text-[#1A2F23]',
     formFieldSuccessText: 'text-green-700',
     formFieldErrorText: 'text-red-600 text-xs',
@@ -166,32 +172,214 @@ function AuthCardHeader({ title, sub }: { title: string; sub: string }) {
   );
 }
 
+// ─── SHARED FORM STYLES ───────────────────────────────────────────────────────
+
+const inp: React.CSSProperties = {
+  width: '100%', padding: '0.75rem 1rem', borderRadius: 14,
+  border: '2px solid #E5E1D8', background: '#F9F7F2', color: '#1A2F23',
+  fontSize: '0.875rem', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
+};
+const inpFocus: React.CSSProperties = { ...inp, border: '2px solid #065F46' };
+const label: React.CSSProperties = {
+  display: 'block', fontSize: '0.65rem', fontWeight: 900,
+  color: '#065F46', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6,
+};
+const btn: React.CSSProperties = {
+  width: '100%', padding: '0.875rem', borderRadius: 14, border: 'none',
+  background: '#065F46', color: 'white', fontWeight: 900, fontSize: '0.875rem',
+  letterSpacing: '0.08em', cursor: 'pointer', fontFamily: 'inherit',
+  boxShadow: '0 6px 20px rgba(6,95,70,0.25)', marginTop: 4,
+};
+const errStyle: React.CSSProperties = {
+  background: '#FEE2E2', border: '1.5px solid #FCA5A5', borderRadius: 10,
+  padding: '0.6rem 0.875rem', fontSize: '0.75rem', color: '#B91C1C', fontWeight: 600,
+};
+
+function FocusInput({ label: labelText, type = 'text', value, onChange, placeholder, autoComplete }: {
+  label: string; type?: string; value: string;
+  onChange: (v: string) => void; placeholder?: string; autoComplete?: string;
+}) {
+  const [focused, setFocused] = useState(false);
+  return (
+    <div style={{ marginBottom: '1rem' }}>
+      <label style={label}>{labelText}</label>
+      <input
+        type={type} value={value} placeholder={placeholder} autoComplete={autoComplete}
+        style={focused ? inpFocus : inp}
+        onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
+        onChange={e => onChange(e.target.value)}
+      />
+    </div>
+  );
+}
+
+// ─── SIGN-IN PAGE (custom — email/phone + password, single screen) ─────────
+
 function SignInPage() {
+  const clerk = useClerk();
+  const [, navigate] = useLocation();
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loading) return;
+    setLoading(true); setError('');
+    try {
+      const result = await clerk.client.signIn.create({
+        identifier: identifier.trim(),
+        password,
+      });
+      if (result.status === 'complete') {
+        await clerk.setActive({ session: result.createdSessionId });
+        navigate(basePath || '/');
+      } else {
+        setError('Étape supplémentaire requise. Réessayez.');
+      }
+    } catch (err: any) {
+      const msg = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || '';
+      if (msg.toLowerCase().includes('password')) setError('Mot de passe incorrect.');
+      else if (msg.toLowerCase().includes('identifier') || msg.toLowerCase().includes('not found')) setError('Compte introuvable. Vérifiez votre email ou téléphone.');
+      else setError(msg || 'Identifiants incorrects. Réessayez.');
+    }
+    setLoading(false);
+  };
+
   return (
     <AuthPageWrapper>
-      <AuthCardHeader title="Connexion · Sign in" sub="Email, téléphone, mot de passe, Google ou Apple" />
-      <SignIn
-        routing="path"
-        path={`${basePath}/sign-in`}
-        signUpUrl={`${basePath}/sign-up`}
-        fallbackRedirectUrl={basePath || '/'}
-        appearance={clerkAppearance}
-      />
+      <AuthCardHeader title="Connexion · Sign in" sub="Email · Téléphone · Mot de passe" />
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+        <FocusInput label="Email ou numéro de téléphone" value={identifier} onChange={setIdentifier}
+          placeholder="+212 6XX XXX XXX ou email@..." autoComplete="username" />
+        <FocusInput label="Mot de passe" type="password" value={password} onChange={setPassword}
+          placeholder="••••••••" autoComplete="current-password" />
+        {error && <div style={errStyle}>{error}</div>}
+        <button type="submit" style={{...btn, opacity: loading ? 0.7 : 1}} disabled={loading}>
+          {loading ? 'Connexion...' : 'Connexion →'}
+        </button>
+      </form>
+      <div style={{ textAlign: 'center', marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid #E5E1D8' }}>
+        <span style={{ fontSize: '0.75rem', color: '#9CA3AF' }}>Pas encore de compte ? </span>
+        <button onClick={() => navigate('/sign-up')}
+          style={{ background: 'none', border: 'none', color: '#065F46', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}>
+          Créer un compte
+        </button>
+      </div>
     </AuthPageWrapper>
   );
 }
 
+// ─── SIGN-UP PAGE (custom — name + email/phone + password, then OTP) ──────
+
 function SignUpPage() {
+  const clerk = useClerk();
+  const [, navigate] = useLocation();
+  const [step, setStep] = useState<'form' | 'verify'>('form');
+  const [firstName, setFirstName] = useState('');
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const isPhone = /^\+?[0-9\s]{7,}$/.test(identifier.trim());
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loading) return;
+    setLoading(true); setError('');
+    try {
+      const params: Record<string, string> = { password };
+      if (firstName.trim()) params.firstName = firstName.trim();
+      if (isPhone) params.phoneNumber = identifier.trim().replace(/\s/g, '');
+      else params.emailAddress = identifier.trim();
+      const result = await clerk.client.signUp.create(params);
+      if (result.status === 'complete') {
+        await clerk.setActive({ session: result.createdSessionId });
+        navigate(basePath || '/');
+      } else {
+        // Verification needed
+        if (isPhone) await clerk.client.signUp.preparePhoneNumberVerification({ strategy: 'phone_code' });
+        else await clerk.client.signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
+        setStep('verify');
+      }
+    } catch (err: any) {
+      const msg = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || '';
+      if (msg.toLowerCase().includes('email')) setError('Email invalide ou déjà utilisé.');
+      else if (msg.toLowerCase().includes('phone')) setError('Numéro de téléphone invalide ou déjà utilisé.');
+      else if (msg.toLowerCase().includes('password')) setError('Mot de passe trop faible (8 caractères min.).');
+      else setError(msg || 'Erreur lors de la création du compte.');
+    }
+    setLoading(false);
+  };
+
+  const handleVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loading) return;
+    setLoading(true); setError('');
+    try {
+      const result = isPhone
+        ? await clerk.client.signUp.attemptPhoneNumberVerification({ code })
+        : await clerk.client.signUp.attemptEmailAddressVerification({ code });
+      if (result.status === 'complete') {
+        await clerk.setActive({ session: result.createdSessionId });
+        navigate(basePath || '/');
+      } else {
+        setError('Code incorrect. Réessayez.');
+      }
+    } catch (err: any) {
+      setError(err?.errors?.[0]?.longMessage || 'Code incorrect.');
+    }
+    setLoading(false);
+  };
+
+  if (step === 'verify') return (
+    <AuthPageWrapper>
+      <AuthCardHeader
+        title="Vérification · Verify"
+        sub={`Code envoyé à ${identifier.trim()}`}
+      />
+      <form onSubmit={handleVerify} style={{ display: 'flex', flexDirection: 'column' }}>
+        <FocusInput label="Code de vérification (6 chiffres)" value={code} onChange={setCode}
+          placeholder="123456" autoComplete="one-time-code" />
+        {error && <div style={errStyle}>{error}</div>}
+        <button type="submit" style={{...btn, opacity: loading ? 0.7 : 1}} disabled={loading}>
+          {loading ? '...' : 'Vérifier →'}
+        </button>
+      </form>
+      <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+        <button onClick={() => setStep('form')}
+          style={{ background: 'none', border: 'none', color: '#9CA3AF', fontSize: '0.75rem', cursor: 'pointer' }}>
+          ← Retour
+        </button>
+      </div>
+    </AuthPageWrapper>
+  );
+
   return (
     <AuthPageWrapper>
-      <AuthCardHeader title="Créer un compte · Sign up" sub="Email ou téléphone requis · mot de passe obligatoire" />
-      <SignUp
-        routing="path"
-        path={`${basePath}/sign-up`}
-        signInUrl={`${basePath}/sign-in`}
-        fallbackRedirectUrl={basePath || '/'}
-        appearance={clerkAppearance}
-      />
+      <AuthCardHeader title="Créer un compte · Sign up" sub="Email ou téléphone + mot de passe" />
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+        <FocusInput label="Prénom (optionnel)" value={firstName} onChange={setFirstName}
+          placeholder="Mohamed, Fatima..." autoComplete="given-name" />
+        <FocusInput label="Email ou numéro de téléphone" value={identifier} onChange={setIdentifier}
+          placeholder="+212 6XX XXX XXX ou email@..." autoComplete="username" />
+        <FocusInput label="Mot de passe (8 caractères min.)" type="password" value={password} onChange={setPassword}
+          placeholder="••••••••" autoComplete="new-password" />
+        {error && <div style={errStyle}>{error}</div>}
+        <button type="submit" style={{...btn, opacity: loading ? 0.7 : 1}} disabled={loading}>
+          {loading ? 'Création...' : 'Créer mon compte →'}
+        </button>
+      </form>
+      <div style={{ textAlign: 'center', marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid #E5E1D8' }}>
+        <span style={{ fontSize: '0.75rem', color: '#9CA3AF' }}>Déjà un compte ? </span>
+        <button onClick={() => navigate('/sign-in')}
+          style={{ background: 'none', border: 'none', color: '#065F46', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}>
+          Se connecter
+        </button>
+      </div>
     </AuthPageWrapper>
   );
 }
