@@ -218,8 +218,10 @@ function FocusInput({ label: labelText, type = 'text', value, onChange, placehol
 function SignInPage() {
   const clerk = useClerk();
   const [, navigate] = useLocation();
+  const [step, setStep] = useState<'credentials' | 'otp'>('credentials');
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -235,8 +237,28 @@ function SignInPage() {
       if (result.status === 'complete') {
         await clerk.setActive({ session: result.createdSessionId });
         navigate(basePath || '/');
+      } else if (result.status === 'needs_second_factor') {
+        // 2FA — prepare TOTP or phone code
+        try {
+          await clerk.client.signIn.prepareSecondFactor({ strategy: 'phone_code' });
+        } catch {
+          // TOTP doesn't need prepare; ignore error and show OTP screen
+        }
+        setStep('otp');
+      } else if (result.status === 'needs_first_factor') {
+        // Email / phone code required after password
+        const factor = result.supportedFirstFactors?.find(
+          (f: any) => f.strategy === 'email_code' || f.strategy === 'phone_code'
+        ) as any;
+        if (factor) {
+          const prepParams: any = { strategy: factor.strategy };
+          if (factor.emailAddressId) prepParams.emailAddressId = factor.emailAddressId;
+          if (factor.phoneNumberId) prepParams.phoneNumberId = factor.phoneNumberId;
+          await clerk.client.signIn.prepareFirstFactor(prepParams);
+        }
+        setStep('otp');
       } else {
-        setError('Étape supplémentaire requise. Réessayez.');
+        setError('Connexion incomplète. Contactez le support.');
       }
     } catch (err: any) {
       const msg = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || '';
@@ -246,6 +268,59 @@ function SignInPage() {
     }
     setLoading(false);
   };
+
+  const handleOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loading) return;
+    setLoading(true); setError('');
+    try {
+      // Try second factor first, then first factor
+      let result: any;
+      try {
+        result = await clerk.client.signIn.attemptSecondFactor({ strategy: 'phone_code', code });
+      } catch {
+        // Not a phone second factor — try email first factor
+        result = await clerk.client.signIn.attemptFirstFactor({ strategy: 'email_code', code });
+      }
+      if (result.status === 'complete') {
+        await clerk.setActive({ session: result.createdSessionId });
+        navigate(basePath || '/');
+      } else {
+        setError('Code incorrect. Réessayez.');
+      }
+    } catch (err: any) {
+      const msg = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || '';
+      if (msg.toLowerCase().includes('incorrect') || msg.toLowerCase().includes('invalid')) {
+        setError('Code incorrect. Vérifiez et réessayez.');
+      } else {
+        setError(msg || 'Code incorrect. Réessayez.');
+      }
+    }
+    setLoading(false);
+  };
+
+  if (step === 'otp') return (
+    <AuthPageWrapper>
+      <AuthCardHeader
+        title="Vérification · Verify"
+        sub={`Code de sécurité envoyé à ${identifier.trim()}`}
+      />
+      <form onSubmit={handleOtp} style={{ display: 'flex', flexDirection: 'column' }}>
+        <FocusInput label="Code de vérification (6 chiffres)" value={code} onChange={setCode}
+          placeholder="123456" autoComplete="one-time-code" type="tel" />
+        {error && <div style={errStyle}>{error}</div>}
+        <button type="submit" style={{...btn, opacity: loading ? 0.7 : 1}} disabled={loading}>
+          {loading ? 'Vérification...' : 'Confirmer →'}
+        </button>
+      </form>
+      <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+        <button onClick={() => { setStep('credentials'); setError(''); setCode(''); }}
+          style={{ background: 'none', border: 'none', color: '#9CA3AF', fontSize: '0.75rem', cursor: 'pointer' }}>
+          ← Retour
+        </button>
+      </div>
+    </AuthPageWrapper>
+  );
 
   return (
     <AuthPageWrapper>
