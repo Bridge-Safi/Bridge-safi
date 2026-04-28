@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useClerk } from '@clerk/react';
 import { useLocation } from 'wouter';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Polygon, useMapEvents } from 'react-leaflet';
@@ -144,6 +144,23 @@ function detectCard(n:string): CardType {
   return 'unknown';
 }
 function isValidCardType(n:string):boolean { return detectCard(n)!=='unknown'; }
+function luhnCheck(n:string):boolean{
+  const d=n.replace(/\D/g,'');
+  let sum=0,isEven=false;
+  for(let i=d.length-1;i>=0;i--){
+    let digit=parseInt(d[i],10);
+    if(isEven){digit*=2;if(digit>9)digit-=9;}
+    sum+=digit;isEven=!isEven;
+  }
+  return sum%10===0;
+}
+function isRealCard(n:string):boolean{
+  const d=n.replace(/\D/g,'');
+  return d.length===16&&isValidCardType(d)&&luhnCheck(d);
+}
+const PROMO_CODES:Record<string,number>={
+  'BRIDGE10':10,'BIENVENUE':15,'SAFI5':5,'FLEURS20':20,'CADEAUX12':12,'BRIDGE20':20
+};
 
 // SVG logos inline (tiny)
 const VisaLogo=()=>(
@@ -207,6 +224,12 @@ const T = {
     errPhone:'Numéro invalide (ex: +212 612 345 678 ou 0612345678)',
     errCard:'Numéro de carte invalide (16 chiffres requis)',
     errCardType:'Carte non acceptée — Visa ou Mastercard uniquement',
+    errLuhn:'Numéro de carte invalide — vérifiez les chiffres',
+    promoLabel:'Code promo / Cadeau', promoPh:'Ex : BRIDGE10', promoApply:'Appliquer',
+    promoOk:(d:number)=>`-${d} MAD appliqué 🎉`, promoErr:'Code invalide ou déjà utilisé',
+    diamondsSection:'💎 Mes Diamants Bridge', diamondsAvail:(n:number)=>`${n} pts disponibles (= ${Math.floor(n/100)} MAD)`,
+    diamondsUse:'Convertir en réduction', diamondsNone:'Aucun diamant pour l\'instant — jouez !',
+    discountRow:(d:number)=>`Réduction appliquée : -${d} MAD`,
     errExpiry:'Date invalide (format MM/AA, non expirée)',
     errCardName:'Nom du titulaire requis (comme sur la carte)',
     paymentTabCard:'💳 Carte', paymentTabPaypal:'🅿️ PayPal',
@@ -289,6 +312,12 @@ const T = {
     errPhone:'Invalid number (e.g. +212 612 345 678 or 0612345678)',
     errCard:'Invalid card number (16 digits required)',
     errCardType:'Card not accepted — Visa or Mastercard only',
+    errLuhn:'Invalid card number — please check the digits',
+    promoLabel:'Promo code / Gift', promoPh:'E.g.: BRIDGE10', promoApply:'Apply',
+    promoOk:(d:number)=>`-${d} MAD applied 🎉`, promoErr:'Invalid or already used code',
+    diamondsSection:'💎 My Bridge Diamonds', diamondsAvail:(n:number)=>`${n} pts available (= ${Math.floor(n/100)} MAD)`,
+    diamondsUse:'Convert to discount', diamondsNone:'No diamonds yet — play to earn!',
+    discountRow:(d:number)=>`Discount applied: -${d} MAD`,
     errExpiry:'Invalid date (MM/YY format, not expired)',
     errCardName:'Cardholder name required (as on the card)',
     paymentTabCard:'💳 Card', paymentTabPaypal:'🅿️ PayPal',
@@ -371,6 +400,12 @@ const T = {
     errPhone:'رقم غير صالح (مثال: 212612345678+ أو 0612345678)',
     errCard:'رقم البطاقة غير صالح (مطلوب 16 رقماً)',
     errCardType:'البطاقة غير مقبولة — Visa أو Mastercard فقط',
+    errLuhn:'رقم البطاقة غير صالح — تحقق من الأرقام',
+    promoLabel:'رمز ترويجي / هدية', promoPh:'مثال: BRIDGE10', promoApply:'تطبيق',
+    promoOk:(d:number)=>`تم تطبيق -${d} MAD 🎉`, promoErr:'الرمز غير صالح أو مستخدم',
+    diamondsSection:'💎 ماساتي Bridge', diamondsAvail:(n:number)=>`${n} نقطة (= ${Math.floor(n/100)} MAD)`,
+    diamondsUse:'تحويل إلى خصم', diamondsNone:'لا توجد نقاط بعد — العب لتكسبها!',
+    discountRow:(d:number)=>`الخصم المطبق: -${d} MAD`,
     errExpiry:'تاريخ غير صالح (صيغة MM/AA وغير منتهية)',
     errCardName:'اسم حامل البطاقة مطلوب',
     paymentTabCard:'💳 بطاقة', paymentTabPaypal:'🅿️ PayPal',
@@ -454,6 +489,12 @@ const T = {
     errPhone:'ⴰⵏⵎⵔ ⵓⵔ ⵉⵙⵀⵡⴰ (ex: +212 612 345 678)',
     errCard:'ⵜⴰⴽⴰⵔⴷⵜ ⵓⵔ ⵜⵙⵀⵡⴰ (16 ⵉⵏⵎⵎⴰⵔⵏ)',
     errCardType:'ⵜⴰⴽⴰⵔⴷⵜ ⵓⵔ ⵜⵜⵓⵇⴱⵍ — Visa ⵏⵖ Mastercard',
+    errLuhn:'ⴰⵏⵓⵎⵔ ⵏ ⵜⴰⴽⴰⵔⴷⵜ ⵓⵔ ⵉⵍⵓⵍ — ⵅⵛⵎ ⵉⵎⵔⴰⵡⵏ',
+    promoLabel:'ⴰⵙⵉⴼⴼⴰⵖ / ⵜⵉⵡⵍⴰⴼⵜ', promoPh:'ⴰⵎⴷⵢⴰ: BRIDGE10', promoApply:'ⵙⴱⴷⴷ',
+    promoOk:(d:number)=>` -${d} MAD ⵜⵓⵙⵉⵏ 🎉`, promoErr:'ⴰⵙⵉⴼⴼⴰⵖ ⵓⵔ ⵉⵍⵓⵍ',
+    diamondsSection:'💎 ⵉⵎⴰⵙⵙⵏ ⵉⵏⵓ Bridge', diamondsAvail:(n:number)=>`${n} ⵏⵇⴰⵟ (= ${Math.floor(n/100)} MAD)`,
+    diamondsUse:'ⵙⴱⴷⴷ ⵖ ⵜⵙⵇⵇⵉⵎⵜ', diamondsNone:'ⵓⵔ ⵉⵍⵍⴰ ⵉⵎⴰⵙ — ⵉⵍⵓ !',
+    discountRow:(d:number)=>`ⵜⴰⵙⵇⵇⵉⵎⵜ: -${d} MAD`,
     errExpiry:'ⴰⵣⵎⵣ ⵓⵔ ⵉⵙⵀⵡⴰ (MM/AA)',
     errCardName:'ⵉⵙⵎ ⵏ ⵓⵎⵙⴽⴽⵉ ⵉⵍⵍⴰ',
     paymentTabCard:'💳 ⵜⴰⴽⴰⵔⴷⵜ', paymentTabPaypal:'🅿️ PayPal',
@@ -1456,7 +1497,7 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
   // ── Validation helpers ──────────────────────────────────────────────────────
   const validateName=(v:string)=>v.trim().length>=3&&/\s/.test(v.trim());
   const validatePhone=(v:string)=>{const d=v.replace(/\D/g,'');return (d.length===9&&/^[67]/.test(d))||(d.length===10&&/^0[67]/.test(d))||(d.length===12&&/^212[67]/.test(d));};
-  const validateCard=(v:string)=>v.replace(/\D/g,'').length===16&&isValidCardType(v);
+  const validateCard=(v:string)=>isRealCard(v);
   const validatePaypal=(v:string)=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
   const validateExpiry=(v:string)=>{
     const m=v.match(/^(\d{2})\/(\d{2})$/);
@@ -1692,12 +1733,39 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
   onQty:(cartId:string,delta:number)=>void;
   profile:UserProfile; onClearCart:()=>void; restaurantName?:string;
 }) {
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
   const [, navigate] = useLocation();
   const t=T[lang]; const isAR=lang==='ar'; const fClass=fontClass(lang);
   const [delivMode,setDelivMode]=useState<'delivery'|'collect'>('delivery');
   const baseTotal=cart.reduce((s,i)=>s+i.totalPerUnit*i.qty,0);
-  const total=baseTotal+(delivMode==='collect'?2.99:0);
+  const collectFee=delivMode==='collect'?2.99:0;
+  // Promo codes
+  const [promoInput,setPromoInput]=useState('');
+  const [promoDiscount,setPromoDiscount]=useState(0);
+  const [promoMsg,setPromoMsg]=useState('');
+  const [promoIsErr,setPromoIsErr]=useState(false);
+  const [usedPromos]=useState(new Set<string>());
+  const applyPromo=()=>{
+    const code=promoInput.trim().toUpperCase();
+    if(!code)return;
+    if(usedPromos.has(code)){setPromoMsg(t.promoErr);setPromoIsErr(true);return;}
+    const disc=PROMO_CODES[code];
+    if(!disc){setPromoMsg(t.promoErr);setPromoIsErr(true);return;}
+    usedPromos.add(code);
+    setPromoDiscount(d=>d+disc);
+    setPromoMsg(t.promoOk(disc));setPromoIsErr(false);setPromoInput('');
+  };
+  // Game diamonds → MAD
+  const gamePts=useMemo(()=>{try{return parseInt(localStorage.getItem(`bridge_game_pts_${user?.id||'guest'}`)||'0',10);}catch{return 0;}},[user?.id]);
+  const maxPtsMAD=Math.floor(gamePts/100);
+  const [ptsUsed,setPtsUsed]=useState(0);
+  const usePts=(mad:number)=>{
+    const clamped=Math.min(mad,maxPtsMAD);
+    setPtsUsed(clamped);
+    try{localStorage.setItem(`bridge_game_pts_${user?.id||'guest'}`,String(Math.max(0,gamePts-clamped*100)));}catch(_){}
+  };
+  const totalDiscount=promoDiscount+ptsUsed;
+  const total=Math.max(0,Math.round((baseTotal+collectFee-totalDiscount)*100)/100);
   const [step,setStep]=useState<CheckoutStep>('cart');
   const [name,setName]=useState(profile.name);
   const [addr,setAddr]=useState(profile.address);
@@ -1968,11 +2036,68 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                     <span className="font-bold" style={{color:'#B45309'}}>+2.99 MAD</span>
                   </div>
                 )}
+                {totalDiscount>0&&(
+                  <div className="flex justify-between text-xs pt-1 pb-1">
+                    <span className={`font-bold ${fClass}`} style={{color:'#059669'}}>{t.discountRow(totalDiscount)}</span>
+                    <span className="font-bold" style={{color:'#059669'}}>-{totalDiscount} MAD</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm mt-2 pt-2" style={{borderTop:'1px solid #E5E1D8'}}>
                   <span className={`font-black ${fClass}`} style={{color:'#065F46'}}>{t.total}</span>
                   <span className="font-black" style={{color:'#065F46'}}>{total} MAD</span>
                 </div>
               </div>
+
+              {/* ── Promo Code ── */}
+              <div className="rounded-2xl p-4 mb-3" style={{background:'#FFFBEB',border:'1.5px solid #FDE68A'}}>
+                <p className={`font-black text-[11px] mb-2 ${fClass}`} style={{color:'#92400E'}}>🎁 {t.promoLabel}</p>
+                <div className="flex gap-2">
+                  <input
+                    value={promoInput} onChange={e=>setPromoInput(e.target.value.toUpperCase())}
+                    onKeyDown={e=>e.key==='Enter'&&applyPromo()}
+                    placeholder={t.promoPh}
+                    className={`flex-1 px-3 py-2 rounded-xl text-sm font-bold outline-none ${fClass}`}
+                    style={{background:'white',border:'1.5px solid #FDE68A',color:'#92400E',direction:isAR?'rtl':'ltr'}}
+                  />
+                  <button onClick={applyPromo}
+                    className="px-4 py-2 rounded-xl font-black text-xs text-white transition-all active:scale-95"
+                    style={{background:'#B45309',boxShadow:'0 3px 10px rgba(180,83,9,0.3)'}}>
+                    {t.promoApply}
+                  </button>
+                </div>
+                {promoMsg&&<p className={`text-[10px] font-bold mt-1.5 ${fClass}`} style={{color:promoIsErr?'#DC2626':'#059669'}}>{promoMsg}</p>}
+              </div>
+
+              {/* ── Diamonds → MAD ── */}
+              <div className="rounded-2xl p-4 mb-3" style={{background:'linear-gradient(135deg,#0A1A12,#0D2E1A)',border:'1px solid rgba(74,222,128,0.3)'}}>
+                <p className="font-black text-[11px] mb-1" style={{color:'#D9C5A0'}}>
+                  {t.diamondsSection}
+                </p>
+                {gamePts>0?(
+                  <>
+                    <p className="text-[10px] mb-2" style={{color:'rgba(255,255,255,0.6)'}}>{t.diamondsAvail(gamePts)}</p>
+                    {ptsUsed>0?(
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold" style={{color:'#4ADE80'}}>✓ -{ptsUsed} MAD {lang==='ar'?'مطبق':lang==='en'?'applied':'appliqué'}</span>
+                        <button onClick={()=>setPtsUsed(0)} className="text-[9px] font-bold px-2 py-1 rounded-lg" style={{background:'rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.5)'}}>✕</button>
+                      </div>
+                    ):(
+                      <div className="flex gap-2 flex-wrap">
+                        {[1,2,5,maxPtsMAD].filter((v,i,a)=>v>0&&a.indexOf(v)===i&&v<=maxPtsMAD).map(mad=>(
+                          <button key={mad} onClick={()=>usePts(mad)}
+                            className="px-3 py-1 rounded-xl font-black text-[10px] text-white transition-all active:scale-95"
+                            style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.5)',color:'#4ADE80'}}>
+                            -{mad} MAD
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ):(
+                  <p className="text-[10px]" style={{color:'rgba(255,255,255,0.4)'}}>{t.diamondsNone}</p>
+                )}
+              </div>
+
               {([{key:'cash'as const,icon:'🤝',label:t.cashOption,desc:t.cashOptionDesc,color:'#065F46',bg:'#F0FDF4',selBg:'#D1FAE5'},{key:'card'as const,icon:'💳',label:t.cardOption,desc:t.cardOptionDesc,color:'#4F46E5',bg:'#EEF2FF',selBg:'#E0E7FF'}] as const).filter(opt=>!(delivMode==='collect'&&opt.key==='cash')).map(opt=>(
                 <button key={opt.key} onClick={()=>setPayMethod(opt.key)}
                   className="w-full flex items-center gap-4 p-4 rounded-2xl mb-3 text-left transition-all active:scale-95"
@@ -2053,6 +2178,8 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                 <span>🔒</span><p className="text-[10px]" style={{color:'#9CA3AF'}}>{t.sslBadge} · PCI DSS</p>
               </div>
               <button onClick={()=>{
+                if(!isValidCardType(cardNum)){setCardErr(t.errCardType);return;}
+                if(!isRealCard(cardNum)){setCardErr(t.errLuhn);return;}
                 if(!cardCVV||cardCVV.length<3){setCardErr(t.fillAll);return;}
                 setCardErr('');
                 sendOrderToAPI('card');
