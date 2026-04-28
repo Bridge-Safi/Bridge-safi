@@ -1380,12 +1380,15 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
             <p className={`font-black text-sm ${fClass}`} style={{color:'#065F46'}}>👤 {t.profileTitle}</p>
             <p className={`text-[10px] mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{t.profileSub}</p>
           </div>
-          {/* Center: shark mascot + game ID + points */}
-          <div className="flex flex-col items-center gap-0.5 flex-shrink-0">
+          {/* Center: shark mascot + game ID + points — tap to open game */}
+          <button
+            onClick={()=>{ onClose(); navigate('/game'); }}
+            className="flex flex-col items-center gap-0.5 flex-shrink-0 active:scale-95 transition-transform"
+            style={{background:'none',border:'none',cursor:'pointer',padding:'2px 4px',borderRadius:12}}>
             <div className="relative">
               <img src="/bridge-shark.png" alt="Bridge Shark"
-                style={{width:44,height:44,objectFit:'cover',objectPosition:'center top',borderRadius:'50%',border:'2px solid #065F46',boxShadow:'0 2px 8px rgba(6,95,70,0.35)',background:'#0A1A12'}}/>
-              <span style={{position:'absolute',bottom:-3,left:'50%',transform:'translateX(-50%)',background:'#065F46',color:'#fff',fontSize:7,fontWeight:900,padding:'1px 5px',borderRadius:8,whiteSpace:'nowrap',letterSpacing:0.5}}>
+                style={{width:46,height:46,objectFit:'cover',objectPosition:'center top',borderRadius:'50%',border:'2.5px solid #065F46',boxShadow:'0 2px 12px rgba(6,95,70,0.4)',background:'#0A1A12'}}/>
+              <span style={{position:'absolute',bottom:-3,left:'50%',transform:'translateX(-50%)',background:'linear-gradient(90deg,#065F46,#047857)',color:'#fff',fontSize:7,fontWeight:900,padding:'1px 6px',borderRadius:8,whiteSpace:'nowrap',letterSpacing:0.5,boxShadow:'0 1px 4px rgba(0,0,0,0.2)'}}>
                 {t.gameTitle}
               </span>
             </div>
@@ -1394,7 +1397,7 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
               <span style={{fontSize:12}}>💎</span>
               <span style={{fontSize:9,fontWeight:900,color:'#92400E'}}>{gamePoints} {t.gamePts}</span>
             </div>
-          </div>
+          </button>
           {/* Right: close button */}
           <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center font-black flex-shrink-0" style={{background:'#F3F4F6',color:'#6B7280',fontSize:14}}>✕</button>
         </div>

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { createRoot } from "react-dom/client";
-import { ClerkProvider, useClerk } from '@clerk/react';
+import { ClerkProvider, useClerk, useUser } from '@clerk/react';
 import { Switch, Route, useLocation, Router as WouterRouter } from 'wouter';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import App from "./App";
@@ -403,6 +403,91 @@ function ClerkQueryClientCacheInvalidator() {
   return null;
 }
 
+// ─── GAME PAGE PLACEHOLDER ────────────────────────────────────────────────────
+
+function GamePage() {
+  const { isLoaded, isSignedIn, user } = useUser();
+  const [, navigate] = useLocation();
+
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) navigate('/sign-in');
+  }, [isLoaded, isSignedIn]);
+
+  if (!isSignedIn) return null;
+
+  const gameId = user?.id
+    ? 'BR-' + user.id.replace(/[^a-z0-9]/gi, '').slice(-7).toUpperCase()
+    : 'BR-???????';
+
+  const gamePoints = (() => {
+    try { return parseInt(localStorage.getItem(`bridge_game_pts_${user?.id||'guest'}`) || '0', 10); } catch { return 0; }
+  })();
+
+  return (
+    <div style={{minHeight:'100dvh',background:'linear-gradient(160deg,#020c07 0%,#0A2218 40%,#0D2E1A 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'2rem 1.5rem',position:'relative',overflow:'hidden'}}>
+      {/* Background zellige pattern */}
+      <div style={{position:'absolute',inset:0,opacity:0.04,backgroundImage:'repeating-linear-gradient(45deg,#ffffff 0,#ffffff 1px,transparent 0,transparent 50%)',backgroundSize:'20px 20px',pointerEvents:'none'}}/>
+
+      {/* Back button */}
+      <button onClick={()=>navigate('/')}
+        style={{position:'absolute',top:20,left:20,background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',color:'#fff',borderRadius:12,padding:'8px 16px',fontSize:13,fontWeight:800,cursor:'pointer',backdropFilter:'blur(8px)'}}>
+        ← Retour
+      </button>
+
+      {/* Shark mascot */}
+      <div style={{position:'relative',marginBottom:'1.5rem'}}>
+        <div style={{width:160,height:160,borderRadius:'50%',overflow:'hidden',border:'3px solid #065F46',boxShadow:'0 0 60px rgba(6,95,70,0.6), 0 0 120px rgba(6,95,70,0.2)',background:'#0A1A12'}}>
+          <img src="/bridge-shark.png" alt="Bridge Shark"
+            style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top'}}/>
+        </div>
+        {/* Glow ring */}
+        <div style={{position:'absolute',inset:-8,borderRadius:'50%',border:'2px solid rgba(6,95,70,0.4)',animation:'pulse 2s ease-in-out infinite'}}/>
+      </div>
+
+      {/* Game title */}
+      <h1 style={{color:'#fff',fontSize:'2rem',fontWeight:900,letterSpacing:4,textTransform:'uppercase',margin:0,textShadow:'0 0 30px rgba(6,95,70,0.8)'}}>
+        BRIDGE
+      </h1>
+      <h2 style={{color:'#4ADE80',fontSize:'1rem',fontWeight:700,letterSpacing:6,textTransform:'uppercase',margin:'4px 0 0',textShadow:'0 0 20px rgba(74,222,128,0.5)'}}>
+        GAME
+      </h2>
+
+      {/* Player ID badge */}
+      <div style={{marginTop:'1.5rem',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:16,padding:'10px 24px',backdropFilter:'blur(8px)',textAlign:'center'}}>
+        <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700,letterSpacing:3,textTransform:'uppercase',margin:'0 0 4px'}}>ID JOUEUR</p>
+        <p style={{color:'#4ADE80',fontSize:18,fontWeight:900,letterSpacing:4,margin:0}}>{gameId}</p>
+      </div>
+
+      {/* Diamond points */}
+      <div style={{marginTop:'1rem',display:'flex',alignItems:'center',gap:10,background:'rgba(253,224,71,0.1)',border:'1px solid rgba(253,224,71,0.3)',borderRadius:16,padding:'10px 24px'}}>
+        <span style={{fontSize:28}}>💎</span>
+        <div>
+          <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700,letterSpacing:3,textTransform:'uppercase',margin:'0 0 2px'}}>DIAMANTS</p>
+          <p style={{color:'#FDE047',fontSize:20,fontWeight:900,margin:0}}>{gamePoints} pts</p>
+        </div>
+      </div>
+
+      {/* Coming soon badge */}
+      <div style={{marginTop:'2.5rem',textAlign:'center'}}>
+        <div style={{display:'inline-block',background:'rgba(6,95,70,0.3)',border:'1px solid #065F46',borderRadius:20,padding:'12px 32px',backdropFilter:'blur(8px)'}}>
+          <p style={{color:'#4ADE80',fontSize:22,margin:'0 0 4px'}}>🎮</p>
+          <p style={{color:'#fff',fontSize:14,fontWeight:900,margin:'0 0 4px',letterSpacing:1}}>Jeu en préparation</p>
+          <p style={{color:'rgba(255,255,255,0.4)',fontSize:11,margin:0}}>Collecte de 💎 · Points → Menus offerts</p>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes pulse {
+          0%,100%{opacity:0.4;transform:scale(1);}
+          50%{opacity:0.8;transform:scale(1.04);}
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 function ClerkProviderWithRoutes() {
   const [, setLocation] = useLocation();
 
@@ -418,6 +503,7 @@ function ClerkProviderWithRoutes() {
         <Switch>
           <Route path="/sign-in/*?" component={SignInPage} />
           <Route path="/sign-up/*?" component={SignUpPage} />
+          <Route path="/game" component={GamePage} />
           <Route component={App} />
         </Switch>
       </QueryClientProvider>
