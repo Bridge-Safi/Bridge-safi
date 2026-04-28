@@ -174,6 +174,7 @@ function SignInPage() {
         routing="path"
         path={`${basePath}/sign-in`}
         signUpUrl={`${basePath}/sign-up`}
+        fallbackRedirectUrl={basePath || '/'}
         appearance={clerkAppearance}
       />
     </AuthPageWrapper>
@@ -188,6 +189,7 @@ function SignUpPage() {
         routing="path"
         path={`${basePath}/sign-up`}
         signInUrl={`${basePath}/sign-in`}
+        fallbackRedirectUrl={basePath || '/'}
         appearance={clerkAppearance}
       />
     </AuthPageWrapper>

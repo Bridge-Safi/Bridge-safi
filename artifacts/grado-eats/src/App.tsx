@@ -186,7 +186,7 @@ const T = {
     contactTitle:"Besoin d'aide ?", contactSub:'Notre équipe est disponible 7j/7',
     whatsapp:'WhatsApp Business', phone:'Appeler', email:'Email', hours:'Horaires', hoursVal:'8h00 – 23h00',
     navHome:'Accueil', navTrack:'Suivi', navContact:'Contact', navCart:'Panier',
-    footer:'© 2026 Bridge Safi · bridge-safi.com', plateau:'Plateau · Centre-Ville · Bouzidi',
+    footer:'© 2026 Bridge Safi · safi-bridge.ma', plateau:'Plateau · Centre-Ville · Bouzidi',
     safiExcl:'Spécialité Safi', selected:'Sélectionné ✓',
     waMsgHeader:'🛍️ Nouvelle commande Bridge Safi\n\n📦 Articles:\n',
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 Total: ${total} MAD\n\n👤 Nom: ${name}\n📍 Adresse: ${addr}, Safi\n📞 Tél: ${phone}\n\nMerci de confirmer ma commande ! 🙏`,
@@ -252,7 +252,7 @@ const T = {
     contactTitle:'Need help?', contactSub:'Our team is available 7 days a week',
     whatsapp:'WhatsApp Business', phone:'Call us', email:'Email', hours:'Hours', hoursVal:'8:00 AM – 11:00 PM',
     navHome:'Home', navTrack:'Track', navContact:'Contact', navCart:'Cart',
-    footer:'© 2026 Bridge Safi · bridge-safi.com', plateau:'Plateau · City Center · Bouzidi',
+    footer:'© 2026 Bridge Safi · safi-bridge.ma', plateau:'Plateau · City Center · Bouzidi',
     safiExcl:'Safi Special', selected:'Selected ✓',
     waMsgHeader:'🛍️ New Bridge Safi order\n\n📦 Items:\n',
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 Total: ${total} MAD\n\n👤 Name: ${name}\n📍 Address: ${addr}, Safi\n📞 Phone: ${phone}\n\nPlease confirm my order! 🙏`,
@@ -319,7 +319,7 @@ const T = {
     whatsapp:'واتساب بيزنس', phone:'اتصل بنا', email:'البريد الإلكتروني',
     hours:'ساعات العمل', hoursVal:'8:00 ص – 11:00 م',
     navHome:'الرئيسية', navTrack:'تتبع', navContact:'تواصل', navCart:'السلة',
-    footer:'© 2026 بريدج سافي · bridge-safi.com', plateau:'الهضبة · وسط المدينة · بوزيدي',
+    footer:'© 2026 بريدج سافي · safi-bridge.ma', plateau:'الهضبة · وسط المدينة · بوزيدي',
     safiExcl:'تخصص آسفي', selected:'تم الاختيار ✓',
     waMsgHeader:'🛍️ طلب جديد من بريدج إيتس\n\n📦 الطلبات:\n',
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 المجموع: ${total} MAD\n\n👤 الاسم: ${name}\n📍 العنوان: ${addr}، آسفي\n📞 الهاتف: ${phone}\n\nأرجو تأكيد طلبي! 🙏`,
@@ -386,7 +386,7 @@ const T = {
     whatsapp:'WA Business', phone:'ⵙⵓⵍ', email:'ⵉⵎⴰⵢⵍ',
     hours:'ⵜⴰⵙⵔⴰⵜ', hoursVal:'8:00 – 23:00',
     navHome:'ⵜⴰⵣⵡⴰⵔⵜ', navTrack:'ⴰⵙⴽⵍⵙ', navContact:'ⴰⵎⵢⴰⵡⴰⴹ', navCart:'ⴰⵙⵡⵉⵔ',
-    footer:'© 2026 ⴱⵔⵉⴷⵊ ⵙⴰⴼⵉ · bridge-safi.com', plateau:'ⴰⴱⵍⴰⵟⵓ · ⵓⵍⵍⴰ ⵏ ⵜⵎⴷⵉⵏⵜ · ⴱⵓⵣⵉⴷⵉ',
+    footer:'© 2026 ⴱⵔⵉⴷⵊ ⵙⴰⴼⵉ · safi-bridge.ma', plateau:'ⴰⴱⵍⴰⵟⵓ · ⵓⵍⵍⴰ ⵏ ⵜⵎⴷⵉⵏⵜ · ⴱⵓⵣⵉⴷⵉ',
     safiExcl:'ⵏ ⵙⴰⴼⵉ', selected:'ⵉⵜⵜⵓⴼⵔⴰ ✓',
     waMsgHeader:'🛍️ ⵜⴰⵖⵓⵍⵜ ⵜⴰⵎⴰⵢⵏⵓⵜ ⵏ ⴱⵔⵉⴷⵊ ⵉⵢⵜⵙ\n\n📦 ⵉⵙⴽⴰⵔⵏ:\n',
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 ⴰⵎⵎⴰⵙ: ${total} MAD\n\n👤 ⵉⵙⵎ: ${name}\n📍 ⵜⴰⵙⵓⵏⵜ: ${addr}, ⵙⴰⴼⵉ\n📞 ⴰⵙⵓⵍ: ${phone}\n\nⵙⵛⴷ ⵜⴰⵖⵓⵍⵜ ⵉⵏⵓ! 🙏`,
@@ -1890,7 +1890,7 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
           <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.007-1.374l-.359-.214-3.728.977 1-3.647-.234-.374A9.818 9.818 0 112 12c0-5.422 4.396-9.818 9.818-9.818 5.421 0 9.818 4.396 9.818 9.818 0 5.421-4.397 9.818-9.818 9.818z"/></svg>
         ),label:t.whatsapp,sub:'+212 7 64 79 48 56'},
         {href:'tel:+212764794856',bg:'#FDFCF9',border:'#E5E1D8',iconBg:'#F0FDF4',iconBorder:'#BBF7D0',icon:<span className="text-xl">📞</span>,label:t.phone,sub:'+212 7 64 79 48 56'},
-        {href:'mailto:contact@bridge-safi.com',bg:'#FDFCF9',border:'#E5E1D8',iconBg:'#FEF9EE',iconBorder:'#FDE68A',icon:<span className="text-xl">✉️</span>,label:t.email,sub:'contact@bridge-safi.com'},
+        {href:'mailto:contact@safi-bridge.ma',bg:'#FDFCF9',border:'#E5E1D8',iconBg:'#FEF9EE',iconBorder:'#FDE68A',icon:<span className="text-xl">✉️</span>,label:t.email,sub:'contact@safi-bridge.ma'},
       ].map((item,i)=>(
         <a key={i} href={item.href} target={item.href.startsWith('http')?'_blank':undefined} rel="noopener noreferrer"
           className="flex items-center gap-4 p-4 rounded-2xl mb-3 transition-all active:scale-95"
@@ -2114,7 +2114,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
             </button>
           ))}
         </div>
-        <p className="text-center text-[9px] pb-2" style={{color:'#C9BFB2'}}>© 2026 Bridge Safi · bridge-safi.com</p>
+        <p className="text-center text-[9px] pb-2" style={{color:'#C9BFB2'}}>© 2026 Bridge Safi · safi-bridge.ma</p>
       </nav>
 
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
@@ -2439,7 +2439,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile}:{
         </button>
       </div>
 
-      {showProfile&&<ProfileModal lang={lang} profile={profile} saveProfile={saveProfile} onClose={()=>setShowProfile(false)}/>}
+      {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
     </div>
   );
 }
@@ -2465,6 +2465,7 @@ export default function App() {
   const [cart,setCart]         = useState<CartItem[]>([]);
   const [showCart,setShowCart] = useState(false);
   const [showProfile,setShowProfile] = useState(false);
+  const [showDriver,setShowDriver] = useState(false);
   const [selectedRestaurant,setSelectedRestaurant] = useState<Restaurant|null>(
     saved?.restaurantId ? (RESTAURANTS.find(r=>r.id===saved.restaurantId)??null) : null
   );
@@ -2517,11 +2518,17 @@ export default function App() {
   const showSplash = !splashDone || !isLoaded;
   if(showSplash) return <SplashScreen/>;
 
-  if(!isSignedIn) return <SignInPage />;
+  // useEffect above handles navigate('/sign-in') — return null while redirecting
+  if(!isSignedIn) return null;
 
   // Profile onboarding after first sign-in
   if(!profile.onboardingComplete) return (
-    <ProfileOnboardingScreen lang={lang} profile={profile} saveProfile={saveProfile} onDone={()=>{}}/>
+    <ProfileOnboardingScreen
+      lang={lang}
+      profile={profile}
+      saveProfile={saveProfile}
+      onDone={()=>saveProfile({...profile,onboardingComplete:true})}
+    />
   );
 
   if(service==='none') return <ServiceSelectPage onSelect={s=>setService(s)} lang={lang} cycleLang={cycleLang}/>;
@@ -2626,6 +2633,31 @@ export default function App() {
 
       {showCart&&<CheckoutDrawer cart={cart} lang={lang} onClose={()=>setShowCart(false)} onQty={adjustQty} profile={profile} onClearCart={clearCart} restaurantName={selectedRestaurant?.name}/>}
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
+
+      {showDriver&&(
+        <div className="fixed inset-0 z-50 flex items-end" style={{background:'rgba(10,30,20,0.7)',backdropFilter:'blur(6px)'}} onClick={()=>setShowDriver(false)}>
+          <div className="w-full max-w-md mx-auto rounded-t-3xl p-6" style={{background:'#FDFCF9',boxShadow:'0 -20px 60px rgba(0,0,0,0.3)'}} onClick={e=>e.stopPropagation()}>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl" style={{background:'linear-gradient(135deg,#065F46,#047857)'}}>🛵</div>
+              <div>
+                <p className="font-black text-sm" style={{color:'#065F46'}}>Bridge Logistique</p>
+                <p className="text-xs" style={{color:'#9CA3AF'}}>Portail livreurs · Tableau de bord</p>
+              </div>
+            </div>
+            <p className="text-xs mb-4 leading-relaxed" style={{color:'#6B7280'}}>
+              Accès réservé aux livreurs Bridge. Gérez vos livraisons, suivez vos commandes en temps réel.
+            </p>
+            <a href={DRIVER_APP_URL} target="_blank" rel="noopener noreferrer"
+              className="block w-full py-3.5 rounded-2xl text-center font-black text-sm text-white"
+              style={{background:'linear-gradient(135deg,#065F46,#047857)',boxShadow:'0 6px 20px rgba(6,95,70,0.3)'}}>
+              Ouvrir l'app livreur →
+            </a>
+            <button onClick={()=>setShowDriver(false)} className="block w-full mt-3 py-3 rounded-2xl text-center text-xs font-bold" style={{color:'#9CA3AF',background:'#F3F4F6'}}>
+              Fermer
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
