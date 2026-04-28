@@ -797,6 +797,104 @@ function GamePage() {
   );
 }
 
+// ─── DRIVER GPS TRACKER PAGE ─────────────────────────────────────────────────
+// The restaurant sends this URL to the driver via WhatsApp.
+// The driver's browser streams GPS to /api/tracking/:ref every 3 seconds.
+
+function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
+  const ref = params?.ref || '';
+  const [status, setStatus] = useState<'asking'|'active'|'error'|'denied'>('asking');
+  const [coords, setCoords] = useState<{lat:number;lng:number}|null>(null);
+  const [lastSent, setLastSent] = useState<number|null>(null);
+  const watchId = useRef<number|null>(null);
+
+  const pushPosition = async (lat: number, lng: number) => {
+    try {
+      await fetch(`/api/tracking/${ref}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lat, lng }),
+      });
+      setLastSent(Date.now());
+    } catch (_) {}
+  };
+
+  useEffect(() => {
+    if (!ref) { setStatus('error'); return; }
+    if (!navigator.geolocation) { setStatus('error'); return; }
+    watchId.current = navigator.geolocation.watchPosition(
+      (pos) => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        setCoords({ lat, lng });
+        setStatus('active');
+        pushPosition(lat, lng);
+      },
+      () => setStatus('denied'),
+      { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 },
+    );
+    return () => {
+      if (watchId.current !== null) navigator.geolocation.clearWatch(watchId.current);
+      if (ref) fetch(`/api/tracking/${ref}`, { method: 'DELETE' }).catch(() => {});
+    };
+  }, [ref]);
+
+  const secsAgo = lastSent ? Math.round((Date.now() - lastSent) / 1000) : null;
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#F0FDF4', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'system-ui, sans-serif' }}>
+      <div style={{ width: '100%', maxWidth: '360px', background: '#fff', borderRadius: '24px', padding: '32px 24px', boxShadow: '0 8px 40px rgba(0,0,0,0.12)', textAlign: 'center' }}>
+        <div style={{ fontSize: '64px', marginBottom: '16px' }}>🛵</div>
+        <h1 style={{ fontSize: '20px', fontWeight: '900', color: '#065F46', margin: '0 0 4px' }}>Bridge Safi — GPS Livreur</h1>
+        <p style={{ fontSize: '12px', color: '#9CA3AF', margin: '0 0 24px' }}>Commande #{ref}</p>
+
+        {status === 'asking' && (
+          <div style={{ background: '#FEF3C7', borderRadius: '12px', padding: '16px' }}>
+            <p style={{ fontSize: '14px', color: '#B45309', fontWeight: '700' }}>⏳ En attente de la localisation…</p>
+            <p style={{ fontSize: '12px', color: '#92400E', marginTop: '4px' }}>Autorisez l'accès à votre position GPS</p>
+          </div>
+        )}
+
+        {status === 'active' && (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#D1FAE5', borderRadius: '12px', padding: '12px 16px', marginBottom: '16px' }}>
+              <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#059669', display: 'inline-block', animation: 'pulse 1.5s infinite' }}/>
+              <span style={{ fontSize: '14px', fontWeight: '800', color: '#065F46' }}>GPS EN DIRECT</span>
+            </div>
+            <p style={{ fontSize: '12px', color: '#6B7280', marginBottom: '8px' }}>Votre position est partagée avec le client en temps réel</p>
+            {coords && (
+              <p style={{ fontSize: '11px', fontFamily: 'monospace', color: '#9CA3AF', background: '#F9FAFB', borderRadius: '8px', padding: '8px' }}>
+                {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
+              </p>
+            )}
+            {secsAgo !== null && (
+              <p style={{ fontSize: '11px', color: '#10B981', marginTop: '8px' }}>✓ Dernière mise à jour il y a {secsAgo}s</p>
+            )}
+            <div style={{ marginTop: '20px', padding: '12px', background: '#FEF3C7', borderRadius: '12px' }}>
+              <p style={{ fontSize: '12px', color: '#92400E', fontWeight: '700' }}>⚠️ Ne fermez pas cette page</p>
+              <p style={{ fontSize: '11px', color: '#B45309', marginTop: '4px' }}>Laissez-la ouverte pendant toute la livraison</p>
+            </div>
+          </div>
+        )}
+
+        {status === 'denied' && (
+          <div style={{ background: '#FEE2E2', borderRadius: '12px', padding: '16px' }}>
+            <p style={{ fontSize: '14px', color: '#DC2626', fontWeight: '700' }}>❌ Accès GPS refusé</p>
+            <p style={{ fontSize: '12px', color: '#991B1B', marginTop: '4px' }}>Activez la localisation dans les paramètres de votre navigateur puis rechargez la page</p>
+          </div>
+        )}
+
+        {status === 'error' && (
+          <div style={{ background: '#FEE2E2', borderRadius: '12px', padding: '16px' }}>
+            <p style={{ fontSize: '14px', color: '#DC2626', fontWeight: '700' }}>❌ Lien invalide</p>
+            <p style={{ fontSize: '12px', color: '#991B1B', marginTop: '4px' }}>Utilisez le lien envoyé par le restaurant</p>
+          </div>
+        )}
+      </div>
+      <style>{`@keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:1;transform:scale(1.3);}}`}</style>
+    </div>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 function ClerkProviderWithRoutes() {
@@ -817,6 +915,7 @@ function ClerkProviderWithRoutes() {
           <Route path="/sign-up/*?" component={SignUpPage} />
           <Route path="/forgot-password" component={ForgotPasswordPage} />
           <Route path="/game" component={GamePage} />
+          <Route path="/driver/:ref" component={DriverTrackerPage} />
           <Route component={App} />
         </Switch>
       </QueryClientProvider>

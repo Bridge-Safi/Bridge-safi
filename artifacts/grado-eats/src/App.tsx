@@ -1728,10 +1728,11 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
 
 type CheckoutStep='cart'|'form'|'payment'|'card'|'success';
 
-function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantName}:{
+function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantName,onOrderSuccess}:{
   cart:CartItem[]; lang:Lang; onClose:()=>void;
   onQty:(cartId:string,delta:number)=>void;
   profile:UserProfile; onClearCart:()=>void; restaurantName?:string;
+  onOrderSuccess?:(ref:string)=>void;
 }) {
   const { isSignedIn, user } = useUser();
   const [, navigate] = useLocation();
@@ -1782,6 +1783,12 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
   const [orderRef]=useState(`BE-${Math.floor(1000+Math.random()*9000)}`);
   const [collectCode]=useState(`CC-${Math.floor(1000+Math.random()*9000)}`);
   const [cardErr,setCardErr]=useState('');
+
+  const handleSuccess=()=>{
+    localStorage.setItem('bridge_last_ref',orderRef);
+    onOrderSuccess?.(orderRef);
+    setStep('success');
+  };
 
   const autoFilled=!!(profile.name||profile.address||profile.phone);
 
@@ -2121,7 +2128,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
               <button
                 onClick={()=>{
                   if(!payMethod)return;
-                  if(payMethod==='cash'){sendOrderToAPI('cash');sendOrderToDriverApp('cash');setStep('success');}
+                  if(payMethod==='cash'){sendOrderToAPI('cash');sendOrderToDriverApp('cash');handleSuccess();}
                   else setStep('card');
                 }}
                 disabled={!payMethod}
@@ -2184,7 +2191,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                 setCardErr('');
                 sendOrderToAPI('card');
                 sendOrderToDriverApp('card');
-                setStep('success');
+                handleSuccess();
               }}
                 className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
                 style={{background:'#4F46E5',boxShadow:'0 6px 20px rgba(79,70,229,0.35)'}}>
@@ -2239,26 +2246,80 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
 
 // ─── TRACKING PAGE ────────────────────────────────────────────────────────────
 
-function TrackingPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
+// Component that pans the map to a new center
+function MapPanner({center}:{center:[number,number]}) {
+  const map=useMap();
+  useEffect(()=>{map.panTo(center,{animate:true,duration:1});},[center,map]);
+  return null;
+}
+
+function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string}) {
   const [activeStage,setActiveStage]=useState(2);
   const [courierStep,setCourierStep]=useState(0);
+  const [realPos,setRealPos]=useState<{lat:number;lng:number}|null>(null);
+  const [lastSeen,setLastSeen]=useState<number|null>(null);
   const isAR=lang==='ar'; const fClass=fontClass(lang);
+  const displayRef=orderRef||t.orderNum;
+
+  // Simulated fallback movement
   useEffect(()=>{const iv=setInterval(()=>setCourierStep(s=>(s+1)%ROUTE_POINTS.length),2500);return()=>clearInterval(iv);},[]);
+
+  // Poll real GPS position every 3 seconds
+  useEffect(()=>{
+    if(!orderRef) return;
+    const poll=async()=>{
+      try{
+        const res=await fetch(`/api/tracking/${orderRef}`,{cache:'no-store'});
+        if(res.ok){
+          const data=await res.json();
+          if(data.found){setRealPos({lat:data.lat,lng:data.lng});setLastSeen(data.updatedAt);}
+          else setRealPos(null);
+        }
+      }catch(_){}
+    };
+    poll();
+    const iv=setInterval(poll,3000);
+    return()=>clearInterval(iv);
+  },[orderRef]);
+
+  const isLive=realPos&&lastSeen&&(Date.now()-lastSeen<15000); // stale after 15s
+  const courierPos:[number,number]=realPos?[realPos.lat,realPos.lng]:ROUTE_POINTS[courierStep];
+  const mapCenter:[number,number]=courierPos;
+
+  // Live courier icon (pulsing green dot)
+  const liveIcon=L.divIcon({
+    html:`<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#059669,#065F46);border:3px solid #D9C5A0;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 6px rgba(5,150,105,0.25),0 4px 16px rgba(6,95,70,0.5);font-size:18px;animation:pulse 1.5s ease-in-out infinite;">🛵</div>`,
+    className:'',iconSize:[36,36],iconAnchor:[18,18],
+  });
+
+  // Stale icon (grey)
+  const staleIcon=L.divIcon({
+    html:`<div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#9CA3AF,#6B7280);border:3px solid #D9C5A0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.2);font-size:16px;">🛵</div>`,
+    className:'',iconSize:[34,34],iconAnchor:[17,17],
+  });
+
+  const secsAgo=lastSeen?Math.round((Date.now()-lastSeen)/1000):null;
+
   return (
     <div className="px-5">
+      {/* Order status card */}
       <div className="rounded-3xl p-4 mb-5" style={{background:'#FDFCF9',border:'1.5px solid #E5E1D8',boxShadow:'0 2px 12px rgba(0,0,0,0.06)'}}>
         <div className="flex items-center justify-between mb-1">
           <p className={`text-[10px] font-bold uppercase tracking-wider ${fClass}`} style={{color:'#9CA3AF'}}>{t.orderStatus}</p>
-          <span className="text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-1" style={{background:'#D1FAE5',color:'#065F46'}}>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse inline-block"/>{t.trackLive}
+          <span className="text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-1"
+            style={{background:isLive?'#D1FAE5':'#FEF3C7',color:isLive?'#065F46':'#B45309'}}>
+            <span className={`w-1.5 h-1.5 rounded-full ${isLive?'bg-emerald-500 animate-pulse':'bg-yellow-500'} inline-block`}/>
+            {isLive?t.trackLive:realPos?'⚠️ Signal faible':'📡 En attente GPS'}
           </span>
         </div>
-        <p className={`font-black text-sm ${fClass}`} style={{color:'#065F46'}}>{t.orderNum}</p>
+        <p className={`font-black text-sm ${fClass}`} style={{color:'#065F46'}}>{displayRef}</p>
         <div className="flex items-center gap-2 mt-2">
           <span className="text-base">⏱️</span>
           <p className="text-sm font-bold" style={{color:'#1A2F23'}}>{t.eta}: <span style={{color:'#065F46'}}>{t.etaTime}</span></p>
         </div>
       </div>
+
+      {/* Stages */}
       <div className="rounded-3xl p-5 mb-5" style={{background:'#FDFCF9',border:'1.5px solid #E5E1D8',boxShadow:'0 2px 12px rgba(0,0,0,0.06)'}}>
         <div className="relative mb-6">
           <div className="absolute top-4 h-0.5" style={{left:isAR?'auto':'12%',right:isAR?'12%':'auto',width:'76%',background:'#E5E1D8'}}/>
@@ -2290,25 +2351,57 @@ function TrackingPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
           ))}
         </div>
       </div>
-      <div className="rounded-3xl overflow-hidden mb-5" style={{border:'1.5px solid #E5E1D8'}}>
+
+      {/* Live GPS Map */}
+      <div className="rounded-3xl overflow-hidden mb-4" style={{border:`2px solid ${isLive?'#059669':'#E5E1D8'}`}}>
+        {isLive&&(
+          <div className="px-3 py-1.5 flex items-center gap-2" style={{background:'#065F46'}}>
+            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"/>
+            <span className="text-white text-[10px] font-black tracking-wide">GPS EN DIRECT</span>
+            {secsAgo!==null&&<span className="text-white/60 text-[9px] ml-auto">il y a {secsAgo}s</span>}
+          </div>
+        )}
         <div className="h-64">
-          <MapContainer center={[32.2990,-9.2385]} zoom={15} style={{height:'100%',width:'100%'}} zoomControl attributionControl={false}>
+          <MapContainer center={mapCenter} zoom={16} style={{height:'100%',width:'100%'}} zoomControl attributionControl={false}>
             <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"/>
             <Marker position={[32.3010,-9.2420]} icon={restaurantIcon}><Popup>🥘 Bridge Safi</Popup></Marker>
-            <MovingCourier step={courierStep}/>
+            {realPos?(
+              <Marker position={courierPos} icon={isLive?liveIcon:staleIcon}>
+                <Popup>🛵 Livreur — position réelle</Popup>
+              </Marker>
+            ):(
+              <MovingCourier step={courierStep}/>
+            )}
+            <MapPanner center={mapCenter}/>
           </MapContainer>
         </div>
         <div className="px-4 py-3 flex items-center justify-between" style={{background:'#FDFCF9'}}>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm" style={{background:'#D1FAE5'}}>🛵</div>
-            <div><p className="text-xs font-bold" style={{color:'#065F46'}}>{t.courierName}</p><p className="text-[10px]" style={{color:'#9CA3AF'}}>{t.trackZone}</p></div>
+            <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm" style={{background:isLive?'#D1FAE5':'#F3F4F6'}}>🛵</div>
+            <div>
+              <p className="text-xs font-bold" style={{color:'#065F46'}}>{t.courierName}</p>
+              <p className="text-[10px]" style={{color:'#9CA3AF'}}>
+                {isLive?'📡 GPS en direct':realPos?'⚠️ Signal perdu':t.trackZone}
+              </p>
+            </div>
           </div>
-          <div className="flex items-center gap-1 px-2 py-1 rounded-full" style={{background:'#F0FDF4'}}>
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"/>
-            <span className="text-[10px] font-black" style={{color:'#065F46'}}>{t.etaTime}</span>
+          <div className="flex items-center gap-1 px-2 py-1 rounded-full" style={{background:isLive?'#F0FDF4':'#F9F7F2'}}>
+            <span className={`w-2 h-2 rounded-full ${isLive?'bg-emerald-500 animate-pulse':'bg-gray-300'}`}/>
+            <span className="text-[10px] font-black" style={{color:isLive?'#065F46':'#9CA3AF'}}>{t.etaTime}</span>
           </div>
         </div>
       </div>
+
+      {/* Driver link info */}
+      {orderRef&&(
+        <div className="rounded-2xl p-3 mb-5" style={{background:'#EFF6FF',border:'1px solid #BFDBFE'}}>
+          <p className="text-[10px] font-black mb-1" style={{color:'#1D4ED8'}}>📡 Lien de suivi pour le livreur</p>
+          <p className="text-[9px] font-mono break-all" style={{color:'#3B82F6'}}>
+            {window.location.origin}/driver/{orderRef}
+          </p>
+          <p className="text-[9px] mt-1" style={{color:'#60A5FA'}}>Envoyez ce lien au livreur sur WhatsApp — sa position s'affiche ici en temps réel</p>
+        </div>
+      )}
     </div>
   );
 }
@@ -3134,6 +3227,7 @@ export default function App() {
   const [showCart,setShowCart] = useState(false);
   const [showProfile,setShowProfile] = useState(false);
   const [showDriver,setShowDriver] = useState(false);
+  const [lastOrderRef,setLastOrderRef] = useState<string>(()=>localStorage.getItem('bridge_last_ref')||'');
   const [selectedRestaurant,setSelectedRestaurant] = useState<Restaurant|null>(
     saved?.restaurantId ? (RESTAURANTS.find(r=>r.id===saved.restaurantId)??null) : null
   );
@@ -3265,7 +3359,7 @@ export default function App() {
         {page==='restaurant'&&selectedRestaurant&&(
           <RestaurantPage restaurant={selectedRestaurant} lang={lang} t={t} onBack={handleBack} onAddToCart={addToCart}/>
         )}
-        {page==='tracking'&&<TrackingPage lang={lang} t={t}/>}
+        {page==='tracking'&&<TrackingPage lang={lang} t={t} orderRef={lastOrderRef}/>}
         {page==='contact'&&<ContactPage lang={lang} t={t}/>}
       </main>
 
@@ -3302,7 +3396,7 @@ export default function App() {
         <p className="text-center text-[9px] pb-2" style={{color:'#C9BFB2'}}>{t.footer}</p>
       </nav>
 
-      {showCart&&<CheckoutDrawer cart={cart} lang={lang} onClose={()=>setShowCart(false)} onQty={adjustQty} profile={profile} onClearCart={clearCart} restaurantName={selectedRestaurant?.name}/>}
+      {showCart&&<CheckoutDrawer cart={cart} lang={lang} onClose={()=>setShowCart(false)} onQty={adjustQty} profile={profile} onClearCart={clearCart} restaurantName={selectedRestaurant?.name} onOrderSuccess={ref=>{setLastOrderRef(ref);setPage('tracking');setShowCart(false);}}/>}
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
 
       {showDriver&&(
