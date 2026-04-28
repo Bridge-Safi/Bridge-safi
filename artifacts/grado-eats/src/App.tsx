@@ -2576,6 +2576,17 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
           );
         })()}
       </div>
+
+      {/* ── AD SLOT — place de publicité ───────────────────────────────────── */}
+      {/* Pour afficher une pub : remplacer le contenu du div#ad-slot ci-dessous */}
+      <div id="ad-slot" className="w-full max-w-sm mt-6 px-4">
+        <div className="rounded-2xl overflow-hidden" style={{border:'1.5px dashed #D9C5A0',background:'rgba(253,252,249,0.7)',minHeight:90,display:'flex',alignItems:'center',justifyContent:'center'}}>
+          {/* PUB_CONTENT_START */}
+          <p className="text-[10px] font-bold tracking-widest uppercase" style={{color:'#C9BFB2'}}>Espace Publicitaire</p>
+          {/* PUB_CONTENT_END */}
+        </div>
+      </div>
+
     </div>
   );
 }
