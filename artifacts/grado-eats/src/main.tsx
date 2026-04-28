@@ -40,6 +40,7 @@ const clerkAppearance = {
     headerTitle: 'hidden',
     headerSubtitle: 'hidden',
     header: 'hidden',
+    formFieldAction: 'text-[#065F46] font-bold hover:text-[#047857]',
     socialButtonsBlockButton: 'border-2 border-[#E5E1D8] rounded-2xl font-semibold hover:border-[#065F46] hover:bg-[#F0FDF4] transition-all h-12',
     socialButtonsBlockButtonText: 'font-semibold text-sm text-[#1A2F23]',
     formFieldInput: 'rounded-2xl border-2 border-[#E5E1D8] focus:border-[#065F46] bg-[#F9F7F2] text-sm h-12 px-4',
@@ -168,7 +169,7 @@ function AuthCardHeader({ title, sub }: { title: string; sub: string }) {
 function SignInPage() {
   return (
     <AuthPageWrapper>
-      <AuthCardHeader title="Connexion · Sign in" sub="Bridge Safi — Safi, Maroc 🇲🇦" />
+      <AuthCardHeader title="Connexion · Sign in" sub="Email, téléphone, mot de passe, Google ou Apple" />
       <SignIn
         routing="path"
         path={`${basePath}/sign-in`}
@@ -182,7 +183,7 @@ function SignInPage() {
 function SignUpPage() {
   return (
     <AuthPageWrapper>
-      <AuthCardHeader title="Créer un compte · Sign up" sub="Bridge Safi — Safi, Maroc 🇲🇦" />
+      <AuthCardHeader title="Créer un compte · Sign up" sub="Email ou téléphone requis · mot de passe obligatoire" />
       <SignUp
         routing="path"
         path={`${basePath}/sign-up`}

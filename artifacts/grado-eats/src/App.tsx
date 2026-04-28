@@ -2133,8 +2133,6 @@ function ProfileOnboardingScreen({lang,profile,saveProfile,onDone}:{
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const [phone,setPhone]=useState(profile.phone||'');
   const [address,setAddress]=useState(profile.address||'');
-  const [openSection,setOpenSection]=useState<'phone'|'addr'|null>('phone');
-
   const completedCount=[phone,address].filter(Boolean).length;
   const total=2;
 
@@ -2145,40 +2143,6 @@ function ProfileOnboardingScreen({lang,profile,saveProfile,onDone}:{
   const handleSkip=()=>{
     saveProfile({...profile,onboardingComplete:true});
     onDone();
-  };
-
-  const Section=({id,icon,title,sub,done,children}:{id:'phone'|'addr';icon:string;title:string;sub:string;done:boolean;children:React.ReactNode})=>{
-    const isOpen=openSection===id;
-    return (
-      <div style={{
-        background:'#FDFCF9',border:'2px solid',
-        borderColor:isOpen?'#065F46':done?'#6EE7B7':'#E5E1D8',
-        borderRadius:20,marginBottom:14,overflow:'hidden',
-        transition:'all 0.2s',
-        boxShadow:isOpen?'0 6px 24px rgba(6,95,70,0.15)':done?'0 2px 8px rgba(110,231,183,0.2)':'none',
-      }}>
-        <button onClick={()=>setOpenSection(isOpen?null:id)} className="w-full"
-          style={{display:'flex',alignItems:'center',gap:14,padding:'16px 18px',background:'none',border:'none',cursor:'pointer',textAlign:isAR?'right':'left'}}>
-          <div style={{width:48,height:48,borderRadius:16,
-            background:isOpen?'#065F46':done?'#D1FAE5':'#F0FDF4',
-            display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,flexShrink:0,
-            border:'2px solid',borderColor:isOpen?'#047857':done?'#34D399':'#D1FAE5',transition:'all 0.2s'}}>
-            {done&&!isOpen?'✓':icon}
-          </div>
-          <div style={{flex:1,textAlign:isAR?'right':'left'}}>
-            <p className={`font-black text-sm ${fClass}`} style={{color:done&&!isOpen?'#065F46':'#1A2F23',margin:0}}>{title}</p>
-            <p className={`text-[10px] ${fClass}`} style={{color:done?'#10B981':'#9CA3AF',margin:'3px 0 0'}}>
-              {done?'✓ Enregistré':sub}
-            </p>
-          </div>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={done?'#10B981':'#9CA3AF'} strokeWidth="2.5"
-            style={{transform:isOpen?'rotate(180deg)':'rotate(0deg)',transition:'transform 0.2s',flexShrink:0}}>
-            <path d="M6 9l6 6 6-6"/>
-          </svg>
-        </button>
-        {isOpen&&<div style={{padding:'0 18px 18px'}}>{children}</div>}
-      </div>
-    );
   };
 
   return (
@@ -2218,36 +2182,30 @@ function ProfileOnboardingScreen({lang,profile,saveProfile,onDone}:{
 
       {/* Sections */}
       <div className="relative z-10 flex-1 px-4 pb-8" style={{maxWidth:460,margin:'0 auto',width:'100%'}}>
-
-        <Section id="phone" icon="📱" title={t.onboardPhone} sub={t.onboardPhoneSub} done={!!phone}>
+        <div style={{
+          background:'#FDFCF9',border:'2px solid #E5E1D8',borderRadius:20,padding:16,marginBottom:14,
+          boxShadow:'0 6px 24px rgba(6,95,70,0.08)'
+        }}>
           <Field label={t.onboardPhone} value={phone} onChange={setPhone}
             placeholder="06 00 00 00 00" type="tel" lang={lang}/>
-          {phone&&(
-            <button onClick={()=>setOpenSection('addr')}
-              style={{width:'100%',height:42,borderRadius:14,background:'#065F46',color:'white',
-                border:'none',cursor:'pointer',fontSize:'0.8rem',fontWeight:800,marginTop:4}}>
-              Suivant — Adresse →
-            </button>
-          )}
-        </Section>
+        </div>
 
-        <Section id="addr" icon="📍" title={t.onboardAddr} sub={t.onboardAddrSub} done={!!address}>
+        <div style={{
+          background:'#FDFCF9',border:'2px solid #E5E1D8',borderRadius:20,padding:16,marginBottom:14,
+          boxShadow:'0 6px 24px rgba(6,95,70,0.08)'
+        }}>
           <AddressAutocomplete label={t.onboardAddr} value={address} onChange={setAddress}
             placeholder="Ex: Plateau, Av. Hassan II, Safi" lang={lang}/>
-        </Section>
+        </div>
 
-        {/* Info card */}
-        <div style={{
-          background:'rgba(255,255,255,0.07)',border:'1px solid rgba(217,197,160,0.2)',
-          borderRadius:16,padding:'14px 16px',marginBottom:16,display:'flex',gap:12,alignItems:'center',
-        }}>
+        <div style={{background:'rgba(255,255,255,0.07)',border:'1px solid rgba(217,197,160,0.2)',borderRadius:16,padding:'14px 16px',marginBottom:16,display:'flex',gap:12,alignItems:'center'}}>
           <div style={{fontSize:22,flexShrink:0}}>💳 🪪</div>
           <div>
             <p style={{color:'rgba(255,255,255,0.7)',fontSize:'0.72rem',margin:0,fontWeight:700}}>
-              Carte & Identité dans votre Profil
+              Carte & identité dans votre profil
             </p>
             <p style={{color:'rgba(255,255,255,0.4)',fontSize:'0.62rem',margin:'3px 0 0'}}>
-              Ajoutez-les plus tard depuis l'icône 👤
+              Ajoutez-les plus tard depuis l’icône 👤
             </p>
           </div>
         </div>
