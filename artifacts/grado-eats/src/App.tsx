@@ -2296,7 +2296,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
              activeColor:'#065F46', activeShadow:'0 0 0 5px rgba(6,95,70,0.15),0 10px 28px rgba(6,95,70,0.3)', labelColor:'#065F46'},
             {key:'taxi'     as const, src:'/logo_taxi.jpeg',     label:'Bridge Taxi',   sub:t.taxiSub,     emoji:'🚖', fallbackBg:'#FEF3C7', pending:true,
              activeColor:'#B45309', activeShadow:'0 0 0 5px rgba(180,83,9,0.15),0 10px 28px rgba(180,83,9,0.25)', labelColor:'#B45309'},
-            {key:'fleurs'   as const, src:'',                    label:'Bridge Fleurs', sub:t.fleursSub,   emoji:'🌹', fallbackBg:'linear-gradient(135deg,#FCE7F3,#FDE8F5)', pending:true,
+            {key:'fleurs'   as const, src:'',                    label:'Bridge Fleurs', sub:t.fleursSub,   emoji:'🌹', fallbackBg:'linear-gradient(135deg,#FCE7F3,#FDE8F5)', pending:false, active:true,
              activeColor:'#DB2777', activeShadow:'0 0 0 5px rgba(219,39,119,0.15),0 10px 28px rgba(219,39,119,0.25)', labelColor:'#DB2777'},
             {key:'tabac'    as const, src:'/logo_tabac.jpeg',    label:'Bridge Tabac',  sub:t.tabacSub,    emoji:'🚬', fallbackBg:'#7D4F2E', pending:true,
              activeColor:'#7D4F2E', activeShadow:'0 0 0 5px rgba(125,79,46,0.15),0 10px 28px rgba(125,79,46,0.25)', labelColor:'#7D4F2E'},
@@ -2646,6 +2646,202 @@ const LANG_CYCLE:Lang[]=['fr','en','ar','amz'];
 const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
 
 const NAV_KEY='bridge_nav_state';
+// ─── FLEURS PAGE ──────────────────────────────────────────────────────────────
+
+const FLEURS_CATALOG = [
+  {id:'f1',emoji:'🌹',names:{fr:'Bouquet Roses Rouges',en:'Red Roses Bouquet',ar:'باقة ورود حمراء',amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵉⴳⵍⴰⴷ ⵉⵣⴳⴳⴰⵖⵏ'},price:89,cat:'bouquet'},
+  {id:'f2',emoji:'💐',names:{fr:'Bouquet Mixte Coloré',en:'Colourful Mixed Bouquet',ar:'باقة ملونة',amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵣⴳⵣⴰⵡ'},price:69,cat:'bouquet'},
+  {id:'f3',emoji:'🤍',names:{fr:'Bouquet Blanc Élégance',en:'White Elegance Bouquet',ar:'باقة بيضاء',amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵎⵍⵍⴰⵍ'},price:79,cat:'bouquet'},
+  {id:'f4',emoji:'🌷',names:{fr:'Bouquet Tulipes',en:'Tulips Bouquet',ar:'باقة زنبق',amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵜⵓⵍⵉⴱⴰⵜⵏ'},price:75,cat:'bouquet'},
+  {id:'f5',emoji:'🌿',names:{fr:'Plante Verte Déco',en:'Decorative Green Plant',ar:'نبتة خضراء',amz:'ⴰⵢⵢⴰⵡ ⴰⵣⴳⴳⵯⴰⵖ'},price:55,cat:'plante'},
+  {id:'f6',emoji:'🪴',names:{fr:'Cactus Chic',en:'Chic Cactus',ar:'صبار شيك',amz:'ⴰⴽⴰⴽⵜⵓⵙ'},price:45,cat:'plante'},
+  {id:'f7',emoji:'🎁',names:{fr:'Coffret Fête',en:'Celebration Box',ar:'علبة احتفال',amz:'ⴰⵙⴷⴰⵙ ⵏ ⵜⴼⴰⵙⴽⴰ'},price:149,cat:'coffret'},
+  {id:'f8',emoji:'❤️',names:{fr:'Coffret Amour',en:'Love Box',ar:'علبة حب',amz:'ⴰⵙⴷⴰⵙ ⵏ ⵓⵎⵏⵉ'},price:199,cat:'coffret'},
+  {id:'f9',emoji:'🌸',names:{fr:'Couronne Florale',en:'Floral Crown',ar:'إكليل زهور',amz:'ⴰⴽⵍⵉⵍ ⵏ ⵉⵣⵓⵍⴰⵏ'},price:119,cat:'bouquet'},
+];
+const FLEURS_CATS=[
+  {id:'bouquet',label:{fr:'Bouquets',en:'Bouquets',ar:'باقات',amz:'ⵉⵥⴰⵡⴰⵏⵏ'}},
+  {id:'plante', label:{fr:'Plantes',en:'Plants',ar:'نباتات',amz:'ⵉⵣⵓⵔⴰⵏ'}},
+  {id:'coffret',label:{fr:'Coffrets',en:'Boxes',ar:'صناديق',amz:'ⵉⵙⴷⴰⵙⵏ'}},
+];
+
+function FleurPage({onBack,lang,cycleLang,profile,saveProfile}:{
+  onBack:()=>void; lang:Lang; cycleLang:()=>void;
+  profile:UserProfile; saveProfile:(p:UserProfile)=>void;
+}) {
+  const [showProfile,setShowProfile]=useState(false);
+  const [activeCat,setActiveCat]=useState('bouquet');
+  const [cart,setCart]=useState<{id:string;qty:number}[]>([]);
+  const [showCheckout,setShowCheckout]=useState(false);
+  const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
+  const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
+  const pillStyle:React.CSSProperties={
+    background:'white',border:'2.5px solid #D9C5A0',color:'#065F46',
+    boxShadow:'0 4px 20px rgba(6,95,70,0.15)',height:'44px',minWidth:'44px',
+  };
+  const addItem=(id:string)=>setCart(c=>{const ex=c.find(x=>x.id===id);return ex?c.map(x=>x.id===id?{...x,qty:x.qty+1}:x):[...c,{id,qty:1}];});
+  const removeItem=(id:string)=>setCart(c=>{const ex=c.find(x=>x.id===id);if(!ex)return c;if(ex.qty===1)return c.filter(x=>x.id!==id);return c.map(x=>x.id===id?{...x,qty:x.qty-1}:x);});
+  const cartTotal=cart.reduce((s,ci)=>{const p=FLEURS_CATALOG.find(f=>f.id===ci.id);return s+(p?p.price*ci.qty:0);},0);
+  const cartCount=cart.reduce((s,ci)=>s+ci.qty,0);
+  const visibleItems=FLEURS_CATALOG.filter(f=>f.cat===activeCat);
+
+  // Build a CartItem[] compatible with CheckoutDrawer
+  const drawerCart:CartItem[]=cart.map(ci=>{
+    const p=FLEURS_CATALOG.find(f=>f.id===ci.id)!;
+    return {
+      cartId:ci.id,
+      restaurantId:'bridge-fleurs',
+      restaurantName:'Bridge Fleurs',
+      item:{id:ci.id,names:p.names,price:p.price,photo:'',safi:false,options:[]},
+      qty:ci.qty,
+      extraPrice:0,
+      totalPerUnit:p.price,
+      selectedOptions:{},
+    };
+  });
+  const handleQty=(cartId:string,delta:number)=>{
+    if(delta>0) addItem(cartId); else removeItem(cartId);
+  };
+
+  return(
+    <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`} style={{background:'#FFF5F7',color:'#1A2F23'}}>
+      {/* Subtle background */}
+      <div className="fixed inset-0 pointer-events-none" style={{background:'radial-gradient(ellipse at 50% 0%,rgba(219,39,119,0.07) 0%,transparent 60%)'}}/>
+
+      {/* Nav pills */}
+      <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
+        <button onClick={onBack}
+          className="flex items-center gap-0.5 px-1.5 rounded-full transition-all active:scale-90 hover:scale-110"
+          style={{...pillStyle,height:'24px',minWidth:'unset'}}>
+          <span style={{fontSize:'9px',lineHeight:1}}>🛵</span>
+          <span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
+          <span style={{fontSize:'9px',lineHeight:1}}>🚖</span>
+          <span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
+          <span style={{fontSize:'9px',lineHeight:1}}>🚬</span>
+          <span style={{fontSize:'8px',lineHeight:1,color:'#9CA3AF'}}>←</span>
+        </button>
+      </div>
+      <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
+        <button onClick={()=>setShowProfile(true)}
+          className="rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 relative"
+          style={{...pillStyle,width:'44px',fontSize:'18px'}}>
+          👤
+          {profile.name&&<span className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{background:'#EC4899'}}/>}
+        </button>
+        <button onClick={cycleLang}
+          className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 px-3 ${isAMZ?'font-tifinagh':''}`}
+          style={{...pillStyle,fontSize:'13px'}}>
+          {LANG_LABELS[lang]}
+        </button>
+      </div>
+
+      {/* Header */}
+      <div className="pt-20 px-5 pb-4 text-center relative">
+        <div className="flex items-center justify-center gap-3 mb-1">
+          <span className="text-4xl">🌹</span>
+          <div>
+            <h1 className="font-black tracking-[0.3em] text-xl" style={{color:'#9D174D'}}>BRIDGE</h1>
+            <p className="font-black text-sm tracking-[0.2em]" style={{color:'#DB2777'}}>FLEURS</p>
+          </div>
+        </div>
+        <div className="flex items-center justify-center gap-2 mt-2 mb-1">
+          <div className="w-8 h-px" style={{background:'#FBCFE8'}}/>
+          <div className="w-1.5 h-1.5 rotate-45" style={{background:'#F9A8D4'}}/>
+          <div className="w-8 h-px" style={{background:'#FBCFE8'}}/>
+        </div>
+        <p className={`text-[10px] font-black tracking-widest uppercase ${fClass}`} style={{color:'#EC4899'}}>
+          {lang==='ar'?'ورود وهدايا · سافي':lang==='en'?'Flowers & Gifts · Safi':lang==='amz'?'ⵉⵣⵓⵍⴰⵏ · ⵙⴰⴼⵉ':'Fleurs & Cadeaux · Safi'}
+        </p>
+      </div>
+
+      {/* Category tabs */}
+      <div className={`flex gap-2 px-5 mb-4 ${isAR?'flex-row-reverse':''}`}>
+        {FLEURS_CATS.map(cat=>(
+          <button key={cat.id} onClick={()=>setActiveCat(cat.id)}
+            className="flex-1 py-2 rounded-2xl font-black text-[11px] transition-all active:scale-95"
+            style={{
+              background:activeCat===cat.id?'linear-gradient(135deg,#9D174D,#DB2777)':'white',
+              color:activeCat===cat.id?'white':'#9D174D',
+              border:`1.5px solid ${activeCat===cat.id?'transparent':'#FBCFE8'}`,
+              boxShadow:activeCat===cat.id?'0 4px 14px rgba(219,39,119,0.3)':'none',
+            }}>
+            {cat.label[lang]}
+          </button>
+        ))}
+      </div>
+
+      {/* Product grid */}
+      <div className="flex-1 overflow-y-auto px-5 pb-36">
+        <div className="grid grid-cols-2 gap-3">
+          {visibleItems.map(item=>{
+            const inCart=cart.find(c=>c.id===item.id);
+            return(
+              <div key={item.id} className="rounded-2xl overflow-hidden" style={{background:'white',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
+                {/* Image area */}
+                <div className="flex items-center justify-center" style={{height:90,background:'linear-gradient(135deg,#FDF2F8,#FCE7F3)'}}>
+                  <span style={{fontSize:44}}>{item.emoji}</span>
+                </div>
+                {/* Info */}
+                <div className="p-3">
+                  <p className={`font-black text-[11px] leading-tight mb-1 ${fClass}`} style={{color:'#831843'}}>{item.names[lang]}</p>
+                  <p className="font-black text-sm" style={{color:'#DB2777'}}>{item.price} MAD</p>
+                  {/* Add/qty */}
+                  {!inCart?(
+                    <button onClick={()=>addItem(item.id)}
+                      className="w-full mt-2 py-1.5 rounded-xl font-black text-[11px] text-white transition-all active:scale-95"
+                      style={{background:'linear-gradient(135deg,#9D174D,#DB2777)',boxShadow:'0 3px 10px rgba(219,39,119,0.3)'}}>
+                      + Ajouter
+                    </button>
+                  ):(
+                    <div className="flex items-center justify-between mt-2">
+                      <button onClick={()=>removeItem(item.id)}
+                        className="w-8 h-8 rounded-full font-black text-lg flex items-center justify-center transition-all active:scale-90"
+                        style={{background:'#FCE7F3',color:'#DB2777'}}>−</button>
+                      <span className="font-black text-sm" style={{color:'#9D174D'}}>{inCart.qty}</span>
+                      <button onClick={()=>addItem(item.id)}
+                        className="w-8 h-8 rounded-full font-black text-lg flex items-center justify-center text-white transition-all active:scale-90"
+                        style={{background:'linear-gradient(135deg,#9D174D,#DB2777)'}}>+</button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Cart bar */}
+      {cartCount>0&&(
+        <div className="fixed bottom-0 left-0 right-0 px-5 pb-6 pt-3 z-40" style={{background:'linear-gradient(to top,#FFF5F7 80%,transparent)'}}>
+          <button onClick={()=>setShowCheckout(true)}
+            className="w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-between px-5 transition-all active:scale-95"
+            style={{background:'linear-gradient(135deg,#9D174D,#DB2777)',boxShadow:'0 8px 24px rgba(219,39,119,0.4)'}}>
+            <span className="bg-white/20 rounded-full px-2.5 py-0.5 text-xs font-black">{cartCount}</span>
+            <span>{lang==='ar'?'عرض السلة':lang==='en'?'View Cart':lang==='amz'?'ⵥⵔ ⴰⵙⵡⵉⵔ':'Voir le panier'}</span>
+            <span>{cartTotal} MAD</span>
+          </button>
+        </div>
+      )}
+
+      {/* Profile modal */}
+      {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={p=>{saveProfile(p);setShowCheckout(false);}} onClose={()=>setShowProfile(false)}/>}
+
+      {/* Checkout */}
+      {showCheckout&&(
+        <CheckoutDrawer
+          cart={drawerCart}
+          lang={lang}
+          onClose={()=>setShowCheckout(false)}
+          onQty={handleQty}
+          profile={profile}
+          onClearCart={()=>{setCart([]);setShowCheckout(false);}}
+          restaurantName="Bridge Fleurs"
+        />
+      )}
+    </div>
+  );
+}
+
 // ─── TABAC PAGE ───────────────────────────────────────────────────────────────
 
 function TabacPage({onBack,lang,cycleLang,profile,saveProfile}:{
@@ -2879,7 +3075,7 @@ export default function App() {
   if(service==='none') return <ServiceSelectPage onSelect={s=>setService(s)} lang={lang} cycleLang={cycleLang}/>;
   if(service==='taxi') return <TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
   if(service==='tabac') return <TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
-  if(service==='fleurs') return <TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
+  if(service==='fleurs') return <FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={
