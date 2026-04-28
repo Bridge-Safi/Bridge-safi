@@ -337,6 +337,8 @@ function ForgotPasswordPage() {
 type FactorKind = 'first' | 'second';
 type FactorStrategy = 'email_code' | 'phone_code' | 'totp' | string;
 
+const STAY_KEY = 'bridge_stay_signed_in';
+
 function SignInPage() {
   const clerk = useClerk();
   const [, navigate] = useLocation();
@@ -346,6 +348,10 @@ function SignInPage() {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [staySignedIn, setStaySignedIn] = useState<boolean>(() => {
+    const v = localStorage.getItem(STAY_KEY);
+    return v === null ? true : v === 'true';
+  });
   // What factor/strategy Clerk is waiting for
   const [factorKind, setFactorKind] = useState<FactorKind>('second');
   const [factorStrategy, setFactorStrategy] = useState<FactorStrategy>('email_code');
@@ -378,6 +384,7 @@ function SignInPage() {
         password,
       });
       if (result.status === 'complete') {
+        localStorage.setItem(STAY_KEY, String(staySignedIn));
         await clerk.setActive({ session: result.createdSessionId });
         navigate(basePath || '/');
       } else if (result.status === 'needs_second_factor') {
@@ -426,6 +433,7 @@ function SignInPage() {
         result = await clerk.client.signIn.attemptFirstFactor({ strategy: factorStrategy as any, code });
       }
       if (result.status === 'complete') {
+        localStorage.setItem(STAY_KEY, String(staySignedIn));
         await clerk.setActive({ session: result.createdSessionId });
         navigate(basePath || '/');
       } else {
@@ -487,7 +495,23 @@ function SignInPage() {
         <FocusInput label="Mot de passe" type="password" value={password} onChange={setPassword}
           placeholder="••••••••" autoComplete="current-password" />
         {error && <div style={errStyle}>{error}</div>}
-        <button type="submit" style={{...btn, opacity: loading ? 0.7 : 1}} disabled={loading}>
+
+        {/* Stay signed in checkbox */}
+        <label style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer',margin:'10px 0 2px',userSelect:'none'}}>
+          <div onClick={()=>setStaySignedIn(v=>!v)} style={{
+            width:20,height:20,borderRadius:6,border:`2px solid ${staySignedIn?'#065F46':'#D1D5DB'}`,
+            background:staySignedIn?'#065F46':'white',
+            display:'flex',alignItems:'center',justifyContent:'center',
+            flexShrink:0,transition:'all 0.18s',cursor:'pointer',
+          }}>
+            {staySignedIn&&<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+          </div>
+          <span style={{fontSize:'0.78rem',color:'#374151',fontWeight:600,lineHeight:1.3}}>
+            Rester connecté · Stay signed in
+          </span>
+        </label>
+
+        <button type="submit" style={{...btn, opacity: loading ? 0.7 : 1, marginTop:14}} disabled={loading}>
           {loading ? 'Connexion...' : 'Connexion →'}
         </button>
       </form>
@@ -640,6 +664,30 @@ function ClerkQueryClientCacheInvalidator() {
   return null;
 }
 
+// ── Session keep-alive: touches the Clerk session every 55s when
+//    the user chose "Rester connecté", preventing inactivity sign-out ──────────
+function SessionKeepAlive() {
+  const clerk = useClerk();
+  const { isSignedIn } = useUser();
+
+  useEffect(() => {
+    if (!isSignedIn) return;
+    const stay = localStorage.getItem(STAY_KEY);
+    // Default to true (keep alive) if the key was never set
+    if (stay === 'false') return;
+
+    const touch = () => {
+      try { clerk.session?.touch(); } catch { /* ignore */ }
+    };
+    touch(); // immediate on mount
+
+    const interval = setInterval(touch, 55_000);
+    return () => clearInterval(interval);
+  }, [isSignedIn, clerk]);
+
+  return null;
+}
+
 // ─── GAME PAGE PLACEHOLDER ────────────────────────────────────────────────────
 
 function GamePage() {
@@ -750,6 +798,7 @@ function ClerkProviderWithRoutes() {
     >
       <QueryClientProvider client={queryClient}>
         <ClerkQueryClientCacheInvalidator />
+        <SessionKeepAlive />
         <Switch>
           <Route path="/sign-in/*?" component={SignInPage} />
           <Route path="/sign-up/*?" component={SignUpPage} />
