@@ -184,6 +184,11 @@ const T = {
     errCard:'Numéro de carte invalide (16 chiffres requis)',
     errExpiry:'Date invalide (format MM/AA, non expirée)',
     errCardName:'Nom du titulaire requis (comme sur la carte)',
+    changePwd:'🔑 Changer le mot de passe', currentPwd:'Mot de passe actuel',
+    newPwd:'Nouveau mot de passe (8 car. min.)', confirmPwd:'Confirmer le nouveau mot de passe',
+    pwdChanged:'Mot de passe modifié ✓', pwdMismatch:'Les mots de passe ne correspondent pas.',
+    pwdWeak:'Mot de passe trop faible (8 caractères min.).', pwdWrong:'Mot de passe actuel incorrect.',
+    pwdSave:'Mettre à jour le mot de passe',
     trackTitle:'Suivi GPS en Direct', trackZone:'SAFI · PLATEAU', trackLive:'EN DIRECT',
     stages:['Reçue','En préparation','En chemin','Livrée'],
     stagesSub:['Commande confirmée',"Le chef s'affaire",'Votre livreur arrive','Bon appétit !'],
@@ -256,6 +261,11 @@ const T = {
     errCard:'Invalid card number (16 digits required)',
     errExpiry:'Invalid date (MM/YY format, not expired)',
     errCardName:'Cardholder name required (as on the card)',
+    changePwd:'🔑 Change password', currentPwd:'Current password',
+    newPwd:'New password (min. 8 chars)', confirmPwd:'Confirm new password',
+    pwdChanged:'Password updated ✓', pwdMismatch:'Passwords do not match.',
+    pwdWeak:'Password too weak (8 characters min.).', pwdWrong:'Current password is incorrect.',
+    pwdSave:'Update password',
     trackTitle:'Live GPS Tracking', trackZone:'SAFI · PLATEAU', trackLive:'LIVE',
     stages:['Received','Preparing','On the way','Delivered'],
     stagesSub:['Order confirmed','Chef is cooking','Courier en route','Enjoy your meal!'],
@@ -328,6 +338,11 @@ const T = {
     errCard:'رقم البطاقة غير صالح (مطلوب 16 رقماً)',
     errExpiry:'تاريخ غير صالح (صيغة MM/AA وغير منتهية)',
     errCardName:'اسم حامل البطاقة مطلوب',
+    changePwd:'🔑 تغيير كلمة المرور', currentPwd:'كلمة المرور الحالية',
+    newPwd:'كلمة مرور جديدة (8 أحرف على الأقل)', confirmPwd:'تأكيد كلمة المرور الجديدة',
+    pwdChanged:'تم تغيير كلمة المرور ✓', pwdMismatch:'كلمتا المرور غير متطابقتين.',
+    pwdWeak:'كلمة المرور ضعيفة (8 أحرف على الأقل).', pwdWrong:'كلمة المرور الحالية غير صحيحة.',
+    pwdSave:'تحديث كلمة المرور',
     trackTitle:'تتبع GPS مباشر', trackZone:'آسفي · الهضبة', trackLive:'مباشر',
     stages:['مستلمة','قيد التحضير','في الطريق','تم التوصيل'],
     stagesSub:['تم تأكيد الطلب','الطاهي يعمل','المندوب في الطريق','بالهناء والشفاء!'],
@@ -401,6 +416,11 @@ const T = {
     errCard:'ⵜⴰⴽⴰⵔⴷⵜ ⵓⵔ ⵜⵙⵀⵡⴰ (16 ⵉⵏⵎⵎⴰⵔⵏ)',
     errExpiry:'ⴰⵣⵎⵣ ⵓⵔ ⵉⵙⵀⵡⴰ (MM/AA)',
     errCardName:'ⵉⵙⵎ ⵏ ⵓⵎⵙⴽⴽⵉ ⵉⵍⵍⴰ',
+    changePwd:'🔑 ⵙⵏⴼⵍ ⵜⴰⴱⵔⵉⴷⵜ', currentPwd:'ⵜⴰⴱⵔⵉⴷⵜ ⵜⴰⵎⵣⵡⴰⵔⵓⵜ',
+    newPwd:'ⵜⴰⴱⵔⵉⴷⵜ ⵜⴰⵎⴰⵢⵏⵓⵜ (8 ⵉⵙⴽⴽⵉⵍⵏ)', confirmPwd:'ⵙⵙⴽⴷⵃ ⵜⴰⴱⵔⵉⴷⵜ ⵜⴰⵎⴰⵢⵏⵓⵜ',
+    pwdChanged:'ⵜⵜⵓⵙⵏⴼⵍ ✓', pwdMismatch:'ⵜⵉⴱⵔⵉⴷⵉⵏ ⵓⵔ ⵏⵎⵎⴰⵍⵏ.',
+    pwdWeak:'ⵜⴰⴱⵔⵉⴷⵜ ⵓⵔ ⵜⵙⵀⵡⴰ (8 ⵉⵙⴽⴽⵉⵍⵏ).', pwdWrong:'ⵜⴰⴱⵔⵉⴷⵜ ⵜⴰⵎⵣⵡⴰⵔⵓⵜ ⵓⵔ ⵜⵙⵀⵡⴰ.',
+    pwdSave:'ⵙⵙⴽⴷⵃ ⵜⴰⴱⵔⵉⴷⵜ',
     trackTitle:'ⴰⵙⴽⵍⵙ GPS', trackZone:'ⵙⴰⴼⵉ · ⴰⴱⵍⴰⵟⵓ', trackLive:'ⴷⴷⴰⵡ',
     stages:['ⵜⵜⵓⵙⵔⵖⴰ','ⵜⴻⵜⵜⵓⵙⴽⴰⵔ','ⵖ ⵓⵣⵔⵉⵔⵉ','ⵜⵜⵓⵙⵍⵎⴷ'],
     stagesSub:['ⵜⵜⵓⵙⵛⴷⵃ ⵜⴰⵖⵓⵍⵜ','ⴰⵎⵓⵙⵙⵓ ⵉⵜⵜⵓⵙⴽⴰⵔ','ⴰⵎⵥⵍⵉ ⵉⵜⵜⴰⵡⵙ','ⵜⵙⴼⵓⵍⵍⵓ!'],
@@ -1401,6 +1421,33 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
   };
   const validateCardName=(v:string)=>v.trim().length>=2;
 
+  // ── Change-password state ────────────────────────────────────────────────────
+  const [pwdOpen,setPwdOpen]=useState(false);
+  const [currentPwd,setCurrentPwd]=useState('');
+  const [newPwd,setNewPwd]=useState('');
+  const [confirmPwd,setConfirmPwd]=useState('');
+  const [pwdLoading,setPwdLoading]=useState(false);
+  const [pwdErr,setPwdErr]=useState('');
+  const [pwdOk,setPwdOk]=useState(false);
+
+  const handleChangePwd=async()=>{
+    if(pwdLoading) return;
+    if(newPwd.length<8){setPwdErr(t.pwdWeak);return;}
+    if(newPwd!==confirmPwd){setPwdErr(t.pwdMismatch);return;}
+    setPwdLoading(true);setPwdErr('');
+    try{
+      await user!.updatePassword({currentPassword:currentPwd,newPassword:newPwd,signOutOfOtherSessions:false});
+      setPwdOk(true);setCurrentPwd('');setNewPwd('');setConfirmPwd('');
+      setTimeout(()=>{setPwdOk(false);setPwdOpen(false);},2500);
+    }catch(err:any){
+      const msg=err?.errors?.[0]?.longMessage||err?.errors?.[0]?.message||'';
+      if(msg.toLowerCase().includes('incorrect')||msg.toLowerCase().includes('current')) setPwdErr(t.pwdWrong);
+      else if(msg.toLowerCase().includes('password')) setPwdErr(t.pwdWeak);
+      else setPwdErr(msg||t.pwdWrong);
+    }
+    setPwdLoading(false);
+  };
+
   const handleSave=()=>{
     const e:Record<string,boolean>={};
     if(!validateName(form.name))       e.name=true;
@@ -1475,6 +1522,29 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
             </div>
             <Field label={t.cardNameLabel} value={form.cardName} onChange={v=>{set('cardName')(v.toUpperCase());if(errs.cardName&&validateCardName(v))setErrs(e=>({...e,cardName:false}));}} placeholder={t.cardNamePh} lang={lang} required error={errs.cardName} errorMsg={t.errCardName}/>
           </div>
+          {/* ── Change password accordion ───────────────────────── */}
+          <div className="rounded-2xl mb-5 overflow-hidden" style={{border:'1px solid #E5E1D8'}}>
+            <button onClick={()=>{setPwdOpen(o=>!o);setPwdErr('');}}
+              className={`w-full flex items-center justify-between px-4 py-3.5 ${fClass}`}
+              style={{background:'#FAFAF8',border:'none',cursor:'pointer'}}>
+              <span className="font-black text-sm" style={{color:'#1A2F23'}}>{t.changePwd}</span>
+              <span style={{color:'#9CA3AF',fontSize:18,transform:pwdOpen?'rotate(180deg)':'none',transition:'transform 0.2s'}}>⌄</span>
+            </button>
+            {pwdOpen&&(
+              <div className="px-4 pb-4 pt-1" style={{background:'#FAFAF8',borderTop:'1px solid #E5E1D8'}}>
+                <Field label={t.currentPwd} value={currentPwd} onChange={setCurrentPwd} placeholder="••••••••" type="password" lang={lang}/>
+                <Field label={t.newPwd} value={newPwd} onChange={setNewPwd} placeholder="••••••••" type="password" lang={lang}/>
+                <Field label={t.confirmPwd} value={confirmPwd} onChange={setConfirmPwd} placeholder="••••••••" type="password" lang={lang}/>
+                {pwdErr&&<p className="text-xs font-semibold mb-3 px-1" style={{color:'#B91C1C'}}>{pwdErr}</p>}
+                <button onClick={handleChangePwd}
+                  className={`w-full py-3 rounded-xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
+                  style={{background:pwdOk?'#059669':'#065F46',opacity:pwdLoading?0.7:1}}>
+                  {pwdOk?t.pwdChanged:pwdLoading?'...' : t.pwdSave}
+                </button>
+              </div>
+            )}
+          </div>
+
           <button onClick={handleSave}
             className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
             style={{background:saved?'#059669':'linear-gradient(135deg,#065F46,#047857)',boxShadow:'0 6px 20px rgba(6,95,70,0.3)'}}>

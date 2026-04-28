@@ -215,6 +215,124 @@ function FocusInput({ label: labelText, type = 'text', value, onChange, placehol
 
 // ─── SIGN-IN PAGE (custom — email/phone + password, single screen) ─────────
 
+// ─── FORGOT PASSWORD PAGE ─────────────────────────────────────────────────────
+
+function ForgotPasswordPage() {
+  const clerk = useClerk();
+  const [, navigate] = useLocation();
+  const [step, setStep] = useState<'email' | 'reset'>('email');
+  const [identifier, setIdentifier] = useState('');
+  const [code, setCode] = useState('');
+  const [newPwd, setNewPwd] = useState('');
+  const [confirmPwd, setConfirmPwd] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSendCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loading) return;
+    setLoading(true); setError('');
+    try {
+      await clerk.client.signIn.create({
+        strategy: 'reset_password_email_code',
+        identifier: identifier.trim(),
+      });
+      setStep('reset');
+    } catch (err: any) {
+      const msg = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || '';
+      if (msg.toLowerCase().includes('not found') || msg.toLowerCase().includes('identifier')) {
+        setError('Aucun compte trouvé avec cet email ou téléphone.');
+      } else {
+        setError(msg || 'Erreur lors de l\'envoi du code. Réessayez.');
+      }
+    }
+    setLoading(false);
+  };
+
+  const handleReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loading) return;
+    if (newPwd.length < 8) { setError('Mot de passe trop faible (8 caractères min.).'); return; }
+    if (newPwd !== confirmPwd) { setError('Les mots de passe ne correspondent pas.'); return; }
+    setLoading(true); setError('');
+    try {
+      const result = await clerk.client.signIn.attemptFirstFactor({
+        strategy: 'reset_password_email_code',
+        code,
+        password: newPwd,
+      } as any);
+      if (result.status === 'complete') {
+        await clerk.setActive({ session: result.createdSessionId });
+        navigate(basePath || '/');
+      } else if (result.status === 'needs_second_factor') {
+        setError('Vérification 2FA requise. Reconnectez-vous normalement.');
+      } else {
+        setError('Réinitialisation incomplète. Réessayez.');
+      }
+    } catch (err: any) {
+      const msg = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || '';
+      if (msg.toLowerCase().includes('incorrect') || msg.toLowerCase().includes('invalid')) {
+        setError('Code incorrect ou expiré. Réessayez.');
+      } else if (msg.toLowerCase().includes('password')) {
+        setError('Mot de passe trop faible. Choisissez-en un plus fort.');
+      } else {
+        setError(msg || 'Erreur. Réessayez.');
+      }
+    }
+    setLoading(false);
+  };
+
+  if (step === 'reset') return (
+    <AuthPageWrapper>
+      <AuthCardHeader
+        title="Nouveau mot de passe"
+        sub={`Code envoyé à ${identifier.trim()} · Vérifiez vos emails`}
+      />
+      <form onSubmit={handleReset} style={{ display: 'flex', flexDirection: 'column' }}>
+        <FocusInput label="Code reçu (6 chiffres)" value={code} onChange={setCode}
+          placeholder="123456" autoComplete="one-time-code" type="tel" />
+        <FocusInput label="Nouveau mot de passe (8 car. min.)" type="password" value={newPwd}
+          onChange={setNewPwd} placeholder="••••••••" autoComplete="new-password" />
+        <FocusInput label="Confirmer le nouveau mot de passe" type="password" value={confirmPwd}
+          onChange={setConfirmPwd} placeholder="••••••••" autoComplete="new-password" />
+        {error && <div style={errStyle}>{error}</div>}
+        <button type="submit" style={{...btn, opacity: loading ? 0.7 : 1}} disabled={loading}>
+          {loading ? 'Mise à jour...' : 'Réinitialiser mon mot de passe →'}
+        </button>
+      </form>
+      <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+        <button onClick={() => { setStep('email'); setError(''); setCode(''); }}
+          style={{ background: 'none', border: 'none', color: '#9CA3AF', fontSize: '0.75rem', cursor: 'pointer' }}>
+          ← Retour
+        </button>
+      </div>
+    </AuthPageWrapper>
+  );
+
+  return (
+    <AuthPageWrapper>
+      <AuthCardHeader
+        title="Mot de passe oublié"
+        sub="Entrez votre email ou téléphone pour recevoir un code"
+      />
+      <form onSubmit={handleSendCode} style={{ display: 'flex', flexDirection: 'column' }}>
+        <FocusInput label="Email ou numéro de téléphone" value={identifier} onChange={setIdentifier}
+          placeholder="+212 6XX XXX XXX ou email@..." autoComplete="username" />
+        {error && <div style={errStyle}>{error}</div>}
+        <button type="submit" style={{...btn, opacity: loading ? 0.7 : 1}} disabled={loading}>
+          {loading ? 'Envoi...' : 'Envoyer le code →'}
+        </button>
+      </form>
+      <div style={{ textAlign: 'center', marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid #E5E1D8' }}>
+        <button onClick={() => navigate('/sign-in')}
+          style={{ background: 'none', border: 'none', color: '#065F46', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}>
+          ← Retour à la connexion
+        </button>
+      </div>
+    </AuthPageWrapper>
+  );
+}
+
 // Factor state shared across sign-in steps
 type FactorKind = 'first' | 'second';
 type FactorStrategy = 'email_code' | 'phone_code' | 'totp' | string;
@@ -373,7 +491,13 @@ function SignInPage() {
           {loading ? 'Connexion...' : 'Connexion →'}
         </button>
       </form>
-      <div style={{ textAlign: 'center', marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid #E5E1D8' }}>
+      <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+        <button onClick={() => navigate('/forgot-password')}
+          style={{ background: 'none', border: 'none', color: '#9CA3AF', fontSize: '0.72rem', cursor: 'pointer', textDecoration: 'underline' }}>
+          Mot de passe oublié ?
+        </button>
+      </div>
+      <div style={{ textAlign: 'center', marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #E5E1D8' }}>
         <span style={{ fontSize: '0.75rem', color: '#9CA3AF' }}>Pas encore de compte ? </span>
         <button onClick={() => navigate('/sign-up')}
           style={{ background: 'none', border: 'none', color: '#065F46', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}>
@@ -616,6 +740,7 @@ function ClerkProviderWithRoutes() {
         <Switch>
           <Route path="/sign-in/*?" component={SignInPage} />
           <Route path="/sign-up/*?" component={SignUpPage} />
+          <Route path="/forgot-password" component={ForgotPasswordPage} />
           <Route path="/game" component={GamePage} />
           <Route component={App} />
         </Switch>
