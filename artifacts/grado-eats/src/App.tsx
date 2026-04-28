@@ -2517,8 +2517,12 @@ export default function App() {
   const showSplash = !splashDone || !isLoaded;
   if(showSplash) return <SplashScreen/>;
 
-  // Auth guard — not signed in (redirect handled in useEffect)
-  if(!isSignedIn) return null;
+  // Force login immediately after splash
+  if(!isSignedIn) return (
+    <div style={{minHeight:'100vh'}}>
+      <SignInPage />
+    </div>
+  );
 
   // Profile onboarding after first sign-in
   if(!profile.onboardingComplete) return (
