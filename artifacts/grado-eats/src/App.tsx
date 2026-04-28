@@ -1712,6 +1712,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
   const [cardCVV,setCardCVV]=useState('');
   const [cardName,setCardName]=useState(profile.cardName);
   const [orderRef]=useState(`BE-${Math.floor(1000+Math.random()*9000)}`);
+  const [collectCode]=useState(`CC-${Math.floor(1000+Math.random()*9000)}`);
   const [cardErr,setCardErr]=useState('');
 
   const autoFilled=!!(profile.name||profile.address||profile.phone);
@@ -1877,7 +1878,12 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                   <span className="text-lg flex-shrink-0">🏪</span>
                   <div>
                     <p className={`text-[11px] font-black mb-1 ${fClass}`} style={{color:'#B45309'}}>Click & Collect — +2.99 MAD</p>
-                    <p className={`text-[10px] ${fClass}`} style={{color:'#92400E'}}>{t.collectAddress}</p>
+                    <p className={`text-[10px] ${fClass}`} style={{color:'#92400E'}}>
+                      {lang==='ar'?'ستحصل على رمز استلام بعد الطلب — أعطه للمطعم':
+                       lang==='amz'?'ⴰⵏⵓⵎⵔ ⵏ ⵓⵔⵣⵣⵓ ⵉⵍⴰ ⵖ ⵓⵙⵙⵓⵎⵔ · ⴰⴼⴽ ⴰⵙ ⵉ ⵓⵣⵉⴳⵣ':
+                       lang==='en'?'A pickup code will appear after ordering — show it to the restaurant':
+                       'Un code de retrait s\'affiche après commande — donnez-le au restaurateur'}
+                    </p>
                   </div>
                 </div>
               )}
@@ -2003,18 +2009,28 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
         {step==='card'&&(
           <>
             <div className="flex-1 overflow-y-auto px-5 py-4" style={{direction:isAR?'rtl':'ltr'}}>
-              <div className="rounded-2xl p-5 mb-5 relative overflow-hidden" style={{background:'linear-gradient(135deg,#065F46,#047857)',minHeight:120}}>
-                <div className="absolute inset-0 opacity-10" style={{backgroundImage:'repeating-linear-gradient(45deg,white 0,white 1px,transparent 0,transparent 50%)',backgroundSize:'8px 8px'}}/>
-                <div className="flex justify-between items-start mb-4">
-                  <p className="text-white/60 text-[10px] font-bold">💳 BRIDGE EATS</p>
-                  <div className="flex gap-1"><div className="w-6 h-6 rounded-full bg-white/20"/><div className="w-6 h-6 rounded-full bg-white/40 -ml-2"/></div>
-                </div>
-                <p className="text-white font-black text-base tracking-widest mb-3">{cardNum?fmtCard(cardNum):'•••• •••• •••• ••••'}</p>
-                <div className="flex justify-between items-end">
-                  <div><p className="text-white/40 text-[9px]">CARDHOLDER</p><p className="text-white text-xs font-bold">{cardName||'—'}</p></div>
-                  <div className="text-right"><p className="text-white/40 text-[9px]">EXPIRES</p><p className="text-white text-xs font-bold">{cardExp||'—'}</p></div>
-                </div>
-              </div>
+              {(()=>{
+                const ct=detectCard(cardNum);
+                const cardBg=ct==='visa'
+                  ?'linear-gradient(135deg,#1A1A6E,#003087,#1A478A)'
+                  :ct==='mastercard'
+                  ?'linear-gradient(135deg,#7B0000,#B71C1C,#C62828)'
+                  :'linear-gradient(135deg,#374151,#1F2937)';
+                return(
+                  <div className="rounded-2xl p-5 mb-5 relative overflow-hidden" style={{background:cardBg,minHeight:120}}>
+                    <div className="absolute inset-0 opacity-10" style={{backgroundImage:'repeating-linear-gradient(45deg,white 0,white 1px,transparent 0,transparent 50%)',backgroundSize:'8px 8px'}}/>
+                    <div className="flex justify-between items-start mb-4">
+                      <p className="text-white/60 text-[10px] font-bold">💳 BRIDGE</p>
+                      {ct==='visa'?<VisaLogo/>:ct==='mastercard'?<MastercardLogo/>:<span style={{fontSize:18}}>💳</span>}
+                    </div>
+                    <p className="text-white font-black text-base tracking-widest mb-3">{cardNum?fmtCard(cardNum):'•••• •••• •••• ••••'}</p>
+                    <div className="flex justify-between items-end">
+                      <div><p className="text-white/40 text-[9px]">CARDHOLDER</p><p className="text-white text-xs font-bold">{cardName||'—'}</p></div>
+                      <div className="text-right"><p className="text-white/40 text-[9px]">EXPIRES</p><p className="text-white text-xs font-bold">{cardExp||'—'}</p></div>
+                    </div>
+                  </div>
+                );
+              })()}
               {profile.cardNumber&&(
                 <button onClick={()=>{setCardNum(profile.cardNumber);setCardExp(profile.cardExpiry);setCardName(profile.cardName);}}
                   className={`flex items-center gap-2 px-3 py-2 rounded-xl mb-4 w-full text-left ${fClass}`} style={{background:'#EEF2FF',border:'1px solid #C7D2FE'}}>
@@ -2060,11 +2076,25 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
             <div className="w-full rounded-2xl p-4 mb-4" style={{background:'#F0FDF4',border:'1.5px solid #BBF7D0'}}>
               <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${fClass}`} style={{color:'#065F46'}}>{t.trackingLabel}</p>
               <p className="text-2xl font-black tracking-widest" style={{color:'#065F46'}}>{orderRef}</p>
-              <div className="flex items-center justify-center gap-2 mt-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"/>
-                <p className={`text-xs font-bold ${fClass}`} style={{color:'#059669'}}>{t.deliveryEta}</p>
-              </div>
             </div>
+            {delivMode==='collect'?(
+              <div className="w-full rounded-2xl p-4 mb-4" style={{background:'#FEF3C7',border:'2px dashed #F59E0B'}}>
+                <p className="text-[10px] font-black uppercase tracking-widest mb-2" style={{color:'#92400E'}}>
+                  🏪 Code de retrait
+                </p>
+                <p className="text-3xl font-black tracking-[0.25em] mb-2" style={{color:'#B45309'}}>{collectCode}</p>
+                <p className="text-[11px] font-semibold" style={{color:'#78350F'}}>
+                  Montrez ce code au restaurateur — il prépare votre commande
+                </p>
+              </div>
+            ):(
+              <div className="w-full rounded-2xl p-3 mb-4" style={{background:'#F0FDF4',border:'1px solid #BBF7D0'}}>
+                <div className="flex items-center justify-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"/>
+                  <p className={`text-xs font-bold ${fClass}`} style={{color:'#059669'}}>{t.deliveryEta}</p>
+                </div>
+              </div>
+            )}
             <button onClick={()=>{onClearCart();onClose();}}
               className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
               style={{background:'linear-gradient(135deg,#065F46,#047857)',boxShadow:'0 6px 20px rgba(6,95,70,0.3)'}}>
