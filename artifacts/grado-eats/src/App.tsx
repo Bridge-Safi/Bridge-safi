@@ -128,12 +128,12 @@ interface CartItem {
   extraPrice: number; totalPerUnit: number;
 }
 
-interface UserProfile { name:string; address:string; phone:string; cardNumber:string; cardExpiry:string; cardName:string; }
+interface UserProfile { name:string; address:string; phone:string; cardNumber:string; cardExpiry:string; cardName:string; onboardingComplete?:boolean; }
 
 // ─── PROFILE STORAGE ──────────────────────────────────────────────────────────
 
 const PROFILE_KEY = 'bridge_eats_profile';
-const emptyProfile = (): UserProfile => ({ name:'', address:'', phone:'', cardNumber:'', cardExpiry:'', cardName:'' });
+const emptyProfile = (): UserProfile => ({ name:'', address:'', phone:'', cardNumber:'', cardExpiry:'', cardName:'', onboardingComplete:false });
 
 function useProfile() {
   const [profile, setProfileState] = useState<UserProfile>(() => {
@@ -205,6 +205,16 @@ const T = {
     paymentCard:'💳 Paiement : Carte Bancaire',
     sslBadge:'256-bit SSL · Paiement 100% sécurisé',
     cardHolderLabel:'👤 Titulaire',
+    onboardTitle:'Complétez votre profil',
+    onboardSub:'Quelques infos pour une expérience fluide',
+    onboardSkip:'Passer pour l\'instant',
+    onboardSave:'Enregistrer et continuer',
+    onboardPhone:'📱 Numéro de téléphone', onboardPhoneSub:'Pour le livreur',
+    onboardAddr:'📍 Adresse de livraison', onboardAddrSub:'Votre adresse à Safi',
+    onboardCard:'💳 Carte bancaire', onboardCardSub:'Paiement rapide & sécurisé',
+    onboardId:'🪪 Identité', onboardIdSub:'Vérification du compte',
+    onboardCardNum:'Numéro de carte', onboardCardExp:'Date d\'expiration', onboardCardHolder:'Nom sur la carte',
+    onboardIdNote:'Fonctionnalité disponible prochainement. Votre compte est actif.',
   },
   en: {
     appName:'Bridge Safi', zone:'Safi, Morocco',
@@ -261,6 +271,16 @@ const T = {
     paymentCard:'💳 Payment: Credit Card',
     sslBadge:'256-bit SSL · 100% Secure Payment',
     cardHolderLabel:'👤 Cardholder',
+    onboardTitle:'Complete your profile',
+    onboardSub:'A few details for a smooth experience',
+    onboardSkip:'Skip for now',
+    onboardSave:'Save & continue',
+    onboardPhone:'📱 Phone number', onboardPhoneSub:'For your delivery rider',
+    onboardAddr:'📍 Delivery address', onboardAddrSub:'Your address in Safi',
+    onboardCard:'💳 Bank card', onboardCardSub:'Fast & secure payment',
+    onboardId:'🪪 Identity', onboardIdSub:'Account verification',
+    onboardCardNum:'Card number', onboardCardExp:'Expiry date', onboardCardHolder:'Name on card',
+    onboardIdNote:'Coming soon. Your account is already active.',
   },
   ar: {
     appName:'بريدج سافي', zone:'آسفي، المغرب',
@@ -318,6 +338,16 @@ const T = {
     paymentCard:'💳 الدفع: بطاقة بنكية',
     sslBadge:'256-bit SSL · دفع آمن 100%',
     cardHolderLabel:'👤 حامل البطاقة',
+    onboardTitle:'أكمل ملفك الشخصي',
+    onboardSub:'بعض المعلومات لتجربة سلسة',
+    onboardSkip:'تخطي الآن',
+    onboardSave:'حفظ ومتابعة',
+    onboardPhone:'📱 رقم الهاتف', onboardPhoneSub:'للتواصل مع المندوب',
+    onboardAddr:'📍 عنوان التوصيل', onboardAddrSub:'عنوانك في آسفي',
+    onboardCard:'💳 بطاقة بنكية', onboardCardSub:'دفع سريع وآمن',
+    onboardId:'🪪 الهوية', onboardIdSub:'التحقق من الحساب',
+    onboardCardNum:'رقم البطاقة', onboardCardExp:'تاريخ الانتهاء', onboardCardHolder:'الاسم على البطاقة',
+    onboardIdNote:'قريباً. حسابك مفعّل.',
   },
   amz: {
     appName:'ⴱⵔⵉⴷⵊ ⵉⵢⵜⵙ', zone:'ⵙⴰⴼⵉ, ⵍⵎⵖⵔⵉⴱ',
@@ -375,6 +405,16 @@ const T = {
     paymentCard:'💳 ⴰⴷⴼⴰⵏ: ⵜⴰⴽⴰⵔⴷⵜ',
     sslBadge:'256-bit SSL · ⴰⴷⴼⴰⵏ ⵉⵣⴷⵉⴳⵏ 100%',
     cardHolderLabel:'👤 ⴰⵎⵙⴽⴽⵉ',
+    onboardTitle:'ⵙⵎⴷ ⴰⵎⵍⵉ ⵏⵏⴽ',
+    onboardSub:'ⵉⵙⴼⴰⵡⵏ ⵏ ⵜⵎⵓⵔⵉ ⵏⵏⴽ',
+    onboardSkip:'ⵙⵎⴰⵍ ⴰⵙⵙⴰ',
+    onboardSave:'ⵙⵎⴷ ⴷ ⴽⵛⵎ',
+    onboardPhone:'📱 ⵓⵟⵟⵓⵏ ⵏ ⵜⵙⵍⵍⴰⵢⵜ', onboardPhoneSub:'ⵉ ⵓⵙⴽⵍⴰ',
+    onboardAddr:'📍 ⵜⴰⵏⵙⴰ ⵏ ⵓⵣⵣⵏⵣ', onboardAddrSub:'ⵜⴰⵏⵙⴰ ⵏⵏⴽ ⵙ ⵙⴰⴼⵉ',
+    onboardCard:'💳 ⵜⴰⴽⴰⵔⴷⵜ ⵏ ⵓⵙⵔⴰⵡ', onboardCardSub:'ⴰⴷⴼⴰⵏ ⴰⵣⴷⵉⴳ',
+    onboardId:'🪪 ⵜⵉⵎⵙⵙⵉⵔⴰ', onboardIdSub:'ⵜⴰⵙⵍⵎⴷⵜ ⵏ ⵓⵃⵙⴰⴱ',
+    onboardCardNum:'ⵓⵟⵟⵓⵏ ⵏ ⵜⴰⴽⴰⵔⴷⵜ', onboardCardExp:'ⴰⵙⴽⵓ ⵏ ⵓⵙⵎⵙⵉⵡⴷ', onboardCardHolder:'ⵉⵙⵎ ⵖⴼ ⵜⴰⴽⴰⵔⴷⵜ',
+    onboardIdNote:'ⵉⵍⴻⵍⵍⵉ ⴰⵙⵙ. ⵓⵃⵙⴰⴱ ⵏⵏⴽ ⵉⵜⵜⵓⵙⵎⴷ.',
   },
 };
 
@@ -2084,6 +2124,159 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
 
 // ─── SPLASH ───────────────────────────────────────────────────────────────────
 
+// ─── PROFILE ONBOARDING SCREEN ────────────────────────────────────────────────
+
+function ProfileOnboardingScreen({lang,profile,saveProfile,onDone}:{
+  lang:Lang; profile:UserProfile;
+  saveProfile:(p:UserProfile)=>void; onDone:()=>void;
+}) {
+  const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
+  const [phone,setPhone]=useState(profile.phone||'');
+  const [address,setAddress]=useState(profile.address||'');
+  const [cardNumber,setCardNumber]=useState(profile.cardNumber||'');
+  const [cardExpiry,setCardExpiry]=useState(profile.cardExpiry||'');
+  const [cardName,setCardName]=useState(profile.cardName||'');
+  const [open,setOpen]=useState<string|null>(null);
+
+  const completedCount=[phone,address,cardNumber].filter(Boolean).length;
+
+  const handleSave=()=>{
+    saveProfile({...profile,phone,address,cardNumber,cardExpiry,cardName,onboardingComplete:true});
+    onDone();
+  };
+  const handleSkip=()=>{
+    saveProfile({...profile,onboardingComplete:true});
+    onDone();
+  };
+
+  const Section=({id,icon,title,sub,children}:{id:string;icon:string;title:string;sub:string;children:React.ReactNode})=>{
+    const isOpen=open===id;
+    return (
+      <div style={{
+        background:'#FDFCF9',border:'2px solid',
+        borderColor:isOpen?'#065F46':'#E5E1D8',
+        borderRadius:18,marginBottom:12,overflow:'hidden',
+        transition:'border-color 0.2s',
+        boxShadow:isOpen?'0 4px 20px rgba(6,95,70,0.12)':'none',
+      }}>
+        <button onClick={()=>setOpen(isOpen?null:id)} className="w-full"
+          style={{display:'flex',alignItems:'center',gap:12,padding:'14px 16px',background:'none',border:'none',cursor:'pointer',textAlign:isAR?'right':'left'}}>
+          <div style={{width:44,height:44,borderRadius:14,background:isOpen?'#065F46':'#F0FDF4',
+            display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,flexShrink:0,
+            border:'2px solid',borderColor:isOpen?'#047857':'#D1FAE5',transition:'all 0.2s'}}>
+            {icon}
+          </div>
+          <div style={{flex:1}}>
+            <p className={`font-black text-sm ${fClass}`} style={{color:'#1A2F23',margin:0}}>{title}</p>
+            <p className={`text-[10px] ${fClass}`} style={{color:'#9CA3AF',margin:'2px 0 0'}}>{sub}</p>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2.5"
+            style={{transform:isOpen?'rotate(180deg)':'rotate(0deg)',transition:'transform 0.2s',flexShrink:0}}>
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
+        {isOpen&&<div style={{padding:'0 16px 16px'}}>{children}</div>}
+      </div>
+    );
+  };
+
+  return (
+    <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`}
+      style={{background:'linear-gradient(160deg,#011c15 0%,#054130 30%,#065F46 60%,#033d2c 100%)'}}>
+      {/* Background pattern */}
+      <div style={{position:'fixed',inset:0,opacity:0.04,
+        backgroundImage:`url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23D9C5A0'%3E%3Cpath d='M30 0L0 30L30 60L60 30L30 0zm0 10L50 30L30 50L10 30L30 10z'/%3E%3C/g%3E%3C/svg%3E")`,
+        backgroundSize:'60px 60px',pointerEvents:'none'}}/>
+
+      {/* Header */}
+      <div className="relative z-10 flex flex-col items-center pt-10 pb-6 px-5">
+        <div style={{width:64,height:64,borderRadius:'50%',overflow:'hidden',
+          border:'3px solid #D9C5A0',boxShadow:'0 8px 32px rgba(0,0,0,0.35)',marginBottom:12}}>
+          <img src="/logo_splash.jpeg" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.2)'}}/>
+        </div>
+        <h2 className={`font-black text-white text-2xl tracking-tight ${fClass}`} style={{margin:0}}>{t.onboardTitle}</h2>
+        <p className={`text-[#D9C5A0] text-xs mt-1 ${fClass}`} style={{opacity:0.85}}>{t.onboardSub}</p>
+
+        {/* Progress */}
+        <div style={{display:'flex',gap:6,marginTop:16,alignItems:'center'}}>
+          {[0,1,2].map(i=>(
+            <div key={i} style={{width:i<completedCount?24:8,height:8,borderRadius:4,
+              background:i<completedCount?'#D9C5A0':'rgba(255,255,255,0.2)',transition:'all 0.3s'}}/>
+          ))}
+          <span style={{color:'rgba(255,255,255,0.5)',fontSize:'0.6rem',marginLeft:4}}>{completedCount}/3</span>
+        </div>
+      </div>
+
+      {/* Cards */}
+      <div className="relative z-10 flex-1 px-4 pb-6" style={{maxWidth:480,margin:'0 auto',width:'100%'}}>
+
+        <Section id="phone" icon="📱" title={t.onboardPhone} sub={t.onboardPhoneSub}>
+          <Field label={t.onboardPhone} value={phone} onChange={setPhone}
+            placeholder="06 00 00 00 00" type="tel" lang={lang}/>
+        </Section>
+
+        <Section id="addr" icon="📍" title={t.onboardAddr} sub={t.onboardAddrSub}>
+          <AddressAutocomplete label={t.onboardAddr} value={address} onChange={setAddress}
+            placeholder="Ex: Plateau, Av. Hassan II, Safi" lang={lang}/>
+        </Section>
+
+        <Section id="card" icon="💳" title={t.onboardCard} sub={t.onboardCardSub}>
+          <div style={{background:'linear-gradient(135deg,#065F46,#047857)',borderRadius:16,padding:'18px 18px 14px',marginBottom:12}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
+              <div style={{color:'rgba(255,255,255,0.6)',fontSize:'0.6rem',letterSpacing:'0.2em',fontWeight:800}}>BRIDGE PAY</div>
+              <div style={{color:'#D9C5A0',fontSize:'1rem'}}>💳</div>
+            </div>
+            <div style={{color:'white',fontSize:'1rem',letterSpacing:'0.25em',fontWeight:900,marginBottom:12,minHeight:22}}>
+              {cardNumber||'•••• •••• •••• ••••'}
+            </div>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end'}}>
+              <div>
+                <div style={{color:'rgba(255,255,255,0.5)',fontSize:'0.5rem',letterSpacing:'0.15em'}}>TITULAIRE</div>
+                <div style={{color:'white',fontSize:'0.7rem',fontWeight:700}}>{cardName||'NOM PRÉNOM'}</div>
+              </div>
+              <div style={{textAlign:'right'}}>
+                <div style={{color:'rgba(255,255,255,0.5)',fontSize:'0.5rem',letterSpacing:'0.15em'}}>EXPIRE</div>
+                <div style={{color:'white',fontSize:'0.7rem',fontWeight:700}}>{cardExpiry||'MM/AA'}</div>
+              </div>
+            </div>
+          </div>
+          <Field label={t.onboardCardNum} value={cardNumber} onChange={v=>setCardNumber(v.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim().slice(0,19))}
+            placeholder="1234 5678 9012 3456" lang={lang}/>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+            <Field label={t.onboardCardExp} value={cardExpiry} onChange={v=>setCardExpiry(v.replace(/[^0-9/]/g,'').slice(0,5))}
+              placeholder="MM/AA" lang={lang}/>
+            <Field label={t.onboardCardHolder} value={cardName} onChange={v=>setCardName(v.toUpperCase())}
+              placeholder="NOM PRÉNOM" lang={lang}/>
+          </div>
+        </Section>
+
+        <Section id="id" icon="🪪" title={t.onboardId} sub={t.onboardIdSub}>
+          <div style={{background:'#F0FDF4',borderRadius:14,padding:14,textAlign:'center'}}>
+            <div style={{fontSize:32,marginBottom:8}}>🔒</div>
+            <p className={`text-sm font-medium ${fClass}`} style={{color:'#065F46',margin:0}}>{t.onboardIdNote}</p>
+          </div>
+        </Section>
+
+        {/* Buttons */}
+        <div style={{display:'flex',flexDirection:'column',gap:10,marginTop:8}}>
+          <button onClick={handleSave}
+            className={`w-full font-black text-sm tracking-widest ${fClass}`}
+            style={{height:52,borderRadius:18,background:'linear-gradient(135deg,#D9C5A0,#C9B48C)',color:'#1A2F23',
+              border:'none',cursor:'pointer',boxShadow:'0 8px 32px rgba(217,197,160,0.35)'}}>
+            ✓ {t.onboardSave}
+          </button>
+          <button onClick={handleSkip}
+            className={`w-full text-xs ${fClass}`}
+            style={{height:40,borderRadius:14,background:'rgba(255,255,255,0.08)',color:'rgba(255,255,255,0.55)',
+              border:'1px solid rgba(255,255,255,0.12)',cursor:'pointer'}}>
+            {t.onboardSkip} →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function SplashScreen() {
   const [progress,setProgress]=useState(0);
   const [dots,setDots]=useState(0);
@@ -2302,11 +2495,13 @@ function loadNav() {
 
 export default function App() {
   const saved = loadNav();
+  const { isLoaded, isSignedIn } = useUser();
+  const [, navigate] = useLocation();
 
   const [lang,setLang]         = useState<Lang>(saved?.lang??'fr');
   const [page,setPage]         = useState<Page>(saved?.page??'home');
-  // Show splash on every load/refresh/restart
-  const [showSplash,setShowSplash] = useState(true);
+  // splashDone becomes true after 3s; we also wait for Clerk to load
+  const [splashDone,setSplashDone] = useState(false);
   const [service,setService]       = useState<'none'|'delivery'|'taxi'|'tabac'>(saved?.service??'none');
   const [cart,setCart]         = useState<CartItem[]>([]);
   const [showCart,setShowCart] = useState(false);
@@ -2316,12 +2511,16 @@ export default function App() {
   );
   const {profile,saveProfile}  = useProfile();
 
-  // Splash timer only when shown
+  // Splash timer — 3 seconds
   useEffect(()=>{
-    if(!showSplash) return;
-    const t=setTimeout(()=>setShowSplash(false),3000);
+    const t=setTimeout(()=>setSplashDone(true),3000);
     return()=>clearTimeout(t);
-  },[showSplash]);
+  },[]);
+
+  // Redirect to sign-in if Clerk loaded and not signed in
+  useEffect(()=>{
+    if(isLoaded && !isSignedIn) navigate('/sign-in');
+  },[isLoaded,isSignedIn]);
 
   // Persist nav state on every relevant change
   useEffect(()=>{
@@ -2354,7 +2553,19 @@ export default function App() {
   const handleBack=()=>{setPage('home');setSelectedRestaurant(null);};
 
   const TABS:Page[]=['home','tracking','contact'];
+
+  // Show splash while timer running OR Clerk still loading
+  const showSplash = !splashDone || !isLoaded;
   if(showSplash) return <SplashScreen/>;
+
+  // Auth guard — not signed in (redirect handled in useEffect)
+  if(!isSignedIn) return null;
+
+  // Profile onboarding after first sign-in
+  if(!profile.onboardingComplete) return (
+    <ProfileOnboardingScreen lang={lang} profile={profile} saveProfile={saveProfile} onDone={()=>{}}/>
+  );
+
   if(service==='none') return <ServiceSelectPage onSelect={s=>setService(s)} lang={lang} cycleLang={cycleLang}/>;
   if(service==='taxi') return <TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
   if(service==='tabac') return <TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
