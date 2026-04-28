@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useUser } from '@clerk/react';
+import { useUser, useClerk } from '@clerk/react';
 import { useLocation } from 'wouter';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Polygon, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -177,7 +177,7 @@ const T = {
     collectAddress:'Adresse retrait : Plateau, Safi (le restaurant vous contacte)',
     profileTitle:'Mon Profil', profileSub:'Vos informations enregistrées',
     profileSave:'Enregistrer le profil', profileSaved:'Profil enregistré ✓',
-    savedPayment:'Carte bancaire enregistrée',
+    savedPayment:'Carte bancaire enregistrée', signOut:'🚪 Se déconnecter',
     trackTitle:'Suivi GPS en Direct', trackZone:'SAFI · PLATEAU', trackLive:'EN DIRECT',
     stages:['Reçue','En préparation','En chemin','Livrée'],
     stagesSub:['Commande confirmée',"Le chef s'affaire",'Votre livreur arrive','Bon appétit !'],
@@ -243,7 +243,7 @@ const T = {
     collectOption:'🏪 Click & Collect', collectOptionDesc:'Pick up at restaurant · +2.99 MAD',
     collectAddress:'Pick-up address: Plateau, Safi (restaurant will contact you)',
     profileTitle:'My Profile', profileSub:'Your saved information',
-    profileSave:'Save profile', profileSaved:'Profile saved ✓', savedPayment:'Saved credit card',
+    profileSave:'Save profile', profileSaved:'Profile saved ✓', savedPayment:'Saved credit card', signOut:'🚪 Sign out',
     trackTitle:'Live GPS Tracking', trackZone:'SAFI · PLATEAU', trackLive:'LIVE',
     stages:['Received','Preparing','On the way','Delivered'],
     stagesSub:['Order confirmed','Chef is cooking','Courier en route','Enjoy your meal!'],
@@ -309,7 +309,7 @@ const T = {
     collectOption:'🏪 Click & Collect', collectOptionDesc:'الاستلام من المطعم · +2.99 MAD',
     collectAddress:'عنوان الاستلام : الهضبة، آسفي (سيتصل بك المطعم)',
     profileTitle:'ملفي الشخصي', profileSub:'معلوماتك المحفوظة',
-    profileSave:'حفظ الملف الشخصي', profileSaved:'تم الحفظ ✓', savedPayment:'بطاقة بنكية محفوظة',
+    profileSave:'حفظ الملف الشخصي', profileSaved:'تم الحفظ ✓', savedPayment:'بطاقة بنكية محفوظة', signOut:'🚪 تسجيل الخروج',
     trackTitle:'تتبع GPS مباشر', trackZone:'آسفي · الهضبة', trackLive:'مباشر',
     stages:['مستلمة','قيد التحضير','في الطريق','تم التوصيل'],
     stagesSub:['تم تأكيد الطلب','الطاهي يعمل','المندوب في الطريق','بالهناء والشفاء!'],
@@ -376,7 +376,7 @@ const T = {
     collectOption:'🏪 Click & Collect', collectOptionDesc:'ⴰⵔⵣⵣⵓ ⴳ ⵓⵣⵉⴳⵣ · +2.99 MAD',
     collectAddress:'ⵜⴰⵏⵙⴰ ⵏ ⵓⵔⵣⵣⵓ : ⴰⴱⵍⴰⵟⵓ, ⵙⴰⴼⵉ',
     profileTitle:'ⴰⵎⵍⵉ ⵏⵓ', profileSub:'ⵉⵙⴼⴰⵡⵏ ⵏⵏⴽ ⵉⵜⵜⵓⵙⵎⴷⵏ',
-    profileSave:'ⵙⵎⴷ ⴰⵎⵍⵉ', profileSaved:'ⵜⵜⵓⵙⵎⴷ ✓', savedPayment:'ⵜⴰⴽⴰⵔⴷⵜ ⵉⵜⵜⵓⵙⵎⴷⵏ',
+    profileSave:'ⵙⵎⴷ ⴰⵎⵍⵉ', profileSaved:'ⵜⵜⵓⵙⵎⴷ ✓', savedPayment:'ⵜⴰⴽⴰⵔⴷⵜ ⵉⵜⵜⵓⵙⵎⴷⵏ', signOut:'🚪 ⴼⴼⵖ',
     trackTitle:'ⴰⵙⴽⵍⵙ GPS', trackZone:'ⵙⴰⴼⵉ · ⴰⴱⵍⴰⵟⵓ', trackLive:'ⴷⴷⴰⵡ',
     stages:['ⵜⵜⵓⵙⵔⵖⴰ','ⵜⴻⵜⵜⵓⵙⴽⴰⵔ','ⵖ ⵓⵣⵔⵉⵔⵉ','ⵜⵜⵓⵙⵍⵎⴷ'],
     stagesSub:['ⵜⵜⵓⵙⵛⴷⵃ ⵜⴰⵖⵓⵍⵜ','ⴰⵎⵓⵙⵙⵓ ⵉⵜⵜⵓⵙⴽⴰⵔ','ⴰⵎⵥⵍⵉ ⵉⵜⵜⴰⵡⵙ','ⵜⵙⴼⵓⵍⵍⵓ!'],
@@ -1345,8 +1345,11 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const [form,setForm]=useState<UserProfile>({...profile});
   const [saved,setSaved]=useState(false);
+  const { signOut } = useClerk();
+  const [, navigate] = useLocation();
 
   const handleSave=()=>{onSave(form);setSaved(true);setTimeout(()=>setSaved(false),2000);};
+  const handleSignOut=async()=>{ await signOut(); navigate('/sign-in'); onClose(); };
   const set=(k:keyof UserProfile)=>(v:string)=>setForm(f=>({...f,[k]:v}));
   const fmtCard=(v:string)=>v.replace(/\D/g,'').slice(0,16).replace(/(.{4})/g,'$1 ').trim();
   const fmtExp=(v:string)=>{const d=v.replace(/\D/g,'').slice(0,4);return d.length>2?`${d.slice(0,2)}/${d.slice(2)}`:d;};
@@ -1393,6 +1396,11 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
             className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
             style={{background:saved?'#059669':'linear-gradient(135deg,#065F46,#047857)',boxShadow:'0 6px 20px rgba(6,95,70,0.3)'}}>
             {saved?t.profileSaved:t.profileSave}
+          </button>
+          <button onClick={handleSignOut}
+            className={`w-full py-3.5 mt-3 rounded-2xl font-black text-sm transition-all active:scale-95 ${fClass}`}
+            style={{background:'#FEF2F2',color:'#DC2626',border:'1.5px solid #FECACA'}}>
+            {t.signOut}
           </button>
         </div>
       </div>
