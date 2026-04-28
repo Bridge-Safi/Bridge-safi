@@ -128,12 +128,36 @@ interface CartItem {
   extraPrice: number; totalPerUnit: number;
 }
 
-interface UserProfile { name:string; address:string; phone:string; cardNumber:string; cardExpiry:string; cardName:string; onboardingComplete?:boolean; }
+interface UserProfile { name:string; address:string; phone:string; cardNumber:string; cardExpiry:string; cardName:string; paymentMethod?:'card'|'paypal'; paypalEmail?:string; onboardingComplete?:boolean; }
 
 // ─── PROFILE STORAGE ──────────────────────────────────────────────────────────
 
 const PROFILE_KEY = 'bridge_eats_profile';
-const emptyProfile = (): UserProfile => ({ name:'', address:'', phone:'', cardNumber:'', cardExpiry:'', cardName:'', onboardingComplete:false });
+const emptyProfile = (): UserProfile => ({ name:'', address:'', phone:'', cardNumber:'', cardExpiry:'', cardName:'', paymentMethod:'card', paypalEmail:'', onboardingComplete:false });
+
+// ── Card type detection ────────────────────────────────────────────────────────
+type CardType = 'visa'|'mastercard'|'unknown';
+function detectCard(n:string): CardType {
+  const d=n.replace(/\D/g,'');
+  if(/^4/.test(d)) return 'visa';
+  if(/^5[1-5]/.test(d)||(/^2[2-7]/.test(d)&&parseInt(d.slice(0,4),10)>=2221&&parseInt(d.slice(0,4),10)<=2720)) return 'mastercard';
+  return 'unknown';
+}
+function isValidCardType(n:string):boolean { return detectCard(n)!=='unknown'; }
+
+// SVG logos inline (tiny)
+const VisaLogo=()=>(
+  <svg viewBox="0 0 60 20" width="44" height="15" fill="none">
+    <text x="0" y="16" fontFamily="Arial" fontWeight="900" fontSize="18" fill="white" letterSpacing="-1">VISA</text>
+  </svg>
+);
+const MastercardLogo=()=>(
+  <svg viewBox="0 0 38 24" width="38" height="24">
+    <circle cx="14" cy="12" r="12" fill="#EB001B"/>
+    <circle cx="24" cy="12" r="12" fill="#F79E1B"/>
+    <path d="M19 4.8a12 12 0 0 1 0 14.4A12 12 0 0 1 19 4.8z" fill="#FF5F00"/>
+  </svg>
+);
 
 function useProfile() {
   const [profile, setProfileState] = useState<UserProfile>(() => {
@@ -182,8 +206,13 @@ const T = {
     errName:'Entrez votre prénom et nom (ex: Mohamed Alaoui)',
     errPhone:'Numéro invalide (ex: +212 612 345 678 ou 0612345678)',
     errCard:'Numéro de carte invalide (16 chiffres requis)',
+    errCardType:'Carte non acceptée — Visa ou Mastercard uniquement',
     errExpiry:'Date invalide (format MM/AA, non expirée)',
     errCardName:'Nom du titulaire requis (comme sur la carte)',
+    paymentTabCard:'💳 Carte', paymentTabPaypal:'🅿️ PayPal',
+    paypalEmailLabel:'Email PayPal', paypalPh:'exemple@paypal.com',
+    errPaypal:'Adresse email PayPal invalide',
+    savedPaypalLabel:'PayPal enregistré',
     changePwd:'🔑 Changer le mot de passe', currentPwd:'Mot de passe actuel',
     newPwd:'Nouveau mot de passe (8 car. min.)', confirmPwd:'Confirmer le nouveau mot de passe',
     pwdChanged:'Mot de passe modifié ✓', pwdMismatch:'Les mots de passe ne correspondent pas.',
@@ -259,8 +288,13 @@ const T = {
     errName:'Enter your first and last name (e.g. Mohamed Alaoui)',
     errPhone:'Invalid number (e.g. +212 612 345 678 or 0612345678)',
     errCard:'Invalid card number (16 digits required)',
+    errCardType:'Card not accepted — Visa or Mastercard only',
     errExpiry:'Invalid date (MM/YY format, not expired)',
     errCardName:'Cardholder name required (as on the card)',
+    paymentTabCard:'💳 Card', paymentTabPaypal:'🅿️ PayPal',
+    paypalEmailLabel:'PayPal Email', paypalPh:'example@paypal.com',
+    errPaypal:'Invalid PayPal email address',
+    savedPaypalLabel:'PayPal saved',
     changePwd:'🔑 Change password', currentPwd:'Current password',
     newPwd:'New password (min. 8 chars)', confirmPwd:'Confirm new password',
     pwdChanged:'Password updated ✓', pwdMismatch:'Passwords do not match.',
@@ -336,8 +370,13 @@ const T = {
     errName:'أدخل اسمك الكامل (مثال: محمد العلوي)',
     errPhone:'رقم غير صالح (مثال: 212612345678+ أو 0612345678)',
     errCard:'رقم البطاقة غير صالح (مطلوب 16 رقماً)',
+    errCardType:'البطاقة غير مقبولة — Visa أو Mastercard فقط',
     errExpiry:'تاريخ غير صالح (صيغة MM/AA وغير منتهية)',
     errCardName:'اسم حامل البطاقة مطلوب',
+    paymentTabCard:'💳 بطاقة', paymentTabPaypal:'🅿️ PayPal',
+    paypalEmailLabel:'بريد PayPal الإلكتروني', paypalPh:'example@paypal.com',
+    errPaypal:'عنوان البريد الإلكتروني لـ PayPal غير صالح',
+    savedPaypalLabel:'PayPal محفوظ',
     changePwd:'🔑 تغيير كلمة المرور', currentPwd:'كلمة المرور الحالية',
     newPwd:'كلمة مرور جديدة (8 أحرف على الأقل)', confirmPwd:'تأكيد كلمة المرور الجديدة',
     pwdChanged:'تم تغيير كلمة المرور ✓', pwdMismatch:'كلمتا المرور غير متطابقتين.',
@@ -414,8 +453,13 @@ const T = {
     errName:'ⵙⵎⴷ ⵉⵙⵎ ⵏⵏⴽ ⴰⵎⴰⵜⴰⵢ (ex: Mohamed Alaoui)',
     errPhone:'ⴰⵏⵎⵔ ⵓⵔ ⵉⵙⵀⵡⴰ (ex: +212 612 345 678)',
     errCard:'ⵜⴰⴽⴰⵔⴷⵜ ⵓⵔ ⵜⵙⵀⵡⴰ (16 ⵉⵏⵎⵎⴰⵔⵏ)',
+    errCardType:'ⵜⴰⴽⴰⵔⴷⵜ ⵓⵔ ⵜⵜⵓⵇⴱⵍ — Visa ⵏⵖ Mastercard',
     errExpiry:'ⴰⵣⵎⵣ ⵓⵔ ⵉⵙⵀⵡⴰ (MM/AA)',
     errCardName:'ⵉⵙⵎ ⵏ ⵓⵎⵙⴽⴽⵉ ⵉⵍⵍⴰ',
+    paymentTabCard:'💳 ⵜⴰⴽⴰⵔⴷⵜ', paymentTabPaypal:'🅿️ PayPal',
+    paypalEmailLabel:'ⵉⵎⵉⵍ PayPal', paypalPh:'example@paypal.com',
+    errPaypal:'ⵉⵎⵉⵍ PayPal ⵓⵔ ⵉⵙⵀⵡⴰ',
+    savedPaypalLabel:'PayPal ⵉⵜⵜⵓⵙⵎⴷ',
     changePwd:'🔑 ⵙⵏⴼⵍ ⵜⴰⴱⵔⵉⴷⵜ', currentPwd:'ⵜⴰⴱⵔⵉⴷⵜ ⵜⴰⵎⵣⵡⴰⵔⵓⵜ',
     newPwd:'ⵜⴰⴱⵔⵉⴷⵜ ⵜⴰⵎⴰⵢⵏⵓⵜ (8 ⵉⵙⴽⴽⵉⵍⵏ)', confirmPwd:'ⵙⵙⴽⴷⵃ ⵜⴰⴱⵔⵉⴷⵜ ⵜⴰⵎⴰⵢⵏⵓⵜ',
     pwdChanged:'ⵜⵜⵓⵙⵏⴼⵍ ✓', pwdMismatch:'ⵜⵉⴱⵔⵉⴷⵉⵏ ⵓⵔ ⵏⵎⵎⴰⵍⵏ.',
@@ -1396,6 +1440,7 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
   const [, navigate] = useLocation();
   const { user } = useUser();
   const [errs,setErrs]=useState<Record<string,boolean>>({});
+  const [payTab,setPayTab]=useState<'card'|'paypal'>(profile.paymentMethod==='paypal'?'paypal':'card');
 
   // Generate deterministic game ID from Clerk userId
   const gameId = user?.id
@@ -1411,7 +1456,8 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
   // ── Validation helpers ──────────────────────────────────────────────────────
   const validateName=(v:string)=>v.trim().length>=3&&/\s/.test(v.trim());
   const validatePhone=(v:string)=>{const d=v.replace(/\D/g,'');return (d.length===9&&/^[67]/.test(d))||(d.length===10&&/^0[67]/.test(d))||(d.length===12&&/^212[67]/.test(d));};
-  const validateCard=(v:string)=>v.replace(/\D/g,'').length===16;
+  const validateCard=(v:string)=>v.replace(/\D/g,'').length===16&&isValidCardType(v);
+  const validatePaypal=(v:string)=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
   const validateExpiry=(v:string)=>{
     const m=v.match(/^(\d{2})\/(\d{2})$/);
     if(!m) return false;
@@ -1452,12 +1498,17 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
     const e:Record<string,boolean>={};
     if(!validateName(form.name))       e.name=true;
     if(!validatePhone(form.phone))     e.phone=true;
-    if(!validateCard(form.cardNumber)) e.card=true;
-    if(!validateExpiry(form.cardExpiry)) e.expiry=true;
-    if(!validateCardName(form.cardName)) e.cardName=true;
+    if(payTab==='card'){
+      if(!validateCard(form.cardNumber)) e.card=true;
+      if(!validateExpiry(form.cardExpiry)) e.expiry=true;
+      if(!validateCardName(form.cardName)) e.cardName=true;
+    } else {
+      if(!validatePaypal(form.paypalEmail||'')) e.paypal=true;
+    }
     setErrs(e);
     if(Object.keys(e).length>0) return;
-    onSave(form);setSaved(true);setTimeout(()=>setSaved(false),2000);
+    onSave({...form, paymentMethod:payTab});
+    setSaved(true);setTimeout(()=>setSaved(false),2000);
   };
   const handleSignOut=async()=>{ await signOut(); navigate('/sign-in'); onClose(); };
   const set=(k:keyof UserProfile)=>(v:string)=>setForm(f=>({...f,[k]:v}));
@@ -1502,25 +1553,96 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
             <Field label={t.addrLabel} value={form.address} onChange={set('address')} placeholder={t.addrPh} lang={lang}/>
             <Field label={t.phoneLabel} value={form.phone} onChange={v=>{set('phone')(v);if(errs.phone&&validatePhone(v))setErrs(e=>({...e,phone:false}));}} placeholder={t.phonePh} type="tel" lang={lang} required error={errs.phone} errorMsg={t.errPhone}/>
           </div>
-          <div className="rounded-2xl p-4 mb-5" style={{background:errs.card||errs.expiry||errs.cardName?'#F5F3FF':'#EEF2FF',border:`1px solid ${errs.card||errs.expiry||errs.cardName?'#C4B5FD':'#C7D2FE'}`,transition:'all 0.2s'}}>
-            <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#4F46E5'}}>💳 {t.savedPayment}</p>
-            {form.cardNumber&&validateCard(form.cardNumber)&&(
-              <div className="rounded-2xl p-4 mb-4 relative overflow-hidden" style={{background:'linear-gradient(135deg,#065F46,#047857)',minHeight:100}}>
-                <div className="absolute inset-0 opacity-10" style={{backgroundImage:'repeating-linear-gradient(45deg,white 0,white 1px,transparent 0,transparent 50%)',backgroundSize:'8px 8px'}}/>
-                <p className="text-white/60 text-[10px] font-bold mb-2">💳 BRIDGE EATS</p>
-                <p className="text-white font-black text-base tracking-widest mb-2">{fmtCard(form.cardNumber)||'•••• •••• •••• ••••'}</p>
-                <div className="flex justify-between items-end">
-                  <div><p className="text-white/50 text-[9px]">NAME</p><p className="text-white text-xs font-bold">{form.cardName||'—'}</p></div>
-                  <div className="text-right"><p className="text-white/50 text-[9px]">EXPIRES</p><p className="text-white text-xs font-bold">{form.cardExpiry||'—'}</p></div>
-                </div>
-              </div>
-            )}
-            <Field label={t.cardNumberLabel} value={fmtCard(form.cardNumber)} onChange={v=>{const raw=v.replace(/\s/g,'');set('cardNumber')(raw);if(errs.card&&validateCard(raw))setErrs(e=>({...e,card:false}));}} placeholder={t.cardNumberPh} type="tel" lang={lang} required error={errs.card} errorMsg={t.errCard}/>
-            <div className="grid grid-cols-2 gap-3">
-              <Field label={t.cardExpiryLabel} value={form.cardExpiry} onChange={v=>{const f=fmtExp(v);set('cardExpiry')(f);if(errs.expiry&&validateExpiry(f))setErrs(e=>({...e,expiry:false}));}} placeholder={t.cardExpiryPh} type="tel" lang={lang} required error={errs.expiry} errorMsg={t.errExpiry}/>
-              <Field label={t.cardCVVLabel} value={form.cardNumber?'•••':''} onChange={()=>{}} placeholder={t.cardCVVPh} type="password" lang={lang}/>
+          {/* ── Payment section ───────────────────────────────────── */}
+          <div className="rounded-2xl p-4 mb-5" style={{
+            background: payTab==='paypal'
+              ? (errs.paypal?'#FFF5F5':'#EFF6FF')
+              : (errs.card||errs.expiry||errs.cardName?'#F5F3FF':'#EEF2FF'),
+            border:`1px solid ${payTab==='paypal'
+              ? (errs.paypal?'#FCA5A5':'#BFDBFE')
+              : (errs.card||errs.expiry||errs.cardName?'#C4B5FD':'#C7D2FE')}`,
+            transition:'all 0.2s'}}>
+            {/* Tab switcher */}
+            <div className="flex gap-2 mb-4 p-1 rounded-xl" style={{background:'rgba(0,0,0,0.05)'}}>
+              {(['card','paypal'] as const).map(tab=>(
+                <button key={tab} onClick={()=>{setPayTab(tab);setErrs({});}}
+                  className={`flex-1 py-2 rounded-lg text-[11px] font-black transition-all ${fClass}`}
+                  style={{
+                    background: payTab===tab?'white':'transparent',
+                    color: payTab===tab?(tab==='paypal'?'#003087':'#4F46E5'):'#9CA3AF',
+                    boxShadow: payTab===tab?'0 2px 8px rgba(0,0,0,0.1)':'none',
+                    border:'none',cursor:'pointer',
+                  }}>
+                  {tab==='card'?t.paymentTabCard:t.paymentTabPaypal}
+                </button>
+              ))}
             </div>
-            <Field label={t.cardNameLabel} value={form.cardName} onChange={v=>{set('cardName')(v.toUpperCase());if(errs.cardName&&validateCardName(v))setErrs(e=>({...e,cardName:false}));}} placeholder={t.cardNamePh} lang={lang} required error={errs.cardName} errorMsg={t.errCardName}/>
+
+            {payTab==='card'&&(<>
+              {/* Visual card preview */}
+              {(()=>{const ct=detectCard(form.cardNumber); const digits=form.cardNumber.replace(/\D/g,''); const valid=digits.length===16&&ct!=='unknown'; return valid?(
+                <div className="rounded-2xl p-4 mb-4 relative overflow-hidden" style={{
+                  background: ct==='visa'
+                    ? 'linear-gradient(135deg,#1A1A6E,#003087,#1A478A)'
+                    : 'linear-gradient(135deg,#EB001B,#FF5F00,#F79E1B)',
+                  minHeight:108}}>
+                  <div className="absolute inset-0 opacity-10" style={{backgroundImage:'repeating-linear-gradient(45deg,white 0,white 1px,transparent 0,transparent 50%)',backgroundSize:'8px 8px'}}/>
+                  {/* Top row: brand + logo */}
+                  <div className="flex justify-between items-start mb-3">
+                    <p className="text-white/70 text-[10px] font-bold tracking-widest">💳 BRIDGE</p>
+                    {ct==='visa'?<VisaLogo/>:<MastercardLogo/>}
+                  </div>
+                  <p className="text-white font-black text-base tracking-widest mb-3">{fmtCard(form.cardNumber)}</p>
+                  <div className="flex justify-between items-end">
+                    <div><p className="text-white/50 text-[9px] font-bold">NAME</p><p className="text-white text-[11px] font-bold">{form.cardName||'—'}</p></div>
+                    <div className="text-right"><p className="text-white/50 text-[9px] font-bold">EXPIRES</p><p className="text-white text-[11px] font-bold">{form.cardExpiry||'—'}</p></div>
+                  </div>
+                </div>
+              ):null;})()}
+              {/* Accepted cards hint */}
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-[10px] font-bold" style={{color:'#6B7280'}}>Accepté :</span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-black" style={{background:'#003087',color:'white'}}>VISA</span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-black" style={{background:'linear-gradient(90deg,#EB001B,#F79E1B)',color:'white'}}>MC</span>
+              </div>
+              <Field label={t.cardNumberLabel} value={fmtCard(form.cardNumber)}
+                onChange={v=>{const raw=v.replace(/\s/g,'').slice(0,16);set('cardNumber')(raw);if(errs.card&&validateCard(raw))setErrs(e=>({...e,card:false}));}}
+                placeholder={t.cardNumberPh} type="tel" lang={lang} required
+                error={errs.card}
+                errorMsg={form.cardNumber.replace(/\D/g,'').length===16&&!isValidCardType(form.cardNumber)?t.errCardType:t.errCard}/>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label={t.cardExpiryLabel} value={form.cardExpiry}
+                  onChange={v=>{const f=fmtExp(v);set('cardExpiry')(f);if(errs.expiry&&validateExpiry(f))setErrs(e=>({...e,expiry:false}));}}
+                  placeholder={t.cardExpiryPh} type="tel" lang={lang} required error={errs.expiry} errorMsg={t.errExpiry}/>
+                <Field label={t.cardCVVLabel} value={form.cardNumber?'•••':''} onChange={()=>{}} placeholder={t.cardCVVPh} type="password" lang={lang}/>
+              </div>
+              <Field label={t.cardNameLabel} value={form.cardName}
+                onChange={v=>{set('cardName')(v.toUpperCase());if(errs.cardName&&validateCardName(v))setErrs(e=>({...e,cardName:false}));}}
+                placeholder={t.cardNamePh} lang={lang} required error={errs.cardName} errorMsg={t.errCardName}/>
+            </>)}
+
+            {payTab==='paypal'&&(<>
+              {/* PayPal saved indicator */}
+              {form.paypalEmail&&validatePaypal(form.paypalEmail)&&(
+                <div className="flex items-center gap-3 rounded-xl p-3 mb-4" style={{background:'#003087',color:'white'}}>
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
+                    <path d="M20.067 8.478c.492.315.844.825.983 1.39.49 2.003-.993 3.895-3.25 4.385-.21.045-.425.067-.64.067H15.26l-.472 3H12l1.98-12H17.8c1.337 0 2.012.635 2.267 1.158z" fill="#009CDE"/>
+                    <path d="M8.5 7H12.8c1.337 0 2.013.635 2.267 1.158.492.315.844.825.983 1.39.49 2.003-.993 3.895-3.25 4.385-.21.045-.425.067-.64.067H10.26l-.472 3H7L9 5h-.5z" fill="#012169"/>
+                    <path d="M4 10H8.3c1.337 0 2.012.635 2.267 1.158.492.315.844.825.983 1.39.49 2.003-.993 3.895-3.25 4.385-.21.045-.425.067-.64.067H5.76l-.472 3H2.5L4.5 8H4z" fill="#003087"/>
+                  </svg>
+                  <div>
+                    <p style={{fontSize:9,opacity:0.7,fontWeight:700,letterSpacing:'0.08em'}}>PAYPAL</p>
+                    <p style={{fontSize:13,fontWeight:900}}>{form.paypalEmail}</p>
+                  </div>
+                </div>
+              )}
+              <Field label={t.paypalEmailLabel} value={form.paypalEmail||''} type="email"
+                onChange={v=>{set('paypalEmail')(v);if(errs.paypal&&validatePaypal(v))setErrs(e=>({...e,paypal:false}));}}
+                placeholder={t.paypalPh} lang={lang} required error={errs.paypal} errorMsg={t.errPaypal}/>
+              <p style={{fontSize:10,color:'#6B7280',margin:'-4px 0 4px',fontWeight:600}}>
+                🔒 PayPal · Paiement sécurisé · Aucune carte requise
+              </p>
+            </>)}
           </div>
           {/* ── Change password accordion ───────────────────────── */}
           <div className="rounded-2xl mb-5 overflow-hidden" style={{border:'1px solid #E5E1D8'}}>
