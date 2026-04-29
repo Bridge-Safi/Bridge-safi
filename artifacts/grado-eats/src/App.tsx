@@ -1846,8 +1846,9 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
     try{localStorage.setItem(`bridge_game_pts_${user?.id||'guest'}`,String(Math.max(0,gamePts-clamped*100)));}catch(_){}
   };
   const [serviceFeeEnabled,setServiceFeeEnabled]=useState(false);
+  const isServiceFeeForced=baseTotal<70;
   const deliveryFee=delivMode==='delivery'?DELIVERY_FEE:0;
-  const serviceFee=serviceFeeEnabled?SERVICE_FEE:0;
+  const serviceFee=(isServiceFeeForced||serviceFeeEnabled)?SERVICE_FEE:0;
   const totalDiscount=promoDiscount+ptsUsed;
   const total=Math.max(0,Math.round((baseTotal+collectFee+deliveryFee+serviceFee-totalDiscount)*100)/100);
   const [step,setStep]=useState<CheckoutStep>('cart');
@@ -2138,7 +2139,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                   </div>
                 )}
                 {/* Frais de service */}
-                {serviceFeeEnabled&&(
+                {(isServiceFeeForced||serviceFeeEnabled)&&(
                   <div className="flex justify-between text-xs pt-0.5 pb-0.5">
                     <span className={`font-bold ${fClass}`} style={{color:'#7C3AED'}}>⚙️ {t.serviceFeeRow}</span>
                     <span className="font-bold" style={{color:'#7C3AED'}}>+{SERVICE_FEE} MAD</span>
@@ -2156,19 +2157,34 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                   <span className="font-black" style={{color:'#065F46'}}>{total} MAD</span>
                 </div>
 
-                {/* Toggle frais de service */}
-                <div className="flex items-center justify-between mt-3 pt-2" style={{borderTop:'1px dashed #E5E1D8'}}>
-                  <div className="flex-1 mr-3">
-                    <p className={`text-[10px] font-black ${fClass}`} style={{color:'#7C3AED'}}>⚙️ {t.serviceFeeToggle} (+{SERVICE_FEE} MAD)</p>
-                    <p className={`text-[9px] mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{t.serviceFeeDesc}</p>
+                {/* Toggle / badge frais de service */}
+                {isServiceFeeForced?(
+                  <div className="flex items-center gap-2 mt-3 pt-2 rounded-xl px-3 py-2" style={{borderTop:'1px dashed #E5E1D8',background:'#F5F3FF'}}>
+                    <span className="text-base">⚙️</span>
+                    <div className="flex-1">
+                      <p className={`text-[10px] font-black ${fClass}`} style={{color:'#7C3AED'}}>
+                        {lang==='ar'?`رسوم الخدمة إلزامية (أقل من 70 د.م.)`:lang==='en'?`Service fee required (order under 70 MAD)`:lang==='amz'?`ⵉⵎⵙⴽⴰⵔⵏ ⵉⵍⴰⵎⵎⴰⵏ (ⴰⴷⴷⴰⴷ ⴷⴰⵜ 70 MAD)`:`Frais de service obligatoires (commande < 70 MAD)`}
+                      </p>
+                      <p className={`text-[9px] mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{t.serviceFeeDesc}</p>
+                    </div>
+                    <span className="text-[9px] font-black px-2 py-0.5 rounded-full" style={{background:'#7C3AED',color:'white'}}>
+                      {lang==='ar'?'إلزامي':lang==='en'?'Required':lang==='amz'?'ⵉⵍⴰⵎⵎⴰⵏ':'Obligatoire'}
+                    </span>
                   </div>
-                  <button onClick={()=>setServiceFeeEnabled(v=>!v)}
-                    className="flex-shrink-0 rounded-full transition-all duration-300"
-                    style={{width:44,height:24,background:serviceFeeEnabled?'#7C3AED':'#E5E1D8',padding:2,position:'relative'}}>
-                    <span className="block rounded-full bg-white transition-all duration-300"
-                      style={{width:20,height:20,transform:serviceFeeEnabled?'translateX(20px)':'translateX(0)',boxShadow:'0 1px 4px rgba(0,0,0,0.2)'}}/>
-                  </button>
-                </div>
+                ):(
+                  <div className="flex items-center justify-between mt-3 pt-2" style={{borderTop:'1px dashed #E5E1D8'}}>
+                    <div className="flex-1 mr-3">
+                      <p className={`text-[10px] font-black ${fClass}`} style={{color:'#7C3AED'}}>⚙️ {t.serviceFeeToggle} (+{SERVICE_FEE} MAD)</p>
+                      <p className={`text-[9px] mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{t.serviceFeeDesc}</p>
+                    </div>
+                    <button onClick={()=>setServiceFeeEnabled(v=>!v)}
+                      className="flex-shrink-0 rounded-full transition-all duration-300"
+                      style={{width:44,height:24,background:serviceFeeEnabled?'#7C3AED':'#E5E1D8',padding:2,position:'relative'}}>
+                      <span className="block rounded-full bg-white transition-all duration-300"
+                        style={{width:20,height:20,transform:serviceFeeEnabled?'translateX(20px)':'translateX(0)',boxShadow:'0 1px 4px rgba(0,0,0,0.2)'}}/>
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* ── Promo Code ── */}
