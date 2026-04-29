@@ -2731,17 +2731,48 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
       </div>
 
       <div className="relative flex flex-col items-center w-full max-w-sm mx-auto pt-20 pb-8 px-2">
-        {/* Title */}
-        <h1 className="font-black tracking-[0.5em] text-3xl mb-1" style={{color:'#065F46'}}>BRIDGE</h1>
-        <p className="text-[11px] tracking-widest font-bold mb-1" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
-        <div className="flex items-center gap-2 mb-8 mt-2">
-          <div className="w-10 h-px" style={{background:'#D9C5A0'}}/>
-          <div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/>
-          <div className="w-10 h-px" style={{background:'#D9C5A0'}}/>
+        {/* Title — Glassmorphism moderne */}
+        <div style={{position:'relative',textAlign:'center',marginBottom:8}}>
+          {/* Glow derrière le titre */}
+          <div style={{position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)',width:220,height:60,background:'radial-gradient(ellipse,rgba(5,150,105,0.28) 0%,transparent 70%)',filter:'blur(18px)',pointerEvents:'none'}}/>
+          <h1 style={{
+            fontSize:'2.6rem',fontWeight:900,letterSpacing:'0.45em',
+            background:'linear-gradient(135deg,#34D399 0%,#065F46 42%,#B45309 100%)',
+            WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',
+            backgroundClip:'text',
+            filter:'drop-shadow(0 2px 12px rgba(5,150,105,0.35))',
+            margin:0,lineHeight:1.1,position:'relative',
+          }}>BRIDGE</h1>
         </div>
-        <p className={`text-[11px] font-black tracking-widest uppercase mb-8 ${fClass}`} style={{color:'#6B7280'}}>
-          {t.chooseService}
-        </p>
+        {/* Badge localisation style glass */}
+        <div style={{
+          display:'inline-flex',alignItems:'center',gap:6,
+          background:'linear-gradient(135deg,rgba(6,95,70,0.1),rgba(180,83,9,0.07))',
+          border:'1px solid rgba(217,197,160,0.6)',
+          borderRadius:20,padding:'4px 14px',
+          backdropFilter:'blur(10px)',marginBottom:6,
+        }}>
+          <span style={{fontSize:10,fontWeight:800,letterSpacing:'0.12em',color:'#065F46'}}>SAFI</span>
+          <span style={{color:'#D9C5A0',fontSize:10}}>·</span>
+          <span style={{fontSize:10,fontWeight:700,color:'#B45309'}}>آسفي</span>
+          <span style={{color:'#D9C5A0',fontSize:10}}>·</span>
+          <span style={{fontSize:10,fontWeight:700,color:'#065F46'}}>ⵙⴰⴼⵉ</span>
+        </div>
+        {/* Séparateur lumineux */}
+        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:20,marginTop:4}}>
+          <div style={{width:40,height:1,background:'linear-gradient(to right,transparent,#D9C5A0)'}}/>
+          <div style={{width:6,height:6,borderRadius:'50%',background:'linear-gradient(135deg,#34D399,#B45309)',boxShadow:'0 0 8px rgba(5,150,105,0.6)'}}/>
+          <div style={{width:40,height:1,background:'linear-gradient(to left,transparent,#D9C5A0)'}}/>
+        </div>
+        {/* Sous-titre dans glass pill */}
+        <div style={{
+          background:'linear-gradient(135deg,rgba(6,95,70,0.08),rgba(217,197,160,0.12))',
+          border:'1px solid rgba(217,197,160,0.4)',
+          borderRadius:12,padding:'5px 16px',
+          backdropFilter:'blur(8px)',marginBottom:24,
+        }}>
+          <p className={`text-[10px] font-black tracking-[0.18em] uppercase ${fClass}`} style={{color:'#6B7280',margin:0}}>{t.chooseService}</p>
+        </div>
 
         {/* 2×2 service grid — Glassmorphism iOS 18 */}
         {(()=>{
