@@ -1649,7 +1649,7 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
     onSave({...form, paymentMethod:payTab});
     setSaved(true);setTimeout(()=>setSaved(false),2000);
   };
-  const handleSignOut=async()=>{ await signOut(); navigate('/sign-in'); onClose(); };
+  const handleSignOut=async()=>{ try{localStorage.removeItem('bridge_was_signed_in');}catch{}  await signOut(); navigate('/sign-in'); onClose(); };
   const set=(k:keyof UserProfile)=>(v:string)=>setForm(f=>({...f,[k]:v}));
   const fmtCard=(v:string)=>v.replace(/\D/g,'').slice(0,16).replace(/(.{4})/g,'$1 ').trim();
   const fmtExp=(v:string)=>{const d=v.replace(/\D/g,'').slice(0,4);return d.length>2?`${d.slice(0,2)}/${d.slice(2)}`:d;};
@@ -3558,9 +3558,21 @@ export default function App() {
     return()=>clearTimeout(t);
   },[]);
 
-  // Redirect to sign-in if Clerk loaded and not signed in
+  // Redirect to sign-in only after Clerk fully loaded + splash done + grace delay
+  // Avoids false redirects while session is restoring from cookies/localStorage
   useEffect(()=>{
-    if(isLoaded && !isSignedIn) navigate('/sign-in');
+    if(!isLoaded) return;
+    if(isSignedIn){
+      try { localStorage.setItem('bridge_was_signed_in','1'); } catch {}
+      return;
+    }
+    // Give Clerk extra time to restore session before redirecting
+    const wasSignedIn = localStorage.getItem('bridge_was_signed_in') === '1';
+    const delay = wasSignedIn ? 4000 : 1500;
+    const t = setTimeout(()=>{
+      if(!isSignedIn) navigate('/sign-in');
+    }, delay);
+    return () => clearTimeout(t);
   },[isLoaded,isSignedIn]);
 
   // Persist nav state on every relevant change

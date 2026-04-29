@@ -685,16 +685,29 @@ function SessionKeepAlive() {
   useEffect(() => {
     if (!isSignedIn) return;
     const stay = localStorage.getItem(STAY_KEY);
-    // Default to true (keep alive) if the key was never set
     if (stay === 'false') return;
 
     const touch = () => {
       try { clerk.session?.touch(); } catch { /* ignore */ }
     };
+
     touch(); // immediate on mount
 
-    const interval = setInterval(touch, 55_000);
-    return () => clearInterval(interval);
+    // Refresh every 30s
+    const interval = setInterval(touch, 30_000);
+
+    // Refresh when user returns to the tab or app
+    const onVisible = () => { if (document.visibilityState === 'visible') touch(); };
+    const onFocus = () => touch();
+
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', onFocus);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', onFocus);
+    };
   }, [isSignedIn, clerk]);
 
   return null;
