@@ -3590,7 +3590,7 @@ export default function App() {
     }
     // Give Clerk extra time to restore session before redirecting
     const wasSignedIn = localStorage.getItem('bridge_was_signed_in') === '1';
-    const delay = wasSignedIn ? 4000 : 1500;
+    const delay = wasSignedIn ? 7 * 60 * 1000 : 1500;
     const t = setTimeout(()=>{
       if(!isSignedIn) navigate('/sign-in');
     }, delay);
