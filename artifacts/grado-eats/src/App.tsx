@@ -2257,36 +2257,46 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                 )}
               </div>
 
-              {([{key:'cash'as const,icon:'🤝',label:t.cashOption,desc:t.cashOptionDesc,color:'#065F46',bg:'#F0FDF4',selBg:'#D1FAE5'},{key:'card'as const,icon:'💳',label:t.cardOption,desc:t.cardOptionDesc,color:'#4F46E5',bg:'#EEF2FF',selBg:'#E0E7FF'}] as const).filter(opt=>!(delivMode==='collect'&&opt.key==='cash')).map(opt=>(
-                <button key={opt.key} onClick={()=>setPayMethod(opt.key)}
-                  className="w-full flex items-center gap-4 p-4 rounded-2xl mb-3 text-left transition-all active:scale-95"
-                  style={{background:payMethod===opt.key?opt.selBg:'#FDFCF9',border:`2px solid ${payMethod===opt.key?opt.color:'#E5E1D8'}`}}>
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl flex-shrink-0" style={{background:payMethod===opt.key?opt.selBg:opt.bg}}>{opt.icon}</div>
-                  <div className="flex-1 text-left">
-                    <p className={`font-black text-sm ${fClass}`} style={{color:opt.color}}>{opt.label}</p>
-                    <p className={`text-xs mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{opt.desc}</p>
+              {/* Cash — indisponible temporairement */}
+              <div className="w-full flex items-center gap-4 p-4 rounded-2xl mb-3 relative overflow-hidden"
+                style={{background:'#F9F9F9',border:'2px solid #E5E1D8',opacity:0.6,cursor:'not-allowed'}}>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl flex-shrink-0" style={{background:'#F0FDF4'}}>🤝</div>
+                <div className="flex-1 text-left">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className={`font-black text-sm ${fClass}`} style={{color:'#065F46'}}>{t.cashOption}</p>
+                    <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${fClass}`} style={{background:'#FEF3C7',color:'#92400E',border:'1px solid #FDE68A'}}>
+                      {lang==='ar'?'قريباً':lang==='en'?'Coming soon':lang==='amz'?'ⵖⵉⵍ ⴰⵢⵢⵓⵔ':'Bientôt disponible'}
+                    </span>
                   </div>
-                  <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0"
-                    style={{borderColor:payMethod===opt.key?opt.color:'#D1D5DB',background:payMethod===opt.key?opt.color:'transparent'}}>
-                    {payMethod===opt.key&&<div className="w-2 h-2 rounded-full bg-white"/>}
-                  </div>
-                </button>
-              ))}
+                  <p className={`text-xs mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{t.cashOptionDesc}</p>
+                </div>
+                <div className="w-5 h-5 rounded-full border-2 flex-shrink-0" style={{borderColor:'#D1D5DB'}}/>
+              </div>
+              {/* Carte bancaire */}
+              <button onClick={()=>setPayMethod('card')}
+                className="w-full flex items-center gap-4 p-4 rounded-2xl mb-3 text-left transition-all active:scale-95"
+                style={{background:payMethod==='card'?'#E0E7FF':'#FDFCF9',border:`2px solid ${payMethod==='card'?'#4F46E5':'#E5E1D8'}`}}>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl flex-shrink-0" style={{background:payMethod==='card'?'#E0E7FF':'#EEF2FF'}}>💳</div>
+                <div className="flex-1 text-left">
+                  <p className={`font-black text-sm ${fClass}`} style={{color:'#4F46E5'}}>{t.cardOption}</p>
+                  <p className={`text-xs mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{t.cardOptionDesc}</p>
+                </div>
+                <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0"
+                  style={{borderColor:payMethod==='card'?'#4F46E5':'#D1D5DB',background:payMethod==='card'?'#4F46E5':'transparent'}}>
+                  {payMethod==='card'&&<div className="w-2 h-2 rounded-full bg-white"/>}
+                </div>
+              </button>
               <div className="flex items-center gap-2 px-3 py-2 rounded-xl mt-2" style={{background:'#F9F7F2'}}>
                 <span>🔒</span><p className="text-[10px]" style={{color:'#9CA3AF'}}>{t.sslBadge}</p>
               </div>
             </div>
             <div className="px-5 py-4 flex-shrink-0" style={{borderTop:'1px solid #E5E1D8'}}>
               <button
-                onClick={()=>{
-                  if(!payMethod)return;
-                  if(payMethod==='cash'){sendOrderToAPI('cash');sendOrderToDriverApp('cash');handleSuccess();}
-                  else setStep('card');
-                }}
+                onClick={()=>{if(!payMethod)return;setStep('card');}}
                 disabled={!payMethod}
                 className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
-                style={{background:!payMethod?'#E5E1D8':payMethod==='cash'?'#25D366':'#4F46E5',boxShadow:payMethod?'0 6px 20px rgba(0,0,0,0.2)':'none',cursor:payMethod?'pointer':'not-allowed'}}>
-                {payMethod==='cash'?t.confirmWhatsApp:payMethod==='card'?`${t.cardFormTitle} →`:t.continueBtn}
+                style={{background:!payMethod?'#E5E1D8':'#4F46E5',boxShadow:payMethod?'0 6px 20px rgba(79,70,229,0.3)':'none',cursor:payMethod?'pointer':'not-allowed'}}>
+                {payMethod==='card'?`${t.cardFormTitle} →`:t.continueBtn}
               </button>
             </div>
           </>
