@@ -1911,6 +1911,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
         :addr.trim()?` | Maps: https://maps.google.com/?q=${encodeURIComponent(addr.trim()+', Safi, Maroc')}`:'';
       const collectLine=delivMode==='collect'?`\n🏪 Click & Collect — CODE CLIENT : ${collectCode}`:'';
       const notes=`🛒 ${itemsList}\n💰 Total: ${total} MAD\n💳 ${payLabel}${navLink}${collectLine}`;
+      const driverTrackUrl=`${window.location.origin}/driver/${orderRef}`;
       const r=await fetch(`${DRIVER_APP_URL}/api/deliveries`,{
         method:'POST',
         headers:{'Content-Type':'application/json'},
@@ -1925,6 +1926,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
           priority:'normal',
           notes,
           collectCode:delivMode==='collect'?collectCode:undefined,
+          driverTrackUrl,
         }),
       });
       if(!r.ok) console.warn('[Bridge→Livreur] non-OK',r.status,await r.text().catch(()=>''));
@@ -2506,14 +2508,13 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
         </div>
       </div>
 
-      {/* Driver link info */}
-      {orderRef&&(
-        <div className="rounded-2xl p-3 mb-5" style={{background:'#EFF6FF',border:'1px solid #BFDBFE'}}>
-          <p className="text-[10px] font-black mb-1" style={{color:'#1D4ED8'}}>📡 Lien de suivi pour le livreur</p>
-          <p className="text-[9px] font-mono break-all" style={{color:'#3B82F6'}}>
-            {window.location.origin}/driver/{orderRef}
+      {/* GPS status info */}
+      {orderRef&&!isLive&&(
+        <div className="rounded-2xl p-3 mb-5 flex items-start gap-2" style={{background:'#F0FDF4',border:'1px solid #BBF7D0'}}>
+          <span className="text-base flex-shrink-0">📡</span>
+          <p className="text-[10px]" style={{color:'#065F46'}}>
+            Le livreur recevra automatiquement son lien GPS dans l'application — sa position apparaîtra ici dès qu'il démarre.
           </p>
-          <p className="text-[9px] mt-1" style={{color:'#60A5FA'}}>Envoyez ce lien au livreur sur WhatsApp — sa position s'affiche ici en temps réel</p>
         </div>
       )}
     </div>
