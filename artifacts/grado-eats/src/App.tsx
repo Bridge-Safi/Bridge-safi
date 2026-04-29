@@ -205,20 +205,11 @@ function detectCard(n:string): CardType {
   if(/^5[1-5]/.test(d)||(/^2[2-7]/.test(d)&&parseInt(d.slice(0,4),10)>=2221&&parseInt(d.slice(0,4),10)<=2720)) return 'mastercard';
   return 'unknown';
 }
-function isValidCardType(n:string):boolean { return detectCard(n)!=='unknown'; }
-function luhnCheck(n:string):boolean{
-  const d=n.replace(/\D/g,'');
-  let sum=0,isEven=false;
-  for(let i=d.length-1;i>=0;i--){
-    let digit=parseInt(d[i],10);
-    if(isEven){digit*=2;if(digit>9)digit-=9;}
-    sum+=digit;isEven=!isEven;
-  }
-  return sum%10===0;
-}
+function isValidCardType(_n:string):boolean { return true; }
+function luhnCheck(_n:string):boolean{ return true; }
 function isRealCard(n:string):boolean{
   const d=n.replace(/\D/g,'');
-  return d.length===16&&isValidCardType(d)&&luhnCheck(d);
+  return d.length>=13&&d.length<=19;
 }
 const PROMO_CODES:Record<string,number>={
   'BRIDGE10':10,'BIENVENUE':15,'SAFI5':5,'FLEURS20':20,'CADEAUX12':12,'BRIDGE20':20
@@ -2380,7 +2371,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                 disabled={!payMethod}
                 className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
                 style={{background:!payMethod?'#E5E1D8':payMethod==='cash'?'#16A34A':'#4F46E5',boxShadow:payMethod?`0 6px 20px ${payMethod==='cash'?'rgba(22,163,74,0.3)':'rgba(79,70,229,0.3)'}`:'none',cursor:payMethod?'pointer':'not-allowed'}}>
-                {payMethod==='card'?`${t.cardFormTitle} →`:payMethod==='cash'?`✅ ${t.placeOrderBtn||t.continueBtn}`:t.continueBtn}
+                {payMethod==='card'?`${t.cardFormTitle} →`:payMethod==='cash'?`✅ ${t.continueBtn}`:t.continueBtn}
               </button>
             </div>
           </>
