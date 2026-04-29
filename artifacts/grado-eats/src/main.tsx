@@ -391,6 +391,7 @@ function SignInPage() {
       });
       if (result.status === 'complete') {
         localStorage.setItem(STAY_KEY, String(staySignedIn));
+        localStorage.setItem('bridge_was_signed_in', '1');
         await clerk.setActive({ session: result.createdSessionId });
         navigate(basePath || '/');
       } else if (result.status === 'needs_second_factor') {
@@ -440,6 +441,7 @@ function SignInPage() {
       }
       if (result.status === 'complete') {
         localStorage.setItem(STAY_KEY, String(staySignedIn));
+        localStorage.setItem('bridge_was_signed_in', '1');
         await clerk.setActive({ session: result.createdSessionId });
         navigate(basePath || '/');
       } else {
