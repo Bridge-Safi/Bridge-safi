@@ -161,6 +161,8 @@ function isRealCard(n:string):boolean{
 const PROMO_CODES:Record<string,number>={
   'BRIDGE10':10,'BIENVENUE':15,'SAFI5':5,'FLEURS20':20,'CADEAUX12':12,'BRIDGE20':20
 };
+const DELIVERY_FEE = 10;   // MAD — frais livraison (mode livraison uniquement)
+const SERVICE_FEE  = 5;    // MAD — frais service optionnel
 
 // SVG logos inline (tiny)
 const VisaLogo=()=>(
@@ -230,6 +232,10 @@ const T = {
     diamondsSection:'💎 Mes Diamants Bridge', diamondsAvail:(n:number)=>`${n} pts disponibles (= ${Math.floor(n/100)} MAD)`,
     diamondsUse:'Convertir en réduction', diamondsNone:'Aucun diamant pour l\'instant — jouez !',
     discountRow:(d:number)=>`Réduction appliquée : -${d} MAD`,
+    deliveryFeeRow:'Frais de livraison',
+    serviceFeeRow:'Frais de service',
+    serviceFeeToggle:'Ajouter frais de service',
+    serviceFeeDesc:'Contribution pour le maintien de la plateforme',
     errExpiry:'Date invalide (format MM/AA, non expirée)',
     errCardName:'Nom du titulaire requis (comme sur la carte)',
     paymentTabCard:'💳 Carte', paymentTabPaypal:'🅿️ PayPal',
@@ -318,6 +324,10 @@ const T = {
     diamondsSection:'💎 My Bridge Diamonds', diamondsAvail:(n:number)=>`${n} pts available (= ${Math.floor(n/100)} MAD)`,
     diamondsUse:'Convert to discount', diamondsNone:'No diamonds yet — play to earn!',
     discountRow:(d:number)=>`Discount applied: -${d} MAD`,
+    deliveryFeeRow:'Delivery fee',
+    serviceFeeRow:'Service fee',
+    serviceFeeToggle:'Add service fee',
+    serviceFeeDesc:'Contribution to platform maintenance',
     errExpiry:'Invalid date (MM/YY format, not expired)',
     errCardName:'Cardholder name required (as on the card)',
     paymentTabCard:'💳 Card', paymentTabPaypal:'🅿️ PayPal',
@@ -406,6 +416,10 @@ const T = {
     diamondsSection:'💎 ماساتي Bridge', diamondsAvail:(n:number)=>`${n} نقطة (= ${Math.floor(n/100)} MAD)`,
     diamondsUse:'تحويل إلى خصم', diamondsNone:'لا توجد نقاط بعد — العب لتكسبها!',
     discountRow:(d:number)=>`الخصم المطبق: -${d} MAD`,
+    deliveryFeeRow:'رسوم التوصيل',
+    serviceFeeRow:'رسوم الخدمة',
+    serviceFeeToggle:'إضافة رسوم الخدمة',
+    serviceFeeDesc:'مساهمة في صيانة المنصة',
     errExpiry:'تاريخ غير صالح (صيغة MM/AA وغير منتهية)',
     errCardName:'اسم حامل البطاقة مطلوب',
     paymentTabCard:'💳 بطاقة', paymentTabPaypal:'🅿️ PayPal',
@@ -495,6 +509,10 @@ const T = {
     diamondsSection:'💎 ⵉⵎⴰⵙⵙⵏ ⵉⵏⵓ Bridge', diamondsAvail:(n:number)=>`${n} ⵏⵇⴰⵟ (= ${Math.floor(n/100)} MAD)`,
     diamondsUse:'ⵙⴱⴷⴷ ⵖ ⵜⵙⵇⵇⵉⵎⵜ', diamondsNone:'ⵓⵔ ⵉⵍⵍⴰ ⵉⵎⴰⵙ — ⵉⵍⵓ !',
     discountRow:(d:number)=>`ⵜⴰⵙⵇⵇⵉⵎⵜ: -${d} MAD`,
+    deliveryFeeRow:'ⵉⵎⵙⴽⴰⵔⵏ ⵏ ⵓⵙⵙⵓⴼⵖ',
+    serviceFeeRow:'ⵉⵎⵙⴽⴰⵔⵏ ⵏ ⵓⵙⵙⵉⵍⵓ',
+    serviceFeeToggle:'ⵔⵏⵓ ⵉⵎⵙⴽⴰⵔⵏ ⵏ ⵓⵙⵙⵉⵍⵓ',
+    serviceFeeDesc:'ⵜⴰⵙⴽⵉⵡⵉⵏⵜ ⵏ ⵜⵏⵙⴽⵉⵡⵜ',
     errExpiry:'ⴰⵣⵎⵣ ⵓⵔ ⵉⵙⵀⵡⴰ (MM/AA)',
     errCardName:'ⵉⵙⵎ ⵏ ⵓⵎⵙⴽⴽⵉ ⵉⵍⵍⴰ',
     paymentTabCard:'💳 ⵜⴰⴽⴰⵔⴷⵜ', paymentTabPaypal:'🅿️ PayPal',
@@ -1765,8 +1783,11 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
     setPtsUsed(clamped);
     try{localStorage.setItem(`bridge_game_pts_${user?.id||'guest'}`,String(Math.max(0,gamePts-clamped*100)));}catch(_){}
   };
+  const [serviceFeeEnabled,setServiceFeeEnabled]=useState(false);
+  const deliveryFee=delivMode==='delivery'?DELIVERY_FEE:0;
+  const serviceFee=serviceFeeEnabled?SERVICE_FEE:0;
   const totalDiscount=promoDiscount+ptsUsed;
-  const total=Math.max(0,Math.round((baseTotal+collectFee-totalDiscount)*100)/100);
+  const total=Math.max(0,Math.round((baseTotal+collectFee+deliveryFee+serviceFee-totalDiscount)*100)/100);
   const [step,setStep]=useState<CheckoutStep>('cart');
   const [name,setName]=useState(profile.name);
   const [addr,setAddr]=useState(profile.address);
@@ -2037,14 +2058,30 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                     <span className="font-black flex-shrink-0" style={{color:'#065F46'}}>{i.totalPerUnit*i.qty} MAD</span>
                   </div>
                 ))}
+                {/* Frais de livraison */}
+                {delivMode==='delivery'&&(
+                  <div className="flex justify-between text-xs pt-1 pb-0.5">
+                    <span className={`font-bold ${fClass}`} style={{color:'#4F46E5'}}>🛵 {t.deliveryFeeRow}</span>
+                    <span className="font-bold" style={{color:'#4F46E5'}}>+{DELIVERY_FEE} MAD</span>
+                  </div>
+                )}
+                {/* Click & Collect */}
                 {delivMode==='collect'&&(
-                  <div className="flex justify-between text-xs pt-1 pb-1">
+                  <div className="flex justify-between text-xs pt-1 pb-0.5">
                     <span className={`font-bold ${fClass}`} style={{color:'#B45309'}}>🏪 Click & Collect</span>
                     <span className="font-bold" style={{color:'#B45309'}}>+2.99 MAD</span>
                   </div>
                 )}
+                {/* Frais de service */}
+                {serviceFeeEnabled&&(
+                  <div className="flex justify-between text-xs pt-0.5 pb-0.5">
+                    <span className={`font-bold ${fClass}`} style={{color:'#7C3AED'}}>⚙️ {t.serviceFeeRow}</span>
+                    <span className="font-bold" style={{color:'#7C3AED'}}>+{SERVICE_FEE} MAD</span>
+                  </div>
+                )}
+                {/* Réductions */}
                 {totalDiscount>0&&(
-                  <div className="flex justify-between text-xs pt-1 pb-1">
+                  <div className="flex justify-between text-xs pt-1 pb-0.5">
                     <span className={`font-bold ${fClass}`} style={{color:'#059669'}}>{t.discountRow(totalDiscount)}</span>
                     <span className="font-bold" style={{color:'#059669'}}>-{totalDiscount} MAD</span>
                   </div>
@@ -2052,6 +2089,20 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                 <div className="flex justify-between text-sm mt-2 pt-2" style={{borderTop:'1px solid #E5E1D8'}}>
                   <span className={`font-black ${fClass}`} style={{color:'#065F46'}}>{t.total}</span>
                   <span className="font-black" style={{color:'#065F46'}}>{total} MAD</span>
+                </div>
+
+                {/* Toggle frais de service */}
+                <div className="flex items-center justify-between mt-3 pt-2" style={{borderTop:'1px dashed #E5E1D8'}}>
+                  <div className="flex-1 mr-3">
+                    <p className={`text-[10px] font-black ${fClass}`} style={{color:'#7C3AED'}}>⚙️ {t.serviceFeeToggle} (+{SERVICE_FEE} MAD)</p>
+                    <p className={`text-[9px] mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{t.serviceFeeDesc}</p>
+                  </div>
+                  <button onClick={()=>setServiceFeeEnabled(v=>!v)}
+                    className="flex-shrink-0 rounded-full transition-all duration-300"
+                    style={{width:44,height:24,background:serviceFeeEnabled?'#7C3AED':'#E5E1D8',padding:2,position:'relative'}}>
+                    <span className="block rounded-full bg-white transition-all duration-300"
+                      style={{width:20,height:20,transform:serviceFeeEnabled?'translateX(20px)':'translateX(0)',boxShadow:'0 1px 4px rgba(0,0,0,0.2)'}}/>
+                  </button>
                 </div>
               </div>
 
