@@ -2743,59 +2743,82 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
           {t.chooseService}
         </p>
 
-        {/* 2×2 service grid */}
+        {/* 2×2 service grid — Glassmorphism iOS 18 */}
         {(()=>{
-          const S=86;
           const items=[
-            {key:'delivery' as const, src:'/sticker_eats.png',  label:'Bridge Eats',  sub:t.deliverySub, emoji:'🛵', fallbackBg:'#D1FAE5', pending:false, active:true,
-             activeColor:'#065F46', activeShadow:'0 0 0 5px rgba(6,95,70,0.15),0 10px 28px rgba(6,95,70,0.3)', labelColor:'#065F46'},
-            {key:'taxi'     as const, src:'/sticker_taxi.png',  label:'Bridge Taxi',   sub:t.taxiSub,     emoji:'🚖', fallbackBg:'#FEF3C7', pending:true,
-             activeColor:'#B45309', activeShadow:'0 0 0 5px rgba(180,83,9,0.15),0 10px 28px rgba(180,83,9,0.25)', labelColor:'#B45309'},
-            {key:'fleurs'   as const, src:'/sticker_fleurs.png',label:'Bridge Fleurs', sub:t.fleursSub,   emoji:'🌹', fallbackBg:'linear-gradient(135deg,#FCE7F3,#FDE8F5)', pending:false, active:true,
-             activeColor:'#DB2777', activeShadow:'0 0 0 5px rgba(219,39,119,0.15),0 10px 28px rgba(219,39,119,0.25)', labelColor:'#DB2777'},
-            {key:'tabac'    as const, src:'/sticker_tabac.png', label:'Bridge Tabac',  sub:t.tabacSub,    emoji:'🚬', fallbackBg:'#7D4F2E', pending:true,
-             activeColor:'#7D4F2E', activeShadow:'0 0 0 5px rgba(125,79,46,0.15),0 10px 28px rgba(125,79,46,0.25)', labelColor:'#7D4F2E'},
+            {key:'delivery' as const, label:'Bridge Eats',  sub:t.deliverySub, emoji:'🛵',
+             pending:false, active:true,
+             grad:'linear-gradient(145deg,#064E3B 0%,#065F46 45%,#059669 100%)',
+             glow:'rgba(5,150,105,0.55)', border:'rgba(52,211,153,0.45)'},
+            {key:'taxi'     as const, label:'Bridge Taxi',  sub:t.taxiSub,     emoji:'🚖',
+             pending:true,
+             grad:'linear-gradient(145deg,#78350F 0%,#B45309 55%,#F59E0B 100%)',
+             glow:'rgba(245,158,11,0.45)', border:'rgba(251,191,36,0.45)'},
+            {key:'fleurs'   as const, label:'Bridge Fleurs',sub:t.fleursSub,   emoji:'🌹',
+             pending:false, active:true,
+             grad:'linear-gradient(145deg,#831843 0%,#DB2777 55%,#F472B6 100%)',
+             glow:'rgba(219,39,119,0.5)', border:'rgba(244,114,182,0.45)'},
+            {key:'tabac'    as const, label:'Bridge Tabac', sub:t.tabacSub,    emoji:'🚬',
+             pending:true,
+             grad:'linear-gradient(145deg,#1C0A00 0%,#7D4F2E 55%,#A0623A 100%)',
+             glow:'rgba(125,79,46,0.5)', border:'rgba(160,98,58,0.4)'},
           ];
           return(
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'28px 20px',width:'100%',maxWidth:300}}>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px',width:'100%',maxWidth:320,padding:'0 4px'}}>
               {items.map(item=>{
                 const isPressed=pressed===item.key;
                 return(
                   <button key={item.key} onClick={()=>choose(item.key)}
-                    className="flex flex-col items-center gap-2.5 transition-all duration-300 active:scale-95"
-                    style={{transform:isPressed?'scale(0.93)':'scale(1)',opacity:item.pending?0.84:1,background:'none',border:'none',cursor:'pointer',padding:0}}>
-                    <div className="relative" style={{width:S,height:S}}>
-                      <div className="rounded-full overflow-hidden" style={{
-                        width:S,height:S,background:item.fallbackBg,
-                        border:isPressed?`3.5px solid ${item.activeColor}`:'3px solid #D9C5A0',
-                        boxShadow:isPressed?item.activeShadow:'0 6px 22px rgba(6,95,70,0.15)',
-                        transition:'all 0.25s',
+                    style={{
+                      background:'none',border:'none',cursor:'pointer',padding:0,
+                      transform:isPressed?'scale(0.94)':'scale(1)',
+                      transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',
+                      opacity:item.pending?0.78:1,
+                    }}>
+                    {/* Glass card */}
+                    <div style={{
+                      background: item.grad,
+                      borderRadius:24,
+                      border:`1.5px solid ${isPressed?'rgba(255,255,255,0.55)':item.border}`,
+                      boxShadow: isPressed
+                        ? `0 0 0 3px ${item.glow},0 16px 40px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.25)`
+                        : `0 8px 32px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.2)`,
+                      padding:'22px 12px 16px',
+                      display:'flex',flexDirection:'column',alignItems:'center',gap:8,
+                      position:'relative',overflow:'hidden',
+                      transition:'box-shadow 0.25s,border-color 0.25s',
+                      minHeight:140,
+                    }}>
+                      {/* Frosted glass highlight */}
+                      <div style={{
+                        position:'absolute',top:0,left:0,right:0,height:'55%',
+                        background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',
+                        borderRadius:'24px 24px 60% 60%',pointerEvents:'none',
+                      }}/>
+                      {/* Status badge */}
+                      <div style={{
+                        position:'absolute',top:10,right:10,
+                        display:'flex',alignItems:'center',gap:3,
+                        background:item.pending?'rgba(220,38,38,0.85)':'rgba(5,150,105,0.85)',
+                        backdropFilter:'blur(8px)',
+                        borderRadius:20,padding:'2px 7px',
+                        border:`1px solid ${item.pending?'rgba(252,165,165,0.4)':'rgba(110,231,183,0.4)'}`,
                       }}>
-                        <span style={{fontSize:'3rem',lineHeight:1,display:'flex',alignItems:'center',justifyContent:'center',width:'100%',height:'100%'}}>{item.emoji}</span>
+                        <div style={{
+                          width:5,height:5,borderRadius:'50%',background:'#fff',
+                          animation:item.pending?'pulse 1.5s infinite':'pulse 2s infinite',
+                        }}/>
+                        <span style={{color:'#fff',fontSize:7,fontWeight:900,letterSpacing:'0.06em'}}>
+                          {item.pending?'EN ATTENTE':'ACTIVÉ'}
+                        </span>
                       </div>
-                      {/* Badge EN ATTENTE / ACTIVÉ */}
-                      {item.pending?(
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full flex items-center gap-1 whitespace-nowrap"
-                          style={{background:'#DC2626',boxShadow:'0 2px 8px rgba(220,38,38,0.5)'}}>
-                          <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"/>
-                          <span className="text-white font-black" style={{fontSize:'8px',letterSpacing:'0.05em'}}>EN ATTENTE</span>
-                        </div>
-                      ):( (item as any).active&&(
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full flex items-center gap-1 whitespace-nowrap"
-                          style={{background:'#059669',boxShadow:'0 2px 8px rgba(5,150,105,0.55)'}}>
-                          <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"/>
-                          <span className="text-white font-black" style={{fontSize:'8px',letterSpacing:'0.05em'}}>ACTIVÉ</span>
-                        </div>
-                      ))}
-                      {/* Emoji badge bottom-center */}
-                      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full flex items-center justify-center text-sm"
-                        style={{background:'#FDFCF9',border:'2px solid #D9C5A0',boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
-                        {item.emoji}
+                      {/* Emoji */}
+                      <span style={{fontSize:'3.2rem',filter:'drop-shadow(0 4px 8px rgba(0,0,0,0.35))',lineHeight:1,zIndex:1}}>{item.emoji}</span>
+                      {/* Text */}
+                      <div style={{textAlign:'center',zIndex:1}}>
+                        <p style={{color:'#fff',fontWeight:900,fontSize:11,letterSpacing:'0.07em',textTransform:'uppercase',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)'}}>{item.label}</p>
+                        <p style={{color:'rgba(255,255,255,0.7)',fontWeight:600,fontSize:9,margin:'3px 0 0',letterSpacing:'0.03em'}}>{item.sub}</p>
                       </div>
-                    </div>
-                    <div className="text-center mt-1">
-                      <p className={`font-black text-[10px] tracking-[0.08em] uppercase ${fClass}`} style={{color:item.pending?'#9CA3AF':item.labelColor}}>{item.label}</p>
-                      <p className={`font-bold text-[9px] tracking-wide mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{item.sub}</p>
                     </div>
                   </button>
                 );
