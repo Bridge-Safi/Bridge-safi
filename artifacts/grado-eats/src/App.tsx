@@ -2722,24 +2722,6 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
         </button>
       </div>
 
-      {/* Game promo widget — CENTER */}
-      <div className="absolute top-4 z-50" style={{left:'50%',transform:'translateX(-50%)'}}>
-        <button onClick={()=>navigate('/game')}
-          style={{display:'flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#071A10,#0D3020)',border:'1.5px solid rgba(74,222,128,0.4)',borderRadius:14,padding:'7px 11px 7px 7px',boxShadow:'0 4px 18px rgba(6,95,70,0.35)',cursor:'pointer',whiteSpace:'nowrap'}}>
-          <div style={{width:34,height:34,borderRadius:'50%',overflow:'hidden',border:'1.5px solid #D9C5A0',flexShrink:0,boxShadow:'0 0 10px rgba(74,222,128,0.3)'}}>
-            <img src="/logo_splash.jpeg" alt="Game" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.15)'}}/>
-          </div>
-          <div style={{textAlign:'left'}}>
-            <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:2}}>
-              <span style={{color:'#D9C5A0',fontSize:8,fontWeight:900,letterSpacing:'0.18em'}}>BRIDGE</span>
-              <span style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.55)',borderRadius:4,padding:'1px 5px',color:'#4ADE80',fontSize:7,fontWeight:900,letterSpacing:'0.12em'}}>GAME</span>
-            </div>
-            <p style={{color:'#FDE047',fontSize:8,fontWeight:700,margin:'0 0 2px',lineHeight:1.2}}>💎 Gagnez des diamants</p>
-            <p style={{color:'rgba(255,255,255,0.5)',fontSize:7,margin:0}}>Jouer maintenant →</p>
-          </div>
-        </button>
-      </div>
-
       {/* Language button — RIGHT */}
       <div className={`absolute top-5 z-50 ${isAR?'left-5':'right-5'}`}>
         <button onClick={cycleLang}
@@ -2830,6 +2812,27 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
           );
         })()}
       </div>
+
+      {/* ── GAME BANNER — entre grille et pub ─────────────────────────────── */}
+      <button onClick={()=>navigate('/game')}
+        className="w-full max-w-sm mt-7 transition-all active:scale-95"
+        style={{background:'linear-gradient(135deg,#071A10,#0D3020)',border:'1.5px solid rgba(74,222,128,0.35)',borderRadius:20,padding:'14px 18px',boxShadow:'0 6px 28px rgba(6,95,70,0.45)',cursor:'pointer',display:'flex',alignItems:'center',gap:14,textAlign:'left'}}>
+        {/* Shark avatar */}
+        <div style={{width:52,height:52,borderRadius:'50%',overflow:'hidden',border:'2px solid #D9C5A0',flexShrink:0,boxShadow:'0 0 16px rgba(74,222,128,0.4)'}}>
+          <img src="/bridge-shark.png" alt="Bridge Game" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top'}}/>
+        </div>
+        {/* Text */}
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:3}}>
+            <span style={{color:'#D9C5A0',fontSize:9,fontWeight:900,letterSpacing:'0.22em'}}>BRIDGE</span>
+            <span style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.6)',borderRadius:5,padding:'1px 6px',color:'#4ADE80',fontSize:8,fontWeight:900,letterSpacing:'0.14em'}}>GAME</span>
+          </div>
+          <p style={{color:'#FDE047',fontSize:12,fontWeight:800,margin:'0 0 2px',lineHeight:1.3}}>💎 Gagnez des diamants</p>
+          <p style={{color:'rgba(255,255,255,0.45)',fontSize:10,margin:0}}>Chaque commande = points → menus offerts</p>
+        </div>
+        {/* Arrow */}
+        <span style={{color:'#4ADE80',fontSize:18,flexShrink:0,fontWeight:900}}>›</span>
+      </button>
 
       {/* ── AD SLOT — place de publicité ───────────────────────────────────── */}
       {/* Pour afficher une pub : remplacer le contenu du div#ad-slot ci-dessous */}
