@@ -1049,6 +1049,21 @@ function GoldDivider() {
     </div>
   );
 }
+
+function AdSlot({className=''}:{className?:string}) {
+  return (
+    <div className={`px-5 pt-3 pb-2 ${className}`} id="bridge-ad-slot">
+      <div className="rounded-2xl flex flex-col items-center justify-center gap-1.5 py-5"
+        style={{border:'1.5px dashed #D9C5A0',background:'linear-gradient(135deg,rgba(253,252,249,0.9),rgba(247,243,235,0.7))',minHeight:88}}>
+        {/* PUB_CONTENT_START */}
+        <span style={{fontSize:22}}>📢</span>
+        <p className="text-[9px] font-black tracking-[0.18em] uppercase" style={{color:'#C9BFB2'}}>Espace Publicitaire</p>
+        <p className="text-[8px] font-semibold" style={{color:'#D9C5A0'}}>contact@safi-bridge.ma</p>
+        {/* PUB_CONTENT_END */}
+      </div>
+    </div>
+  );
+}
 function Field({label,value,onChange,placeholder,type='text',lang,error,errorMsg,required:req}:{label:string;value:string;onChange:(v:string)=>void;placeholder:string;type?:string;lang:Lang;error?:boolean;errorMsg?:string;required?:boolean}) {
   const fClass=fontClass(lang);
   return (
@@ -1453,6 +1468,8 @@ function RestaurantPage({restaurant,lang,t,onBack,onAddToCart}:{
         </div>
       )}
 
+      <AdSlot />
+
       {optionsItem&&(
         <ItemOptionsModal item={optionsItem} lang={lang} t={t} onClose={()=>setOptionsItem(null)}
           onAdd={(sel,extra)=>handleAddItem(optionsItem,sel,extra)}/>
@@ -1556,6 +1573,7 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
           </div>
         )
       }
+      <AdSlot />
     </div>
   );
 }
@@ -2015,9 +2033,10 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
           <>
             <div className="flex-1 overflow-y-auto px-5 py-3" style={{direction:isAR?'rtl':'ltr'}}>
               {cart.length===0?(
-                <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="flex flex-col items-center justify-center py-10 text-center">
                   <span className="text-6xl mb-3">🛒</span>
                   <p className={`text-sm font-bold ${fClass}`} style={{color:'#9CA3AF'}}>{t.cartEmpty}</p>
+                  <AdSlot className="w-full mt-4" />
                 </div>
               ):cart.map(ci=>(
                 <div key={ci.cartId} className="py-3" style={{borderBottom:'1px solid #F3F4F6'}}>
@@ -2620,6 +2639,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
           </p>
         </div>
       )}
+      <AdSlot />
     </div>
   );
 }
