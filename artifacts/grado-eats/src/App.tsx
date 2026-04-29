@@ -2771,8 +2771,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
                         boxShadow:isPressed?item.activeShadow:'0 6px 22px rgba(6,95,70,0.15)',
                         transition:'all 0.25s',
                       }}>
-                        <img src={item.src} alt={item.label}
-                          style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.35)',display:'block'}}/>
+                        <span style={{fontSize:'3rem',lineHeight:1,display:'flex',alignItems:'center',justifyContent:'center',width:'100%',height:'100%'}}>{item.emoji}</span>
                       </div>
                       {/* Badge EN ATTENTE / ACTIVÉ */}
                       {item.pending?(
