@@ -2747,13 +2747,13 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
         {(()=>{
           const S=86;
           const items=[
-            {key:'delivery' as const, src:'/logo_delivery.jpeg', label:'Bridge Eats',  sub:t.deliverySub, emoji:'🛵', fallbackBg:'#D1FAE5', pending:false, active:true,
+            {key:'delivery' as const, src:'/sticker_eats.png',  label:'Bridge Eats',  sub:t.deliverySub, emoji:'🛵', fallbackBg:'#D1FAE5', pending:false, active:true,
              activeColor:'#065F46', activeShadow:'0 0 0 5px rgba(6,95,70,0.15),0 10px 28px rgba(6,95,70,0.3)', labelColor:'#065F46'},
-            {key:'taxi'     as const, src:'/logo_taxi.jpeg',     label:'Bridge Taxi',   sub:t.taxiSub,     emoji:'🚖', fallbackBg:'#FEF3C7', pending:true,
+            {key:'taxi'     as const, src:'/sticker_taxi.png',  label:'Bridge Taxi',   sub:t.taxiSub,     emoji:'🚖', fallbackBg:'#FEF3C7', pending:true,
              activeColor:'#B45309', activeShadow:'0 0 0 5px rgba(180,83,9,0.15),0 10px 28px rgba(180,83,9,0.25)', labelColor:'#B45309'},
-            {key:'fleurs'   as const, src:'',                    label:'Bridge Fleurs', sub:t.fleursSub,   emoji:'🌹', fallbackBg:'linear-gradient(135deg,#FCE7F3,#FDE8F5)', pending:false, active:true,
+            {key:'fleurs'   as const, src:'/sticker_fleurs.png',label:'Bridge Fleurs', sub:t.fleursSub,   emoji:'🌹', fallbackBg:'linear-gradient(135deg,#FCE7F3,#FDE8F5)', pending:false, active:true,
              activeColor:'#DB2777', activeShadow:'0 0 0 5px rgba(219,39,119,0.15),0 10px 28px rgba(219,39,119,0.25)', labelColor:'#DB2777'},
-            {key:'tabac'    as const, src:'/logo_tabac.jpeg',    label:'Bridge Tabac',  sub:t.tabacSub,    emoji:'🚬', fallbackBg:'#7D4F2E', pending:true,
+            {key:'tabac'    as const, src:'/sticker_tabac.png', label:'Bridge Tabac',  sub:t.tabacSub,    emoji:'🚬', fallbackBg:'#7D4F2E', pending:true,
              activeColor:'#7D4F2E', activeShadow:'0 0 0 5px rgba(125,79,46,0.15),0 10px 28px rgba(125,79,46,0.25)', labelColor:'#7D4F2E'},
           ];
           return(
@@ -2771,14 +2771,8 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
                         boxShadow:isPressed?item.activeShadow:'0 6px 22px rgba(6,95,70,0.15)',
                         transition:'all 0.25s',
                       }}>
-                        {item.key==='fleurs'
-                          ?<div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#FCE7F3,#FDE8F5)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:4}}>
-                              <span style={{fontSize:36}}>🌹</span>
-                              <span style={{fontSize:9,fontWeight:900,color:'#DB2777',letterSpacing:'0.08em'}}>BRIDGE</span>
-                            </div>
-                          :<img src={item.key==='tabac'?'/bridge-tabac-logo.jpeg':item.src} alt={item.label}
-                              style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
-                        }
+                        <img src={item.src} alt={item.label}
+                          style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center center',display:'block'}}/>
                       </div>
                       {/* Badge EN ATTENTE / ACTIVÉ */}
                       {item.pending?(
