@@ -2704,10 +2704,10 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
   const avatarSrc=user?.imageUrl||null;
   const initials=(profile.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   return(
-    <div className={`fixed inset-0 flex flex-col items-center justify-center z-40 px-6 ${isAR?'rtl':'ltr'}`}
-      style={{background:'#FDFCF9'}}>
+    <div className={`fixed inset-0 flex flex-col z-40 ${isAR?'rtl':'ltr'}`}
+      style={{background:'#FDFCF9',overflowY:'auto'}}>
       {/* Background watermark */}
-      <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
+      <div className="fixed inset-0 opacity-[0.04] pointer-events-none" style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
 
       {/* ── TOP BAR ── */}
 
@@ -2731,7 +2731,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
         </button>
       </div>
 
-      <div className="relative flex flex-col items-center w-full max-w-sm">
+      <div className="relative flex flex-col items-center w-full max-w-sm mx-auto pt-20 pb-8 px-2">
         {/* Title */}
         <h1 className="font-black tracking-[0.5em] text-3xl mb-1" style={{color:'#065F46'}}>BRIDGE</h1>
         <p className="text-[11px] tracking-widest font-bold mb-1" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
@@ -2811,37 +2811,37 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
             </div>
           );
         })()}
-      </div>
 
-      {/* ── GAME BANNER — entre grille et pub ─────────────────────────────── */}
-      <button onClick={()=>navigate('/game')}
-        className="w-full max-w-sm mt-7 transition-all active:scale-95"
-        style={{background:'linear-gradient(135deg,#071A10,#0D3020)',border:'1.5px solid rgba(74,222,128,0.35)',borderRadius:20,padding:'14px 18px',boxShadow:'0 6px 28px rgba(6,95,70,0.45)',cursor:'pointer',display:'flex',alignItems:'center',gap:14,textAlign:'left'}}>
-        {/* Shark avatar */}
-        <div style={{width:52,height:52,borderRadius:'50%',overflow:'hidden',border:'2px solid #D9C5A0',flexShrink:0,boxShadow:'0 0 16px rgba(74,222,128,0.4)'}}>
-          <img src="/bridge-shark.png" alt="Bridge Game" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top'}}/>
-        </div>
-        {/* Text */}
-        <div style={{flex:1,minWidth:0}}>
-          <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:3}}>
-            <span style={{color:'#D9C5A0',fontSize:9,fontWeight:900,letterSpacing:'0.22em'}}>BRIDGE</span>
-            <span style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.6)',borderRadius:5,padding:'1px 6px',color:'#4ADE80',fontSize:8,fontWeight:900,letterSpacing:'0.14em'}}>GAME</span>
+        {/* ── GAME BANNER — entre grille et pub ─────────────────────────────── */}
+        <button onClick={()=>navigate('/game')}
+          className="w-full mt-7 transition-all active:scale-95"
+          style={{background:'linear-gradient(135deg,#071A10,#0D3020)',border:'1.5px solid rgba(74,222,128,0.35)',borderRadius:20,padding:'14px 18px',boxShadow:'0 6px 28px rgba(6,95,70,0.45)',cursor:'pointer',display:'flex',alignItems:'center',gap:14,textAlign:'left'}}>
+          {/* Shark avatar */}
+          <div style={{width:52,height:52,borderRadius:'50%',overflow:'hidden',border:'2px solid #D9C5A0',flexShrink:0,boxShadow:'0 0 16px rgba(74,222,128,0.4)'}}>
+            <img src="/bridge-shark.png" alt="Bridge Game" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top'}}/>
           </div>
-          <p style={{color:'#FDE047',fontSize:12,fontWeight:800,margin:'0 0 2px',lineHeight:1.3}}>💎 Gagnez des diamants</p>
-          <p style={{color:'rgba(255,255,255,0.45)',fontSize:10,margin:0}}>Chaque commande = points → menus offerts</p>
-        </div>
-        {/* Arrow */}
-        <span style={{color:'#4ADE80',fontSize:18,flexShrink:0,fontWeight:900}}>›</span>
-      </button>
+          {/* Text */}
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:3}}>
+              <span style={{color:'#D9C5A0',fontSize:9,fontWeight:900,letterSpacing:'0.22em'}}>BRIDGE</span>
+              <span style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.6)',borderRadius:5,padding:'1px 6px',color:'#4ADE80',fontSize:8,fontWeight:900,letterSpacing:'0.14em'}}>GAME</span>
+            </div>
+            <p style={{color:'#FDE047',fontSize:12,fontWeight:800,margin:'0 0 2px',lineHeight:1.3}}>💎 Gagnez des diamants</p>
+            <p style={{color:'rgba(255,255,255,0.45)',fontSize:10,margin:0}}>Chaque commande = points → menus offerts</p>
+          </div>
+          {/* Arrow */}
+          <span style={{color:'#4ADE80',fontSize:18,flexShrink:0,fontWeight:900}}>›</span>
+        </button>
 
-      {/* ── AD SLOT — place de publicité ───────────────────────────────────── */}
-      {/* Pour afficher une pub : remplacer le contenu du div#ad-slot ci-dessous */}
-      <div id="ad-slot" className="w-full max-w-sm mt-6 px-4">
-        <div className="rounded-2xl overflow-hidden" style={{border:'1.5px dashed #D9C5A0',background:'rgba(253,252,249,0.7)',minHeight:90,display:'flex',alignItems:'center',justifyContent:'center'}}>
-          {/* PUB_CONTENT_START */}
-          <p className="text-[10px] font-bold tracking-widest uppercase" style={{color:'#C9BFB2'}}>Espace Publicitaire</p>
-          {/* PUB_CONTENT_END */}
+        {/* ── AD SLOT — place de publicité ───────────────────────────────────── */}
+        <div id="ad-slot" className="w-full mt-5">
+          <div className="rounded-2xl overflow-hidden" style={{border:'1.5px dashed #D9C5A0',background:'rgba(253,252,249,0.7)',minHeight:90,display:'flex',alignItems:'center',justifyContent:'center'}}>
+            {/* PUB_CONTENT_START */}
+            <p className="text-[10px] font-bold tracking-widest uppercase" style={{color:'#C9BFB2'}}>Espace Publicitaire</p>
+            {/* PUB_CONTENT_END */}
+          </div>
         </div>
+
       </div>
 
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
