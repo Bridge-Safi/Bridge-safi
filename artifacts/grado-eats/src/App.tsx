@@ -223,8 +223,17 @@ function isRealCard(n:string):boolean{
 const PROMO_CODES:Record<string,number>={
   'BRIDGE10':10,'BIENVENUE':15,'SAFI5':5,'FLEURS20':20,'CADEAUX12':12,'BRIDGE20':20
 };
-const DELIVERY_FEE = 10;   // MAD — frais livraison (mode livraison uniquement)
+const DELIVERY_FEE = 12;   // MAD — frais livraison de base (affiché au client)
+const KM_RATE      = 1;    // MAD/km — silencieux, non affiché au client
+const RESTAURANT_LAT = 32.2994; // Centre-ville Safi (point de départ calcul distance)
+const RESTAURANT_LNG = -9.2372;
 const SERVICE_FEE  = 5;    // MAD — frais service optionnel
+
+function haversineKm(lat1:number,lng1:number,lat2:number,lng2:number):number{
+  const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
 
 // SVG logos inline (tiny)
 const VisaLogo=()=>(
@@ -1848,16 +1857,25 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
   };
   const [serviceFeeEnabled,setServiceFeeEnabled]=useState(false);
   const isServiceFeeForced=baseTotal<serviceFeeThreshold;
-  const deliveryFee=delivMode==='delivery'?DELIVERY_FEE:0;
   const serviceFee=(isServiceFeeForced||serviceFeeEnabled)?serviceFeeAmount:0;
-  const totalDiscount=promoDiscount+ptsUsed;
-  const total=Math.max(0,Math.round((baseTotal+collectFee+deliveryFee+serviceFee-totalDiscount)*100)/100);
   const [step,setStep]=useState<CheckoutStep>('cart');
   const [name,setName]=useState(profile.name);
   const [addr,setAddr]=useState(profile.address);
   const [phone,setPhone]=useState(profile.phone);
   const [err,setErr]=useState('');
   const [gpsCoords,setGpsCoords]=useState('');
+  // Distance km — silencieux, jamais affiché au client
+  const distanceKm=useMemo(()=>{
+    if(!gpsCoords)return 0;
+    const [lat,lng]=gpsCoords.split(',').map(Number);
+    if(isNaN(lat)||isNaN(lng))return 0;
+    return Math.round(haversineKm(RESTAURANT_LAT,RESTAURANT_LNG,lat,lng)*10)/10;
+  },[gpsCoords]);
+  const kmSurcharge=delivMode==='delivery'?Math.ceil(distanceKm)*KM_RATE:0;
+  const deliveryFeeBase=delivMode==='delivery'?DELIVERY_FEE:0; // affiché
+  const deliveryFee=deliveryFeeBase+kmSurcharge;               // réel
+  const totalDiscount=promoDiscount+ptsUsed;
+  const total=Math.max(0,Math.round((baseTotal+collectFee+deliveryFee+serviceFee-totalDiscount)*100)/100);
   const [mapPin,setMapPin]=useState<[number,number]|null>(null);
   const [outsideZone,setOutsideZone]=useState(false);
   const [payMethod,setPayMethod]=useState<'cash'|'card'|null>(null);
@@ -1912,7 +1930,8 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
         ?` | GPS: https://maps.google.com/?q=${gpsCoords}`
         :addr.trim()?` | Maps: https://maps.google.com/?q=${encodeURIComponent(addr.trim()+', Safi, Maroc')}`:'';
       const collectLine=delivMode==='collect'?`\n🏪 Click & Collect — CODE CLIENT : ${collectCode}`:'';
-      const notes=`🛒 ${itemsList}\n💰 Total: ${total} MAD\n💳 ${payLabel}${navLink}${collectLine}`;
+      const kmLine=delivMode==='delivery'&&distanceKm>0?`\n📏 Distance: ~${distanceKm} km | Frais km: +${kmSurcharge} MAD (total livraison: ${deliveryFee} MAD)`:'';
+      const notes=`🛒 ${itemsList}\n💰 Total client: ${total} MAD\n💳 ${payLabel}${navLink}${collectLine}${kmLine}`;
       const driverTrackUrl=`${window.location.origin}/driver/${orderRef}`;
       const r=await fetch(`${DRIVER_APP_URL}/api/deliveries`,{
         method:'POST',
@@ -2129,7 +2148,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                 {delivMode==='delivery'&&(
                   <div className="flex justify-between text-xs pt-1 pb-0.5">
                     <span className={`font-bold ${fClass}`} style={{color:'#4F46E5'}}>🛵 {t.deliveryFeeRow}</span>
-                    <span className="font-bold" style={{color:'#4F46E5'}}>+{DELIVERY_FEE} MAD</span>
+                    <span className="font-bold" style={{color:'#4F46E5'}}>+{deliveryFeeBase} MAD</span>
                   </div>
                 )}
                 {/* Click & Collect */}
