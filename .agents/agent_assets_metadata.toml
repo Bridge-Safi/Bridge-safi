@@ -54,3 +54,27 @@ id = "EU_UdT7mde67RVkQ3xxky"
 uri = "file://attached_assets/stock_images/mcdo_exterior_3.jpg"
 type = "image"
 title = "McDonald's restaurant exterior golden arches sign at night, iconic fast food brand"
+
+[[outputs]]
+id = "bj-xK2ZK5-BHCdFijnWRw"
+uri = "file://attached_assets/stickers/sticker_fleurs_eau.png"
+type = "image"
+title = "Sticker 1 — Livraison Bridge (Fleurs/Eau)"
+
+[[outputs]]
+id = "wMpQ1XuQ82cukSGhJC_6r"
+uri = "file://attached_assets/stickers/sticker_food.png"
+type = "image"
+title = "Sticker 2 — Livraison Bridge (Food)"
+
+[[outputs]]
+id = "XQSa8df7eN6K0QrjETjkA"
+uri = "file://attached_assets/stickers/sticker_cigarettes.png"
+type = "image"
+title = "Sticker 3 — Livraison Cigarettes Bridge"
+
+[[outputs]]
+id = "zgohazccejlmiBBi1Y49c"
+uri = "file://attached_assets/stickers/sticker_flowers.png"
+type = "image"
+title = "Sticker 4 — Livraison Flowers Bridge"
