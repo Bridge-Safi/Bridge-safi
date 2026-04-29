@@ -1495,7 +1495,7 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
     <div>
       {/* Hero banner */}
       <section className="relative mx-5 mb-5 rounded-3xl overflow-hidden" style={{boxShadow:'0 8px 32px rgba(6,95,70,0.18)'}}>
-        <img src="/bridge_door.png" alt="Bridge Safi" className="w-full h-52 object-cover" style={{objectPosition:'center 20%'}}/>
+        <img src="/cover-shark.jpeg" alt="Bridge Safi" className="w-full h-52 object-cover" style={{objectPosition:'center 30%'}}/>
         <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.92) 0%,rgba(4,55,38,0.25) 60%,transparent 100%)'}}/>
         <div className="absolute bottom-0 left-0 right-0 p-5">
           <span className="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full inline-block mb-2" style={{background:'#D9C5A0',color:'#065F46'}}>SAFI · آسفي · ⵙⴰⴼⵉ</span>
