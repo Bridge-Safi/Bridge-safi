@@ -2333,21 +2333,20 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                 </div>
               </div>
 
-              {/* Cash — indisponible temporairement */}
-              <div className="w-full flex items-center gap-4 p-4 rounded-2xl mb-3 relative overflow-hidden"
-                style={{background:'#F9F9F9',border:'2px solid #E5E1D8',opacity:0.6,cursor:'not-allowed'}}>
+              {/* Cash à la livraison */}
+              <button onClick={()=>setPayMethod('cash')}
+                className="w-full flex items-center gap-4 p-4 rounded-2xl mb-3 text-left transition-all active:scale-95"
+                style={{background:payMethod==='cash'?'#F0FDF4':'#FDFCF9',border:`2px solid ${payMethod==='cash'?'#16A34A':'#E5E1D8'}`}}>
                 <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl flex-shrink-0" style={{background:'#F0FDF4'}}>🤝</div>
                 <div className="flex-1 text-left">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <p className={`font-black text-sm ${fClass}`} style={{color:'#065F46'}}>{t.cashOption}</p>
-                    <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${fClass}`} style={{background:'#FEF3C7',color:'#92400E',border:'1px solid #FDE68A'}}>
-                      {lang==='ar'?'قريباً':lang==='en'?'Coming soon':lang==='amz'?'ⵖⵉⵍ ⴰⵢⵢⵓⵔ':'Bientôt disponible'}
-                    </span>
-                  </div>
+                  <p className={`font-black text-sm ${fClass}`} style={{color:'#065F46'}}>{t.cashOption}</p>
                   <p className={`text-xs mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{t.cashOptionDesc}</p>
                 </div>
-                <div className="w-5 h-5 rounded-full border-2 flex-shrink-0" style={{borderColor:'#D1D5DB'}}/>
-              </div>
+                <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0"
+                  style={{borderColor:payMethod==='cash'?'#16A34A':'#D1D5DB',background:payMethod==='cash'?'#16A34A':'transparent'}}>
+                  {payMethod==='cash'&&<div className="w-2 h-2 rounded-full bg-white"/>}
+                </div>
+              </button>
               {/* Carte bancaire */}
               <button onClick={()=>setPayMethod('card')}
                 className="w-full flex items-center gap-4 p-4 rounded-2xl mb-3 text-left transition-all active:scale-95"
@@ -2368,11 +2367,20 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
             </div>
             <div className="px-5 py-4 flex-shrink-0" style={{borderTop:'1px solid #E5E1D8'}}>
               <button
-                onClick={()=>{if(!payMethod)return;setStep('card');}}
+                onClick={()=>{
+                  if(!payMethod)return;
+                  if(payMethod==='cash'){
+                    sendOrderToAPI('cash');
+                    sendOrderToDriverApp('cash');
+                    handleSuccess();
+                  } else {
+                    setStep('card');
+                  }
+                }}
                 disabled={!payMethod}
                 className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
-                style={{background:!payMethod?'#E5E1D8':'#4F46E5',boxShadow:payMethod?'0 6px 20px rgba(79,70,229,0.3)':'none',cursor:payMethod?'pointer':'not-allowed'}}>
-                {payMethod==='card'?`${t.cardFormTitle} →`:t.continueBtn}
+                style={{background:!payMethod?'#E5E1D8':payMethod==='cash'?'#16A34A':'#4F46E5',boxShadow:payMethod?`0 6px 20px ${payMethod==='cash'?'rgba(22,163,74,0.3)':'rgba(79,70,229,0.3)'}`:'none',cursor:payMethod?'pointer':'not-allowed'}}>
+                {payMethod==='card'?`${t.cardFormTitle} →`:payMethod==='cash'?`✅ ${t.placeOrderBtn||t.continueBtn}`:t.continueBtn}
               </button>
             </div>
           </>
