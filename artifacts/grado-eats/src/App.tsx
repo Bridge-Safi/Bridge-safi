@@ -3011,9 +3011,10 @@ const FLEURS_CATS=[
   {id:'coffret',label:{fr:'Coffrets',en:'Boxes',ar:'صناديق',amz:'ⵉⵙⴷⴰⵙⵏ'}},
 ];
 
-function FleurPage({onBack,lang,cycleLang,profile,saveProfile}:{
+function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   onBack:()=>void; lang:Lang; cycleLang:()=>void;
   profile:UserProfile; saveProfile:(p:UserProfile)=>void;
+  onOrderSuccess?:(ref:string)=>void;
 }) {
   const [showProfile,setShowProfile]=useState(false);
   const [activeCat,setActiveCat]=useState('bouquet');
@@ -3182,6 +3183,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile}:{
           profile={profile}
           onClearCart={()=>{setCart([]);setShowCheckout(false);}}
           restaurantName="Bridge Fleurs"
+          onOrderSuccess={ref=>{setCart([]);setShowCheckout(false);onOrderSuccess?.(ref);}}
         />
       )}
     </div>
@@ -3190,9 +3192,10 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile}:{
 
 // ─── TABAC PAGE ───────────────────────────────────────────────────────────────
 
-function TabacPage({onBack,lang,cycleLang,profile,saveProfile}:{
+function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   onBack:()=>void; lang:Lang; cycleLang:()=>void;
   profile:UserProfile; saveProfile:(p:UserProfile)=>void;
+  onOrderSuccess?:(ref:string)=>void;
 }) {
   const [showProfile,setShowProfile]=useState(false);
   const [delivMode,setDelivMode]=useState<'delivery'|'collect'>('delivery');
@@ -3200,6 +3203,9 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile}:{
   const [addr,setAddr]=useState(profile.address??'');
   const [phone,setPhone]=useState(profile.phone??'');
   const [err,setErr]=useState('');
+  const [sending,setSending]=useState(false);
+  const [sent,setSent]=useState(false);
+  const [orderRef]=useState(()=>`TB-${Math.floor(1000+Math.random()*9000)}`);
 
   const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
   const t=T[lang];
@@ -3211,18 +3217,43 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile}:{
 
   const WA_SVG=<svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>;
 
-  const handleSend=()=>{
+  const handleSend=async()=>{
     if(!name.trim()||!phone.trim()||(delivMode==='delivery'&&!addr.trim())){
       setErr('*');return;
     }
-    let msg=`🚬 Bridge Tabac — ${delivMode==='delivery'?t.delivOption:t.collectOption}\n\n`;
-    if(delivMode==='delivery'){
-      msg+=`👤 ${t.nameLabel}: ${name.trim()}\n📍 ${t.addrLabel}: ${addr.trim()}, Safi\n📞 ${t.phoneLabel}: ${phone.trim()}`;
-    } else {
-      msg+=`👤 ${t.nameLabel}: ${name.trim()}\n📞 ${t.phoneLabel}: ${phone.trim()}\n\n🏪 ${t.tabacCollectAddress}`;
-    }
-    msg+=`\n\n${t.tabacBook} 🙏`;
-    window.open(`https://wa.me/212764794856?text=${encodeURIComponent(msg)}`,'_blank','noopener,noreferrer');
+    setSending(true);
+    const deliveryAddress=delivMode==='delivery'?`${addr.trim()}, Safi, Maroc`:t.tabacCollectAddress;
+    const driverTrackUrl=`${window.location.origin}/driver/${orderRef}`;
+    try {
+      // → API Bridge
+      await fetch('/api/orders/inbound',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-bridge-secret':'bridge-safi-8b269bba03fd8c0205116f3f'},
+        body:JSON.stringify({
+          customerName:name.trim(),customerPhone:phone.trim(),
+          deliveryAddress,pickupAddress:'Bridge Tabac — Safi',
+          items:[{name:'🚬 Commande Bridge Tabac',qty:1,price:0}],
+          total:0,source:'Bridge Tabac',paymentMethod:'cash',
+        }),
+      }).catch(()=>{});
+      // → App livreur
+      await fetch(`${DRIVER_APP_URL}/api/deliveries`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          trackingNumber:orderRef,
+          customerName:name.trim(),customerPhone:phone.trim(),
+          pickupAddress:'Bridge Tabac — Safi',
+          deliveryAddress,
+          priority:'normal',
+          notes:`🚬 Commande Bridge Tabac\n💳 Espèces à la livraison\n👤 ${name.trim()} — ${phone.trim()}`,
+          driverTrackUrl,
+        }),
+      }).catch(()=>{});
+    } finally { setSending(false); }
+    localStorage.setItem('bridge_last_ref',orderRef);
+    setSent(true);
+    onOrderSuccess?.(orderRef);
   };
 
   const inputCls=`w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all ${fClass}`;
@@ -3317,13 +3348,37 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile}:{
           {err&&<p className={`text-xs font-bold ${fClass}`} style={{color:'#EF4444'}}>⚠️ {lang==='ar'?'يرجى ملء جميع الحقول المطلوبة':lang==='en'?'Please fill in all required fields':lang==='amz'?'ⵔⵏⵓ ⵉⵙⵡⵓⵔⵉⵡⵏ ⵉⵍⴰⵎⵎⴰⵏ':'Veuillez remplir tous les champs requis'}</p>}
         </div>
 
+        {/* Success screen overlay */}
+        {sent&&(
+          <div className="rounded-3xl p-6 text-center" style={{background:'#F0FDF4',border:'2px solid #059669',boxShadow:'0 8px 32px rgba(5,150,105,0.18)'}}>
+            <div className="text-5xl mb-3">✅</div>
+            <p className={`font-black text-base mb-1 ${fClass}`} style={{color:'#065F46'}}>
+              {lang==='ar'?'تم إرسال طلبك!':lang==='en'?'Order placed!':lang==='amz'?'ⵜⵓⴷⴷⵙ ⵜⴰⵖⵓⵍⵜ ⵉⵏⵓ!':'Commande envoyée !'}
+            </p>
+            <p className="text-2xl font-black tracking-[0.25em] my-2" style={{color:'#B45309'}}>{orderRef}</p>
+            <p className={`text-[11px] mb-4 ${fClass}`} style={{color:'#6B7280'}}>
+              {lang==='ar'?'سيتصل بك الليبرور قريباً':lang==='en'?'The driver will contact you soon':lang==='amz'?'ⴰⵙⵙⵉⵍⵓ ⴰⴷ ⵉⵙⵓⵙ ⵅⵅⵉⵏ':'Le livreur vous contactera bientôt'}
+            </p>
+            <button onClick={()=>onOrderSuccess?.(orderRef)}
+              className={`w-full py-3 rounded-2xl font-black text-sm text-white active:scale-95 transition-all ${fClass}`}
+              style={{background:'#065F46',boxShadow:'0 4px 14px rgba(6,95,70,0.35)'}}>
+              📍 {lang==='ar'?'متابعة الطلب':lang==='en'?'Track order':lang==='amz'?'ⴰⵙⴽⵍⵙ ⵏ ⵓⵎⵢⴰⵡⴰ':'Suivre ma commande'}
+            </button>
+          </div>
+        )}
+
         {/* Send button */}
-        <button onClick={handleSend}
-          className={`w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 active:scale-95 transition-all ${fClass}`}
-          style={{background:'#25D366',boxShadow:'0 6px 20px rgba(37,211,102,0.3)'}}>
-          {WA_SVG}
-          {t.tabacSend}
-        </button>
+        {!sent&&(
+          <button onClick={handleSend} disabled={sending}
+            className={`w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 active:scale-95 transition-all ${fClass}`}
+            style={{background:sending?'#9CA3AF':'#065F46',boxShadow:sending?'none':'0 6px 20px rgba(6,95,70,0.3)',cursor:sending?'not-allowed':'pointer'}}>
+            {sending?(
+              <><span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin"/>{lang==='ar'?'جارٍ الإرسال…':lang==='en'?'Sending…':lang==='amz'?'ⵉⵙⵙⵉⴼⵍ…':'Envoi en cours…'}</>
+            ):(
+              <><span>🛵</span>{t.tabacSend}</>
+            )}
+          </button>
+        )}
       </div>
 
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
@@ -3421,8 +3476,9 @@ export default function App() {
 
   if(service==='none') return <ServiceSelectPage onSelect={s=>setService(s)} lang={lang} cycleLang={cycleLang}/>;
   if(service==='taxi') return <TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
-  if(service==='tabac') return <TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
-  if(service==='fleurs') return <FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
+  const handleOrderSuccess=(ref:string)=>{setLastOrderRef(ref);setService('none');setPage('tracking');};
+  if(service==='tabac') return <TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/>;
+  if(service==='fleurs') return <FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={
