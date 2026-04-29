@@ -1893,6 +1893,32 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
     setStep('success');
   };
 
+  const handleWalletPay=async(type:'apple'|'google')=>{
+    const payLabel=type==='apple'?'Apple Pay':'Google Pay';
+    const methods=type==='apple'
+      ?[{supportedMethods:'https://apple.com/apple-pay',data:{version:3,merchantIdentifier:'merchant.ma.safi-bridge',merchantCapabilities:['supports3DS'],supportedNetworks:['visa','masterCard'],countryCode:'MA'}}]
+      :[{supportedMethods:'https://google.com/pay',data:{apiVersion:2,apiVersionMinor:0,merchantInfo:{merchantName:'Bridge Safi'},allowedPaymentMethods:[{type:'CARD',parameters:{allowedAuthMethods:['PAN_ONLY','CRYPTOGRAM_3DS'],allowedCardNetworks:['MASTERCARD','VISA']},tokenizationSpecification:{type:'PAYMENT_GATEWAY',parameters:{gateway:'example',gatewayMerchantId:'bridge-safi'}}}]}}];
+    const details={total:{label:`Bridge Safi${restaurantName?' · '+restaurantName:''}`,amount:{currency:'MAD',value:String(total)}}};
+    try{
+      if(typeof PaymentRequest==='undefined') throw new Error('unsupported');
+      const pr=new PaymentRequest(methods,details);
+      const canMake=await pr.canMakePayment().catch(()=>false);
+      if(!canMake) throw new Error('unavailable');
+      const response=await pr.show();
+      await response.complete('success');
+      sendOrderToAPI(payLabel);
+      sendOrderToDriverApp(payLabel);
+      handleSuccess();
+    }catch(e:unknown){
+      const msg=e instanceof Error?e.message:'';
+      if(msg!=='AbortError'&&msg!==''){
+        // Wallet non disponible sur cet appareil → fallback carte
+        setPayMethod('card');
+        setStep('card');
+      }
+    }
+  };
+
   const autoFilled=!!(profile.name||profile.address||profile.phone);
 
   const sendOrderToAPI=async(paymentMethod:string)=>{
@@ -2255,6 +2281,37 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                 ):(
                   <p className="text-[10px]" style={{color:'rgba(255,255,255,0.4)'}}>{t.diamondsNone}</p>
                 )}
+              </div>
+
+              {/* ── Apple Pay & Google Pay ── */}
+              <div className="mb-4">
+                <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#6B7280'}}>
+                  ⚡ {lang==='ar'?'دفع سريع':lang==='en'?'Express checkout':lang==='amz'?'ⵉⵙⵙⵉⴼⵍ ⴰⵣⵔⴼ':'Paiement rapide'}
+                </p>
+                <div className="flex gap-3 mb-4">
+                  {/* Apple Pay */}
+                  <button onClick={()=>handleWalletPay('apple')}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-3.5 rounded-2xl font-black text-sm text-white active:scale-95 transition-all"
+                    style={{background:'#000',boxShadow:'0 4px 16px rgba(0,0,0,0.28)'}}>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.42c1.27.06 2.15.64 2.88.68.93-.21 1.82-.8 3.07-.68 1.52.13 2.66.72 3.4 1.82-3.14 1.87-2.37 5.98.65 7.04zm-3.77-13.97c-.39 1.73-2.22 3.03-3.68 2.95-.24-1.65 1.4-3.1 3.68-2.95z"/></svg>
+                    <span>Pay</span>
+                  </button>
+                  {/* Google Pay */}
+                  <button onClick={()=>handleWalletPay('google')}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-3.5 rounded-2xl font-black text-sm active:scale-95 transition-all"
+                    style={{background:'white',border:'2px solid #E5E1D8',boxShadow:'0 4px 16px rgba(0,0,0,0.08)'}}>
+                    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 10.2v3.6h5c-.2 1.1-.8 2-1.7 2.7l2.7 2.1C19.7 17 21 14.8 21 12c0-.6-.1-1.2-.2-1.8H12z" fill="#4285F4"/><path d="M5.3 14.3l-.6.5-2.3 1.8C4 19.3 7.7 21.5 12 21.5c3 0 5.5-1 7.3-2.7l-2.7-2.1c-1 .7-2.2 1-3.6 1-2.8 0-5.1-1.9-5.9-4.4H5.3z" fill="#34A853"/><path d="M2.4 7.4C1.8 8.6 1.5 9.8 1.5 12s.3 3.4 1 4.6l2.9-2.3C5.1 13.5 5 12.8 5 12s.1-1.5.4-2.3L2.4 7.4z" fill="#FBBC05"/><path d="M12 5.5c1.6 0 3 .5 4.2 1.5l2.5-2.5C16.8 2.9 14.6 2 12 2 7.7 2 4 4.2 2.4 7.4l2.9 2.3C6.2 7.1 8.9 5.5 12 5.5z" fill="#EA4335"/></svg>
+                    <span style={{fontWeight:900,fontSize:13,letterSpacing:'-0.01em',color:'#3C4043'}}>Pay</span>
+                  </button>
+                </div>
+                {/* Séparateur */}
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 h-px" style={{background:'#E5E1D8'}}/>
+                  <span className={`text-[11px] font-bold ${fClass}`} style={{color:'#9CA3AF'}}>
+                    {lang==='ar'?'أو':lang==='en'?'or':lang==='amz'?'ⵏⵖ':'ou'}
+                  </span>
+                  <div className="flex-1 h-px" style={{background:'#E5E1D8'}}/>
+                </div>
               </div>
 
               {/* Cash — indisponible temporairement */}
