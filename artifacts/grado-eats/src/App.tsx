@@ -88,17 +88,79 @@ function MapClickLayer({onPick}:{onPick:(lat:number,lng:number,inside:boolean)=>
   return null;
 }
 
-function DeliveryMap({onSet,pin}:{onSet:(coords:string,inside:boolean)=>void; pin:[number,number]|null}) {
+// Reverse geocoding via Nominatim — returns a short readable address
+async function reverseGeocode(lat:number,lng:number):Promise<string> {
+  try {
+    const res=await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=fr`,
+      {headers:{'User-Agent':'BridgeSafi/1.0'}}
+    );
+    if(!res.ok) return '';
+    const d=await res.json();
+    const a=d.address||{};
+    const parts=[
+      a.house_number,
+      a.road||a.pedestrian||a.footway||a.path,
+      a.neighbourhood||a.suburb||a.quarter||a.city_district,
+    ].filter(Boolean);
+    return parts.length>=2 ? parts.join(' ') : (d.display_name||'').split(',').slice(0,2).join(',').trim();
+  } catch(_){return '';}
+}
+
+// Draggable pin marker — updates when dragged
+function DraggablePin({pos,onDragEnd}:{pos:[number,number];onDragEnd:(lat:number,lng:number)=>void}) {
+  const markerRef=useRef<L.Marker|null>(null);
   return (
-    <MapContainer center={[32.2994,-9.2372]} zoom={13}
-      style={{height:220,borderRadius:14,marginBottom:12,zIndex:0}} scrollWheelZoom={false}
-      maxBounds={[[32.18,-9.265],[32.36,-9.13]]} maxBoundsViscosity={1.0} minZoom={12}>
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://osm.org">OpenStreetMap</a>'/>
-      <Polygon positions={DELIVERY_ZONE} pathOptions={{color:'#065F46',fillColor:'#2ecc71',fillOpacity:0.18,weight:2,dashArray:'6,4'}}/>
-      <MapClickLayer onPick={(lat,lng,inside)=>{onSet(`${lat.toFixed(5)},${lng.toFixed(5)}`,inside);}}/>
-      {pin&&<Marker position={pin} icon={clientPinIcon}/>}
-    </MapContainer>
+    <Marker
+      position={pos}
+      icon={clientPinIcon}
+      draggable
+      ref={markerRef}
+      eventHandlers={{
+        dragend(){
+          const m=markerRef.current;
+          if(m){const {lat,lng}=m.getLatLng();onDragEnd(lat,lng);}
+        }
+      }}
+    />
+  );
+}
+
+function DeliveryMap({onSet,onAddress,pin}:{
+  onSet:(coords:string,inside:boolean)=>void;
+  onAddress:(addr:string)=>void;
+  pin:[number,number]|null;
+}) {
+  const [geocoding,setGeocoding]=useState(false);
+
+  const handlePick=async(lat:number,lng:number)=>{
+    const inside=pointInPolygon(lat,lng,DELIVERY_ZONE);
+    onSet(`${lat.toFixed(5)},${lng.toFixed(5)}`,inside);
+    setGeocoding(true);
+    const addr=await reverseGeocode(lat,lng);
+    setGeocoding(false);
+    if(addr) onAddress(addr);
+  };
+
+  return (
+    <div className="relative mb-3">
+      <MapContainer center={[32.2994,-9.2372]} zoom={13}
+        style={{height:220,borderRadius:14,zIndex:0}} scrollWheelZoom={false}
+        maxBounds={[[32.18,-9.265],[32.36,-9.13]]} maxBoundsViscosity={1.0} minZoom={12}>
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://osm.org">OpenStreetMap</a>'/>
+        <Polygon positions={DELIVERY_ZONE} pathOptions={{color:'#065F46',fillColor:'#2ecc71',fillOpacity:0.18,weight:2,dashArray:'6,4'}}/>
+        <MapClickLayer onPick={handlePick}/>
+        {pin&&<DraggablePin pos={pin} onDragEnd={handlePick}/>}
+      </MapContainer>
+      {geocoding&&(
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-bold text-white flex items-center gap-1.5"
+          style={{background:'rgba(6,95,70,0.85)',backdropFilter:'blur(4px)',zIndex:1000}}>
+          <span className="w-2 h-2 rounded-full bg-green-300 animate-pulse"/>
+          Adresse en cours…
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -1997,7 +2059,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
               {/* Delivery map (hidden in collect mode) */}
               {delivMode==='delivery'&&(<>
                 <p className={`text-[10px] font-black uppercase tracking-wider mb-2 ${fClass}`} style={{color:'#065F46'}}>
-                  {lang==='ar'?'📍 اختر موقعك على الخريطة':lang==='amz'?'📍 ⵙⵜⵜⵉ ⵜⴰⵙⵓⵏⵜ ⵖ ⵓⵙⴽⴽⵉⵍ':'📍 Cliquez sur la carte pour épingler votre adresse'}
+                  {lang==='ar'?'📍 انقر أو اسحب الدبوس لتحديد عنوانك':lang==='amz'?'📍 ⵙⵜⵜⵉ ⵏⵖ ⵔⴽⵙ ⵜⴰⵙⵓⵏⵜ ⵖ ⵓⵙⴽⴽⵉⵍ':lang==='en'?'📍 Tap or drag the pin to set your address':'📍 Touchez ou glissez le 📍 pour remplir votre adresse'}
                 </p>
                 <DeliveryMap
                   pin={mapPin}
@@ -2007,6 +2069,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                     setGpsCoords(coords);
                     setOutsideZone(!inside);
                   }}
+                  onAddress={(a)=>{setAddr(a);setErr('');}}
                 />
                 {outsideZone&&mapPin&&(
                   <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-3" style={{background:'#FEF2F2',border:'1px solid #FECACA'}}>
