@@ -3,10 +3,45 @@ import { db, ordersTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
 import { notifyDrivers } from "./push";
 import { addSSEClient, removeSSEClient, broadcastOrder } from "../lib/sse";
+import { logger } from "../lib/logger";
 
 const router = Router();
 
 const BRIDGE_SECRET = "bridge-safi-8b269bba03fd8c0205116f3f";
+
+// ── Webhooks par restaurant ─────────────────────────────────────────────────
+const RESTAURANT_WEBHOOKS: Record<string, string> = {
+  "Kebab Express Safi": "https://303eedda-22da-41f3-8687-e84c69502bcd-00-2g2wlpsf6p1h3.riker.replit.dev/api/webhook/orders",
+};
+
+async function forwardToRestaurant(order: typeof ordersTable.$inferSelect) {
+  const webhookUrl = order.restaurantName
+    ? RESTAURANT_WEBHOOKS[order.restaurantName]
+    : undefined;
+  if (!webhookUrl) return;
+  try {
+    await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-bridge-secret": BRIDGE_SECRET },
+      body: JSON.stringify({
+        ref: order.ref,
+        customerName: order.customerName,
+        customerPhone: order.customerPhone,
+        deliveryAddress: order.customerAddress,
+        items: order.items,
+        total: order.total,
+        deliveryMode: order.deliveryMode,
+        paymentMethod: order.paymentMethod,
+        restaurantName: order.restaurantName,
+        status: order.status,
+        createdAt: order.createdAt,
+      }),
+    });
+    logger.info({ ref: order.ref, restaurant: order.restaurantName }, "Order forwarded to restaurant webhook");
+  } catch (err) {
+    logger.error({ err, restaurant: order.restaurantName }, "Failed to forward order to restaurant webhook");
+  }
+}
 
 // ── Webhook entrant partenaire (ex: Grado Eats) ─────────────────────────────
 router.post("/orders/inbound", async (req, res) => {
@@ -155,6 +190,9 @@ router.post("/orders", async (req, res) => {
         url: "/",
       },
     }).catch(() => {});
+
+    // Forward to restaurant webhook if configured
+    forwardToRestaurant(order).catch(() => {});
 
   } catch (err) {
     res.status(500).json({ error: "Failed to create order" });
