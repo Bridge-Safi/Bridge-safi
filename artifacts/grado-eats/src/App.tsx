@@ -2772,7 +2772,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
                         transition:'all 0.25s',
                       }}>
                         <img src={item.src} alt={item.label}
-                          style={{width:'115%',height:'115%',objectFit:'cover',objectPosition:'center center',display:'block',marginLeft:'-7.5%',marginTop:'-7.5%'}}/>
+                          style={{width:'100%',height:'100%',objectFit:'fill',display:'block'}}/>
                       </div>
                       {/* Badge EN ATTENTE / ACTIVÉ */}
                       {item.pending?(
