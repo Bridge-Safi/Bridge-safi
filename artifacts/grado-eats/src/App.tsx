@@ -14,8 +14,8 @@ L.Icon.Default.mergeOptions({
 
 const courierIcon = L.divIcon({
   className: '',
-  html: `<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#065F46,#047857);border:3px solid #D9C5A0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(6,95,70,0.4);font-size:18px;">🛵</div>`,
-  iconSize: [38, 38], iconAnchor: [19, 19],
+  html: `<div style="width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#065F46,#047857);border:5px solid #D9C5A0;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 28px rgba(6,95,70,0.55);font-size:36px;">🛵</div>`,
+  iconSize: [76, 76], iconAnchor: [38, 38],
 });
 const restaurantIcon = L.divIcon({
   className: '',
