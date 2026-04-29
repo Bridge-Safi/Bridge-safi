@@ -2605,27 +2605,43 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
 
 // ─── SERVICE SELECT PAGE ──────────────────────────────────────────────────────
 
-function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'taxi'|'tabac'|'fleurs')=>void;lang:Lang;cycleLang:()=>void}) {
+function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSelect:(s:'delivery'|'taxi'|'tabac'|'fleurs')=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void}) {
   const [pressed,setPressed]=useState<'delivery'|'taxi'|'tabac'|'fleurs'|null>(null);
+  const [showProfile,setShowProfile]=useState(false);
   const [,navigate]=useLocation();
+  const { user } = useUser();
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
   const choose=(s:'delivery'|'taxi'|'tabac'|'fleurs')=>{setPressed(s);setTimeout(()=>onSelect(s),320);};
+  // Avatar: Clerk photo or initials
+  const avatarSrc=user?.imageUrl||null;
+  const initials=(profile.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   return(
     <div className={`fixed inset-0 flex flex-col items-center justify-center z-40 px-6 ${isAR?'rtl':'ltr'}`}
       style={{background:'#FDFCF9'}}>
       {/* Background watermark */}
       <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
 
-      {/* Game promo widget — top LEFT */}
+      {/* ── TOP BAR ── */}
+
+      {/* Profile button — LEFT */}
       <div className={`absolute top-4 z-50 ${isAR?'right-4':'left-4'}`}>
+        <button onClick={()=>setShowProfile(true)}
+          style={{width:40,height:40,borderRadius:'50%',overflow:'hidden',border:'2.5px solid #D9C5A0',background:'#F0EBE1',boxShadow:'0 4px 14px rgba(6,95,70,0.15)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',padding:0}}>
+          {avatarSrc
+            ?<img src={avatarSrc} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+            :<span style={{fontSize:13,fontWeight:900,color:'#065F46',lineHeight:1}}>{initials}</span>
+          }
+        </button>
+      </div>
+
+      {/* Game promo widget — CENTER */}
+      <div className="absolute top-4 z-50" style={{left:'50%',transform:'translateX(-50%)'}}>
         <button onClick={()=>navigate('/game')}
-          style={{display:'flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#071A10,#0D3020)',border:'1.5px solid rgba(74,222,128,0.4)',borderRadius:14,padding:'7px 11px 7px 7px',boxShadow:'0 4px 18px rgba(6,95,70,0.35)',cursor:'pointer'}}>
-          {/* Circular logo */}
-          <div style={{width:36,height:36,borderRadius:'50%',overflow:'hidden',border:'1.5px solid #D9C5A0',flexShrink:0,boxShadow:'0 0 12px rgba(74,222,128,0.3)'}}>
+          style={{display:'flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#071A10,#0D3020)',border:'1.5px solid rgba(74,222,128,0.4)',borderRadius:14,padding:'7px 11px 7px 7px',boxShadow:'0 4px 18px rgba(6,95,70,0.35)',cursor:'pointer',whiteSpace:'nowrap'}}>
+          <div style={{width:34,height:34,borderRadius:'50%',overflow:'hidden',border:'1.5px solid #D9C5A0',flexShrink:0,boxShadow:'0 0 10px rgba(74,222,128,0.3)'}}>
             <img src="/logo_splash.jpeg" alt="Game" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.15)'}}/>
           </div>
-          {/* Description */}
           <div style={{textAlign:'left'}}>
             <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:2}}>
               <span style={{color:'#D9C5A0',fontSize:8,fontWeight:900,letterSpacing:'0.18em'}}>BRIDGE</span>
@@ -2637,7 +2653,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
         </button>
       </div>
 
-      {/* Language button */}
+      {/* Language button — RIGHT */}
       <div className={`absolute top-5 z-50 ${isAR?'left-5':'right-5'}`}>
         <button onClick={cycleLang}
           className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 px-3 ${lang==='amz'?'font-tifinagh':''}`}
@@ -2738,6 +2754,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang}:{onSelect:(s:'delivery'|'ta
         </div>
       </div>
 
+      {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
     </div>
   );
 }
@@ -3512,7 +3529,7 @@ export default function App() {
     />
   );
 
-  if(service==='none') return <ServiceSelectPage onSelect={s=>setService(s)} lang={lang} cycleLang={cycleLang}/>;
+  if(service==='none') return <ServiceSelectPage onSelect={s=>setService(s)} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
   if(service==='taxi') return <TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
   const handleOrderSuccess=(ref:string)=>{setLastOrderRef(ref);setService('none');setPage('tracking');};
   if(service==='tabac') return <TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/>;
