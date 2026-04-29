@@ -1808,11 +1808,12 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
 
 type CheckoutStep='cart'|'form'|'payment'|'card'|'success';
 
-function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantName,onOrderSuccess}:{
+function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantName,onOrderSuccess,serviceFeeThreshold=70,serviceFeeAmount=SERVICE_FEE}:{
   cart:CartItem[]; lang:Lang; onClose:()=>void;
   onQty:(cartId:string,delta:number)=>void;
   profile:UserProfile; onClearCart:()=>void; restaurantName?:string;
   onOrderSuccess?:(ref:string)=>void;
+  serviceFeeThreshold?:number; serviceFeeAmount?:number;
 }) {
   const { isSignedIn, user } = useUser();
   const [, navigate] = useLocation();
@@ -1846,9 +1847,9 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
     try{localStorage.setItem(`bridge_game_pts_${user?.id||'guest'}`,String(Math.max(0,gamePts-clamped*100)));}catch(_){}
   };
   const [serviceFeeEnabled,setServiceFeeEnabled]=useState(false);
-  const isServiceFeeForced=baseTotal<70;
+  const isServiceFeeForced=baseTotal<serviceFeeThreshold;
   const deliveryFee=delivMode==='delivery'?DELIVERY_FEE:0;
-  const serviceFee=(isServiceFeeForced||serviceFeeEnabled)?SERVICE_FEE:0;
+  const serviceFee=(isServiceFeeForced||serviceFeeEnabled)?serviceFeeAmount:0;
   const totalDiscount=promoDiscount+ptsUsed;
   const total=Math.max(0,Math.round((baseTotal+collectFee+deliveryFee+serviceFee-totalDiscount)*100)/100);
   const [step,setStep]=useState<CheckoutStep>('cart');
@@ -2142,7 +2143,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                 {(isServiceFeeForced||serviceFeeEnabled)&&(
                   <div className="flex justify-between text-xs pt-0.5 pb-0.5">
                     <span className={`font-bold ${fClass}`} style={{color:'#7C3AED'}}>⚙️ {t.serviceFeeRow}</span>
-                    <span className="font-bold" style={{color:'#7C3AED'}}>+{SERVICE_FEE} MAD</span>
+                    <span className="font-bold" style={{color:'#7C3AED'}}>+{serviceFeeAmount} MAD</span>
                   </div>
                 )}
                 {/* Réductions */}
@@ -2163,7 +2164,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                     <span className="text-base">⚙️</span>
                     <div className="flex-1">
                       <p className={`text-[10px] font-black ${fClass}`} style={{color:'#7C3AED'}}>
-                        {lang==='ar'?`رسوم الخدمة إلزامية (أقل من 70 د.م.)`:lang==='en'?`Service fee required (order under 70 MAD)`:lang==='amz'?`ⵉⵎⵙⴽⴰⵔⵏ ⵉⵍⴰⵎⵎⴰⵏ (ⴰⴷⴷⴰⴷ ⴷⴰⵜ 70 MAD)`:`Frais de service obligatoires (commande < 70 MAD)`}
+                        {lang==='ar'?`رسوم الخدمة إلزامية (أقل من ${serviceFeeThreshold} د.م.)`:lang==='en'?`Service fee required (order under ${serviceFeeThreshold} MAD)`:lang==='amz'?`ⵉⵎⵙⴽⴰⵔⵏ ⵉⵍⴰⵎⵎⴰⵏ (ⴰⴷⴷⴰⴷ ⴷⴰⵜ ${serviceFeeThreshold} MAD)`:`Frais de service obligatoires (commande < ${serviceFeeThreshold} MAD)`}
                       </p>
                       <p className={`text-[9px] mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{t.serviceFeeDesc}</p>
                     </div>
@@ -2174,7 +2175,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                 ):(
                   <div className="flex items-center justify-between mt-3 pt-2" style={{borderTop:'1px dashed #E5E1D8'}}>
                     <div className="flex-1 mr-3">
-                      <p className={`text-[10px] font-black ${fClass}`} style={{color:'#7C3AED'}}>⚙️ {t.serviceFeeToggle} (+{SERVICE_FEE} MAD)</p>
+                      <p className={`text-[10px] font-black ${fClass}`} style={{color:'#7C3AED'}}>⚙️ {t.serviceFeeToggle} (+{serviceFeeAmount} MAD)</p>
                       <p className={`text-[9px] mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{t.serviceFeeDesc}</p>
                     </div>
                     <button onClick={()=>setServiceFeeEnabled(v=>!v)}
@@ -3199,6 +3200,8 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           profile={profile}
           onClearCart={()=>{setCart([]);setShowCheckout(false);}}
           restaurantName="Bridge Fleurs"
+          serviceFeeThreshold={40}
+          serviceFeeAmount={6}
           onOrderSuccess={ref=>{setCart([]);setShowCheckout(false);onOrderSuccess?.(ref);}}
         />
       )}
