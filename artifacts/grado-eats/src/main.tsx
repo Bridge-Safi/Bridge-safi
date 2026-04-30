@@ -717,9 +717,42 @@ function SessionKeepAlive() {
 
 // ─── GAME PAGE PLACEHOLDER ────────────────────────────────────────────────────
 
+const GAME_LANGS = ['fr','en','ar','amz'] as const;
+type GameLang = typeof GAME_LANGS[number];
+const GAME_LANG_LABELS: Record<GameLang,string> = {fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
+const GAME_T = {
+  fr:{ back:'← Retour', playerId:'ID JOUEUR', diamonds:'DIAMANTS', soon:'Jeu en préparation', soonSub:'Collecte de 💎 · Points → Menus offerts', howTitle:'Comment jouer ?', how1:'Passez une commande', how2:'Gagnez des 💎 diamants', how3:'Échangez contre des menus offerts', rank:'Mon classement', rankSub:'Bientôt disponible', pts:'pts' },
+  en:{ back:'← Back',   playerId:'PLAYER ID',  diamonds:'DIAMONDS',  soon:'Game coming soon',  soonSub:'Collect 💎 · Points → Free meals',           howTitle:'How to play?',   how1:'Place an order',    how2:'Earn 💎 diamonds',        how3:'Redeem for free meals',           rank:'My ranking',  rankSub:'Coming soon',       pts:'pts' },
+  ar:{ back:'→ رجوع',   playerId:'معرّف اللاعب',diamonds:'الماسات',  soon:'اللعبة قريباً',     soonSub:'اجمع 💎 · نقاط → وجبات مجانية',             howTitle:'كيف تلعب؟',     how1:'اطلب وجبة',         how2:'اربح 💎 الماسات',        how3:'استبدل بوجبات مجانية',           rank:'ترتيبي',      rankSub:'قريباً',            pts:'نقطة' },
+  amz:{ back:'← ⴰⵣⵣⵓⵍ', playerId:'ⴰⵏⴳⵔⴰⵡ',  diamonds:'ⵉⴷⵢⴰⵎⴰⵏ', soon:'ⴰⵎⴽⵙⴰⵡ ⵔⴰⴷ ⵢⴰⵙ', soonSub:'ⵙⴳⵎ 💎 · ⵜⵉⵏⵎⵍⴰⵏ → ⵉⵎⵏⵙⵉⵡⵏ',          howTitle:'ⵎⴰⵎⴽ ⴰⴷ ⵜⴽⵙⵎ?', how1:'ⴽ ⴰⵙⵙⴳⵏ',       how2:'ⵙⴳⵎ 💎 ⵉⴷⵢⴰⵎⴰⵏ',     how3:'ⵙⴽⵍⵙ ⵉⵎⵏⵙⵉⵡⵏ',          rank:'ⴰⵎⵣⵡⴰⵔⵓ',   rankSub:'ⵔⴰⴷ ⵢⴰⵙ',          pts:'ⵜⵉⵏⵎⵍⴰⵏ' },
+};
+
 function GamePage() {
   const { isLoaded, isSignedIn, user } = useUser();
   const [, navigate] = useLocation();
+
+  // Read language from persisted nav state, default fr
+  const [lang, setLang] = useState<GameLang>(()=>{
+    try {
+      const raw = localStorage.getItem('bridge_nav_state');
+      if (raw) { const p = JSON.parse(raw); if (GAME_LANGS.includes(p.lang)) return p.lang; }
+    } catch {}
+    return 'fr';
+  });
+  const cycleLang = () => setLang(l => {
+    const idx = GAME_LANGS.indexOf(l);
+    const next = GAME_LANGS[(idx+1)%GAME_LANGS.length];
+    // persist back
+    try {
+      const raw = localStorage.getItem('bridge_nav_state');
+      const state = raw ? JSON.parse(raw) : {};
+      localStorage.setItem('bridge_nav_state', JSON.stringify({...state, lang: next}));
+    } catch {}
+    return next;
+  });
+
+  const t = GAME_T[lang];
+  const isAR = lang === 'ar';
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) navigate('/sign-in');
@@ -736,13 +769,12 @@ function GamePage() {
   })();
 
   return (
-    <div style={{minHeight:'100dvh',background:'linear-gradient(160deg,#020c07 0%,#0A2218 40%,#0D2E1A 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'2rem 1.5rem',position:'relative',overflow:'hidden'}}>
-      {/* Background zellige pattern */}
+    <div dir={isAR?'rtl':'ltr'} style={{minHeight:'100dvh',background:'linear-gradient(160deg,#020c07 0%,#0A2218 40%,#0D2E1A 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'2rem 1.5rem',position:'relative',overflow:'hidden'}}>
       <div style={{position:'absolute',inset:0,opacity:0.04,backgroundImage:'repeating-linear-gradient(45deg,#ffffff 0,#ffffff 1px,transparent 0,transparent 50%)',backgroundSize:'20px 20px',pointerEvents:'none'}}/>
 
-      {/* ── Top bar: logo-poster left · back right ── */}
+      {/* Top bar */}
       <div style={{position:'absolute',top:0,left:0,right:0,display:'flex',alignItems:'flex-start',justifyContent:'space-between',padding:'16px 16px 0'}}>
-        {/* Mini poster / logo stamp — top LEFT */}
+        {/* Logo stamp */}
         <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:16,padding:'8px 12px',backdropFilter:'blur(8px)'}}>
           <div style={{width:52,height:52,borderRadius:'50%',overflow:'hidden',border:'2px solid #D9C5A0',boxShadow:'0 0 20px rgba(217,197,160,0.3)'}}>
             <img src="/logo_splash.jpeg" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.1)'}}/>
@@ -753,61 +785,78 @@ function GamePage() {
           </div>
         </div>
 
-        {/* Back button — top RIGHT */}
-        <button onClick={()=>navigate('/')}
-          style={{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',color:'#fff',borderRadius:12,padding:'8px 16px',fontSize:13,fontWeight:800,cursor:'pointer',backdropFilter:'blur(8px)'}}>
-          ← Retour
-        </button>
+        {/* Right: lang toggle + back */}
+        <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:8}}>
+          <button onClick={cycleLang}
+            style={{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.2)',color:'#D9C5A0',borderRadius:12,padding:'7px 14px',fontSize:12,fontWeight:900,cursor:'pointer',backdropFilter:'blur(8px)',letterSpacing:'0.1em'}}>
+            {GAME_LANG_LABELS[lang]}
+          </button>
+          <button onClick={()=>navigate('/')}
+            style={{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',color:'#fff',borderRadius:12,padding:'8px 16px',fontSize:13,fontWeight:800,cursor:'pointer',backdropFilter:'blur(8px)'}}>
+            {t.back}
+          </button>
+        </div>
       </div>
 
       {/* Shark mascot */}
       <div style={{position:'relative',marginBottom:'1.5rem'}}>
-        <div style={{width:210,height:210,borderRadius:'50%',overflow:'hidden',border:'3px solid #065F46',boxShadow:'0 0 60px rgba(6,95,70,0.6), 0 0 120px rgba(6,95,70,0.2)',background:'#0A1A12'}}>
-          <img src="/bridge-shark.png" alt="Bridge Shark"
-            style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top'}}/>
+        <div style={{width:210,height:210,borderRadius:'50%',overflow:'hidden',border:'3px solid #065F46',boxShadow:'0 0 60px rgba(6,95,70,0.6),0 0 120px rgba(6,95,70,0.2)',background:'#0A1A12'}}>
+          <img src="/bridge-shark.png" alt="Bridge Shark" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top'}}/>
         </div>
-        {/* Glow ring */}
         <div style={{position:'absolute',inset:-8,borderRadius:'50%',border:'2px solid rgba(6,95,70,0.4)',animation:'pulse 2s ease-in-out infinite'}}/>
       </div>
 
-      {/* Game title */}
-      <h1 style={{color:'#fff',fontSize:'2rem',fontWeight:900,letterSpacing:4,textTransform:'uppercase',margin:0,textShadow:'0 0 30px rgba(6,95,70,0.8)'}}>
-        BRIDGE
-      </h1>
-      <h2 style={{color:'#4ADE80',fontSize:'1rem',fontWeight:700,letterSpacing:6,textTransform:'uppercase',margin:'4px 0 0',textShadow:'0 0 20px rgba(74,222,128,0.5)'}}>
-        GAME
-      </h2>
+      {/* Title */}
+      <h1 style={{color:'#fff',fontSize:'2rem',fontWeight:900,letterSpacing:4,textTransform:'uppercase',margin:0,textShadow:'0 0 30px rgba(6,95,70,0.8)'}}>BRIDGE</h1>
+      <h2 style={{color:'#4ADE80',fontSize:'1rem',fontWeight:700,letterSpacing:6,textTransform:'uppercase',margin:'4px 0 0',textShadow:'0 0 20px rgba(74,222,128,0.5)'}}>GAME</h2>
 
-      {/* Player ID badge */}
+      {/* Player ID */}
       <div style={{marginTop:'1.5rem',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:16,padding:'10px 24px',backdropFilter:'blur(8px)',textAlign:'center'}}>
-        <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700,letterSpacing:3,textTransform:'uppercase',margin:'0 0 4px'}}>ID JOUEUR</p>
+        <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700,letterSpacing:3,textTransform:'uppercase',margin:'0 0 4px'}}>{t.playerId}</p>
         <p style={{color:'#4ADE80',fontSize:18,fontWeight:900,letterSpacing:4,margin:0}}>{gameId}</p>
       </div>
 
-      {/* Diamond points */}
+      {/* Diamonds */}
       <div style={{marginTop:'1rem',display:'flex',alignItems:'center',gap:10,background:'rgba(253,224,71,0.1)',border:'1px solid rgba(253,224,71,0.3)',borderRadius:16,padding:'10px 24px'}}>
         <span style={{fontSize:28}}>💎</span>
         <div>
-          <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700,letterSpacing:3,textTransform:'uppercase',margin:'0 0 2px'}}>DIAMANTS</p>
-          <p style={{color:'#FDE047',fontSize:20,fontWeight:900,margin:0}}>{gamePoints} pts</p>
+          <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700,letterSpacing:3,textTransform:'uppercase',margin:'0 0 2px'}}>{t.diamonds}</p>
+          <p style={{color:'#FDE047',fontSize:20,fontWeight:900,margin:0}}>{gamePoints} <span style={{fontSize:12}}>{t.pts}</span></p>
         </div>
       </div>
 
-      {/* Coming soon badge */}
-      <div style={{marginTop:'2.5rem',textAlign:'center'}}>
+      {/* How to play */}
+      <div style={{marginTop:'1.5rem',width:'100%',maxWidth:320,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:18,padding:'14px 18px',backdropFilter:'blur(8px)'}}>
+        <p style={{color:'#D9C5A0',fontSize:11,fontWeight:900,letterSpacing:2,textTransform:'uppercase',margin:'0 0 10px'}}>{t.howTitle}</p>
+        {[t.how1,t.how2,t.how3].map((step,i)=>(
+          <div key={i} style={{display:'flex',alignItems:'center',gap:10,marginBottom:8}}>
+            <div style={{width:24,height:24,borderRadius:'50%',background:'linear-gradient(135deg,#065F46,#059669)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+              <span style={{color:'#fff',fontSize:11,fontWeight:900}}>{i+1}</span>
+            </div>
+            <p style={{color:'rgba(255,255,255,0.7)',fontSize:12,margin:0}}>{step}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Coming soon */}
+      <div style={{marginTop:'1.5rem',textAlign:'center'}}>
         <div style={{display:'inline-block',background:'rgba(6,95,70,0.3)',border:'1px solid #065F46',borderRadius:20,padding:'12px 32px',backdropFilter:'blur(8px)'}}>
           <p style={{color:'#4ADE80',fontSize:22,margin:'0 0 4px'}}>🎮</p>
-          <p style={{color:'#fff',fontSize:14,fontWeight:900,margin:'0 0 4px',letterSpacing:1}}>Jeu en préparation</p>
-          <p style={{color:'rgba(255,255,255,0.4)',fontSize:11,margin:0}}>Collecte de 💎 · Points → Menus offerts</p>
+          <p style={{color:'#fff',fontSize:14,fontWeight:900,margin:'0 0 4px',letterSpacing:1}}>{t.soon}</p>
+          <p style={{color:'rgba(255,255,255,0.4)',fontSize:11,margin:0}}>{t.soonSub}</p>
         </div>
       </div>
 
-      <style>{`
-        @keyframes pulse {
-          0%,100%{opacity:0.4;transform:scale(1);}
-          50%{opacity:0.8;transform:scale(1.04);}
-        }
-      `}</style>
+      {/* Ranking teaser */}
+      <div style={{marginTop:'1rem',display:'flex',alignItems:'center',gap:10,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:14,padding:'10px 20px',width:'100%',maxWidth:320}}>
+        <span style={{fontSize:22}}>🏆</span>
+        <div>
+          <p style={{color:'rgba(255,255,255,0.7)',fontSize:12,fontWeight:800,margin:0}}>{t.rank}</p>
+          <p style={{color:'rgba(255,255,255,0.3)',fontSize:10,margin:0}}>{t.rankSub}</p>
+        </div>
+      </div>
+
+      <style>{`@keyframes pulse{0%,100%{opacity:.4;transform:scale(1);}50%{opacity:.8;transform:scale(1.04);}}`}</style>
     </div>
   );
 }
