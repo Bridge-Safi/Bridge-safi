@@ -3627,59 +3627,164 @@ function ProfileOnboardingScreen({lang,profile,saveProfile,onDone}:{
 
 function SplashScreen() {
   const [progress,setProgress]=useState(0);
-  const [dots,setDots]=useState(0);
-  useEffect(()=>{const iv=setInterval(()=>setProgress(p=>Math.min(p+1.8,100)),50);return()=>clearInterval(iv);},[]);
-  useEffect(()=>{const iv=setInterval(()=>setDots(d=>(d+1)%4),420);return()=>clearInterval(iv);},[]);
+  const [phase,setPhase]=useState(0); // 0-3 cycling through services
+  const services=[
+    {icon:'🛵',label:'Bridge Eats',color:'#4ADE80'},
+    {icon:'🚖',label:'Bridge Taxi',color:'#FDE047'},
+    {icon:'🚬',label:'Bridge Tabac',color:'#FB923C'},
+    {icon:'🌹',label:'Bridge Fleurs',color:'#F472B6'},
+  ];
+  useEffect(()=>{const iv=setInterval(()=>setProgress(p=>Math.min(p+1.6,100)),50);return()=>clearInterval(iv);},[]);
+  useEffect(()=>{const iv=setInterval(()=>setPhase(p=>(p+1)%4),900);return()=>clearInterval(iv);},[]);
+  const svc=services[phase];
 
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center z-50" style={{background:'var(--c-bg)'}}>
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 opacity-[0.035]"
-        style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
+    <div style={{position:'fixed',inset:0,zIndex:50,overflow:'hidden',
+      background:'linear-gradient(160deg,#030712 0%,#020c07 40%,#0d1117 100%)',
+      display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
 
-      <div className="relative flex flex-col items-center">
-        {/* Main logo circle */}
-        <div className="relative mb-8">
-          {/* Outer pulse ring */}
-          <div className="absolute inset-0 rounded-full animate-pulse"
-            style={{background:'radial-gradient(circle,rgba(217,197,160,0.35) 0%,transparent 70%)',transform:'scale(1.55)'}}/>
-          {/* Logo */}
-          <div className="relative rounded-full overflow-hidden"
-            style={{width:120,height:120,background:'#D1FAE5',border:'3px solid #D9C5A0',boxShadow:'0 12px 40px rgba(6,95,70,0.2)'}}>
+      <style>{`
+        @keyframes splashRing1{0%,100%{transform:scale(1);opacity:0.5;}50%{transform:scale(1.15);opacity:0.15;}}
+        @keyframes splashRing2{0%,100%{transform:scale(1);opacity:0.3;}50%{transform:scale(1.25);opacity:0.08;}}
+        @keyframes splashRing3{0%,100%{transform:scale(1);opacity:0.15;}50%{transform:scale(1.35);opacity:0.04;}}
+        @keyframes splashLogoFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+        @keyframes splashOrbit1{0%{transform:rotate(0deg) translateX(118px) rotate(0deg);}100%{transform:rotate(360deg) translateX(118px) rotate(-360deg);}}
+        @keyframes splashOrbit2{0%{transform:rotate(90deg) translateX(118px) rotate(-90deg);}100%{transform:rotate(450deg) translateX(118px) rotate(-450deg);}}
+        @keyframes splashOrbit3{0%{transform:rotate(180deg) translateX(118px) rotate(-180deg);}100%{transform:rotate(540deg) translateX(118px) rotate(-540deg);}}
+        @keyframes splashOrbit4{0%{transform:rotate(270deg) translateX(118px) rotate(-270deg);}100%{transform:rotate(630deg) translateX(118px) rotate(-630deg);}}
+        @keyframes splashLetterIn{0%{opacity:0;transform:translateY(24px);}100%{opacity:1;transform:translateY(0);}}
+        @keyframes splashGlow{0%,100%{box-shadow:0 0 40px rgba(6,95,70,0.6),0 0 80px rgba(6,95,70,0.2);}50%{box-shadow:0 0 60px rgba(6,95,70,0.9),0 0 120px rgba(6,95,70,0.35),0 0 200px rgba(6,95,70,0.1);}}
+        @keyframes splashBarShimmer{0%{background-position:200% center;}100%{background-position:-200% center;}}
+        @keyframes splashServiceFade{0%{opacity:0;transform:translateY(6px);}20%,80%{opacity:1;transform:translateY(0);}100%{opacity:0;transform:translateY(-6px);}}
+        @keyframes splashStarPulse{0%,100%{opacity:0.6;transform:scale(1);}50%{opacity:1;transform:scale(1.4);}}
+        @keyframes splashMeshMove{0%{transform:translateX(0) translateY(0);}50%{transform:translateX(-20px) translateY(-10px);}100%{transform:translateX(0) translateY(0);}}
+      `}</style>
+
+      {/* Animated mesh background */}
+      <div style={{position:'absolute',inset:0,opacity:0.06,animation:'splashMeshMove 8s ease-in-out infinite',
+        backgroundImage:'radial-gradient(circle at 1px 1px,rgba(255,255,255,0.8) 1px,transparent 0)',
+        backgroundSize:'32px 32px',pointerEvents:'none'}}/>
+
+      {/* Ambient light blobs */}
+      <div style={{position:'absolute',top:'15%',left:'10%',width:280,height:280,borderRadius:'50%',
+        background:'radial-gradient(circle,rgba(6,95,70,0.18) 0%,transparent 70%)',filter:'blur(40px)',pointerEvents:'none'}}/>
+      <div style={{position:'absolute',bottom:'20%',right:'5%',width:220,height:220,borderRadius:'50%',
+        background:'radial-gradient(circle,rgba(217,197,160,0.12) 0%,transparent 70%)',filter:'blur(50px)',pointerEvents:'none'}}/>
+      <div style={{position:'absolute',top:'60%',left:'30%',width:160,height:160,borderRadius:'50%',
+        background:'radial-gradient(circle,rgba(74,222,128,0.08) 0%,transparent 70%)',filter:'blur(30px)',pointerEvents:'none'}}/>
+
+      {/* Star particles */}
+      {[[8,'12%','18%',0],[5,'85%','25%',0.4],[6,'20%','75%',0.8],[4,'75%','70%',0.2],[7,'50%','10%',0.6],[4,'35%','88%',1.1]].map(([s,l,t,d],i)=>(
+        <div key={i} style={{position:'absolute',left:l as string,top:t as string,width:s as number,height:s as number,
+          borderRadius:'50%',background:'rgba(255,255,255,0.7)',
+          animation:`splashStarPulse ${1.5+Number(d)}s ease-in-out ${d}s infinite`}}/>
+      ))}
+
+      {/* Center content */}
+      <div style={{position:'relative',display:'flex',flexDirection:'column',alignItems:'center'}}>
+
+        {/* Logo + orbiting service icons */}
+        <div style={{position:'relative',width:200,height:200,marginBottom:32}}>
+
+          {/* Ring 3 — outermost */}
+          <div style={{position:'absolute',inset:-44,borderRadius:'50%',border:'1px solid rgba(6,95,70,0.25)',
+            animation:'splashRing3 3s ease-in-out infinite 0.6s'}}/>
+          {/* Ring 2 */}
+          <div style={{position:'absolute',inset:-22,borderRadius:'50%',border:'1px solid rgba(6,95,70,0.4)',
+            animation:'splashRing2 3s ease-in-out infinite 0.3s'}}/>
+          {/* Ring 1 — innermost */}
+          <div style={{position:'absolute',inset:-8,borderRadius:'50%',border:'1.5px solid rgba(217,197,160,0.35)',
+            animation:'splashRing1 3s ease-in-out infinite'}}/>
+
+          {/* Orbiting service icons */}
+          {[
+            {icon:'🛵',anim:'splashOrbit1',delay:'0s'},
+            {icon:'🚖',anim:'splashOrbit2',delay:'0s'},
+            {icon:'🚬',anim:'splashOrbit3',delay:'0s'},
+            {icon:'🌹',anim:'splashOrbit4',delay:'0s'},
+          ].map((o,i)=>(
+            <div key={i} style={{position:'absolute',top:'50%',left:'50%',width:0,height:0}}>
+              <div style={{position:'absolute',transform:`rotate(${i*90}deg) translateX(118px) rotate(-${i*90}deg)`,
+                animation:`${o.anim} 8s linear infinite ${o.delay}`,
+                width:36,height:36,marginLeft:-18,marginTop:-18,
+                background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',
+                borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',
+                fontSize:16,backdropFilter:'blur(4px)'}}>
+                {o.icon}
+              </div>
+            </div>
+          ))}
+
+          {/* Logo circle */}
+          <div style={{position:'absolute',inset:0,borderRadius:'50%',overflow:'hidden',
+            border:'3px solid #D9C5A0',
+            animation:'splashLogoFloat 4s ease-in-out infinite, splashGlow 4s ease-in-out infinite'}}>
             <img src="/logo_splash.jpeg" alt="Bridge"
-              style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center',display:'block',transform:'scale(1.22)'}}/>
+              style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center',transform:'scale(1.22)'}}/>
           </div>
-          {/* Download badge */}
-          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 flex items-center gap-1"
-            style={{background:'#065F46',boxShadow:'0 4px 12px rgba(6,95,70,0.35)'}}>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="white">
-              <path d="M12 16l-6-6h4V4h4v6h4l-6 6z"/><rect x="4" y="18" width="16" height="2" rx="1" fill="white"/>
-            </svg>
-            <span className="text-[9px] font-black tracking-widest text-white">APP</span>
+
+          {/* Premium badge */}
+          <div style={{position:'absolute',bottom:-10,left:'50%',transform:'translateX(-50%)',
+            background:'linear-gradient(135deg,#065F46,#059669)',
+            borderRadius:999,padding:'4px 12px',
+            boxShadow:'0 4px 16px rgba(6,95,70,0.5)',display:'flex',alignItems:'center',gap:5,whiteSpace:'nowrap'}}>
+            <div style={{width:6,height:6,borderRadius:'50%',background:'#4ADE80',boxShadow:'0 0 6px #4ADE80'}}/>
+            <span style={{color:'#fff',fontSize:9,fontWeight:900,letterSpacing:'0.2em'}}>BRIDGE SAFI</span>
           </div>
         </div>
 
-        {/* Brand name */}
-        <h1 className="font-black tracking-[0.55em] text-3xl mb-1" style={{color:'#065F46'}}>BRIDGE</h1>
-        <p className="text-[10px] tracking-widest font-bold" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
+        {/* Brand letters with staggered animation */}
+        <div style={{display:'flex',gap:6,marginBottom:10}}>
+          {'BRIDGE'.split('').map((letter,i)=>(
+            <span key={i} style={{
+              fontSize:36,fontWeight:900,letterSpacing:2,
+              color:'#fff',
+              textShadow:'0 0 30px rgba(6,95,70,0.8)',
+              animation:`splashLetterIn 0.5s ease-out ${i*0.07}s both`,
+              display:'inline-block',
+            }}>{letter}</span>
+          ))}
+        </div>
 
-        {/* Gold divider */}
-        <div className="flex items-center gap-2 my-5">
-          <div className="w-10 h-px" style={{background:'#D9C5A0'}}/>
-          <div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/>
-          <div className="w-10 h-px" style={{background:'#D9C5A0'}}/>
+        {/* Location tags */}
+        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:24}}>
+          {['SAFI','MAROC','آسفي','ⵙⴰⴼⵉ'].map((city,i)=>(
+            <div key={i} style={{display:'flex',alignItems:'center',gap:8}}>
+              <span style={{fontSize:9,fontWeight:800,letterSpacing:'0.2em',color:'#D9C5A0'}}>{city}</span>
+              {i<3 && <div style={{width:3,height:3,borderRadius:'50%',background:'#065F46'}}/>}
+            </div>
+          ))}
+        </div>
+
+        {/* Active service indicator */}
+        <div key={phase} style={{
+          display:'flex',alignItems:'center',gap:8,
+          background:'rgba(255,255,255,0.04)',border:`1px solid ${svc.color}40`,
+          borderRadius:999,padding:'6px 16px',marginBottom:28,
+          animation:'splashServiceFade 0.9s ease-in-out both',
+        }}>
+          <span style={{fontSize:14}}>{svc.icon}</span>
+          <span style={{color:svc.color,fontSize:11,fontWeight:800,letterSpacing:'0.1em'}}>{svc.label}</span>
+          <div style={{width:6,height:6,borderRadius:'50%',background:svc.color,boxShadow:`0 0 8px ${svc.color}`}}/>
         </div>
 
         {/* Progress bar */}
-        <div className="w-48 h-1.5 rounded-full overflow-hidden mb-2" style={{background:'var(--c-border)'}}>
-          <div className="h-full rounded-full transition-all duration-75"
-            style={{width:`${progress}%`,background:'linear-gradient(to right,#065F46,#059669)'}}/>
+        <div style={{width:220,position:'relative',marginBottom:8}}>
+          <div style={{height:3,borderRadius:999,background:'rgba(255,255,255,0.08)',overflow:'hidden'}}>
+            <div style={{
+              height:'100%',borderRadius:999,
+              width:`${progress}%`,
+              background:'linear-gradient(90deg,#065F46,#4ADE80,#D9C5A0)',
+              backgroundSize:'200% 100%',
+              animation:'splashBarShimmer 1.5s linear infinite',
+              transition:'width 0.08s linear',
+            }}/>
+          </div>
+          <div style={{display:'flex',justifyContent:'space-between',marginTop:6}}>
+            <span style={{color:'rgba(255,255,255,0.2)',fontSize:8,fontWeight:700,letterSpacing:'0.25em'}}>CHARGEMENT</span>
+            <span style={{color:'rgba(255,255,255,0.35)',fontSize:8,fontWeight:900}}>{Math.round(progress)}%</span>
+          </div>
         </div>
-
-        {/* Loading dots */}
-        <p className="text-[9px] tracking-[0.3em] font-black" style={{color:'#B8AFA4'}}>
-          CHARGEMENT{'·'.repeat(dots)}
-        </p>
       </div>
     </div>
   );
