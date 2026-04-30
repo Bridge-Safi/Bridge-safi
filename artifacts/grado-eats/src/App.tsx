@@ -3981,7 +3981,8 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
         {tab==='shop'&&(
           <div>
             <div className="pt-20 px-5 pb-3">
-              <p className="font-black text-base tracking-wide" style={{color:'#9D174D'}}>🌹 Rayhana Fleurs — {lang==='ar'?'آسفي':lang==='en'?'Safi':'Safi'}</p>
+              <p className="font-black text-base tracking-wide" style={{color:'#9D174D'}}>🌹 Bridge Fleurs · {lang==='ar'?'آسفي':lang==='en'?'Safi':'Safi'}</p>
+              <p className="text-[10px] font-semibold" style={{color:'#EC4899',marginTop:1}}>by Rayhana Fleurs</p>
             </div>
             {/* Category tabs */}
             <div className={`flex gap-2 px-5 mb-4 ${isAR?'flex-row-reverse':''}`}>
