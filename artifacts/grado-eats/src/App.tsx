@@ -3209,6 +3209,9 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   const [activeCat,setActiveCat]=useState('bouquet');
   const [cart,setCart]=useState<{id:string;qty:number}[]>([]);
   const [showCheckout,setShowCheckout]=useState(false);
+  const [tab,setTab]=useState<'home'|'shop'|'track'>('home');
+  const [lastRef,setLastRef]=useState<string>(()=>localStorage.getItem('bridge_fleurs_last_ref')||'');
+  const [trackStage,setTrackStage]=useState(0);
   const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
   const pillStyle:React.CSSProperties={
@@ -3221,171 +3224,313 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   const cartCount=cart.reduce((s,ci)=>s+ci.qty,0);
   const visibleItems=FLEURS_CATALOG.filter(f=>f.cat===activeCat);
 
-  // Build a CartItem[] compatible with CheckoutDrawer
   const drawerCart:CartItem[]=cart.map(ci=>{
     const p=FLEURS_CATALOG.find(f=>f.id===ci.id)!;
     return {
-      cartId:ci.id,
-      restaurantId:'bridge-fleurs',
-      restaurantName:'Bridge Fleurs',
+      cartId:ci.id,restaurantId:'bridge-fleurs',restaurantName:'Bridge Fleurs',
       item:{id:ci.id,names:p.names,price:p.price,photo:'',safi:false,options:[]},
-      qty:ci.qty,
-      extraPrice:0,
-      totalPerUnit:p.price,
-      selectedOptions:{},
+      qty:ci.qty,extraPrice:0,totalPerUnit:p.price,selectedOptions:{},
     };
   });
-  const handleQty=(cartId:string,delta:number)=>{
-    if(delta>0) addItem(cartId); else removeItem(cartId);
-  };
+  const handleQty=(cartId:string,delta:number)=>{ if(delta>0) addItem(cartId); else removeItem(cartId); };
+
+  const trackStages=lang==='ar'
+    ?['تم تأكيد الطلب','جاري التحضير','في الطريق إليك','تم التسليم']
+    :lang==='en'
+    ?['Order confirmed','Preparing your order','On the way','Delivered']
+    :['Commande confirmée','Préparation en cours','En route','Livré 🌹'];
+
+  const pinkGrad='linear-gradient(135deg,#9D174D,#DB2777)';
+  const pinkGlow='0 4px 16px rgba(219,39,119,0.35)';
 
   return(
     <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`} style={{background:'#FFF5F7',color:'#1A2F23'}}>
-      {/* Subtle background */}
       <div className="fixed inset-0 pointer-events-none" style={{background:'radial-gradient(ellipse at 50% 0%,rgba(219,39,119,0.07) 0%,transparent 60%)'}}/>
 
-      {/* Nav pills */}
+      {/* Top nav */}
       <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
         <button onClick={onBack}
-          className="flex items-center gap-0.5 px-1.5 rounded-full transition-all active:scale-90 hover:scale-110"
+          className="flex items-center gap-0.5 px-1.5 rounded-full transition-all active:scale-90"
           style={{...pillStyle,height:'24px',minWidth:'unset'}}>
-          <span style={{fontSize:'9px',lineHeight:1}}>🛵</span>
-          <span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
-          <span style={{fontSize:'9px',lineHeight:1}}>🚖</span>
-          <span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
-          <span style={{fontSize:'9px',lineHeight:1}}>🚬</span>
-          <span style={{fontSize:'8px',lineHeight:1,color:'#9CA3AF'}}>←</span>
+          <span style={{fontSize:'9px'}}>🛵</span><span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
+          <span style={{fontSize:'9px'}}>🚖</span><span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
+          <span style={{fontSize:'9px'}}>🚬</span><span style={{fontSize:'8px',color:'#9CA3AF'}}>←</span>
         </button>
       </div>
       <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
         <button onClick={()=>setShowProfile(true)}
-          className="rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 relative"
+          className="rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 relative"
           style={{...pillStyle,width:'44px',fontSize:'18px'}}>
-          👤
-          {profile.name&&<span className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{background:'#EC4899'}}/>}
+          👤{profile.name&&<span className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{background:'#EC4899'}}/>}
         </button>
         <button onClick={cycleLang}
-          className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 px-3 ${isAMZ?'font-tifinagh':''}`}
+          className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 px-3 ${isAMZ?'font-tifinagh':''}`}
           style={{...pillStyle,fontSize:'13px'}}>
           {LANG_LABELS[lang]}
         </button>
       </div>
 
-      {/* Header */}
-      <div className="pt-20 px-5 pb-4 text-center relative">
-        <div className="flex items-center justify-center gap-3 mb-1">
-          <span className="text-4xl">🌹</span>
+      {/* ── TAB CONTENT ────────────────────────────────────────── */}
+      <div className="flex-1 overflow-y-auto pb-32">
+
+        {/* ── HOME TAB ── */}
+        {tab==='home'&&(
           <div>
-            <h1 className="font-black tracking-[0.3em] text-xl" style={{color:'#9D174D'}}>BRIDGE</h1>
-            <p className="font-black text-sm tracking-[0.2em]" style={{color:'#DB2777'}}>FLEURS</p>
-          </div>
-        </div>
-        <div className="flex items-center justify-center gap-2 mt-2 mb-1">
-          <div className="w-8 h-px" style={{background:'#FBCFE8'}}/>
-          <div className="w-1.5 h-1.5 rotate-45" style={{background:'#F9A8D4'}}/>
-          <div className="w-8 h-px" style={{background:'#FBCFE8'}}/>
-        </div>
-        <p className={`text-[10px] font-black tracking-widest uppercase ${fClass}`} style={{color:'#EC4899'}}>
-          {lang==='ar'?'ورود وهدايا · سافي':lang==='en'?'Flowers & Gifts · Safi':lang==='amz'?'ⵉⵣⵓⵍⴰⵏ · ⵙⴰⴼⵉ':'Fleurs & Cadeaux · Safi'}
-        </p>
-      </div>
-
-      {/* Cover photo */}
-      <div className="relative mx-5 mb-5 rounded-3xl overflow-hidden" style={{height:180,boxShadow:'0 8px 32px rgba(157,23,77,0.22)'}}>
-        <img src="/cover-fleurs.png" alt="Bridge Fleurs" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center 35%'}}/>
-        <div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(157,23,77,0.75) 0%,rgba(157,23,77,0.1) 60%,transparent 100%)'}}/>
-        <div style={{position:'absolute',bottom:14,left:18}}>
-          <span style={{background:'rgba(219,39,119,0.9)',backdropFilter:'blur(8px)',borderRadius:20,padding:'3px 12px',color:'#fff',fontSize:9,fontWeight:900,letterSpacing:'0.12em'}}>
-            🌹 BRIDGE FLORIST · SAFI
-          </span>
-        </div>
-      </div>
-
-      {/* Category tabs */}
-      <div className={`flex gap-2 px-5 mb-4 ${isAR?'flex-row-reverse':''}`}>
-        {FLEURS_CATS.map(cat=>(
-          <button key={cat.id} onClick={()=>setActiveCat(cat.id)}
-            className="flex-1 py-2 rounded-2xl font-black text-[11px] transition-all active:scale-95"
-            style={{
-              background:activeCat===cat.id?'linear-gradient(135deg,#9D174D,#DB2777)':'white',
-              color:activeCat===cat.id?'white':'#9D174D',
-              border:`1.5px solid ${activeCat===cat.id?'transparent':'#FBCFE8'}`,
-              boxShadow:activeCat===cat.id?'0 4px 14px rgba(219,39,119,0.3)':'none',
-            }}>
-            {cat.label[lang]}
-          </button>
-        ))}
-      </div>
-
-      {/* Product grid */}
-      <div className="flex-1 overflow-y-auto px-5 pb-36">
-        <div className="grid grid-cols-2 gap-3">
-          {visibleItems.map(item=>{
-            const inCart=cart.find(c=>c.id===item.id);
-            return(
-              <div key={item.id} className="rounded-2xl overflow-hidden" style={{background:'white',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
-                {/* Image area */}
-                <div className="flex items-center justify-center" style={{height:90,background:'linear-gradient(135deg,#FDF2F8,#FCE7F3)'}}>
-                  <span style={{fontSize:44}}>{item.emoji}</span>
-                </div>
-                {/* Info */}
-                <div className="p-3">
-                  <p className={`font-black text-[11px] leading-tight mb-1 ${fClass}`} style={{color:'#831843'}}>{item.names[lang]}</p>
-                  <p className="font-black text-sm" style={{color:'#DB2777'}}>{item.price} MAD</p>
-                  {/* Add/qty */}
-                  {!inCart?(
-                    <button onClick={()=>addItem(item.id)}
-                      className="w-full mt-2 py-1.5 rounded-xl font-black text-[11px] text-white transition-all active:scale-95"
-                      style={{background:'linear-gradient(135deg,#9D174D,#DB2777)',boxShadow:'0 3px 10px rgba(219,39,119,0.3)'}}>
-                      + Ajouter
-                    </button>
-                  ):(
-                    <div className="flex items-center justify-between mt-2">
-                      <button onClick={()=>removeItem(item.id)}
-                        className="w-8 h-8 rounded-full font-black text-lg flex items-center justify-center transition-all active:scale-90"
-                        style={{background:'#FCE7F3',color:'#DB2777'}}>−</button>
-                      <span className="font-black text-sm" style={{color:'#9D174D'}}>{inCart.qty}</span>
-                      <button onClick={()=>addItem(item.id)}
-                        className="w-8 h-8 rounded-full font-black text-lg flex items-center justify-center text-white transition-all active:scale-90"
-                        style={{background:'linear-gradient(135deg,#9D174D,#DB2777)'}}>+</button>
-                    </div>
-                  )}
+            {/* Header */}
+            <div className="pt-20 px-5 pb-4 text-center">
+              <div className="flex items-center justify-center gap-3 mb-1">
+                <span className="text-4xl">🌹</span>
+                <div>
+                  <h1 className="font-black tracking-[0.3em] text-xl" style={{color:'#9D174D'}}>BRIDGE</h1>
+                  <p className="font-black text-sm tracking-[0.2em]" style={{color:'#DB2777'}}>FLEURS</p>
                 </div>
               </div>
-            );
-          })}
-        </div>
+              <div className="flex items-center justify-center gap-2 mt-2 mb-1">
+                <div className="w-8 h-px" style={{background:'#FBCFE8'}}/>
+                <div className="w-1.5 h-1.5 rotate-45" style={{background:'#F9A8D4'}}/>
+                <div className="w-8 h-px" style={{background:'#FBCFE8'}}/>
+              </div>
+              <p className={`text-[10px] font-black tracking-widest uppercase ${fClass}`} style={{color:'#EC4899'}}>
+                {lang==='ar'?'ورود وهدايا · سافي':lang==='en'?'Flowers & Gifts · Safi':lang==='amz'?'ⵉⵣⵓⵍⴰⵏ · ⵙⴰⴼⵉ':'Fleurs & Cadeaux · Safi'}
+              </p>
+            </div>
+            {/* Cover */}
+            <div className="relative mx-5 mb-5 rounded-3xl overflow-hidden" style={{height:200,boxShadow:'0 8px 32px rgba(157,23,77,0.25)'}}>
+              <img src="/cover-fleurs.png" alt="Bridge Fleurs" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center 35%'}}/>
+              <div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(157,23,77,0.78) 0%,rgba(157,23,77,0.1) 60%,transparent 100%)'}}/>
+              <div style={{position:'absolute',bottom:14,left:18}}>
+                <span style={{background:'rgba(219,39,119,0.9)',backdropFilter:'blur(8px)',borderRadius:20,padding:'3px 12px',color:'#fff',fontSize:9,fontWeight:900,letterSpacing:'0.12em'}}>
+                  🌹 BRIDGE FLORIST · SAFI
+                </span>
+              </div>
+            </div>
+            {/* Quick CTA cards */}
+            <div className="grid grid-cols-2 gap-3 px-5 mb-5">
+              <button onClick={()=>setTab('shop')}
+                className="rounded-2xl p-4 flex flex-col items-center gap-2 transition-all active:scale-95"
+                style={{background:pinkGrad,boxShadow:pinkGlow}}>
+                <span style={{fontSize:28}}>🛍️</span>
+                <span className="text-white font-black text-[11px] tracking-wide">{lang==='ar'?'تصفح المتجر':lang==='en'?'Shop Now':'Commander'}</span>
+              </button>
+              <button onClick={()=>setTab('track')}
+                className="rounded-2xl p-4 flex flex-col items-center gap-2 transition-all active:scale-95"
+                style={{background:'white',border:'1.5px solid #FBCFE8',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
+                <span style={{fontSize:28}}>📦</span>
+                <span className="font-black text-[11px] tracking-wide" style={{color:'#9D174D'}}>{lang==='ar'?'تتبع طلبي':lang==='en'?'Track Order':'Suivi commande'}</span>
+              </button>
+            </div>
+            {/* Featured items */}
+            <div className="px-5">
+              <p className="font-black text-[11px] tracking-widest uppercase mb-3" style={{color:'#9D174D'}}>
+                {lang==='ar'?'⭐ المميزة':lang==='en'?'⭐ Featured':'⭐ En vedette'}
+              </p>
+              <div className="flex gap-3 overflow-x-auto pb-2" style={{scrollbarWidth:'none'}}>
+                {FLEURS_CATALOG.slice(0,4).map(item=>(
+                  <div key={item.id} className="flex-shrink-0 rounded-2xl overflow-hidden"
+                    style={{width:130,background:'white',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 14px rgba(219,39,119,0.07)'}}>
+                    <div className="flex items-center justify-center" style={{height:72,background:'linear-gradient(135deg,#FDF2F8,#FCE7F3)'}}>
+                      <span style={{fontSize:36}}>{item.emoji}</span>
+                    </div>
+                    <div className="p-2">
+                      <p className="font-black text-[10px] leading-tight mb-1" style={{color:'#831843'}}>{item.names[lang]}</p>
+                      <p className="font-black text-xs" style={{color:'#DB2777'}}>{item.price} MAD</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── SHOP TAB ── */}
+        {tab==='shop'&&(
+          <div>
+            <div className="pt-20 px-5 pb-3">
+              <p className="font-black text-base tracking-wide" style={{color:'#9D174D'}}>🌹 {lang==='ar'?'المتجر':lang==='en'?'Boutique':'Boutique'}</p>
+            </div>
+            {/* Category tabs */}
+            <div className={`flex gap-2 px-5 mb-4 ${isAR?'flex-row-reverse':''}`}>
+              {FLEURS_CATS.map(cat=>(
+                <button key={cat.id} onClick={()=>setActiveCat(cat.id)}
+                  className="flex-1 py-2 rounded-2xl font-black text-[11px] transition-all active:scale-95"
+                  style={{
+                    background:activeCat===cat.id?pinkGrad:'white',
+                    color:activeCat===cat.id?'white':'#9D174D',
+                    border:`1.5px solid ${activeCat===cat.id?'transparent':'#FBCFE8'}`,
+                    boxShadow:activeCat===cat.id?pinkGlow:'none',
+                  }}>
+                  {cat.label[lang]}
+                </button>
+              ))}
+            </div>
+            {/* Product grid */}
+            <div className="px-5">
+              <div className="grid grid-cols-2 gap-3">
+                {visibleItems.map(item=>{
+                  const inCart=cart.find(c=>c.id===item.id);
+                  return(
+                    <div key={item.id} className="rounded-2xl overflow-hidden" style={{background:'white',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
+                      <div className="flex items-center justify-center" style={{height:90,background:'linear-gradient(135deg,#FDF2F8,#FCE7F3)'}}>
+                        <span style={{fontSize:44}}>{item.emoji}</span>
+                      </div>
+                      <div className="p-3">
+                        <p className={`font-black text-[11px] leading-tight mb-1 ${fClass}`} style={{color:'#831843'}}>{item.names[lang]}</p>
+                        <p className="font-black text-sm" style={{color:'#DB2777'}}>{item.price} MAD</p>
+                        {!inCart?(
+                          <button onClick={()=>addItem(item.id)}
+                            className="w-full mt-2 py-1.5 rounded-xl font-black text-[11px] text-white transition-all active:scale-95"
+                            style={{background:pinkGrad,boxShadow:pinkGlow}}>
+                            + Ajouter
+                          </button>
+                        ):(
+                          <div className="flex items-center justify-between mt-2">
+                            <button onClick={()=>removeItem(item.id)}
+                              className="w-8 h-8 rounded-full font-black text-lg flex items-center justify-center transition-all active:scale-90"
+                              style={{background:'#FCE7F3',color:'#DB2777'}}>−</button>
+                            <span className="font-black text-sm" style={{color:'#9D174D'}}>{inCart.qty}</span>
+                            <button onClick={()=>addItem(item.id)}
+                              className="w-8 h-8 rounded-full font-black text-lg flex items-center justify-center text-white transition-all active:scale-90"
+                              style={{background:pinkGrad}}>+</button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── TRACK TAB ── */}
+        {tab==='track'&&(
+          <div className="pt-20 px-5">
+            <p className="font-black text-base tracking-wide mb-5" style={{color:'#9D174D'}}>📦 {lang==='ar'?'تتبع الطلب':lang==='en'?'Order Tracking':'Suivi de commande'}</p>
+            {!lastRef?(
+              <div className="rounded-3xl p-8 text-center" style={{background:'white',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 20px rgba(219,39,119,0.08)'}}>
+                <span style={{fontSize:48}}>🌸</span>
+                <p className="font-black text-sm mt-3 mb-1" style={{color:'#9D174D'}}>
+                  {lang==='ar'?'لا توجد طلبات بعد':lang==='en'?'No orders yet':'Aucune commande en cours'}
+                </p>
+                <p className="text-[11px]" style={{color:'#9CA3AF'}}>
+                  {lang==='ar'?'اطلب الآن وتابع هنا':lang==='en'?'Order now and track here':'Passez une commande pour la suivre ici'}
+                </p>
+                <button onClick={()=>setTab('shop')}
+                  className="mt-4 px-6 py-2.5 rounded-2xl font-black text-sm text-white transition-all active:scale-95"
+                  style={{background:pinkGrad,boxShadow:pinkGlow}}>
+                  {lang==='ar'?'تسوق الآن':lang==='en'?'Shop Now':'Commander maintenant'}
+                </button>
+              </div>
+            ):(
+              <div>
+                {/* Ref badge */}
+                <div className="rounded-2xl p-4 mb-4 flex items-center justify-between" style={{background:'white',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest" style={{color:'#9CA3AF'}}>
+                      {lang==='ar'?'رقم الطلب':lang==='en'?'Order ref':'Référence'}
+                    </p>
+                    <p className="font-black text-sm mt-0.5" style={{color:'#9D174D'}}>#{lastRef}</p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{background:'linear-gradient(135deg,#FCE7F3,#FBCFE8)'}}>
+                    <span style={{fontSize:20}}>🌹</span>
+                  </div>
+                </div>
+                {/* Stages */}
+                <div className="rounded-2xl p-4 mb-4" style={{background:'white',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
+                  <p className="font-black text-[10px] uppercase tracking-widest mb-4" style={{color:'#9CA3AF'}}>
+                    {lang==='ar'?'حالة الطلب':lang==='en'?'Order status':'Statut de la commande'}
+                  </p>
+                  {trackStages.map((stage,i)=>(
+                    <div key={i} className="flex items-center gap-3 mb-3">
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-black text-sm transition-all"
+                        style={{
+                          background:i<=trackStage?pinkGrad:'#F3F4F6',
+                          color:i<=trackStage?'white':'#9CA3AF',
+                          boxShadow:i===trackStage?pinkGlow:'none',
+                        }}>
+                        {i<trackStage?'✓':['📋','💐','🛵','✅'][i]}
+                      </div>
+                      <div className="flex-1">
+                        <p className={`text-[11px] font-black ${fClass}`} style={{color:i<=trackStage?'#9D174D':'#9CA3AF'}}>{stage}</p>
+                        {i===trackStage&&<p className="text-[9px]" style={{color:'#EC4899'}}>● En cours…</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {/* Simulate stages (dev) */}
+                <div className="flex gap-2 mb-4">
+                  {[0,1,2,3].map(i=>(
+                    <button key={i} onClick={()=>setTrackStage(i)}
+                      className="flex-1 py-1.5 rounded-xl text-[10px] font-bold transition-all"
+                      style={{background:trackStage===i?pinkGrad:'white',color:trackStage===i?'white':'#9D174D',border:'1px solid #FBCFE8'}}>
+                      {i+1}
+                    </button>
+                  ))}
+                </div>
+                {/* ETA card */}
+                <div className="rounded-2xl p-4 flex items-center gap-3" style={{background:'linear-gradient(135deg,#FDF2F8,#FCE7F3)',border:'1px solid #FBCFE8'}}>
+                  <span style={{fontSize:24}}>⏱️</span>
+                  <div>
+                    <p className="font-black text-sm" style={{color:'#9D174D'}}>
+                      {lang==='ar'?'وقت التسليم المتوقع':lang==='en'?'Estimated delivery':'Livraison estimée'}
+                    </p>
+                    <p className="text-[11px]" style={{color:'#DB2777'}}>30 – 45 min</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Cart bar */}
-      {cartCount>0&&(
-        <div className="fixed bottom-0 left-0 right-0 px-5 pb-6 pt-3 z-40" style={{background:'linear-gradient(to top,#FFF5F7 80%,transparent)'}}>
+      {/* Cart bar (shop tab only) */}
+      {cartCount>0&&tab==='shop'&&(
+        <div className="fixed bottom-20 left-0 right-0 px-5 z-40">
           <button onClick={()=>setShowCheckout(true)}
             className="w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-between px-5 transition-all active:scale-95"
-            style={{background:'linear-gradient(135deg,#9D174D,#DB2777)',boxShadow:'0 8px 24px rgba(219,39,119,0.4)'}}>
+            style={{background:pinkGrad,boxShadow:'0 8px 24px rgba(219,39,119,0.4)'}}>
             <span className="bg-white/20 rounded-full px-2.5 py-0.5 text-xs font-black">{cartCount}</span>
-            <span>{lang==='ar'?'عرض السلة':lang==='en'?'View Cart':lang==='amz'?'ⵥⵔ ⴰⵙⵡⵉⵔ':'Voir le panier'}</span>
+            <span>{lang==='ar'?'عرض السلة':lang==='en'?'View Cart':'Voir le panier'}</span>
             <span>{cartTotal} MAD</span>
           </button>
         </div>
       )}
 
-      {/* Profile modal */}
-      {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={p=>{saveProfile(p);setShowCheckout(false);}} onClose={()=>setShowProfile(false)}/>}
+      {/* Bottom tab bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 flex" style={{background:'white',borderTop:'1.5px solid #FCE7F3',boxShadow:'0 -4px 20px rgba(219,39,119,0.08)'}}>
+        {([
+          {id:'home',emoji:'🏠',label:{fr:'Accueil',en:'Home',ar:'الرئيسية',amz:'ⴰⵡⵡⵓⵔ'}},
+          {id:'shop',emoji:'🌹',label:{fr:'Boutique',en:'Shop',ar:'المتجر',amz:'ⴰⵙⵡⵉⵔ'}},
+          {id:'track',emoji:'📦',label:{fr:'Suivi',en:'Track',ar:'تتبع',amz:'ⴰⵙⴽⵍⵙ'}},
+        ] as {id:'home'|'shop'|'track';emoji:string;label:Record<Lang,string>}[]).map(t=>(
+          <button key={t.id} onClick={()=>setTab(t.id)}
+            className="flex-1 py-3 flex flex-col items-center gap-0.5 transition-all"
+            style={{background:'none',border:'none',cursor:'pointer'}}>
+            <span style={{fontSize:20,filter:tab===t.id?'none':'grayscale(1) opacity(0.5)'}}>{t.emoji}</span>
+            <span className="text-[9px] font-black tracking-wide"
+              style={{color:tab===t.id?'#DB2777':'#9CA3AF'}}>{t.label[lang]}</span>
+            {tab===t.id&&<div className="w-4 h-0.5 rounded-full mt-0.5" style={{background:pinkGrad}}/>}
+          </button>
+        ))}
+      </div>
 
-      {/* Checkout */}
+      {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={p=>{saveProfile(p);setShowCheckout(false);}} onClose={()=>setShowProfile(false)}/>}
       {showCheckout&&(
         <CheckoutDrawer
-          cart={drawerCart}
-          lang={lang}
+          cart={drawerCart} lang={lang}
           onClose={()=>setShowCheckout(false)}
           onQty={handleQty}
           profile={profile}
           onClearCart={()=>{setCart([]);setShowCheckout(false);}}
           restaurantName="Bridge Fleurs"
-          serviceFeeThreshold={40}
-          serviceFeeAmount={6}
-          onOrderSuccess={ref=>{setCart([]);setShowCheckout(false);onOrderSuccess?.(ref);}}
+          serviceFeeThreshold={40} serviceFeeAmount={6}
+          onOrderSuccess={ref=>{
+            setCart([]);setShowCheckout(false);
+            setLastRef(ref);
+            try{localStorage.setItem('bridge_fleurs_last_ref',ref);}catch{}
+            setTrackStage(0);setTab('track');
+            onOrderSuccess?.(ref);
+          }}
         />
       )}
     </div>
