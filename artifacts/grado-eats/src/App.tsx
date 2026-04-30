@@ -190,7 +190,7 @@ interface CartItem {
   extraPrice: number; totalPerUnit: number;
 }
 
-interface UserProfile { name:string; address:string; phone:string; cardNumber:string; cardExpiry:string; cardName:string; paymentMethod?:'card'|'paypal'; paypalEmail?:string; onboardingComplete?:boolean; }
+interface UserProfile { name:string; address:string; phone:string; cardNumber:string; cardExpiry:string; cardName:string; paymentMethod?:'card'|'paypal'; paypalEmail?:string; onboardingComplete?:boolean; avatar?:string; }
 
 // ─── PROFILE STORAGE ──────────────────────────────────────────────────────────
 
@@ -1575,6 +1575,13 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const [form,setForm]=useState<UserProfile>({...profile});
   const [saved,setSaved]=useState(false);
+  const avatarInputRef=useRef<HTMLInputElement>(null);
+  const handleAvatarChange=(e:React.ChangeEvent<HTMLInputElement>)=>{
+    const file=e.target.files?.[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=ev=>{ if(typeof ev.target?.result==='string') setForm(f=>({...f,avatar:ev.target!.result as string})); };
+    reader.readAsDataURL(file);
+  };
   const { signOut } = useClerk();
   const [, navigate] = useLocation();
   const { user } = useUser();
@@ -1686,6 +1693,36 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
           <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center font-black flex-shrink-0" style={{background:'#F3F4F6',color:'#6B7280',fontSize:14}}>✕</button>
         </div>
         <div className="px-5 py-5" style={{direction:isAR?'rtl':'ltr'}}>
+
+          {/* ── Photo de profil ── */}
+          <div className="flex flex-col items-center mb-5">
+            <div className="relative">
+              <div style={{width:88,height:88,borderRadius:'50%',overflow:'hidden',border:'3px solid #D9C5A0',boxShadow:'0 4px 20px rgba(6,95,70,0.2)',background:'#F0EBE1',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                {form.avatar
+                  ?<img src={form.avatar} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+                  :<span style={{fontSize:36}}>👤</span>
+                }
+              </div>
+              <button onClick={()=>avatarInputRef.current?.click()}
+                style={{position:'absolute',bottom:0,right:0,width:28,height:28,borderRadius:'50%',background:'linear-gradient(135deg,#065F46,#059669)',border:'2.5px solid #fff',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',boxShadow:'0 2px 8px rgba(6,95,70,0.4)'}}>
+                <span style={{fontSize:13}}>📷</span>
+              </button>
+            </div>
+            <input ref={avatarInputRef} type="file" accept="image/*" onChange={handleAvatarChange} style={{display:'none'}}/>
+            <button onClick={()=>avatarInputRef.current?.click()}
+              className={`mt-2 text-[11px] font-black ${fClass}`}
+              style={{color:'#065F46',background:'none',border:'none',cursor:'pointer',letterSpacing:'0.05em'}}>
+              {form.avatar?'🔄 Changer la photo':'📷 Ajouter une photo'}
+            </button>
+            {form.avatar&&(
+              <button onClick={()=>setForm(f=>({...f,avatar:''}))}
+                className="text-[10px] mt-0.5"
+                style={{color:'#9CA3AF',background:'none',border:'none',cursor:'pointer'}}>
+                Supprimer
+              </button>
+            )}
+          </div>
+
           <div className="rounded-2xl p-4 mb-5" style={{background:errs.name||errs.phone?'#FFF5F5':'#F0FDF4',border:`1px solid ${errs.name||errs.phone?'#FCA5A5':'#BBF7D0'}`,transition:'all 0.2s'}}>
             <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#065F46'}}>👤 {t.nameLabel}</p>
             <Field label={t.nameLabel} value={form.name} onChange={v=>{set('name')(v);if(errs.name&&validateName(v))setErrs(e=>({...e,name:false}));}} placeholder={t.namePh} lang={lang} required error={errs.name} errorMsg={t.errName}/>
@@ -2699,8 +2736,8 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
   const choose=(s:'delivery'|'taxi'|'tabac'|'fleurs')=>{setPressed(s);setTimeout(()=>onSelect(s),320);};
-  // Avatar: Clerk photo or initials
-  const avatarSrc=user?.imageUrl||null;
+  // Avatar: custom upload > Clerk photo > initials
+  const avatarSrc=profile.avatar||user?.imageUrl||null;
   const initials=(profile.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   return(
     <div className={`fixed inset-0 flex flex-col z-40 ${isAR?'rtl':'ltr'}`}
@@ -2938,8 +2975,11 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
       <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
         <button onClick={()=>setShowProfile(true)}
           className="rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 relative"
-          style={{...pillStyle,width:'44px',fontSize:'18px'}}>
-          👤
+          style={{...pillStyle,width:'44px',padding:0,overflow:'hidden'}}>
+          {profile.avatar
+            ?<img src={profile.avatar} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'50%'}}/>
+            :<span style={{fontSize:'18px'}}>👤</span>
+          }
           {profile.name&&<span className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{background:'#10B981'}}/>}
         </button>
         <button onClick={cycleLang}
@@ -3313,8 +3353,12 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
       <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
         <button onClick={()=>setShowProfile(true)}
           className="rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 relative"
-          style={{...pillStyle,width:'44px',fontSize:'18px'}}>
-          👤{profile.name&&<span className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{background:'#EC4899'}}/>}
+          style={{...pillStyle,width:'44px',padding:0,overflow:'hidden'}}>
+          {profile.avatar
+            ?<img src={profile.avatar} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'50%'}}/>
+            :<span style={{fontSize:'18px'}}>👤</span>
+          }
+          {profile.name&&<span className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{background:'#EC4899'}}/>}
         </button>
         <button onClick={cycleLang}
           className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 px-3 ${isAMZ?'font-tifinagh':''}`}
@@ -3683,9 +3727,13 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           {LANG_LABELS[lang]}
         </button>
         <button onClick={()=>setShowProfile(true)}
-          className="rounded-full flex items-center justify-center font-black text-xl transition-all active:scale-90 hover:scale-110"
-          style={{...pillStyle,width:'44px',padding:0}}>
-          👤
+          className="rounded-full flex items-center justify-center font-black text-xl transition-all active:scale-90 hover:scale-110 relative"
+          style={{...pillStyle,width:'44px',padding:0,overflow:'hidden'}}>
+          {profile.avatar
+            ?<img src={profile.avatar} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'50%'}}/>
+            :<span style={{fontSize:'18px'}}>👤</span>
+          }
+          {profile.name&&<span className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{background:'#10B981'}}/>}
         </button>
       </div>
 
@@ -3928,8 +3976,11 @@ export default function App() {
       <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
         <button onClick={()=>setShowProfile(true)}
           className="rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 relative"
-          style={{...pillStyle,width:'44px',fontSize:'18px'}}>
-          👤
+          style={{...pillStyle,width:'44px',padding:0,overflow:'hidden'}}>
+          {profile.avatar
+            ?<img src={profile.avatar} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'50%'}}/>
+            :<span style={{fontSize:'18px'}}>👤</span>
+          }
           {profile.name&&<span className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{background:'#10B981'}}/>}
         </button>
         <button onClick={cycleLang}
