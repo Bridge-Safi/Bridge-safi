@@ -1160,14 +1160,6 @@ function GamePage() {
             <p style={{color:'rgba(255,255,255,0.75)',fontSize:12,fontWeight:600,margin:0,lineHeight:1.4}}>{t.bonusDesc}</p>
           </div>
         </div>
-        {/* Bonus diamants */}
-        <div style={{background:'linear-gradient(135deg,rgba(6,95,70,0.2) 0%,rgba(74,222,128,0.08) 100%)',border:'1px solid rgba(74,222,128,0.35)',borderRadius:18,padding:'14px 16px',display:'flex',alignItems:'flex-start',gap:12}}>
-          <div style={{fontSize:26,flexShrink:0,lineHeight:1}}>💎</div>
-          <div>
-            <p style={{color:'#4ADE80',fontSize:11,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 4px'}}>{t.bonusDiaTitle}</p>
-            <p style={{color:'rgba(255,255,255,0.75)',fontSize:12,fontWeight:600,margin:0,lineHeight:1.4}}>{t.bonusDiaDesc}</p>
-          </div>
-        </div>
       </div>
 
       {/* ── RULES BUTTON ── */}
