@@ -2903,10 +2903,10 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
           <div style={{position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)',width:220,height:60,background:'radial-gradient(ellipse,rgba(5,150,105,0.28) 0%,transparent 70%)',filter:'blur(18px)',pointerEvents:'none'}}/>
           <h1 style={{
             fontSize:'2.6rem',fontWeight:900,letterSpacing:'0.45em',
-            background:'linear-gradient(135deg,#34D399 0%,#065F46 42%,#B45309 100%)',
+            background:'linear-gradient(160deg,#059669 0%,#065F46 55%,#044434 100%)',
             WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',
             backgroundClip:'text',
-            filter:'drop-shadow(0 2px 12px rgba(5,150,105,0.35))',
+            filter:'drop-shadow(0 2px 14px rgba(5,150,105,0.4))',
             margin:0,lineHeight:1.1,position:'relative',
           }}>BRIDGE</h1>
         </div>
