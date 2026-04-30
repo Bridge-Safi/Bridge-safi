@@ -3836,7 +3836,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   const drawerCart:CartItem[]=cart.map(ci=>{
     const p=FLEURS_CATALOG.find(f=>f.id===ci.id)!;
     return {
-      cartId:ci.id,restaurantId:'bridge-fleurs',restaurantName:'Bridge Fleurs',
+      cartId:ci.id,restaurantId:'rayhana-fleurs',restaurantName:'Rayhana Fleurs',
       item:{id:ci.id,names:p.names,price:p.price,photo:'',safi:false,options:[]},
       qty:ci.qty,extraPrice:0,totalPerUnit:p.price,selectedOptions:{},
     };
@@ -3908,15 +3908,34 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
                 {lang==='ar'?'ورود وهدايا · سافي':lang==='en'?'Flowers & Gifts · Safi':lang==='amz'?'ⵉⵣⵓⵍⴰⵏ · ⵙⴰⴼⵉ':'Fleurs & Cadeaux · Safi'}
               </p>
             </div>
-            {/* Cover */}
-            <div className="relative mx-5 mb-5 rounded-3xl overflow-hidden" style={{height:200,boxShadow:'0 8px 32px rgba(157,23,77,0.25)'}}>
-              <img src="/cover-fleurs.png" alt="Bridge Fleurs" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center 35%'}}/>
-              <div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(157,23,77,0.78) 0%,rgba(157,23,77,0.1) 60%,transparent 100%)'}}/>
-              <div style={{position:'absolute',bottom:14,left:18}}>
-                <span style={{background:'rgba(219,39,119,0.9)',backdropFilter:'blur(8px)',borderRadius:20,padding:'3px 12px',color:'#fff',fontSize:9,fontWeight:900,letterSpacing:'0.12em'}}>
-                  🌹 BRIDGE FLORIST · SAFI
-                </span>
+            {/* Boutique badge */}
+            <div className="flex flex-col items-center mx-5 mb-5">
+              {/* Logo cercle */}
+              <div style={{
+                width:88,height:88,borderRadius:'50%',
+                background:'linear-gradient(135deg,#FCE7F3,#FBCFE8)',
+                border:'3px solid #F9A8D4',
+                boxShadow:'0 0 0 6px rgba(249,168,212,0.18), 0 8px 32px rgba(219,39,119,0.22)',
+                overflow:'hidden',display:'flex',alignItems:'center',justifyContent:'center',
+                marginBottom:10,
+              }}>
+                <img src="/logo_splash_new.png" alt="Rayhana Fleurs"
+                  style={{width:'100%',height:'100%',objectFit:'cover',
+                    filter:'sepia(0.3) saturate(1.2) hue-rotate(280deg) brightness(1.05)'}}/>
               </div>
+              {/* Nom boutique */}
+              <p className="font-black text-base tracking-wide" style={{color:'#9D174D',marginBottom:2}}>Rayhana Fleurs</p>
+              <div className="flex items-center gap-2 mb-1">
+                <div style={{width:28,height:1,background:'linear-gradient(to right,transparent,#F9A8D4)'}}/>
+                <span style={{fontSize:7,fontWeight:900,letterSpacing:'0.18em',color:'#EC4899'}}>SAFI · آسفي · ⵙⴰⴼⵉ</span>
+                <div style={{width:28,height:1,background:'linear-gradient(to left,transparent,#F9A8D4)'}}/>
+              </div>
+              <span style={{
+                background:'linear-gradient(135deg,#9D174D,#DB2777)',
+                borderRadius:20,padding:'3px 14px',
+                color:'#fff',fontSize:9,fontWeight:900,letterSpacing:'0.15em',
+                boxShadow:'0 4px 12px rgba(219,39,119,0.3)',
+              }}>🌹 Partenaire Bridge Officiel</span>
             </div>
             {/* Quick CTA cards */}
             <div className="grid grid-cols-2 gap-3 px-5 mb-5">
@@ -3962,7 +3981,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
         {tab==='shop'&&(
           <div>
             <div className="pt-20 px-5 pb-3">
-              <p className="font-black text-base tracking-wide" style={{color:'#9D174D'}}>🌹 {lang==='ar'?'المتجر':lang==='en'?'Boutique':'Boutique'}</p>
+              <p className="font-black text-base tracking-wide" style={{color:'#9D174D'}}>🌹 Rayhana Fleurs — {lang==='ar'?'آسفي':lang==='en'?'Safi':'Safi'}</p>
             </div>
             {/* Category tabs */}
             <div className={`flex gap-2 px-5 mb-4 ${isAR?'flex-row-reverse':''}`}>
@@ -4141,7 +4160,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           onQty={handleQty}
           profile={profile}
           onClearCart={()=>{setCart([]);setShowCheckout(false);}}
-          restaurantName="Bridge Fleurs"
+          restaurantName="Rayhana Fleurs"
           serviceFeeThreshold={40} serviceFeeAmount={6}
           onOrderSuccess={ref=>{
             setCart([]);setShowCheckout(false);
