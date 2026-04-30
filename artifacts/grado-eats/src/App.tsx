@@ -3291,16 +3291,6 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
       {/* ── Main Content ── */}
       <div className="relative flex flex-col pb-28 max-w-sm mx-auto w-full">
 
-        {/* Cover photo */}
-        <div className="relative overflow-hidden" style={{height:200}}>
-          <img src="/cover-taxi.png" alt="Bridge Taxi Luxe" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center 40%'}}/>
-          <div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(120,53,15,0.85) 0%,rgba(120,53,15,0.1) 55%,transparent 100%)'}}/>
-          <div style={{position:'absolute',bottom:14,left:18}}>
-            <p className="font-black text-white text-lg tracking-[0.3em]">BRIDGE TAXI</p>
-            <p style={{color:'#FDE68A',fontSize:10,fontWeight:700,letterSpacing:'0.18em'}}>LUXE · CONFORT · SAFI</p>
-          </div>
-        </div>
-
         {/* ── Tab bar ── */}
         <div className="flex border-b sticky top-0 z-30" style={{background:'var(--c-nav)',backdropFilter:'blur(12px)',borderColor:'#E5E1D8'}}>
           {navItems.map((tab,i)=>(
@@ -4285,15 +4275,6 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
 
       {/* Content */}
       <div className="flex flex-col items-center px-5 pt-24 pb-12 max-w-sm mx-auto w-full">
-        {/* Cover photo */}
-        <div className="relative w-full rounded-3xl overflow-hidden mb-5" style={{height:200,boxShadow:'0 8px 32px rgba(125,79,46,0.3)'}}>
-          <img src="/cover-tabac.png" alt="Bridge Tabac" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center 40%'}}/>
-          <div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(80,40,10,0.82) 0%,rgba(80,40,10,0.1) 55%,transparent 100%)'}}/>
-          <div style={{position:'absolute',bottom:14,left:18}}>
-            <p className="font-black text-white text-lg tracking-[0.3em]">BRIDGE TABAC</p>
-            <p style={{color:'#FDE68A',fontSize:10,fontWeight:700,letterSpacing:'0.18em'}}>CIGARETTES · SAFI · آسفي</p>
-          </div>
-        </div>
         <h1 className={`font-black text-xl tracking-wider mb-0.5 ${fClass}`} style={{color:'#7D4F2E'}}>BRIDGE TABAC</h1>
         <p className="text-[10px] tracking-widest font-bold mb-5" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
 
