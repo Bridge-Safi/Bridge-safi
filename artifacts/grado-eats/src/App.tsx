@@ -2994,19 +2994,8 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({clientLat:clientPos?.lat,clientLng:clientPos?.lng,clientAddress:pickup,destination:destination.trim(),customerName:name.trim(),customerPhone:phone.trim()}),
       }).catch(()=>{});
-      // 2. Notify driver app
-      await fetch(`${DRIVER_APP_URL}/api/deliveries`,{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          trackingNumber:ref,customerName:name.trim(),customerPhone:phone.trim(),
-          pickupAddress:pickup,deliveryAddress:destination.trim(),
-          priority:'urgent',
-          notes:`🚖 BRIDGE TAXI LUXE\n📍 Départ: ${pickup}\n🏁 Destination: ${destination.trim()}\n👤 ${name.trim()} — ${phone.trim()}\n\n🔗 GPS Chauffeur: ${driverTrackUrl}`,
-          driverTrackUrl,
-        }),
-      }).catch(()=>{});
-      // 3. WhatsApp admin
-      const waMsg=encodeURIComponent(`🚖 *BRIDGE TAXI* — ${ref}\n👤 ${name.trim()} — ${phone.trim()}\n📍 Départ: ${pickup}\n🏁 Destination: ${destination.trim()}\n🔗 GPS: ${driverTrackUrl}`);
+      // 2. WhatsApp dispatch taxi (chauffeur, pas livreur)
+      const waMsg=encodeURIComponent(`🚖 *BRIDGE TAXI* — ${ref}\n👤 ${name.trim()} — ${phone.trim()}\n📍 Départ: ${pickup}\n🏁 Destination: ${destination.trim()}\n\n🔗 Lien GPS chauffeur:\n${driverTrackUrl}`);
       window.open(`https://wa.me/212764794856?text=${waMsg}`,'_blank');
     }finally{setSending(false);}
     localStorage.setItem('bridge_taxi_ref',ref);
