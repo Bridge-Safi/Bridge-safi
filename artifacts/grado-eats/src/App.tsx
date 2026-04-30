@@ -2950,32 +2950,85 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
       </div>
 
       {/* ── Content ── */}
-      <div className="relative flex flex-col items-center justify-center min-h-screen px-6 pt-20 pb-28">
-        <div className="w-full max-w-sm text-center">
-          <div className="rounded-full overflow-hidden mx-auto mb-6" style={{width:160,height:160,border:'3px solid #D9C5A0',boxShadow:'0 10px 36px rgba(180,83,9,0.2)'}}>
-            <img src="/logo_taxi.jpeg" alt="Bridge Taxi"
-              style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}}/>
+      <div className="relative flex flex-col px-5 pt-20 pb-28 max-w-sm mx-auto w-full">
+
+        {/* Cover photo */}
+        <div className="relative rounded-3xl overflow-hidden mb-5" style={{height:200,boxShadow:'0 8px 32px rgba(180,83,9,0.25)'}}>
+          <img src="/cover-taxi.png" alt="Bridge Taxi Luxe" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center 40%'}}/>
+          <div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(120,53,15,0.8) 0%,rgba(120,53,15,0.1) 55%,transparent 100%)'}}/>
+          <div style={{position:'absolute',bottom:14,left:18}}>
+            <p className="font-black text-white text-lg tracking-[0.3em]">BRIDGE TAXI</p>
+            <p style={{color:'#FDE68A',fontSize:10,fontWeight:700,letterSpacing:'0.18em'}}>LUXE · CONFORT · SAFI</p>
           </div>
-          <h1 className="font-black tracking-[0.35em] text-xl mb-1" style={{color:'#B45309'}}>BRIDGE TAXI</h1>
-          <p className="font-black text-sm tracking-widest mb-1" style={{color:'#065F46'}}>CONFORT</p>
-          <div className="flex items-center justify-center gap-2 mb-6 mt-2">
-            <div className="w-8 h-px" style={{background:'#D9C5A0'}}/>
-            <div className="w-1.5 h-1.5 rotate-45" style={{background:'#D9C5A0'}}/>
-            <div className="w-8 h-px" style={{background:'#D9C5A0'}}/>
-          </div>
-          <div className="rounded-2xl p-5 mb-6 w-full" style={{background:'#FEF9EE',border:'1.5px solid #FDE68A'}}>
-            <p className="text-4xl mb-3">🚖</p>
-            <p className={`font-black text-sm mb-1 ${fClass}`} style={{color:'#B45309'}}>{T[lang].taxiSoon}</p>
-            <p className={`text-xs font-medium ${fClass}`} style={{color:'#78716C'}}>{T[lang].taxiDesc}</p>
-          </div>
-          <a href="https://wa.me/212764794856?text=Bonjour%2C%20je%20voudrais%20r%C3%A9server%20un%20Bridge%20Taxi%20Confort%20%F0%9F%9A%96"
-            target="_blank" rel="noopener noreferrer"
-            className="w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 mb-3 active:scale-95 transition-all"
-            style={{background:'#25D366',boxShadow:'0 6px 20px rgba(37,211,102,0.3)'}}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
-            {T[lang].taxiBook}
-          </a>
         </div>
+
+        {/* Animated taxi GPS map */}
+        <div className="rounded-3xl overflow-hidden mb-5" style={{height:512,position:'relative',background:'linear-gradient(145deg,#0d1117 0%,#161b22 50%,#0d1117 100%)',boxShadow:'0 8px 40px rgba(180,83,9,0.3)',border:'1.5px solid rgba(251,191,36,0.25)'}}>
+          {/* Grid road lines */}
+          <svg style={{position:'absolute',inset:0,width:'100%',height:'100%',opacity:0.12}} xmlns="http://www.w3.org/2000/svg">
+            {[0,1,2,3,4,5,6].map(i=>(
+              <line key={`h${i}`} x1="0" y1={`${i*16.6}%`} x2="100%" y2={`${i*16.6}%`} stroke="#F59E0B" strokeWidth="1"/>
+            ))}
+            {[0,1,2,3,4,5,6,7].map(i=>(
+              <line key={`v${i}`} x1={`${i*14.2}%`} y1="0" x2={`${i*14.2}%`} y2="100%" stroke="#F59E0B" strokeWidth="1"/>
+            ))}
+          </svg>
+          {/* Radar rings */}
+          <div style={{position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)'}}>
+            {[60,110,160].map((r,i)=>(
+              <div key={i} style={{
+                position:'absolute',top:'50%',left:'50%',
+                width:r*2,height:r*2,
+                transform:'translate(-50%,-50%)',
+                borderRadius:'50%',
+                border:'1.5px solid rgba(251,191,36,0.2)',
+              }}/>
+            ))}
+          </div>
+          {/* Orbiting taxis */}
+          <style>{`
+            @keyframes orbit-slow{from{transform:rotate(0deg) translateX(65px) rotate(0deg)}to{transform:rotate(360deg) translateX(65px) rotate(-360deg)}}
+            @keyframes orbit-med{from{transform:rotate(120deg) translateX(110px) rotate(-120deg)}to{transform:rotate(480deg) translateX(110px) rotate(-480deg)}}
+            @keyframes orbit-fast{from{transform:rotate(240deg) translateX(155px) rotate(-240deg)}to{transform:rotate(600deg) translateX(155px) rotate(-600deg)}}
+          `}</style>
+          <div style={{position:'absolute',top:'50%',left:'50%',width:0,height:0}}>
+            <div style={{position:'absolute',animation:'orbit-slow 8s linear infinite',fontSize:22,marginTop:-11,marginLeft:-11}}>🚖</div>
+            <div style={{position:'absolute',animation:'orbit-med 12s linear infinite',fontSize:22,marginTop:-11,marginLeft:-11}}>🚖</div>
+            <div style={{position:'absolute',animation:'orbit-fast 16s linear infinite',fontSize:22,marginTop:-11,marginLeft:-11}}>🚖</div>
+          </div>
+          {/* Central pin */}
+          <div style={{position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-55%)',textAlign:'center'}}>
+            <div style={{width:48,height:48,borderRadius:'50%',background:'linear-gradient(135deg,#78350F,#F59E0B)',border:'3px solid #FDE68A',boxShadow:'0 0 24px rgba(245,158,11,0.6)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,margin:'0 auto'}}>
+              📍
+            </div>
+            <div style={{marginTop:6,background:'rgba(245,158,11,0.15)',border:'1px solid rgba(251,191,36,0.4)',borderRadius:10,padding:'3px 10px',backdropFilter:'blur(8px)'}}>
+              <span style={{color:'#FDE68A',fontSize:9,fontWeight:900,letterSpacing:'0.15em'}}>SAFI CENTRE</span>
+            </div>
+          </div>
+          {/* EN ATTENTE badge */}
+          <div style={{position:'absolute',top:14,right:14,background:'rgba(220,38,38,0.85)',backdropFilter:'blur(8px)',borderRadius:20,padding:'4px 12px',border:'1px solid rgba(252,165,165,0.4)',display:'flex',alignItems:'center',gap:5}}>
+            <div style={{width:6,height:6,borderRadius:'50%',background:'#fff',animation:'pulse 1.2s ease-in-out infinite'}}/>
+            <span style={{color:'#fff',fontSize:8,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
+          </div>
+          {/* Top label */}
+          <div style={{position:'absolute',top:14,left:14}}>
+            <span style={{color:'#FDE68A',fontSize:9,fontWeight:900,letterSpacing:'0.15em',opacity:0.8}}>🚖 BRIDGE TAXI LIVE</span>
+          </div>
+          {/* Bottom info */}
+          <div style={{position:'absolute',bottom:0,left:0,right:0,padding:'12px 16px',background:'linear-gradient(to top,rgba(13,17,23,0.95),transparent)'}}>
+            <p className={`text-white font-black text-sm mb-0.5 ${fClass}`}>{T[lang].taxiSoon}</p>
+            <p className={`text-xs ${fClass}`} style={{color:'rgba(255,255,255,0.5)'}}>{T[lang].taxiDesc}</p>
+          </div>
+        </div>
+
+        {/* WhatsApp booking */}
+        <a href="https://wa.me/212764794856?text=Bonjour%2C%20je%20voudrais%20r%C3%A9server%20un%20Bridge%20Taxi%20Confort%20%F0%9F%9A%96"
+          target="_blank" rel="noopener noreferrer"
+          className="w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 active:scale-95 transition-all"
+          style={{background:'#25D366',boxShadow:'0 6px 20px rgba(37,211,102,0.3)'}}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+          {T[lang].taxiBook}
+        </a>
       </div>
 
       {/* ── Bottom nav (same as delivery) ── */}
@@ -3638,10 +3691,14 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
 
       {/* Content */}
       <div className="flex flex-col items-center px-5 pt-24 pb-12 max-w-sm mx-auto w-full">
-        {/* Logo */}
-        <div className="w-24 h-24 rounded-full overflow-hidden mb-4 flex-shrink-0"
-          style={{boxShadow:'0 8px 32px rgba(125,79,46,0.3)',border:'3px solid #D9C5A0'}}>
-          <img src="/bridge-tabac-logo.jpeg" alt="Bridge Tabac" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center center',display:'block'}}/>
+        {/* Cover photo */}
+        <div className="relative w-full rounded-3xl overflow-hidden mb-5" style={{height:200,boxShadow:'0 8px 32px rgba(125,79,46,0.3)'}}>
+          <img src="/cover-tabac.png" alt="Bridge Tabac" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center 40%'}}/>
+          <div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(80,40,10,0.82) 0%,rgba(80,40,10,0.1) 55%,transparent 100%)'}}/>
+          <div style={{position:'absolute',bottom:14,left:18}}>
+            <p className="font-black text-white text-lg tracking-[0.3em]">BRIDGE TABAC</p>
+            <p style={{color:'#FDE68A',fontSize:10,fontWeight:700,letterSpacing:'0.18em'}}>CIGARETTES · SAFI · آسفي</p>
+          </div>
         </div>
         <h1 className={`font-black text-xl tracking-wider mb-0.5 ${fClass}`} style={{color:'#7D4F2E'}}>BRIDGE TABAC</h1>
         <p className="text-[10px] tracking-widest font-bold mb-5" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
