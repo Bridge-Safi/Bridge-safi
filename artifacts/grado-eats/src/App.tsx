@@ -3549,7 +3549,7 @@ function ProfileOnboardingScreen({lang,profile,saveProfile,onDone}:{
           border:'3px solid #D9C5A0',
           boxShadow:'0 0 0 6px rgba(217,197,160,0.12),0 12px 40px rgba(0,0,0,0.4)',
           marginBottom:14}}>
-          <img src="/logo_splash.jpeg" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.2)'}}/>
+          <img src="/logo_splash_new.png" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.2)'}}/>
         </div>
         <h2 className={`font-black text-white text-2xl tracking-tight ${fClass}`} style={{margin:0}}>{t.onboardTitle}</h2>
         <p className={`text-xs mt-1 ${fClass}`} style={{color:'rgba(217,197,160,0.8)'}}>{t.onboardSub}</p>
@@ -3719,7 +3719,7 @@ function SplashScreen() {
           <div style={{position:'absolute',inset:0,borderRadius:'50%',overflow:'hidden',
             border:'3px solid #D9C5A0',
             animation:'splashLogoFloat 4s ease-in-out infinite, splashGlow 4s ease-in-out infinite'}}>
-            <img src="/logo_splash.jpeg" alt="Bridge"
+            <img src="/logo_splash_new.png" alt="Bridge"
               style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center',transform:'scale(1.22)'}}/>
           </div>
 

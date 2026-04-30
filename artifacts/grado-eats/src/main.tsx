@@ -103,7 +103,7 @@ function AuthPageWrapper({ children }: { children: React.ReactNode }) {
           boxShadow: '0 0 0 6px rgba(217,197,160,0.12), 0 16px 48px rgba(0,0,0,0.4)',
           margin: '0 auto 1rem',
         }}>
-          <img src="/logo_splash.jpeg" alt="Bridge Safi"
+          <img src="/logo_splash_new.png" alt="Bridge Safi"
             style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scale(1.2)' }} />
         </div>
 
@@ -1003,7 +1003,7 @@ function GamePage() {
         {/* Logo stamp */}
         <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:16,padding:'8px 12px',backdropFilter:'blur(8px)'}}>
           <div style={{width:52,height:52,borderRadius:'50%',overflow:'hidden',border:'2px solid #D9C5A0',boxShadow:'0 0 20px rgba(217,197,160,0.3)'}}>
-            <img src="/logo_splash.jpeg" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.1)'}}/>
+            <img src="/logo_splash_new.png" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.1)'}}/>
           </div>
           <span style={{color:'#D9C5A0',fontSize:8,fontWeight:900,letterSpacing:'0.25em'}}>BRIDGE</span>
           <div style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.5)',borderRadius:6,padding:'2px 7px'}}>
@@ -1554,7 +1554,7 @@ function BridgeAssistantPage() {
             {msg.role==='assistant' && (
               <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:4,flexDirection:isAR?'row-reverse':'row'}}>
                 <div style={{width:28,height:28,borderRadius:'50%',overflow:'hidden',border:'1px solid rgba(99,102,241,0.4)'}}>
-                  <img src="/logo_splash.jpeg" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+                  <img src="/logo_splash_new.png" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
                 </div>
                 <span style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700}}>Bridge AI</span>
               </div>
@@ -1580,7 +1580,7 @@ function BridgeAssistantPage() {
         {loading && (
           <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
             <div style={{width:28,height:28,borderRadius:'50%',overflow:'hidden',border:'1px solid rgba(99,102,241,0.4)'}}>
-              <img src="/logo_splash.jpeg" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+              <img src="/logo_splash_new.png" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
             </div>
             <div style={{background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'18px 18px 18px 4px',padding:'12px 16px',display:'flex',gap:6,alignItems:'center'}}>
               {[0,1,2].map(i=>(
