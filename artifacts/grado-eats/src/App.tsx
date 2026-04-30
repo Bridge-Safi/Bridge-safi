@@ -3790,20 +3790,23 @@ const NAV_KEY='bridge_nav_state';
 // ─── FLEURS PAGE ──────────────────────────────────────────────────────────────
 
 const FLEURS_CATALOG = [
-  {id:'f1',emoji:'🌹',names:{fr:'Bouquet Roses Rouges',en:'Red Roses Bouquet',ar:'باقة ورود حمراء',amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵉⴳⵍⴰⴷ ⵉⵣⴳⴳⴰⵖⵏ'},price:89,cat:'bouquet'},
-  {id:'f2',emoji:'💐',names:{fr:'Bouquet Mixte Coloré',en:'Colourful Mixed Bouquet',ar:'باقة ملونة',amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵣⴳⵣⴰⵡ'},price:69,cat:'bouquet'},
-  {id:'f3',emoji:'🤍',names:{fr:'Bouquet Blanc Élégance',en:'White Elegance Bouquet',ar:'باقة بيضاء',amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵎⵍⵍⴰⵍ'},price:79,cat:'bouquet'},
-  {id:'f4',emoji:'🌷',names:{fr:'Bouquet Tulipes',en:'Tulips Bouquet',ar:'باقة زنبق',amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵜⵓⵍⵉⴱⴰⵜⵏ'},price:75,cat:'bouquet'},
-  {id:'f5',emoji:'🌿',names:{fr:'Plante Verte Déco',en:'Decorative Green Plant',ar:'نبتة خضراء',amz:'ⴰⵢⵢⴰⵡ ⴰⵣⴳⴳⵯⴰⵖ'},price:55,cat:'plante'},
-  {id:'f6',emoji:'🪴',names:{fr:'Cactus Chic',en:'Chic Cactus',ar:'صبار شيك',amz:'ⴰⴽⴰⴽⵜⵓⵙ'},price:45,cat:'plante'},
-  {id:'f7',emoji:'🎁',names:{fr:'Coffret Fête',en:'Celebration Box',ar:'علبة احتفال',amz:'ⴰⵙⴷⴰⵙ ⵏ ⵜⴼⴰⵙⴽⴰ'},price:149,cat:'coffret'},
-  {id:'f8',emoji:'❤️',names:{fr:'Coffret Amour',en:'Love Box',ar:'علبة حب',amz:'ⴰⵙⴷⴰⵙ ⵏ ⵓⵎⵏⵉ'},price:199,cat:'coffret'},
-  {id:'f9',emoji:'🌸',names:{fr:'Couronne Florale',en:'Floral Crown',ar:'إكليل زهور',amz:'ⴰⴽⵍⵉⵍ ⵏ ⵉⵣⵓⵍⴰⵏ'},price:119,cat:'bouquet'},
+  {id:'f1', img:'/fleurs/fl_01.png', emoji:'🌹', names:{fr:'Bouquet Roses Mixtes',en:'Mixed Roses Bouquet',ar:'باقة ورود مشكلة',amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵉⴳⵍⴰⴷ'},          price:0, cat:'bouquet'},
+  {id:'f2', img:'/fleurs/fl_02.png', emoji:'🤍', names:{fr:'Bouquet Blanc & Rose',en:'White & Pink Bouquet',ar:'باقة بيضاء وردية',amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵎⵍⵍⴰⵍ'},         price:0, cat:'bouquet'},
+  {id:'f3', img:'/fleurs/fl_03.png', emoji:'🌸', names:{fr:'Bouquet Roses Roses',en:'Pink Roses Bouquet',ar:'باقة ورود وردية',amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵉⴳⵍⴰⴷ ⵉⵡⵔⵉⵖⵏ'},   price:0, cat:'bouquet'},
+  {id:'f4', img:'/fleurs/fl_05.png', emoji:'💐', names:{fr:'Grand Bouquet Luxe',en:'Luxury Large Bouquet',ar:'باقة فاخرة كبيرة',amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵎⵇⵔⴰⵏ'},         price:0, cat:'bouquet'},
+  {id:'f5', img:'/fleurs/fl_08.png', emoji:'🌷', names:{fr:'Bouquet Lavande & Blanc',en:'Lavender & White Bouquet',ar:'باقة بنفسجية بيضاء',amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵣⴳⵣⴰⵡ'},price:0, cat:'bouquet'},
+  {id:'f6', img:'/fleurs/fl_09.png', emoji:'🌹', names:{fr:'Bouquet Roses Bordeaux',en:'Dark Red Roses Bouquet',ar:'باقة ورود عنابية',amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵣⴳⴳⴰⵖ'},      price:0, cat:'bouquet'},
+  {id:'f7', img:'/fleurs/fl_07.png', emoji:'❤️', names:{fr:'Coffret Cœur Roses',en:'Heart Rose Box',ar:'علبة قلب ورود',amz:'ⴰⵙⴷⴰⵙ ⵏ ⵓⵍ'},                    price:0, cat:'coffret'},
+  {id:'f8', img:'/fleurs/fl_11.png', emoji:'🎁', names:{fr:'Box Roses Élégance',en:'Roses Elegance Box',ar:'علبة ورود أناقة',amz:'ⴰⵙⴷⴰⵙ ⵏ ⵉⴳⵍⴰⴷ'},              price:0, cat:'coffret'},
+  {id:'f9', img:'/fleurs/fl_12.png', emoji:'🎀', names:{fr:'Box Prestige Nœud Or',en:'Gold Bow Prestige Box',ar:'علبة فاخرة بنيفة ذهبية',amz:'ⴰⵙⴷⴰⵙ ⵏ ⵓⵔ'},    price:0, cat:'coffret'},
+  {id:'f10',img:'/fleurs/fl_04.png', emoji:'🍫', names:{fr:'Arrangement Ferrero & Roses',en:'Ferrero & Roses Arrangement',ar:'تنسيق فريرو وورود',amz:'ⴰⵔⴰⵜⵉⴱ ⵏ ⵉⴳⵍⴰⴷ'}, price:0, cat:'arrangement'},
+  {id:'f11',img:'/fleurs/fl_06.png', emoji:'🍫', names:{fr:'Bouquet Ferrero Rocher',en:'Ferrero Rocher Bouquet',ar:'باقة فريرو روشيه',amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵉⵡⵙⴽⵉⵡⵏ'},   price:0, cat:'arrangement'},
+  {id:'f12',img:'/fleurs/fl_10.png', emoji:'💙', names:{fr:'Arrangement Roses Bleues',en:'Blue Roses Arrangement',ar:'تنسيق ورود زرقاء',amz:'ⴰⵔⴰⵜⵉⴱ ⵏ ⵉⴳⵍⴰⴷ ⵉⵣⵣⴳⴳⴰⵏ'},price:0,cat:'arrangement'},
 ];
 const FLEURS_CATS=[
-  {id:'bouquet',label:{fr:'Bouquets',en:'Bouquets',ar:'باقات',amz:'ⵉⵥⴰⵡⴰⵏⵏ'}},
-  {id:'plante', label:{fr:'Plantes',en:'Plants',ar:'نباتات',amz:'ⵉⵣⵓⵔⴰⵏ'}},
-  {id:'coffret',label:{fr:'Coffrets',en:'Boxes',ar:'صناديق',amz:'ⵉⵙⴷⴰⵙⵏ'}},
+  {id:'bouquet',    label:{fr:'Bouquets',en:'Bouquets',ar:'باقات',amz:'ⵉⵥⴰⵡⴰⵏⵏ'}},
+  {id:'coffret',    label:{fr:'Coffrets',en:'Boxes',ar:'صناديق',amz:'ⵉⵙⴷⴰⵙⵏ'}},
+  {id:'arrangement',label:{fr:'Arrangements',en:'Arrangements',ar:'تنسيقات',amz:'ⵉⵔⴰⵜⵉⴱⵏ'}},
 ];
 
 function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
@@ -3939,12 +3942,14 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
                 {FLEURS_CATALOG.slice(0,4).map(item=>(
                   <div key={item.id} className="flex-shrink-0 rounded-2xl overflow-hidden"
                     style={{width:130,background:'var(--c-card)',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 14px rgba(219,39,119,0.07)'}}>
-                    <div className="flex items-center justify-center" style={{height:72,background:'linear-gradient(135deg,#FDF2F8,#FCE7F3)'}}>
-                      <span style={{fontSize:36}}>{item.emoji}</span>
+                    <div className="flex items-center justify-center overflow-hidden" style={{height:90,background:'linear-gradient(135deg,#FDF2F8,#FCE7F3)'}}>
+                      {item.img
+                        ? <img src={item.img} alt={item.names.fr} style={{width:'100%',height:'100%',objectFit:'contain'}}/>
+                        : <span style={{fontSize:36}}>{item.emoji}</span>}
                     </div>
                     <div className="p-2">
                       <p className="font-black text-[10px] leading-tight mb-1" style={{color:'#831843'}}>{item.names[lang]}</p>
-                      <p className="font-black text-xs" style={{color:'#DB2777'}}>{item.price} MAD</p>
+                      <p className="font-black text-xs" style={{color:'#DB2777'}}>{item.price>0?`${item.price} MAD`:lang==='ar'?'السعر عند الطلب':'Sur demande'}</p>
                     </div>
                   </div>
                 ))}
@@ -3981,12 +3986,14 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
                   const inCart=cart.find(c=>c.id===item.id);
                   return(
                     <div key={item.id} className="rounded-2xl overflow-hidden" style={{background:'var(--c-card)',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
-                      <div className="flex items-center justify-center" style={{height:90,background:'linear-gradient(135deg,#FDF2F8,#FCE7F3)'}}>
-                        <span style={{fontSize:44}}>{item.emoji}</span>
+                      <div className="flex items-center justify-center overflow-hidden" style={{height:110,background:'linear-gradient(135deg,#FDF2F8,#FCE7F3)'}}>
+                        {item.img
+                          ? <img src={item.img} alt={item.names.fr} style={{width:'100%',height:'100%',objectFit:'contain'}}/>
+                          : <span style={{fontSize:44}}>{item.emoji}</span>}
                       </div>
                       <div className="p-3">
                         <p className={`font-black text-[11px] leading-tight mb-1 ${fClass}`} style={{color:'#831843'}}>{item.names[lang]}</p>
-                        <p className="font-black text-sm" style={{color:'#DB2777'}}>{item.price} MAD</p>
+                        <p className="font-black text-sm" style={{color:'#DB2777'}}>{item.price>0?`${item.price} MAD`:lang==='ar'?'السعر عند الطلب':'Sur demande'}</p>
                         {!inCart?(
                           <button onClick={()=>addItem(item.id)}
                             className="w-full mt-2 py-1.5 rounded-xl font-black text-[11px] text-white transition-all active:scale-95"
