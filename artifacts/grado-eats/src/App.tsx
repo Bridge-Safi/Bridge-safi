@@ -3290,6 +3290,17 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
         </p>
       </div>
 
+      {/* Cover photo */}
+      <div className="relative mx-5 mb-5 rounded-3xl overflow-hidden" style={{height:180,boxShadow:'0 8px 32px rgba(157,23,77,0.22)'}}>
+        <img src="/cover-fleurs.png" alt="Bridge Fleurs" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center 35%'}}/>
+        <div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(157,23,77,0.75) 0%,rgba(157,23,77,0.1) 60%,transparent 100%)'}}/>
+        <div style={{position:'absolute',bottom:14,left:18}}>
+          <span style={{background:'rgba(219,39,119,0.9)',backdropFilter:'blur(8px)',borderRadius:20,padding:'3px 12px',color:'#fff',fontSize:9,fontWeight:900,letterSpacing:'0.12em'}}>
+            🌹 BRIDGE FLORIST · SAFI
+          </span>
+        </div>
+      </div>
+
       {/* Category tabs */}
       <div className={`flex gap-2 px-5 mb-4 ${isAR?'flex-row-reverse':''}`}>
         {FLEURS_CATS.map(cat=>(
