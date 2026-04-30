@@ -723,10 +723,10 @@ const GAME_LANG_LABELS: Record<GameLang,string> = {fr:'FR',en:'EN',ar:'AR',amz:'
 const GAME_URL = 'https://de74e39f-30c2-4a4e-81c6-35b38d5328e6-00-2kdljcxzty31v.riker.replit.dev/';
 const GAME_TARGET = 15000;
 const GAME_T = {
-  fr:{ back:'← Retour', playerId:'ID JOUEUR', diamonds:'MES DIAMANTS', playBtn:'🎮 JOUER MAINTENANT', howTitle:'Comment gagner ?', how1:'🎮 Lance le jeu Bridge Shark', how2:'💎 Récoltez 1 000 💎 / heure', how3:'🎁 Échangez vos 💎 contre des cadeaux', rulesBtn:'📜 Règles du jeu', target:'OBJECTIF', progress:'PROGRESSION', days:'5 jours · 3-4h/jour', pts:'pts' },
-  en:{ back:'← Back',   playerId:'PLAYER ID',  diamonds:'MY DIAMONDS',  playBtn:'🎮 PLAY NOW',             howTitle:'How to win?',        how1:'🎮 Launch the Bridge Shark game', how2:'💎 Collect 1,000 💎 per hour', how3:'🎁 Redeem 💎 for free gifts',       rulesBtn:'📜 Game Rules',   target:'TARGET',    progress:'PROGRESS',    days:'5 days · 3-4h/day',  pts:'pts' },
-  ar:{ back:'→ رجوع',   playerId:'معرّف اللاعب',diamonds:'ماساتي',       playBtn:'🎮 العب الآن',             howTitle:'كيف تفوز؟',          how1:'🎮 شغّل لعبة Bridge Shark',      how2:'💎 اجمع 1 000 💎 كل ساعة',    how3:'🎁 استبدل 💎 بهدايا مجانية',       rulesBtn:'📜 قواعد اللعبة', target:'الهدف',     progress:'التقدم',      days:'5 أيام · 3-4 ساعات', pts:'نقطة' },
-  amz:{ back:'← ⴰⵣⵣⵓⵍ', playerId:'ⴰⵏⴳⵔⴰⵡ',  diamonds:'ⵉⴷⵢⴰⵎⴰⵏ ⵉⵏⵓ', playBtn:'🎮 ⵙⵖⵔ ⴷⴰⵖⵉ',             howTitle:'ⵎⴰⵎⴽ ⴰⴷ ⵜⴽⵙⵎ?',       how1:'🎮 ⵙⵏⵓⴱⴳ Bridge Shark',         how2:'💎 1 000 💎 ⵙ ⵜⵉⵙⵙⵓⵜ',        how3:'🎁 ⵙⴽⵍⵙ 💎',                       rulesBtn:'📜 ⵜⵉⵖⵔⵉ',        target:'ⴰⵎⵓⵟⵟⵓ',  progress:'ⴰⵎⵙⵉⵡⴹ',     days:'5 ⵡⴰⵙⵙⴰⵜⵏ',          pts:'ⵜⵉⵏⵎⵍⴰⵏ' },
+  fr:{ back:'← Retour', playerId:'ID JOUEUR', diamonds:'MES DIAMANTS', playBtn:'🎮 JOUER MAINTENANT', howTitle:'Comment gagner ?', how1:'🎮 Lance le jeu Bridge Shark', how2:'💎 Récoltez 1 000 💎 / heure', how3:'🎁 Échangez vos 💎 contre des cadeaux', rulesBtn:'📜 Règles du jeu', target:'OBJECTIF', progress:'PROGRESSION', days:'5 jours · 3-4h/jour', pts:'pts', bonusTitle:'🎁 BONUS LIVRAISON OFFERTE', bonusDesc:'Jouez 2h de plus → votre prochaine livraison est GRATUITE !', bonusDiaTitle:'💎 BONUS DIAMANTS', bonusDiaDesc:'+2 000 💎 offerts si vous jouez 2h supplémentaires par jour' },
+  en:{ back:'← Back',   playerId:'PLAYER ID',  diamonds:'MY DIAMONDS',  playBtn:'🎮 PLAY NOW',             howTitle:'How to win?',        how1:'🎮 Launch the Bridge Shark game', how2:'💎 Collect 1,000 💎 per hour', how3:'🎁 Redeem 💎 for free gifts',       rulesBtn:'📜 Game Rules',   target:'TARGET',    progress:'PROGRESS',    days:'5 days · 3-4h/day',  pts:'pts', bonusTitle:'🎁 FREE DELIVERY BONUS', bonusDesc:'Play 2 extra hours → your next delivery is FREE!', bonusDiaTitle:'💎 DIAMOND BONUS', bonusDiaDesc:'+2,000 💎 bonus if you play 2 extra hours per day' },
+  ar:{ back:'→ رجوع',   playerId:'معرّف اللاعب',diamonds:'ماساتي',       playBtn:'🎮 العب الآن',             howTitle:'كيف تفوز؟',          how1:'🎮 شغّل لعبة Bridge Shark',      how2:'💎 اجمع 1 000 💎 كل ساعة',    how3:'🎁 استبدل 💎 بهدايا مجانية',       rulesBtn:'📜 قواعد اللعبة', target:'الهدف',     progress:'التقدم',      days:'5 أيام · 3-4 ساعات', pts:'نقطة', bonusTitle:'🎁 مكافأة التوصيل المجاني', bonusDesc:'العب ساعتين إضافيتين → توصيلك التالي مجاني!', bonusDiaTitle:'💎 مكافأة الماسات', bonusDiaDesc:'+2 000 💎 إضافية إذا لعبت ساعتين أكثر في اليوم' },
+  amz:{ back:'← ⴰⵣⵣⵓⵍ', playerId:'ⴰⵏⴳⵔⴰⵡ',  diamonds:'ⵉⴷⵢⴰⵎⴰⵏ ⵉⵏⵓ', playBtn:'🎮 ⵙⵖⵔ ⴷⴰⵖⵉ',             howTitle:'ⵎⴰⵎⴽ ⴰⴷ ⵜⴽⵙⵎ?',       how1:'🎮 ⵙⵏⵓⴱⴳ Bridge Shark',         how2:'💎 1 000 💎 ⵙ ⵜⵉⵙⵙⵓⵜ',        how3:'🎁 ⵙⴽⵍⵙ 💎',                       rulesBtn:'📜 ⵜⵉⵖⵔⵉ',        target:'ⴰⵎⵓⵟⵟⵓ',  progress:'ⴰⵎⵙⵉⵡⴹ',     days:'5 ⵡⴰⵙⵙⴰⵜⵏ',          pts:'ⵜⵉⵏⵎⵍⴰⵏ', bonusTitle:'🎁 ⴰⵣⵏⵏⵣ ⴱⵍⴰ ⴰⵣⵔⴼ', bonusDesc:'+2 ⵜⵉⵙⵙⵓⵜⵉⵏ → ⴰⵣⵏⵏⵣ ⵢⵉⵍⵉ ⵖⵔⴰⵜⴽ!', bonusDiaTitle:'💎 ⴱⵓⵏⵓⵙ ⵉⴷⵢⴰⵎⴰⵏ', bonusDiaDesc:'+2 000 💎 ⵙ 2 ⵜⵉⵙⵙⵓⵜⵉⵏ ⵢⴰⴹⵏⵉⵏ' },
 };
 
 // ─── BRIDGE GAME RULES MODAL ──────────────────────────────────────────────────
@@ -761,6 +761,14 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
             'S\'il manque 1 000 💎 → vous payez 5 DH',
             'S\'il manque 3 000 💎 → vous payez 15 DH',
             'Calcul : diamants manquants ÷ 1 000 × 5 DH',
+          ]
+        },
+        {
+          icon: '🚴', title: 'BONUS — Livraison gratuite',
+          points: [
+            'Jouez 2h DE PLUS que votre session normale',
+            '→ Votre prochaine livraison est 100% GRATUITE 🎁',
+            '→ Vous gagnez aussi +2 000 💎 bonus !',
           ]
         },
         {
@@ -806,6 +814,14 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           ]
         },
         {
+          icon: '🚴', title: 'BONUS — Free delivery',
+          points: [
+            'Play 2 EXTRA hours beyond your normal session',
+            '→ Your next delivery is 100% FREE 🎁',
+            '→ You also earn +2,000 💎 bonus!',
+          ]
+        },
+        {
           icon: '🎁', title: 'How to use your winnings',
           points: [
             '🛵 A meal from Bridge Eats',
@@ -848,6 +864,14 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           ]
         },
         {
+          icon: '🚴', title: 'مكافأة — توصيل مجاني',
+          points: [
+            'العب ساعتين إضافيتين فوق جلستك العادية',
+            '→ توصيلك التالي مجاني 100% 🎁',
+            '→ تكسب أيضاً +2 000 💎 إضافية!',
+          ]
+        },
+        {
           icon: '🎁', title: 'كيف تستخدم مكاسبك',
           points: [
             '🛵 وجبة من Bridge Eats',
@@ -886,6 +910,13 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
             'ⵓⵚⴽⵉⴷ ⴰⵎⵓⵟⵟⵓ → ⴽⵓⵍⵍⵓ ⵢⵉⵍⵉ ⵖⵔⴰⵜⴽ! 🎉',
             'ⵢⵍⵍⴰ 1 000 💎 → 5 ⴷⵔⵀⵎ',
             'ⵢⵍⵍⴰ 3 000 💎 → 15 ⴷⵔⵀⵎ',
+          ]
+        },
+        {
+          icon: '🚴', title: 'ⴱⵓⵏⵓⵙ — ⴰⵣⵏⵏⵣ ⴱⵍⴰ ⴰⵣⵔⴼ',
+          points: [
+            '+2 ⵜⵉⵙⵙⵓⵜⵉⵏ ⵢⴰⴹⵏⵉⵏ → ⴰⵣⵏⵏⵣ ⵢⵉⵍⵉ ⵖⵔⴰⵜⴽ 🎁',
+            '+2 000 💎 ⴱⵓⵏⵓⵙ!',
           ]
         },
         {
@@ -1116,6 +1147,26 @@ function GamePage() {
               <p style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:0,lineHeight:1.3}}>{step}</p>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* ── BONUS CARDS ── */}
+      <div style={{width:'100%',maxWidth:380,padding:'0 16px',marginTop:12,display:'flex',flexDirection:'column',gap:10}}>
+        {/* Bonus livraison */}
+        <div style={{background:'linear-gradient(135deg,rgba(217,119,6,0.15) 0%,rgba(251,191,36,0.08) 100%)',border:'1px solid rgba(251,191,36,0.4)',borderRadius:18,padding:'14px 16px',display:'flex',alignItems:'flex-start',gap:12}}>
+          <div style={{fontSize:26,flexShrink:0,lineHeight:1}}>🚴</div>
+          <div>
+            <p style={{color:'#FCD34D',fontSize:11,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 4px'}}>{t.bonusTitle}</p>
+            <p style={{color:'rgba(255,255,255,0.75)',fontSize:12,fontWeight:600,margin:0,lineHeight:1.4}}>{t.bonusDesc}</p>
+          </div>
+        </div>
+        {/* Bonus diamants */}
+        <div style={{background:'linear-gradient(135deg,rgba(6,95,70,0.2) 0%,rgba(74,222,128,0.08) 100%)',border:'1px solid rgba(74,222,128,0.35)',borderRadius:18,padding:'14px 16px',display:'flex',alignItems:'flex-start',gap:12}}>
+          <div style={{fontSize:26,flexShrink:0,lineHeight:1}}>💎</div>
+          <div>
+            <p style={{color:'#4ADE80',fontSize:11,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 4px'}}>{t.bonusDiaTitle}</p>
+            <p style={{color:'rgba(255,255,255,0.75)',fontSize:12,fontWeight:600,margin:0,lineHeight:1.4}}>{t.bonusDiaDesc}</p>
+          </div>
         </div>
       </div>
 
