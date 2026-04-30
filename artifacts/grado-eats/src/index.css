@@ -1,12 +1,58 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* ── Dark mode CSS custom properties ───────────────────────────────────────── */
+:root {
+  --c-bg:       #FDFCF9;
+  --c-nav:      rgba(253,252,249,0.97);
+  --c-nav-soft: rgba(253,252,249,0.93);
+  --c-card:     #ffffff;
+  --c-input:    #F9F7F2;
+  --c-text:     #1A2F23;
+  --c-border:   #E5E1D8;
+  --c-muted:    #9CA3AF;
+}
+
+html.dark {
+  --c-bg:       #0C1A10;
+  --c-nav:      rgba(10,22,14,0.98);
+  --c-nav-soft: rgba(10,22,14,0.94);
+  --c-card:     #162019;
+  --c-input:    #1A2B1E;
+  --c-text:     #E5E1D8;
+  --c-border:   #27392C;
+  --c-muted:    #6B7280;
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: var(--c-bg);
+  color: var(--c-text);
+}
+
+html.dark body::before {
+  opacity: 0.04;
+}
+
+html.dark input,
+html.dark textarea,
+html.dark select {
+  background: var(--c-input) !important;
+  color: var(--c-text) !important;
+  border-color: var(--c-border) !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: var(--c-muted) !important;
+}
+
 @layer base {
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body {
-    background-color: #FDFCF9;
-    color: #1A2F23;
+    background-color: var(--c-bg);
+    color: var(--c-text);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
@@ -46,6 +92,10 @@
 @keyframes pulseDot {
   0%, 100% { transform: scale(1); }
   50%       { transform: scale(1.35); }
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 .modal-overlay { animation: fadeIn 0.18s ease; }

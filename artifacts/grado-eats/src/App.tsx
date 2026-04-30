@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, createContext, useContext } from 'react';
 import { useUser, useClerk } from '@clerk/react';
 import { useLocation } from 'wouter';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Polygon, useMapEvents } from 'react-leaflet';
@@ -22,6 +22,29 @@ const restaurantIcon = L.divIcon({
   html: `<div style="width:34px;height:34px;border-radius:50%;background:#D9C5A0;border:3px solid #065F46;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(0,0,0,0.2);font-size:16px;">🥘</div>`,
   iconSize: [34, 34], iconAnchor: [17, 17],
 });
+
+// ── Dark mode context ────────────────────────────────────────────────────────
+const DARK_KEY = 'bridge_dark';
+interface DarkCtxValue { dark: boolean; toggle: () => void }
+const DarkModeCtx = createContext<DarkCtxValue>({ dark: false, toggle: () => {} });
+export function useDark() { return useContext(DarkModeCtx); }
+
+function DarkToggle({ size = 44 }: { size?: number }) {
+  const { dark, toggle } = useDark();
+  return (
+    <button
+      onClick={toggle}
+      aria-label={dark ? 'Mode clair' : 'Mode sombre'}
+      className="rounded-full flex items-center justify-center font-black transition-all active:scale-90 hover:scale-110"
+      style={{
+        background: 'var(--c-card)', border: '2.5px solid #D9C5A0',
+        color: '#065F46', boxShadow: '0 4px 20px rgba(6,95,70,0.15)',
+        height: size, width: size, fontSize: size * 0.42,
+      }}>
+      {dark ? '☀️' : '🌙'}
+    </button>
+  );
+}
 
 const ROUTE_POINTS: [number, number][] = [
   [32.3010,-9.2420],[32.3005,-9.2400],[32.2998,-9.2385],
@@ -1034,9 +1057,9 @@ function fontClass(lang: Lang) {
 function GoldDivider() {
   return (
     <div className="flex items-center gap-3 my-6">
-      <div className="flex-1 h-px" style={{background:'#E5E1D8'}}/>
+      <div className="flex-1 h-px" style={{background:'var(--c-border)'}}/>
       <div className="w-3 h-3 rotate-45 flex-shrink-0" style={{background:'#D9C5A0'}}/>
-      <div className="flex-1 h-px" style={{background:'#E5E1D8'}}/>
+      <div className="flex-1 h-px" style={{background:'var(--c-border)'}}/>
     </div>
   );
 }
@@ -1064,7 +1087,7 @@ function Field({label,value,onChange,placeholder,type='text',lang,error,errorMsg
       </label>
       <input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder}
         className={`w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all ${fClass}`}
-        style={{background:error?'#FEF2F2':'#F9F7F2',border:`2px solid ${error?'#FCA5A5':'#E5E1D8'}`,color:'#1A2F23'}}
+        style={{background:error?'#FEF2F2':'var(--c-input)',border:`2px solid ${error?'#FCA5A5':'var(--c-border)'}`,color:'var(--c-text)'}}
         onFocus={e=>{e.currentTarget.style.borderColor='#065F46';}}
         onBlur={e=>{e.currentTarget.style.borderColor=error?'#FCA5A5':'#E5E1D8';}}/>
       {error&&errorMsg&&<p style={{color:'#DC2626',fontSize:10,fontWeight:700,marginTop:4,marginBottom:0}}>⚠ {errorMsg}</p>}
@@ -1130,9 +1153,9 @@ function AddressAutocomplete({label,value,onChange,placeholder,lang,error,nation
           onChange={e=>{onChange(e.target.value);fetchSuggestions(e.target.value);}}
           placeholder={placeholder}
           className={`w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all ${fClass}`}
-          style={{background:error?'#FEF2F2':'#F9F7F2',border:`2px solid ${error?'#FCA5A5':'#E5E1D8'}`,color:'#1A2F23',paddingRight:'40px'}}
+          style={{background:error?'#FEF2F2':'var(--c-input)',border:`2px solid ${error?'#FCA5A5':'var(--c-border)'}`,color:'var(--c-text)',paddingRight:'40px'}}
           onFocus={e=>{e.currentTarget.style.borderColor='#065F46';}}
-          onBlur={e=>{e.currentTarget.style.borderColor=error?'#FCA5A5':'#E5E1D8';}}/>
+          onBlur={e=>{e.currentTarget.style.borderColor=error?'#FCA5A5':'var(--c-border)';}}/>
         {loading
           ?<div className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 animate-spin" style={{borderColor:'#065F46',borderTopColor:'transparent'}}/>
           :value&&<button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-base leading-none"
@@ -1141,11 +1164,11 @@ function AddressAutocomplete({label,value,onChange,placeholder,lang,error,nation
       </div>
       {open&&suggestions.length>0&&(
         <div className="absolute z-[200] w-full mt-1 rounded-xl overflow-hidden"
-          style={{background:'#FDFCF9',border:'1.5px solid #E5E1D8',boxShadow:'0 8px 28px rgba(0,0,0,0.13)'}}>
+          style={{background:'var(--c-bg)',border:'1.5px solid var(--c-border)',boxShadow:'0 8px 28px rgba(0,0,0,0.13)'}}>
           {suggestions.map((s,i)=>(
             <button key={i} type="button"
               className={`w-full text-left px-4 py-3 text-xs font-medium transition-colors active:bg-green-50 hover:bg-green-50 ${fClass}`}
-              style={{color:'#1A2F23',borderBottom:i<suggestions.length-1?'1px solid #F3F4F6':'none'}}
+              style={{color:'var(--c-text)',borderBottom:i<suggestions.length-1?'1px solid #F3F4F6':'none'}}
               onMouseDown={()=>{onChange(s);setOpen(false);setSuggestions([]);}}>
               <span className="mr-1.5" style={{color:'#065F46'}}>📍</span>{s}
             </button>
@@ -1165,7 +1188,7 @@ function RestaurantCard({r,lang,t,onClick,compact=false}:{r:Restaurant;lang:Lang
     return(
       <button onClick={onClick}
         className="w-full text-left rounded-2xl overflow-hidden transition-all active:scale-95"
-        style={{background:'#FDFCF9',border:`1.5px solid ${isFeatured?'#D9C5A0':'#E5E1D8'}`,boxShadow:'0 4px 14px rgba(0,0,0,0.08)'}}>
+        style={{background:'var(--c-bg)',border:`1.5px solid ${isFeatured?'#D9C5A0':'#E5E1D8'}`,boxShadow:'0 4px 14px rgba(0,0,0,0.08)'}}>
         <div className="relative h-28 overflow-hidden">
           <img src={r.cover} alt={r.name} className="w-full h-full object-cover" loading="lazy"/>
           <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.9) 0%,rgba(4,55,38,0.05) 60%,transparent 100%)'}}/>
@@ -1187,7 +1210,7 @@ function RestaurantCard({r,lang,t,onClick,compact=false}:{r:Restaurant;lang:Lang
         <div className="px-2.5 py-2 flex items-center justify-between gap-1">
           <div className="flex items-center gap-1 flex-wrap">
             <span className="text-yellow-400 text-xs">★</span>
-            <span className="text-[10px] font-black" style={{color:'#1A2F23'}}>{r.rating}</span>
+            <span className="text-[10px] font-black" style={{color:'var(--c-text)'}}>{r.rating}</span>
             <div className="w-0.5 h-0.5 rounded-full mx-0.5" style={{background:'#D9C5A0'}}/>
             <span className="text-[10px]" style={{color:'#6B7280'}}>⏱{r.deliveryTime}{t.delivMin}</span>
           </div>
@@ -1202,7 +1225,7 @@ function RestaurantCard({r,lang,t,onClick,compact=false}:{r:Restaurant;lang:Lang
   return (
     <button onClick={onClick}
       className="w-full text-left rounded-3xl overflow-hidden transition-all active:scale-95 hover:shadow-2xl"
-      style={{background:'#FDFCF9',border:`1.5px solid ${isFeatured?'#D9C5A0':'#E5E1D8'}`,boxShadow:isFeatured?'0 6px 24px rgba(217,197,160,0.35)':'0 4px 16px rgba(0,0,0,0.07)'}}>
+      style={{background:'var(--c-bg)',border:`1.5px solid ${isFeatured?'#D9C5A0':'#E5E1D8'}`,boxShadow:isFeatured?'0 6px 24px rgba(217,197,160,0.35)':'0 4px 16px rgba(0,0,0,0.07)'}}>
       <div className="relative h-44 overflow-hidden">
         <img src={r.cover} alt={r.name} className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" loading="lazy"/>
         <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.85) 0%,rgba(4,55,38,0.1) 55%,transparent 100%)'}}/>
@@ -1232,7 +1255,7 @@ function RestaurantCard({r,lang,t,onClick,compact=false}:{r:Restaurant;lang:Lang
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             <span className="text-yellow-400 text-sm">★</span>
-            <span className="text-xs font-black" style={{color:'#1A2F23'}}>{r.rating}</span>
+            <span className="text-xs font-black" style={{color:'var(--c-text)'}}>{r.rating}</span>
           </div>
           <div className="w-1 h-1 rounded-full" style={{background:'#D9C5A0'}}/>
           <span className="text-xs" style={{color:'#6B7280'}}>⏱ {r.deliveryTime} {t.delivMin}</span>
@@ -1284,7 +1307,7 @@ function ItemOptionsModal({item,lang,t,onClose,onAdd}:{
 
   return (
     <div className="fixed inset-0 z-50 flex items-end modal-overlay" style={{background:'rgba(10,30,20,0.65)',backdropFilter:'blur(6px)'}} onClick={onClose}>
-      <div className="w-full max-w-md mx-auto rounded-t-3xl modal-sheet" style={{background:'#FDFCF9',maxHeight:'90vh',display:'flex',flexDirection:'column'}} onClick={e=>e.stopPropagation()}>
+      <div className="w-full max-w-md mx-auto rounded-t-3xl modal-sheet" style={{background:'var(--c-bg)',maxHeight:'90vh',display:'flex',flexDirection:'column'}} onClick={e=>e.stopPropagation()}>
         {/* Item header */}
         <div className="relative h-44 rounded-t-3xl overflow-hidden flex-shrink-0">
           <img src={item.photo} alt={item.names[lang]} className="w-full h-full object-cover"/>
@@ -1322,7 +1345,7 @@ function ItemOptionsModal({item,lang,t,onClose,onAdd}:{
                   return (
                     <button key={choice.id} onClick={()=>toggle(group.id,choice.id,group.type)}
                       className="flex items-center gap-3 p-3 rounded-xl transition-all text-left"
-                      style={{background:sel?'#F0FDF4':'#F9F7F2',border:`1.5px solid ${errors.has(group.id)?'#FCA5A5':sel?'#065F46':'#E5E1D8'}`}}>
+                      style={{background:sel?'#F0FDF4':'var(--c-input)',border:`1.5px solid ${errors.has(group.id)?'#FCA5A5':sel?'#065F46':'var(--c-border)'}`}}>
                       <div className={`flex-shrink-0 flex items-center justify-center transition-all ${group.type==='radio'?'w-5 h-5 rounded-full':'w-5 h-5 rounded-md'}`}
                         style={{border:`2px solid ${sel?'#065F46':'#D1D5DB'}`,background:sel?'#065F46':'transparent'}}>
                         {sel&&<div className={`bg-white ${group.type==='radio'?'w-2 h-2 rounded-full':'w-2.5 h-2.5 rounded-sm'} flex items-center justify-center`}>
@@ -1340,7 +1363,7 @@ function ItemOptionsModal({item,lang,t,onClose,onAdd}:{
         </div>
 
         {/* Add button */}
-        <div className="px-5 py-4 flex-shrink-0" style={{borderTop:'1px solid #E5E1D8'}}>
+        <div className="px-5 py-4 flex-shrink-0" style={{borderTop:'1px solid var(--c-border)'}}>
           <div className="flex items-center justify-between mb-3">
             <span className={`text-sm font-black ${fClass}`} style={{color:'#6B7280'}}>{t.totalLabel}</span>
             <span className="text-xl font-black" style={{color:'#065F46'}}>{item.price+extraPrice()} MAD</span>
@@ -1438,7 +1461,7 @@ function RestaurantPage({restaurant,lang,t,onBack,onAddToCart}:{
           {activeCat.items.map(item=>(
             <button key={item.id} onClick={()=>setOptionsItem(item)}
               className="text-left rounded-2xl overflow-hidden transition-all active:scale-95 hover:shadow-xl"
-              style={{background:'#FDFCF9',border:'1.5px solid #E5E1D8',boxShadow:'0 3px 12px rgba(0,0,0,0.07)'}}>
+              style={{background:'var(--c-bg)',border:'1.5px solid var(--c-border)',boxShadow:'0 3px 12px rgba(0,0,0,0.07)'}}>
               <div className="relative h-28 overflow-hidden">
                 <img src={item.photo} alt={item.names[lang]} className="w-full h-full object-cover transition-transform duration-500 hover:scale-110" loading="lazy"/>
                 <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(0,0,0,0.15) 0%,transparent 60%)'}}/>
@@ -1451,7 +1474,7 @@ function RestaurantPage({restaurant,lang,t,onBack,onAddToCart}:{
                 )}
               </div>
               <div className="p-2.5">
-                <p className={`text-[11px] font-black leading-tight mb-2 line-clamp-2 ${fClass}`} style={{color:'#1A2F23'}}>{item.names[lang]}</p>
+                <p className={`text-[11px] font-black leading-tight mb-2 line-clamp-2 ${fClass}`} style={{color:'var(--c-text)'}}>{item.names[lang]}</p>
                 <div className="flex items-center justify-between gap-1">
                   <span className="text-xs font-black" style={{color:'#065F46'}}>{item.price} MAD</span>
                   <div className="w-7 h-7 rounded-full flex items-center justify-center text-white font-black text-base" style={{background:'#4F46E5',flexShrink:0}}>+</div>
@@ -1667,8 +1690,8 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
   return (
     <div className="fixed inset-0 z-50 modal-overlay" style={{background:'rgba(10,30,20,0.55)',backdropFilter:'blur(6px)'}} onClick={onClose}>
       <div className="absolute right-0 top-0 bottom-0 w-full max-w-sm h-full overflow-y-auto"
-        style={{background:'#FDFCF9',boxShadow:'-8px 0 40px rgba(0,0,0,0.15)',animation:'slideInRight 0.28s cubic-bezier(0.34,1,0.64,1)'}} onClick={e=>e.stopPropagation()}>
-        <div className="sticky top-0 z-10 px-4 py-3 flex items-center gap-3" style={{background:'rgba(253,252,249,0.96)',backdropFilter:'blur(12px)',borderBottom:'1px solid #E5E1D8'}}>
+        style={{background:'var(--c-bg)',boxShadow:'-8px 0 40px rgba(0,0,0,0.15)',animation:'slideInRight 0.28s cubic-bezier(0.34,1,0.64,1)'}} onClick={e=>e.stopPropagation()}>
+        <div className="sticky top-0 z-10 px-4 py-3 flex items-center gap-3" style={{background:'var(--c-nav)',backdropFilter:'blur(12px)',borderBottom:'1px solid var(--c-border)'}}>
           {/* Left: avatar + profile title */}
           <div className="flex items-center gap-2.5 flex-1 min-w-0">
             <div className="relative flex-shrink-0" onClick={()=>avatarInputRef.current?.click()} style={{cursor:'pointer'}}>
@@ -1807,15 +1830,15 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
             </>)}
           </div>
           {/* ── Change password accordion ───────────────────────── */}
-          <div className="rounded-2xl mb-5 overflow-hidden" style={{border:'1px solid #E5E1D8'}}>
+          <div className="rounded-2xl mb-5 overflow-hidden" style={{border:'1px solid var(--c-border)'}}>
             <button onClick={()=>{setPwdOpen(o=>!o);setPwdErr('');}}
               className={`w-full flex items-center justify-between px-4 py-3.5 ${fClass}`}
-              style={{background:'#FAFAF8',border:'none',cursor:'pointer'}}>
-              <span className="font-black text-sm" style={{color:'#1A2F23'}}>{t.changePwd}</span>
+              style={{background:'var(--c-input)',border:'none',cursor:'pointer'}}>
+              <span className="font-black text-sm" style={{color:'var(--c-text)'}}>{t.changePwd}</span>
               <span style={{color:'#9CA3AF',fontSize:18,transform:pwdOpen?'rotate(180deg)':'none',transition:'transform 0.2s'}}>⌄</span>
             </button>
             {pwdOpen&&(
-              <div className="px-4 pb-4 pt-1" style={{background:'#FAFAF8',borderTop:'1px solid #E5E1D8'}}>
+              <div className="px-4 pb-4 pt-1" style={{background:'var(--c-input)',borderTop:'1px solid var(--c-border)'}}>
                 <Field label={t.currentPwd} value={currentPwd} onChange={setCurrentPwd} placeholder="••••••••" type="password" lang={lang}/>
                 <Field label={t.newPwd} value={newPwd} onChange={setNewPwd} placeholder="••••••••" type="password" lang={lang}/>
                 <Field label={t.confirmPwd} value={confirmPwd} onChange={setConfirmPwd} placeholder="••••••••" type="password" lang={lang}/>
@@ -2019,9 +2042,9 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
 
   return (
     <div className="fixed inset-0 z-50 flex items-end modal-overlay" style={{background:'rgba(10,30,20,0.6)',backdropFilter:'blur(4px)'}} onClick={step==='success'?undefined:onClose}>
-      <div className="w-full max-w-md mx-auto rounded-t-3xl modal-sheet" style={{background:'#FDFCF9',maxHeight:'92vh',display:'flex',flexDirection:'column'}} onClick={e=>e.stopPropagation()}>
+      <div className="w-full max-w-md mx-auto rounded-t-3xl modal-sheet" style={{background:'var(--c-bg)',maxHeight:'92vh',display:'flex',flexDirection:'column'}} onClick={e=>e.stopPropagation()}>
         {/* Header */}
-        <div className="px-5 py-4 flex items-center gap-3 flex-shrink-0" style={{borderBottom:'1px solid #E5E1D8'}}>
+        <div className="px-5 py-4 flex items-center gap-3 flex-shrink-0" style={{borderBottom:'1px solid var(--c-border)'}}>
           {step!=='cart'&&step!=='success'&&(
             <button onClick={()=>setStep(STEP_BACK[step]!)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{background:'#F3F4F6',color:'#065F46',fontSize:14,fontWeight:900}}>←</button>
           )}
@@ -2036,7 +2059,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
             {(['cart','form','payment'] as CheckoutStep[]).map((s,i)=>(
               <div key={s} className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full transition-all" style={{background:['cart','form','payment','card','success'].indexOf(step)>=i?'#065F46':'#E5E1D8',transform:step===s?'scale(1.4)':'scale(1)'}}/>
-                {i<2&&<div className="w-6 h-px" style={{background:'#E5E1D8'}}/>}
+                {i<2&&<div className="w-6 h-px" style={{background:'var(--c-border)'}}/>}
               </div>
             ))}
           </div>
@@ -2057,13 +2080,13 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                   <div className="flex items-center gap-3">
                     <img src={ci.item.photo} alt={ci.item.names[lang]} className="w-12 h-12 rounded-xl object-cover flex-shrink-0"/>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-xs font-black truncate ${fClass}`} style={{color:'#1A2F23'}}>{ci.item.names[lang]}</p>
+                      <p className={`text-xs font-black truncate ${fClass}`} style={{color:'var(--c-text)'}}>{ci.item.names[lang]}</p>
                       <p className="text-[10px]" style={{color:'#9CA3AF'}}>{ci.restaurantName}</p>
                       <p className="text-xs font-bold mt-0.5" style={{color:'#065F46'}}>{ci.totalPerUnit*ci.qty} MAD</p>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <button onClick={()=>onQty(ci.cartId,-1)} className="w-7 h-7 rounded-full flex items-center justify-center font-black text-sm" style={{background:'#F3F4F6',color:'#6B7280'}}>−</button>
-                      <span className="text-sm font-black w-4 text-center" style={{color:'#1A2F23'}}>{ci.qty}</span>
+                      <span className="text-sm font-black w-4 text-center" style={{color:'var(--c-text)'}}>{ci.qty}</span>
                       <button onClick={()=>onQty(ci.cartId,+1)} className="w-7 h-7 rounded-full flex items-center justify-center font-black text-sm text-white" style={{background:'#4F46E5'}}>+</button>
                     </div>
                   </div>
@@ -2079,7 +2102,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
               ))}
             </div>
             {cart.length>0&&(
-              <div className="px-5 py-4 flex-shrink-0" style={{borderTop:'1px solid #E5E1D8'}}>
+              <div className="px-5 py-4 flex-shrink-0" style={{borderTop:'1px solid var(--c-border)'}}>
                 <div className="flex justify-between items-center mb-4">
                   <span className={`font-black text-sm ${fClass}`} style={{color:'#6B7280'}}>{t.total}</span>
                   <span className="font-black text-xl" style={{color:'#065F46'}}>{total} MAD</span>
@@ -2178,7 +2201,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
               <Field label={t.phoneLabel} value={phone} onChange={v=>{setPhone(v);setErr('');}} placeholder={t.phonePh} type="tel" lang={lang} error={!!err&&!phone.trim()}/>
               {err&&<p className="text-xs font-bold -mt-2 mb-3" style={{color:'#DC2626'}}>{err}</p>}
             </div>
-            <div className="px-5 py-4 flex-shrink-0" style={{borderTop:'1px solid #E5E1D8'}}>
+            <div className="px-5 py-4 flex-shrink-0" style={{borderTop:'1px solid var(--c-border)'}}>
               <button onClick={()=>{
                 const needAddr=delivMode==='delivery';
                 if(!name.trim()||(needAddr&&!addr.trim())||!phone.trim()){setErr(t.fillAll);return;}
@@ -2196,10 +2219,10 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
         {step==='payment'&&(
           <>
             <div className="flex-1 overflow-y-auto px-5 py-4">
-              <div className="rounded-2xl p-3 mb-5" style={{background:'#F9F7F2',border:'1px solid #E5E1D8'}}>
+              <div className="rounded-2xl p-3 mb-5" style={{background:'var(--c-input)',border:'1px solid var(--c-border)'}}>
                 {cart.map(i=>(
                   <div key={i.cartId} className="flex justify-between text-xs py-0.5">
-                    <span className={`font-bold truncate mr-2 ${fClass}`} style={{color:'#1A2F23'}}>{i.item.names[lang]} ×{i.qty}</span>
+                    <span className={`font-bold truncate mr-2 ${fClass}`} style={{color:'var(--c-text)'}}>{i.item.names[lang]} ×{i.qty}</span>
                     <span className="font-black flex-shrink-0" style={{color:'#065F46'}}>{i.totalPerUnit*i.qty} MAD</span>
                   </div>
                 ))}
@@ -2231,7 +2254,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                     <span className="font-bold" style={{color:'#059669'}}>-{totalDiscount} MAD</span>
                   </div>
                 )}
-                <div className="flex justify-between text-sm mt-2 pt-2" style={{borderTop:'1px solid #E5E1D8'}}>
+                <div className="flex justify-between text-sm mt-2 pt-2" style={{borderTop:'1px solid var(--c-border)'}}>
                   <span className={`font-black ${fClass}`} style={{color:'#065F46'}}>{t.total}</span>
                   <span className="font-black" style={{color:'#065F46'}}>{total} MAD</span>
                 </div>
@@ -2275,7 +2298,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                     onKeyDown={e=>e.key==='Enter'&&applyPromo()}
                     placeholder={t.promoPh}
                     className={`flex-1 px-3 py-2 rounded-xl text-sm font-bold outline-none ${fClass}`}
-                    style={{background:'white',border:'1.5px solid #FDE68A',color:'#92400E',direction:isAR?'rtl':'ltr'}}
+                    style={{background:'var(--c-card)',border:'1.5px solid #FDE68A',color:'#92400E',direction:isAR?'rtl':'ltr'}}
                   />
                   <button onClick={applyPromo}
                     className="px-4 py-2 rounded-xl font-black text-xs text-white transition-all active:scale-95"
@@ -2332,18 +2355,18 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                   {/* Google Pay */}
                   <button onClick={()=>handleWalletPay('google')}
                     className="flex-1 flex items-center justify-center gap-1.5 py-3.5 rounded-2xl font-black text-sm active:scale-95 transition-all"
-                    style={{background:'white',border:'2px solid #E5E1D8',boxShadow:'0 4px 16px rgba(0,0,0,0.08)'}}>
+                    style={{background:'var(--c-card)',border:'2px solid #E5E1D8',boxShadow:'0 4px 16px rgba(0,0,0,0.08)'}}>
                     <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 10.2v3.6h5c-.2 1.1-.8 2-1.7 2.7l2.7 2.1C19.7 17 21 14.8 21 12c0-.6-.1-1.2-.2-1.8H12z" fill="#4285F4"/><path d="M5.3 14.3l-.6.5-2.3 1.8C4 19.3 7.7 21.5 12 21.5c3 0 5.5-1 7.3-2.7l-2.7-2.1c-1 .7-2.2 1-3.6 1-2.8 0-5.1-1.9-5.9-4.4H5.3z" fill="#34A853"/><path d="M2.4 7.4C1.8 8.6 1.5 9.8 1.5 12s.3 3.4 1 4.6l2.9-2.3C5.1 13.5 5 12.8 5 12s.1-1.5.4-2.3L2.4 7.4z" fill="#FBBC05"/><path d="M12 5.5c1.6 0 3 .5 4.2 1.5l2.5-2.5C16.8 2.9 14.6 2 12 2 7.7 2 4 4.2 2.4 7.4l2.9 2.3C6.2 7.1 8.9 5.5 12 5.5z" fill="#EA4335"/></svg>
                     <span style={{fontWeight:900,fontSize:13,letterSpacing:'-0.01em',color:'#3C4043'}}>Pay</span>
                   </button>
                 </div>
                 {/* Séparateur */}
                 <div className="flex items-center gap-3">
-                  <div className="flex-1 h-px" style={{background:'#E5E1D8'}}/>
+                  <div className="flex-1 h-px" style={{background:'var(--c-border)'}}/>
                   <span className={`text-[11px] font-bold ${fClass}`} style={{color:'#9CA3AF'}}>
                     {lang==='ar'?'أو':lang==='en'?'or':lang==='amz'?'ⵏⵖ':'ou'}
                   </span>
-                  <div className="flex-1 h-px" style={{background:'#E5E1D8'}}/>
+                  <div className="flex-1 h-px" style={{background:'var(--c-border)'}}/>
                 </div>
               </div>
 
@@ -2375,11 +2398,11 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                   {payMethod==='card'&&<div className="w-2 h-2 rounded-full bg-white"/>}
                 </div>
               </button>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-xl mt-2" style={{background:'#F9F7F2'}}>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl mt-2" style={{background:'var(--c-input)'}}>
                 <span>🔒</span><p className="text-[10px]" style={{color:'#9CA3AF'}}>{t.sslBadge}</p>
               </div>
             </div>
-            <div className="px-5 py-4 flex-shrink-0" style={{borderTop:'1px solid #E5E1D8'}}>
+            <div className="px-5 py-4 flex-shrink-0" style={{borderTop:'1px solid var(--c-border)'}}>
               <button
                 onClick={()=>{
                   if(!payMethod)return;
@@ -2440,7 +2463,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
               <Field label={t.cardNameLabel} value={cardName} onChange={v=>setCardName(v.toUpperCase())} placeholder={t.cardNamePh} lang={lang}/>
               {cardErr&&<p className="text-xs font-bold -mt-2 mb-3" style={{color:'#DC2626'}}>{cardErr}</p>}
             </div>
-            <div className="px-5 py-4 flex-shrink-0" style={{borderTop:'1px solid #E5E1D8'}}>
+            <div className="px-5 py-4 flex-shrink-0" style={{borderTop:'1px solid var(--c-border)'}}>
               <div className="flex items-center justify-center gap-2 mb-3">
                 <span>🔒</span><p className="text-[10px]" style={{color:'#9CA3AF'}}>{t.sslBadge} · PCI DSS</p>
               </div>
@@ -2563,7 +2586,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
   return (
     <div className="px-5">
       {/* Order status card */}
-      <div className="rounded-3xl p-4 mb-5" style={{background:'#FDFCF9',border:'1.5px solid #E5E1D8',boxShadow:'0 2px 12px rgba(0,0,0,0.06)'}}>
+      <div className="rounded-3xl p-4 mb-5" style={{background:'var(--c-bg)',border:'1.5px solid var(--c-border)',boxShadow:'0 2px 12px rgba(0,0,0,0.06)'}}>
         <div className="flex items-center justify-between mb-1">
           <p className={`text-[10px] font-bold uppercase tracking-wider ${fClass}`} style={{color:'#9CA3AF'}}>{t.orderStatus}</p>
           <span className="text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-1"
@@ -2575,14 +2598,14 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
         <p className={`font-black text-sm ${fClass}`} style={{color:'#065F46'}}>{displayRef}</p>
         <div className="flex items-center gap-2 mt-2">
           <span className="text-base">⏱️</span>
-          <p className="text-sm font-bold" style={{color:'#1A2F23'}}>{t.eta}: <span style={{color:'#065F46'}}>{t.etaTime}</span></p>
+          <p className="text-sm font-bold" style={{color:'var(--c-text)'}}>{t.eta}: <span style={{color:'#065F46'}}>{t.etaTime}</span></p>
         </div>
       </div>
 
       {/* Stages */}
-      <div className="rounded-3xl p-5 mb-5" style={{background:'#FDFCF9',border:'1.5px solid #E5E1D8',boxShadow:'0 2px 12px rgba(0,0,0,0.06)'}}>
+      <div className="rounded-3xl p-5 mb-5" style={{background:'var(--c-bg)',border:'1.5px solid var(--c-border)',boxShadow:'0 2px 12px rgba(0,0,0,0.06)'}}>
         <div className="relative mb-6">
-          <div className="absolute top-4 h-0.5" style={{left:isAR?'auto':'12%',right:isAR?'12%':'auto',width:'76%',background:'#E5E1D8'}}/>
+          <div className="absolute top-4 h-0.5" style={{left:isAR?'auto':'12%',right:isAR?'12%':'auto',width:'76%',background:'var(--c-border)'}}/>
           <div className="absolute top-4 h-0.5 transition-all duration-700" style={{left:isAR?'auto':'12%',right:isAR?'12%':'auto',width:`${(activeStage/3)*76}%`,background:'linear-gradient(to right,#065F46,#059669)'}}/>
           <div className={`flex justify-between relative ${isAR?'flex-row-reverse':''}`}>
             {t.stages.map((stage,i)=>(
@@ -2607,7 +2630,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
         <div className="flex gap-2 mt-3">
           {[0,1,2,3].map(i=>(
             <button key={i} onClick={()=>setActiveStage(i)} className="flex-1 py-1 rounded-lg text-[10px] font-bold transition-all"
-              style={{background:activeStage===i?'#065F46':'#F9F7F2',color:activeStage===i?'white':'#6B7280',border:'1px solid #E5E1D8'}}>{i+1}</button>
+              style={{background:activeStage===i?'#065F46':'var(--c-input)',color:activeStage===i?'white':'#6B7280',border:'1px solid var(--c-border)'}}>{i+1}</button>
           ))}
         </div>
       </div>
@@ -2635,7 +2658,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
             <MapPanner center={mapCenter}/>
           </MapContainer>
         </div>
-        <div className="px-4 py-3 flex items-center justify-between" style={{background:'#FDFCF9'}}>
+        <div className="px-4 py-3 flex items-center justify-between" style={{background:'var(--c-bg)'}}>
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm" style={{background:isLive?'#D1FAE5':'#F3F4F6'}}>🛵</div>
             <div>
@@ -2645,7 +2668,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-1 px-2 py-1 rounded-full" style={{background:isLive?'#F0FDF4':'#F9F7F2'}}>
+          <div className="flex items-center gap-1 px-2 py-1 rounded-full" style={{background:isLive?'#F0FDF4':'var(--c-input)'}}>
             <span className={`w-2 h-2 rounded-full ${isLive?'bg-emerald-500 animate-pulse':'bg-gray-300'}`}/>
             <span className="text-[10px] font-black" style={{color:isLive?'#065F46':'#9CA3AF'}}>{t.etaTime}</span>
           </div>
@@ -2673,7 +2696,7 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
   const arrow=(<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#065F46" strokeWidth="2.5" style={{transform:isAR?'scaleX(-1)':'',flexShrink:0}}><path d="M5 12h14M12 5l7 7-7 7"/></svg>);
   return (
     <div className="px-5">
-      <div className="rounded-3xl overflow-hidden mb-5 relative" style={{border:'1.5px solid #E5E1D8'}}>
+      <div className="rounded-3xl overflow-hidden mb-5 relative" style={{border:'1.5px solid var(--c-border)'}}>
         <img src="/logo.jpeg" className="w-full h-32 object-cover" alt="Bridge Safi"/>
         <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.85) 0%,transparent 55%)'}}/>
         <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -2703,7 +2726,7 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
         <div><p className={`font-black text-sm ${fClass}`} style={{color:'#B45309'}}>{t.hours}</p><p className="text-xs font-bold mt-0.5" style={{color:'#92400E'}}>{t.hoursVal}</p></div>
       </div>
       <GoldDivider/>
-      <div className="rounded-2xl p-4 text-center mb-4" style={{background:'#F9F7F2',border:'1px solid #E5E1D8'}}>
+      <div className="rounded-2xl p-4 text-center mb-4" style={{background:'var(--c-input)',border:'1px solid var(--c-border)'}}>
         <p className="text-xl mb-1">📍</p>
         <p className={`font-black text-sm ${fClass}`} style={{color:'#065F46'}}>{t.zone}</p>
         <p className={`text-xs mt-1 ${fClass}`} style={{color:'#9CA3AF'}}>{t.plateau}</p>
@@ -2727,7 +2750,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
   const initials=(profile.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   return(
     <div className={`fixed inset-0 flex flex-col z-40 ${isAR?'rtl':'ltr'}`}
-      style={{background:'#FDFCF9',overflowY:'auto'}}>
+      style={{background:'var(--c-bg)',overflowY:'auto'}}>
       {/* Background watermark */}
       <div className="fixed inset-0 opacity-[0.04] pointer-events-none" style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
 
@@ -2744,11 +2767,12 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
         </button>
       </div>
 
-      {/* Language button — RIGHT */}
-      <div className={`absolute top-5 z-50 ${isAR?'left-5':'right-5'}`}>
+      {/* Language + Dark toggle — RIGHT */}
+      <div className={`absolute top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
+        <DarkToggle size={38}/>
         <button onClick={cycleLang}
           className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 px-3 ${lang==='amz'?'font-tifinagh':''}`}
-          style={{background:'white',border:'2.5px solid #D9C5A0',color:'#065F46',boxShadow:'0 4px 20px rgba(6,95,70,0.15)',height:'38px',fontSize:'13px'}}>
+          style={{background:'var(--c-card)',border:'2.5px solid #D9C5A0',color:'#065F46',boxShadow:'0 4px 20px rgba(6,95,70,0.15)',height:'38px',fontSize:'13px'}}>
           {LANG_LABELS[lang]}
         </button>
       </div>
@@ -2978,7 +3002,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   const [activeTab,setActiveTab]=useState<0|1>(0);
   const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
   const pillStyle:React.CSSProperties={
-    background:'white',border:'2.5px solid #D9C5A0',color:'#065F46',
+    background:'var(--c-card)',border:'2.5px solid #D9C5A0',color:'#065F46',
     boxShadow:'0 4px 20px rgba(6,95,70,0.15)',height:'44px',minWidth:'44px',
   };
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
@@ -3081,14 +3105,14 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
 
 
   const inputStyle:React.CSSProperties={
-    width:'100%',borderRadius:12,border:'1.5px solid #E5E1D8',padding:'12px 14px',
-    fontSize:14,fontFamily:'system-ui,sans-serif',background:'#FDFCF9',color:'#1A2F23',
+    width:'100%',borderRadius:12,border:'1.5px solid var(--c-border)',padding:'12px 14px',
+    fontSize:14,fontFamily:'system-ui,sans-serif',background:'var(--c-bg)',color:'var(--c-text)',
     outline:'none',boxSizing:'border-box' as const,
   };
   const labelStyle:React.CSSProperties={fontSize:11,fontWeight:800,letterSpacing:'0.12em',color:'#78350F',textTransform:'uppercase',marginBottom:4,display:'block'};
 
   return(
-    <div className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{background:'#FDFCF9',color:'#1A2F23'}}>
+    <div className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{background:'var(--c-bg)',color:'var(--c-text)'}}>
       <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
 
       {/* ── Top-left: back ── */}
@@ -3121,6 +3145,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
           style={{...pillStyle,fontSize:'13px'}}>
           {LANG_LABELS[lang]}
         </button>
+        <DarkToggle/>
       </div>
 
       {/* ── Main Content ── */}
@@ -3137,7 +3162,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
         </div>
 
         {/* ── Tab bar ── */}
-        <div className="flex border-b sticky top-0 z-30" style={{background:'rgba(253,252,249,0.97)',backdropFilter:'blur(12px)',borderColor:'#E5E1D8'}}>
+        <div className="flex border-b sticky top-0 z-30" style={{background:'var(--c-nav)',backdropFilter:'blur(12px)',borderColor:'#E5E1D8'}}>
           {navItems.map((tab,i)=>(
             <button key={i} onClick={()=>setActiveTab(i as 0|1)}
               className={`flex-1 flex flex-col items-center gap-1 py-3 transition-all ${isAMZ?'font-tifinagh':''}`}
@@ -3249,7 +3274,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
             ):(
               <>
                 {/* Status card */}
-                <div style={{margin:'16px 20px 0',background:'white',borderRadius:16,padding:'14px 16px',boxShadow:'0 2px 16px rgba(0,0,0,0.08)',border:`2px solid ${statusColor}20`}}>
+                <div style={{margin:'16px 20px 0',background:'var(--c-card)',borderRadius:16,padding:'14px 16px',boxShadow:'0 2px 16px rgba(0,0,0,0.08)',border:`2px solid ${statusColor}20`}}>
                   <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:6}}>
                     <div style={{width:10,height:10,borderRadius:'50%',background:statusColor,flexShrink:0,animation:'pulse 1.5s infinite'}}/>
                     <p style={{fontWeight:900,color:statusColor,fontSize:13}}>
@@ -3257,7 +3282,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
                     </p>
                   </div>
                   <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                    <p style={{fontSize:11,color:'#9CA3AF'}}>Réf: <strong style={{color:'#1A2F23'}}>{bookingRef}</strong></p>
+                    <p style={{fontSize:11,color:'#9CA3AF'}}>Réf: <strong style={{color:'var(--c-text)'}}>{bookingRef}</strong></p>
                     {trackData?.driverName&&<p style={{fontSize:11,color:'#065F46',fontWeight:700}}>🚗 {trackData.driverName}</p>}
                     {trackData?.eta&&<p style={{fontSize:11,color:'#78350F',fontWeight:900}}>⏱ {trackData.eta} min</p>}
                   </div>
@@ -3309,7 +3334,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
 
       {/* ── Bottom nav ── */}
       <nav className="fixed bottom-0 inset-x-0 z-40"
-        style={{background:'rgba(253,252,249,0.97)',backdropFilter:'blur(20px)',borderTop:'1px solid #E5E1D8'}}>
+        style={{background:'var(--c-nav)',backdropFilter:'blur(20px)',borderTop:'1px solid var(--c-border)'}}>
         <div className="max-w-md mx-auto flex">
           {navItems.map((tab,i)=>(
             <button key={i} onClick={()=>setActiveTab(i as 0|1)}
@@ -3390,7 +3415,7 @@ function ProfileOnboardingScreen({lang,profile,saveProfile,onDone}:{
       {/* Sections */}
       <div className="relative z-10 flex-1 px-4 pb-8" style={{maxWidth:460,margin:'0 auto',width:'100%'}}>
         <div style={{
-          background:'#FDFCF9',border:'2px solid #E5E1D8',borderRadius:20,padding:16,marginBottom:14,
+          background:'var(--c-bg)',border:'2px solid #E5E1D8',borderRadius:20,padding:16,marginBottom:14,
           boxShadow:'0 6px 24px rgba(6,95,70,0.08)'
         }}>
           <Field label={t.onboardPhone} value={phone} onChange={setPhone}
@@ -3398,7 +3423,7 @@ function ProfileOnboardingScreen({lang,profile,saveProfile,onDone}:{
         </div>
 
         <div style={{
-          background:'#FDFCF9',border:'2px solid #E5E1D8',borderRadius:20,padding:16,marginBottom:14,
+          background:'var(--c-bg)',border:'2px solid #E5E1D8',borderRadius:20,padding:16,marginBottom:14,
           boxShadow:'0 6px 24px rgba(6,95,70,0.08)'
         }}>
           <AddressAutocomplete label={t.onboardAddr} value={address} onChange={setAddress}
@@ -3450,7 +3475,7 @@ function SplashScreen() {
   useEffect(()=>{const iv=setInterval(()=>setDots(d=>(d+1)%4),420);return()=>clearInterval(iv);},[]);
 
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center z-50" style={{background:'#FDFCF9'}}>
+    <div className="fixed inset-0 flex flex-col items-center justify-center z-50" style={{background:'var(--c-bg)'}}>
       {/* Subtle background pattern */}
       <div className="absolute inset-0 opacity-[0.035]"
         style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
@@ -3489,7 +3514,7 @@ function SplashScreen() {
         </div>
 
         {/* Progress bar */}
-        <div className="w-48 h-1.5 rounded-full overflow-hidden mb-2" style={{background:'#E5E1D8'}}>
+        <div className="w-48 h-1.5 rounded-full overflow-hidden mb-2" style={{background:'var(--c-border)'}}>
           <div className="h-full rounded-full transition-all duration-75"
             style={{width:`${progress}%`,background:'linear-gradient(to right,#065F46,#059669)'}}/>
         </div>
@@ -3544,7 +3569,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
   const pillStyle:React.CSSProperties={
-    background:'white',border:'2.5px solid #D9C5A0',color:'#065F46',
+    background:'var(--c-card)',border:'2.5px solid #D9C5A0',color:'#065F46',
     boxShadow:'0 4px 20px rgba(6,95,70,0.15)',height:'44px',minWidth:'44px',
   };
   const addItem=(id:string)=>setCart(c=>{const ex=c.find(x=>x.id===id);return ex?c.map(x=>x.id===id?{...x,qty:x.qty+1}:x):[...c,{id,qty:1}];});
@@ -3573,7 +3598,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   const pinkGlow='0 4px 16px rgba(219,39,119,0.35)';
 
   return(
-    <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`} style={{background:'#FFF5F7',color:'#1A2F23'}}>
+    <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`} style={{background:'#FFF5F7',color:'var(--c-text)'}}>
       <div className="fixed inset-0 pointer-events-none" style={{background:'radial-gradient(ellipse at 50% 0%,rgba(219,39,119,0.07) 0%,transparent 60%)'}}/>
 
       {/* Top nav */}
@@ -3601,6 +3626,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           style={{...pillStyle,fontSize:'13px'}}>
           {LANG_LABELS[lang]}
         </button>
+        <DarkToggle/>
       </div>
 
       {/* ── TAB CONTENT ────────────────────────────────────────── */}
@@ -3647,7 +3673,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
               </button>
               <button onClick={()=>setTab('track')}
                 className="rounded-2xl p-4 flex flex-col items-center gap-2 transition-all active:scale-95"
-                style={{background:'white',border:'1.5px solid #FBCFE8',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
+                style={{background:'var(--c-card)',border:'1.5px solid #FBCFE8',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
                 <span style={{fontSize:28}}>📦</span>
                 <span className="font-black text-[11px] tracking-wide" style={{color:'#9D174D'}}>{lang==='ar'?'تتبع طلبي':lang==='en'?'Track Order':'Suivi commande'}</span>
               </button>
@@ -3660,7 +3686,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
               <div className="flex gap-3 overflow-x-auto pb-2" style={{scrollbarWidth:'none'}}>
                 {FLEURS_CATALOG.slice(0,4).map(item=>(
                   <div key={item.id} className="flex-shrink-0 rounded-2xl overflow-hidden"
-                    style={{width:130,background:'white',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 14px rgba(219,39,119,0.07)'}}>
+                    style={{width:130,background:'var(--c-card)',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 14px rgba(219,39,119,0.07)'}}>
                     <div className="flex items-center justify-center" style={{height:72,background:'linear-gradient(135deg,#FDF2F8,#FCE7F3)'}}>
                       <span style={{fontSize:36}}>{item.emoji}</span>
                     </div>
@@ -3702,7 +3728,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
                 {visibleItems.map(item=>{
                   const inCart=cart.find(c=>c.id===item.id);
                   return(
-                    <div key={item.id} className="rounded-2xl overflow-hidden" style={{background:'white',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
+                    <div key={item.id} className="rounded-2xl overflow-hidden" style={{background:'var(--c-card)',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
                       <div className="flex items-center justify-center" style={{height:90,background:'linear-gradient(135deg,#FDF2F8,#FCE7F3)'}}>
                         <span style={{fontSize:44}}>{item.emoji}</span>
                       </div>
@@ -3740,7 +3766,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           <div className="pt-20 px-5">
             <p className="font-black text-base tracking-wide mb-5" style={{color:'#9D174D'}}>📦 {lang==='ar'?'تتبع الطلب':lang==='en'?'Order Tracking':'Suivi de commande'}</p>
             {!lastRef?(
-              <div className="rounded-3xl p-8 text-center" style={{background:'white',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 20px rgba(219,39,119,0.08)'}}>
+              <div className="rounded-3xl p-8 text-center" style={{background:'var(--c-card)',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 20px rgba(219,39,119,0.08)'}}>
                 <span style={{fontSize:48}}>🌸</span>
                 <p className="font-black text-sm mt-3 mb-1" style={{color:'#9D174D'}}>
                   {lang==='ar'?'لا توجد طلبات بعد':lang==='en'?'No orders yet':'Aucune commande en cours'}
@@ -3757,7 +3783,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
             ):(
               <div>
                 {/* Ref badge */}
-                <div className="rounded-2xl p-4 mb-4 flex items-center justify-between" style={{background:'white',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
+                <div className="rounded-2xl p-4 mb-4 flex items-center justify-between" style={{background:'var(--c-card)',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-widest" style={{color:'#9CA3AF'}}>
                       {lang==='ar'?'رقم الطلب':lang==='en'?'Order ref':'Référence'}
@@ -3769,7 +3795,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
                   </div>
                 </div>
                 {/* Stages */}
-                <div className="rounded-2xl p-4 mb-4" style={{background:'white',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
+                <div className="rounded-2xl p-4 mb-4" style={{background:'var(--c-card)',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
                   <p className="font-black text-[10px] uppercase tracking-widest mb-4" style={{color:'#9CA3AF'}}>
                     {lang==='ar'?'حالة الطلب':lang==='en'?'Order status':'Statut de la commande'}
                   </p>
@@ -3830,7 +3856,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
       )}
 
       {/* Bottom tab bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 flex" style={{background:'white',borderTop:'1.5px solid #FCE7F3',boxShadow:'0 -4px 20px rgba(219,39,119,0.08)'}}>
+      <div className="fixed bottom-0 left-0 right-0 z-50 flex" style={{background:'var(--c-card)',borderTop:'1.5px solid #FCE7F3',boxShadow:'0 -4px 20px rgba(219,39,119,0.08)'}}>
         {([
           {id:'home',emoji:'🏠',label:{fr:'Accueil',en:'Home',ar:'الرئيسية',amz:'ⴰⵡⵡⵓⵔ'}},
           {id:'shop',emoji:'🌹',label:{fr:'Boutique',en:'Shop',ar:'المتجر',amz:'ⴰⵙⵡⵉⵔ'}},
@@ -3891,7 +3917,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
   const t=T[lang];
   const pillStyle:React.CSSProperties={
-    background:'white',border:'2.5px solid #D9C5A0',color:'#065F46',
+    background:'var(--c-card)',border:'2.5px solid #D9C5A0',color:'#065F46',
     boxShadow:'0 4px 20px rgba(6,95,70,0.15)',height:'44px',minWidth:'44px',
   };
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
@@ -3939,11 +3965,11 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
 
   const inputCls=`w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all ${fClass}`;
   const inputStyle=(hasErr:boolean):React.CSSProperties=>({
-    background:'#F9F6F0',border:`1.5px solid ${hasErr?'#EF4444':'#E5E1D8'}`,color:'#1A2F23',
+    background:'#F9F6F0',border:`1.5px solid ${hasErr?'#EF4444':'#E5E1D8'}`,color:'var(--c-text)',
   });
 
   return(
-    <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`} style={{background:'#FDFCF9',color:'#1A2F23'}}>
+    <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`} style={{background:'var(--c-bg)',color:'var(--c-text)'}}>
       {/* Header */}
       <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
         <button onClick={onBack}
@@ -3972,6 +3998,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           }
           {profile.name&&<span className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{background:'#10B981'}}/>}
         </button>
+        <DarkToggle/>
       </div>
 
       {/* Content */}
@@ -4091,6 +4118,19 @@ export default function App() {
   const { isLoaded, isSignedIn } = useUser();
   const [, navigate] = useLocation();
 
+  // ── Dark mode ──────────────────────────────────────────────────────────────
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    try { return localStorage.getItem(DARK_KEY) === '1'; } catch { return false; }
+  });
+  const toggleDark = useCallback(() => setIsDark(d => {
+    const next = !d;
+    try { localStorage.setItem(DARK_KEY, next ? '1' : '0'); } catch {}
+    return next;
+  }), []);
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDark);
+  }, [isDark]);
+
   const [lang,setLang]         = useState<Lang>(saved?.lang??'fr');
   const [page,setPage]         = useState<Page>(saved?.page??'home');
   // splashDone becomes true after 3s; we also wait for Clerk to load
@@ -4161,6 +4201,10 @@ export default function App() {
 
   const TABS:Page[]=['home','tracking','contact'];
 
+  // ── Stable dark context value (must be before any conditional return) ──
+  const dv = useMemo(() => ({ dark: isDark, toggle: toggleDark }), [isDark, toggleDark]);
+  const handleOrderSuccess=(ref:string)=>{setLastOrderRef(ref);setService('none');setPage('tracking');};
+
   // Show splash while timer running OR Clerk still loading
   const showSplash = !splashDone || !isLoaded;
   if(showSplash) return <SplashScreen/>;
@@ -4170,28 +4214,30 @@ export default function App() {
 
   // Profile onboarding after first sign-in
   if(!profile.onboardingComplete) return (
-    <ProfileOnboardingScreen
-      lang={lang}
-      profile={profile}
-      saveProfile={saveProfile}
-      onDone={()=>saveProfile({...profile,onboardingComplete:true})}
-    />
+    <DarkModeCtx.Provider value={dv}>
+      <ProfileOnboardingScreen
+        lang={lang}
+        profile={profile}
+        saveProfile={saveProfile}
+        onDone={()=>saveProfile({...profile,onboardingComplete:true})}
+      />
+    </DarkModeCtx.Provider>
   );
 
-  if(service==='none') return <ServiceSelectPage onSelect={s=>setService(s)} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
-  if(service==='taxi') return <TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/>;
-  const handleOrderSuccess=(ref:string)=>{setLastOrderRef(ref);setService('none');setPage('tracking');};
-  if(service==='tabac') return <TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/>;
-  if(service==='fleurs') return <FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/>;
+  if(service==='none') return <DarkModeCtx.Provider value={dv}><ServiceSelectPage onSelect={s=>setService(s)} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
+  if(service==='taxi') return <DarkModeCtx.Provider value={dv}><TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
+  if(service==='tabac') return <DarkModeCtx.Provider value={dv}><TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
+  if(service==='fleurs') return <DarkModeCtx.Provider value={dv}><FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={
-    background:'white',border:'2.5px solid #D9C5A0',color:'#065F46',
+    background:'var(--c-card)',border:'2.5px solid #D9C5A0',color:'#065F46',
     boxShadow:'0 4px 20px rgba(6,95,70,0.15)',height:'44px',minWidth:'44px',
   };
 
   return (
-    <div className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{color:'#1A2F23'}}>
+  <DarkModeCtx.Provider value={dv}>
+    <div className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{color:'var(--c-text)'}}>
 
       {/* ── Top-left: Services back + Driver ── */}
       <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'right-5':'left-5'}`}>
@@ -4228,12 +4274,13 @@ export default function App() {
           style={{...pillStyle,fontSize:'13px'}}>
           {LANG_LABELS[lang]}
         </button>
+        <DarkToggle/>
       </div>
 
 
       {/* ── Header ── */}
       <header className="relative pt-14 pb-4 flex flex-col items-center"
-        style={{borderBottom:'1px solid #E5E1D8',background:'rgba(253,252,249,0.93)',backdropFilter:'blur(14px)'}}>
+        style={{borderBottom:'1px solid var(--c-border)',background:'var(--c-nav-soft)',backdropFilter:'blur(14px)'}}>
         <img src="/logo.jpeg" alt="Bridge" className="h-14 w-14 rounded-full object-cover"
           style={{border:'2.5px solid #D9C5A0',boxShadow:'0 4px 16px rgba(6,95,70,0.15)'}}/>
         <h1 className="mt-2 text-[11px] font-black tracking-[0.45em] uppercase" style={{color:'#065F46'}}>
@@ -4254,7 +4301,7 @@ export default function App() {
 
       {/* ── Bottom nav ── */}
       <nav className="fixed bottom-0 inset-x-0 z-40"
-        style={{background:'rgba(253,252,249,0.97)',backdropFilter:'blur(20px)',borderTop:'1px solid #E5E1D8'}}>
+        style={{background:'var(--c-nav)',backdropFilter:'blur(20px)',borderTop:'1px solid var(--c-border)'}}>
         <div className="max-w-md mx-auto flex">
           {([
             {id:'home' as Page,label:t.navHome,icon:'🏠'},
@@ -4291,7 +4338,7 @@ export default function App() {
 
       {showDriver&&(
         <div className="fixed inset-0 z-50 flex items-end" style={{background:'rgba(10,30,20,0.7)',backdropFilter:'blur(6px)'}} onClick={()=>setShowDriver(false)}>
-          <div className="w-full max-w-md mx-auto rounded-t-3xl p-6" style={{background:'#FDFCF9',boxShadow:'0 -20px 60px rgba(0,0,0,0.3)'}} onClick={e=>e.stopPropagation()}>
+          <div className="w-full max-w-md mx-auto rounded-t-3xl p-6" style={{background:'var(--c-bg)',boxShadow:'0 -20px 60px rgba(0,0,0,0.3)'}} onClick={e=>e.stopPropagation()}>
             <div className="flex items-center gap-3 mb-5">
               <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl" style={{background:'linear-gradient(135deg,#065F46,#047857)'}}>🛵</div>
               <div>
@@ -4314,5 +4361,6 @@ export default function App() {
         </div>
       )}
     </div>
+  </DarkModeCtx.Provider>
   );
 }

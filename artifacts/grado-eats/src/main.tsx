@@ -868,6 +868,12 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
   const ref = params?.ref || '';
   const isTaxi = ref.startsWith('TC-');
 
+  // Apply saved dark mode preference
+  useEffect(() => {
+    const dark = localStorage.getItem('bridge_dark') === '1';
+    document.documentElement.classList.toggle('dark', dark);
+  }, []);
+
   // ── Delivery mode state ──
   const [status, setStatus] = useState<'asking'|'active'|'error'|'denied'>('asking');
   const [coords, setCoords] = useState<{lat:number;lng:number}|null>(null);
