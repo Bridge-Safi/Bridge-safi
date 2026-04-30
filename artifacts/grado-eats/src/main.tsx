@@ -739,15 +739,15 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
         {
           icon: '⏱️', title: 'Durée de jeu',
           points: [
-            'Jouez 3 heures par jour pendant 2 jours consécutifs',
-            'Durée totale minimum : 6 heures sur 2 jours',
-            '🎁 +1h de jeu = livraison GRATUITE (7h en tout)',
+            'Jouez 3 à 4 heures par jour pendant 5 jours consécutifs',
+            'Durée totale minimum : 15 heures sur 5 jours',
+            '🎁 Plus vous jouez, plus vous gagnez de 💎 !',
           ]
         },
         {
           icon: '💎', title: 'Diamants à récolter',
           points: [
-            'Objectif : récolter 6 000 💎 en 2 jours',
+            'Objectif : récolter 15 000 💎 en 5 jours',
             'Rythme : 1 000 💎 par heure de jeu',
             'Chaque 1 000 💎 vaut 5 DH',
           ]
@@ -757,7 +757,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           points: [
             'Si vous atteignez votre objectif → tout est offert ! 🎉',
             'S\'il manque 1 000 💎 → vous payez 5 DH',
-            'S\'il manque 2 000 💎 → vous payez 10 DH',
+            'S\'il manque 3 000 💎 → vous payez 15 DH',
             'Calcul : diamants manquants ÷ 1 000 × 5 DH',
           ]
         },
@@ -771,7 +771,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           ]
         },
       ],
-      example: '💡 Exemple : vous terminez avec 4 000 💎 au lieu de 6 000 → il manque 2 000 💎 → vous payez 10 DH seulement.',
+      example: '💡 Exemple : vous terminez avec 12 000 💎 au lieu de 15 000 → il manque 3 000 💎 → vous payez 15 DH seulement.',
       close: 'J\'ai compris ! 🦈',
     },
     en: {
@@ -781,15 +781,15 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
         {
           icon: '⏱️', title: 'Playing time',
           points: [
-            'Play 3 hours per day for 2 consecutive days',
-            'Minimum total: 6 hours over 2 days',
-            '🎁 +1 extra hour = FREE delivery (7h total)',
+            'Play 3 to 4 hours per day for 5 consecutive days',
+            'Minimum total: 15 hours over 5 days',
+            '🎁 The more you play, the more 💎 you earn!',
           ]
         },
         {
           icon: '💎', title: 'Diamonds to collect',
           points: [
-            'Goal: collect 6,000 💎 in 2 days',
+            'Goal: collect 15,000 💎 in 5 days',
             'Pace: 1,000 💎 per hour of play',
             'Every 1,000 💎 = 5 MAD value',
           ]
@@ -799,7 +799,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           points: [
             'Reach the goal → everything is free! 🎉',
             'Missing 1,000 💎 → you pay 5 MAD',
-            'Missing 2,000 💎 → you pay 10 MAD',
+            'Missing 3,000 💎 → you pay 15 MAD',
             'Formula: missing diamonds ÷ 1,000 × 5 MAD',
           ]
         },
@@ -813,7 +813,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           ]
         },
       ],
-      example: '💡 Example: you finish with 4,000 💎 instead of 6,000 → missing 2,000 💎 → you pay only 10 MAD.',
+      example: '💡 Example: you finish with 12,000 💎 instead of 15,000 → missing 3,000 💎 → you pay only 15 MAD.',
       close: 'Got it! 🦈',
     },
     ar: {
@@ -823,15 +823,15 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
         {
           icon: '⏱️', title: 'وقت اللعب',
           points: [
-            'العب 3 ساعات يومياً لمدة يومين متتاليين',
-            'الحد الأدنى : 6 ساعات على مدى يومين',
-            '🎁 ساعة إضافية = توصيل مجاني (7 ساعات مجموعة)',
+            'العب من 3 إلى 4 ساعات يومياً لمدة 5 أيام متتالية',
+            'الحد الأدنى : 15 ساعة على مدى 5 أيام',
+            '🎁 كلما لعبت أكثر، كسبت ماسات أكثر!',
           ]
         },
         {
           icon: '💎', title: 'الماسات المطلوبة',
           points: [
-            'الهدف : جمع 6 000 💎 خلال يومين',
+            'الهدف : جمع 15 000 💎 خلال 5 أيام',
             'الوتيرة : 1 000 💎 في كل ساعة لعب',
             'كل 1 000 💎 يساوي 5 درهم',
           ]
@@ -841,7 +841,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           points: [
             'حققت الهدف → كل شيء مجاني! 🎉',
             'ناقص 1 000 💎 → تدفع 5 دراهم',
-            'ناقص 2 000 💎 → تدفع 10 دراهم',
+            'ناقص 3 000 💎 → تدفع 15 درهماً',
             'الحساب : الماسات الناقصة ÷ 1 000 × 5 درهم',
           ]
         },
@@ -855,7 +855,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           ]
         },
       ],
-      example: '💡 مثال : أنهيت اللعبة بـ 4 000 💎 بدلاً من 6 000 → ناقص 2 000 💎 → تدفع 10 دراهم فقط.',
+      example: '💡 مثال : أنهيت اللعبة بـ 12 000 💎 بدلاً من 15 000 → ناقص 3 000 💎 → تدفع 15 درهماً فقط.',
       close: 'فهمت! 🦈',
     },
     amz: {
@@ -865,15 +865,15 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
         {
           icon: '⏱️', title: 'ⴰⵣⵎⵣ ⵏ ⵓⵎⴽⵙⴰⵡ',
           points: [
-            '3 ⵜⵉⵙⵙⵓⵜⵉⵏ ⵙ ⵡⴰⵙⵙ, 2 ⵡⴰⵙⵙⴰⵜⵏ',
-            'ⴰⵣⵎⵣ ⴰⵎⵏⵣⵡⴰⵔⵓ : 6 ⵜⵉⵙⵙⵓⵜⵉⵏ',
-            '🎁 +1 ⵜⵉⵙⵙⵓⵜ = ⴰⵣⵏⵏⵣ ⴱⵍⴰ ⴽⵔⴰ ⵏ ⵓⵣⵔⴼ',
+            '3 ⴰⵔ 4 ⵜⵉⵙⵙⵓⵜⵉⵏ ⵙ ⵡⴰⵙⵙ, 5 ⵡⴰⵙⵙⴰⵜⵏ',
+            'ⴰⵣⵎⵣ ⴰⵎⵏⵣⵡⴰⵔⵓ : 15 ⵜⵉⵙⵙⵓⵜⵉⵏ',
+            '🎁 ⴽⵓⵍⵍⵓ ⵉⵍⵎⵎⴰⵏ → ⵉⵍⵎⵎⴰⵏ ⵉⵏⵙ 💎!',
           ]
         },
         {
           icon: '💎', title: 'ⵉⴷⵢⴰⵎⴰⵏ ⵉⵍⴰⵎⵎⴰⵏ',
           points: [
-            'ⴰⵎⵓⵟⵟⵓ : 6 000 💎 ⵙ 2 ⵡⴰⵙⵙⴰⵜⵏ',
+            'ⴰⵎⵓⵟⵟⵓ : 15 000 💎 ⵙ 5 ⵡⴰⵙⵙⴰⵜⵏ',
             '1 000 💎 ⵙ ⵜⵉⵙⵙⵓⵜ ⵢⴰⵜⵜ',
             '1 000 💎 = 5 ⴷⵔⵀⵎ',
           ]
@@ -883,7 +883,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           points: [
             'ⵓⵚⴽⵉⴷ ⴰⵎⵓⵟⵟⵓ → ⴽⵓⵍⵍⵓ ⵢⵉⵍⵉ ⵖⵔⴰⵜⴽ! 🎉',
             'ⵢⵍⵍⴰ 1 000 💎 → 5 ⴷⵔⵀⵎ',
-            'ⵢⵍⵍⴰ 2 000 💎 → 10 ⴷⵔⵀⵎ',
+            'ⵢⵍⵍⴰ 3 000 💎 → 15 ⴷⵔⵀⵎ',
           ]
         },
         {
@@ -895,7 +895,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           ]
         },
       ],
-      example: '💡 4 000 💎 ⴷⴳ 6 000 → ⵢⵍⵍⴰ 2 000 → 10 ⴷⵔⵀⵎ.',
+      example: '💡 12 000 💎 ⴷⴳ 15 000 → ⵢⵍⵍⴰ 3 000 → 15 ⴷⵔⵀⵎ.',
       close: 'ⵙⵙⵉⵏⵖ! 🦈',
     },
   };
