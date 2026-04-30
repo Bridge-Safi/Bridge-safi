@@ -32,3 +32,19 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - `pnpm --filter @workspace/api-server run dev` — run API server locally
 
 See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
+
+## Payment System (Bridge Safi)
+
+All 4 services support the same payment options:
+- **Apple Pay** — native wallet (via PaymentRequest API; falls back gracefully)
+- **Google Pay** — native wallet (same API)
+- **QR Code** — bank QR code (`BRIDGE_QR_PAY_URL` constant in App.tsx, line ~198) — shows QRPayModal with a generated QR image. Update the URL to the merchant's bank payment link.
+- **Cash** — espèces à la livraison (all services except Fleurs/Eats collect mode)
+- **Card** — Visa/Mastercard CMI form (Bridge Eats checkout only)
+
+Key shared components in `App.tsx`:
+- `QRPayModal` — bottom-sheet modal showing the QR + instructions + "J'ai payé" confirm
+- `SharedPaymentOptions` — reusable payment method selector (Apple/Google Pay buttons + QR/Cash/Card toggles)
+- `PayMethodType` — shared type `'cash'|'card'|'qr'|'apple'|'google'|null`
+
+To update the bank QR: change `BRIDGE_QR_PAY_URL` near line 198 in `artifacts/grado-eats/src/App.tsx`.

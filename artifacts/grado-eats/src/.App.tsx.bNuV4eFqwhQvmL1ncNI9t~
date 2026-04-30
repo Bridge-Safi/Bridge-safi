@@ -1891,7 +1891,7 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
 function QRPayModal({lang,amount,onConfirm,onClose}:{lang:Lang;amount?:number;onConfirm:()=>void;onClose:()=>void;}){
   const isAR=lang==='ar';
   const fClass=lang==='amz'?'font-tifinagh':'';
-  const t=T[lang];
+  const t=TRANSLATIONS[lang];
   const qrSrc=`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(BRIDGE_QR_PAY_URL)}&color=065F46&bgcolor=FDFCF9&margin=12&qzone=2`;
   return(
     <div className="fixed inset-0 z-[200] flex items-end justify-center" style={{background:'rgba(0,0,0,0.65)',backdropFilter:'blur(4px)'}}>
@@ -1962,7 +1962,7 @@ function SharedPaymentOptions({lang,amount,selected,onSelect,showCash=true,showC
   lang:Lang; amount?:number; selected:PayMethodType; onSelect:(m:PayMethodType)=>void;
   showCash?:boolean; showCard?:boolean; onWalletPay:(type:'apple'|'google')=>void;
 }){
-  const t=T[lang]; const isAR=lang==='ar'; const fClass=lang==='amz'?'font-tifinagh':'';
+  const t=TRANSLATIONS[lang]; const isAR=lang==='ar'; const fClass=lang==='amz'?'font-tifinagh':'';
   return(
     <div style={{direction:isAR?'rtl':'ltr'}}>
       {/* Apple Pay + Google Pay */}
@@ -4262,26 +4262,9 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           </div>
         )}
 
-        {/* ── Mode de paiement ── */}
-        {!sent&&(
-          <div className="rounded-2xl p-4" style={{background:'var(--c-card)',border:'1.5px solid var(--c-border)'}}>
-            <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#065F46'}}>
-              💳 {lang==='ar'?'طريقة الدفع':lang==='en'?'Payment method':lang==='amz'?'ⴰⵣⵔⴼ':'Mode de paiement'}
-            </p>
-            <SharedPaymentOptions
-              lang={lang} selected={tabacPayMethod}
-              onSelect={setTabacPayMethod} showCash showCard={false}
-              onWalletPay={handleTabacWalletPay}
-            />
-          </div>
-        )}
-
         {/* Send button */}
         {!sent&&(
-          <button onClick={()=>{
-              if(tabacPayMethod==='qr'){handleSend().then(()=>setShowTabacQR(true));}
-              else handleSend();
-            }} disabled={sending}
+          <button onClick={handleSend} disabled={sending}
             className={`w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 active:scale-95 transition-all ${fClass}`}
             style={{background:sending?'#9CA3AF':'#065F46',boxShadow:sending?'none':'0 6px 20px rgba(6,95,70,0.3)',cursor:sending?'not-allowed':'pointer'}}>
             {sending?(
@@ -4291,7 +4274,6 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
             )}
           </button>
         )}
-        {showTabacQR&&<QRPayModal lang={lang} onClose={()=>setShowTabacQR(false)} onConfirm={()=>setShowTabacQR(false)}/>}
       </div>
 
       <WAButton/>
