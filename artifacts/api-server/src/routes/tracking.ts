@@ -10,6 +10,15 @@ interface TrackPos {
   speed?: number;
   eta?: number;
   updatedAt: number;
+  // Taxi-specific
+  status?: 'waiting' | 'accepted' | 'arrived';
+  clientLat?: number;
+  clientLng?: number;
+  clientAddress?: string;
+  destination?: string;
+  driverName?: string;
+  customerName?: string;
+  customerPhone?: string;
 }
 
 // In-memory store: orderRef → position  (auto-expires after 3h)
@@ -24,20 +33,53 @@ function cleanup() {
 }
 setInterval(cleanup, 10 * 60 * 1000);
 
-// Driver → push position
-router.put("/tracking/:ref", (req, res) => {
+// Client → create taxi booking (initial, status=waiting)
+router.post("/tracking/:ref", (req, res) => {
   const { ref } = req.params;
-  const { lat, lng, heading, speed, eta } = req.body;
-  if (typeof lat !== "number" || typeof lng !== "number") {
-    res.status(400).json({ error: "lat and lng required" });
-    return;
-  }
-  positions.set(ref, { lat, lng, heading, speed, eta, updatedAt: Date.now() });
-  req.log.info({ ref, lat, lng }, "tracking position updated");
+  const { clientLat, clientLng, clientAddress, destination, customerName, customerPhone } = req.body;
+  positions.set(ref, {
+    lat: clientLat ?? 32.2994,
+    lng: clientLng ?? -9.2372,
+    updatedAt: Date.now(),
+    status: 'waiting',
+    clientLat: clientLat ?? undefined,
+    clientLng: clientLng ?? undefined,
+    clientAddress: clientAddress ?? undefined,
+    destination: destination ?? undefined,
+    customerName: customerName ?? undefined,
+    customerPhone: customerPhone ?? undefined,
+  });
+  req.log.info({ ref }, "taxi booking created");
   res.json({ ok: true });
 });
 
-// Client → get position
+// Driver → push position / update status
+router.put("/tracking/:ref", (req, res) => {
+  const { ref } = req.params;
+  const { lat, lng, heading, speed, eta, status, driverName } = req.body;
+  const existing = positions.get(ref);
+  if (lat !== undefined && lng !== undefined &&
+      (typeof lat !== "number" || typeof lng !== "number")) {
+    res.status(400).json({ error: "lat and lng must be numbers" });
+    return;
+  }
+  const updated: TrackPos = {
+    ...(existing ?? { lat: lat ?? 0, lng: lng ?? 0, updatedAt: Date.now() }),
+    ...(lat !== undefined ? { lat } : {}),
+    ...(lng !== undefined ? { lng } : {}),
+    ...(heading !== undefined ? { heading } : {}),
+    ...(speed !== undefined ? { speed } : {}),
+    ...(eta !== undefined ? { eta } : {}),
+    ...(status ? { status } : {}),
+    ...(driverName ? { driverName } : {}),
+    updatedAt: Date.now(),
+  };
+  positions.set(ref, updated);
+  req.log.info({ ref, lat, lng, status }, "tracking position updated");
+  res.json({ ok: true });
+});
+
+// Client → get position + status
 router.get("/tracking/:ref", (req, res) => {
   const { ref } = req.params;
   const pos = positions.get(ref);

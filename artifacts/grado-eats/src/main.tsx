@@ -862,21 +862,87 @@ function GamePage() {
 }
 
 // ─── DRIVER GPS TRACKER PAGE ─────────────────────────────────────────────────
-// The restaurant sends this URL to the driver via WhatsApp.
-// The driver's browser streams GPS to /api/tracking/:ref every 3 seconds.
+// Supports both delivery (ref starts with digit) and taxi (ref starts with TC-)
 
 function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
   const ref = params?.ref || '';
+  const isTaxi = ref.startsWith('TC-');
+
+  // ── Delivery mode state ──
   const [status, setStatus] = useState<'asking'|'active'|'error'|'denied'>('asking');
   const [coords, setCoords] = useState<{lat:number;lng:number}|null>(null);
   const [lastSent, setLastSent] = useState<number|null>(null);
   const watchId = useRef<number|null>(null);
 
+  // ── Taxi mode state ──
+  const [taxiState, setTaxiState] = useState<'loading'|'pending'|'accepted'|'arrived'>('loading');
+  const [bookingInfo, setBookingInfo] = useState<{customerName?:string;customerPhone?:string;clientAddress?:string;destination?:string;clientLat?:number;clientLng?:number}|null>(null);
+  const [taxiCoords, setTaxiCoords] = useState<{lat:number;lng:number}|null>(null);
+  const [taxiLastSent, setTaxiLastSent] = useState<number|null>(null);
+  const taxiWatchId = useRef<number|null>(null);
+
+  // ── Load taxi booking info ──
+  useEffect(() => {
+    if (!isTaxi) return;
+    fetch(`/api/tracking/${ref}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d?.found) {
+          setBookingInfo({ customerName: d.customerName, customerPhone: d.customerPhone, clientAddress: d.clientAddress, destination: d.destination, clientLat: d.clientLat, clientLng: d.clientLng });
+          if (d.status === 'accepted') setTaxiState('accepted');
+          else if (d.status === 'arrived') setTaxiState('arrived');
+          else setTaxiState('pending');
+        } else { setTaxiState('pending'); }
+      })
+      .catch(() => setTaxiState('pending'));
+  }, [ref, isTaxi]);
+
+  const pushTaxiPosition = async (lat: number, lng: number) => {
+    try {
+      await fetch(`/api/tracking/${ref}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lat, lng }),
+      });
+      setTaxiLastSent(Date.now());
+    } catch (_) {}
+  };
+
+  const startTaxiGPS = () => {
+    if (!navigator.geolocation) return;
+    taxiWatchId.current = navigator.geolocation.watchPosition(
+      pos => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        setTaxiCoords({ lat, lng });
+        pushTaxiPosition(lat, lng);
+      },
+      () => {},
+      { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 },
+    );
+  };
+
+  const handleAccept = async () => {
+    await fetch(`/api/tracking/${ref}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'accepted' }),
+    }).catch(() => {});
+    setTaxiState('accepted');
+    startTaxiGPS();
+  };
+
+  const handleArrived = async () => {
+    await fetch(`/api/tracking/${ref}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'arrived' }),
+    }).catch(() => {});
+    if (taxiWatchId.current !== null) navigator.geolocation.clearWatch(taxiWatchId.current);
+    setTaxiState('arrived');
+  };
+
+  // ── Delivery mode ──
   const pushPosition = async (lat: number, lng: number) => {
     try {
       await fetch(`/api/tracking/${ref}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ lat, lng }),
       });
       setLastSent(Date.now());
@@ -884,6 +950,7 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
   };
 
   useEffect(() => {
+    if (isTaxi) return;
     if (!ref) { setStatus('error'); return; }
     if (!navigator.geolocation) { setStatus('error'); return; }
     watchId.current = navigator.geolocation.watchPosition(
@@ -900,10 +967,119 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
       if (watchId.current !== null) navigator.geolocation.clearWatch(watchId.current);
       if (ref) fetch(`/api/tracking/${ref}`, { method: 'DELETE' }).catch(() => {});
     };
-  }, [ref]);
+  }, [ref, isTaxi]);
 
   const secsAgo = lastSent ? Math.round((Date.now() - lastSent) / 1000) : null;
+  const taxiSecsAgo = taxiLastSent ? Math.round((Date.now() - taxiLastSent) / 1000) : null;
 
+  // ── TAXI MODE UI ──
+  if (isTaxi) {
+    return (
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg,#78350F 0%,#1A2F23 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'system-ui, sans-serif' }}>
+        <div style={{ width: '100%', maxWidth: '360px', background: '#fff', borderRadius: '24px', padding: '28px 24px', boxShadow: '0 8px 40px rgba(0,0,0,0.3)', textAlign: 'center' }}>
+          <div style={{ fontSize: '56px', marginBottom: '8px' }}>🚖</div>
+          <h1 style={{ fontSize: '18px', fontWeight: '900', color: '#78350F', margin: '0 0 2px' }}>Bridge Taxi — Chauffeur</h1>
+          <p style={{ fontSize: '11px', color: '#9CA3AF', margin: '0 0 20px' }}>Course #{ref}</p>
+
+          {taxiState === 'loading' && (
+            <div style={{ padding: '20px', background: '#FEF3C7', borderRadius: '12px' }}>
+              <p style={{ fontSize: '13px', color: '#B45309', fontWeight: '700' }}>⏳ Chargement de la course…</p>
+            </div>
+          )}
+
+          {taxiState === 'pending' && bookingInfo && (
+            <div>
+              {/* Booking info card */}
+              <div style={{ background: '#FEF3C7', borderRadius: '14px', padding: '14px', marginBottom: '16px', textAlign: 'left' }}>
+                <p style={{ fontSize: '10px', fontWeight: '900', color: '#92400E', letterSpacing: '0.1em', marginBottom: '10px' }}>DÉTAILS DE LA COURSE</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                    <span style={{ fontSize: '14px' }}>👤</span>
+                    <div>
+                      <p style={{ fontSize: '13px', fontWeight: '800', color: '#1A2F23', margin: 0 }}>{bookingInfo.customerName || 'Client'}</p>
+                      {bookingInfo.customerPhone && <a href={`tel:${bookingInfo.customerPhone}`} style={{ fontSize: '12px', color: '#78350F', fontWeight: '700', textDecoration: 'none' }}>{bookingInfo.customerPhone}</a>}
+                    </div>
+                  </div>
+                  {bookingInfo.clientAddress && (
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                      <span style={{ fontSize: '14px' }}>📍</span>
+                      <div>
+                        <p style={{ fontSize: '10px', color: '#9CA3AF', margin: '0 0 2px', fontWeight: '700' }}>DÉPART</p>
+                        <p style={{ fontSize: '12px', color: '#1A2F23', margin: 0 }}>{bookingInfo.clientAddress}</p>
+                        {bookingInfo.clientLat && bookingInfo.clientLng && (
+                          <a href={`https://maps.google.com/?q=${bookingInfo.clientLat},${bookingInfo.clientLng}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#3B82F6', fontWeight: '700' }}>Ouvrir dans Maps →</a>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {bookingInfo.destination && (
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                      <span style={{ fontSize: '14px' }}>🏁</span>
+                      <div>
+                        <p style={{ fontSize: '10px', color: '#9CA3AF', margin: '0 0 2px', fontWeight: '700' }}>DESTINATION</p>
+                        <p style={{ fontSize: '12px', color: '#1A2F23', margin: 0 }}>{bookingInfo.destination}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <button onClick={handleAccept} style={{ width: '100%', padding: '14px', background: 'linear-gradient(135deg,#065F46,#10B981)', color: '#fff', border: 'none', borderRadius: '14px', fontSize: '16px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 4px 16px rgba(16,185,129,0.4)' }}>
+                ✅ Accepter la course
+              </button>
+            </div>
+          )}
+
+          {taxiState === 'pending' && !bookingInfo && (
+            <div style={{ padding: '20px', background: '#FEF3C7', borderRadius: '12px' }}>
+              <p style={{ fontSize: '13px', color: '#B45309', fontWeight: '700' }}>📋 Course en attente</p>
+              <p style={{ fontSize: '11px', color: '#92400E', marginTop: '4px' }}>Informations client non disponibles</p>
+              <button onClick={handleAccept} style={{ marginTop: '12px', width: '100%', padding: '12px', background: '#065F46', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: '900', cursor: 'pointer' }}>
+                ✅ Accepter
+              </button>
+            </div>
+          )}
+
+          {taxiState === 'accepted' && (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#D1FAE5', borderRadius: '12px', padding: '12px 16px', marginBottom: '12px' }}>
+                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#059669', display: 'inline-block', animation: 'pulse 1.5s infinite' }}/>
+                <span style={{ fontSize: '14px', fontWeight: '800', color: '#065F46' }}>GPS EN DIRECT</span>
+              </div>
+              {bookingInfo?.destination && (
+                <div style={{ background: '#EFF6FF', borderRadius: '12px', padding: '10px 14px', marginBottom: '12px', textAlign: 'left' }}>
+                  <p style={{ fontSize: '10px', color: '#9CA3AF', fontWeight: '700', marginBottom: '2px' }}>DESTINATION</p>
+                  <p style={{ fontSize: '13px', color: '#1D4ED8', fontWeight: '800', margin: 0 }}>🏁 {bookingInfo.destination}</p>
+                </div>
+              )}
+              {taxiCoords && (
+                <p style={{ fontSize: '11px', fontFamily: 'monospace', color: '#9CA3AF', background: '#F9FAFB', borderRadius: '8px', padding: '8px', marginBottom: '8px' }}>
+                  {taxiCoords.lat.toFixed(6)}, {taxiCoords.lng.toFixed(6)}
+                </p>
+              )}
+              {taxiSecsAgo !== null && <p style={{ fontSize: '11px', color: '#10B981', marginBottom: '16px' }}>✓ Mis à jour il y a {taxiSecsAgo}s</p>}
+              <button onClick={handleArrived} style={{ width: '100%', padding: '14px', background: 'linear-gradient(135deg,#78350F,#F59E0B)', color: '#fff', border: 'none', borderRadius: '14px', fontSize: '16px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 4px 16px rgba(120,53,15,0.4)' }}>
+                🎯 Je suis arrivé !
+              </button>
+              <div style={{ marginTop: '12px', padding: '10px', background: '#FEF3C7', borderRadius: '10px' }}>
+                <p style={{ fontSize: '11px', color: '#92400E', fontWeight: '700' }}>⚠️ Ne fermez pas cette page</p>
+              </div>
+            </div>
+          )}
+
+          {taxiState === 'arrived' && (
+            <div style={{ background: '#EFF6FF', borderRadius: '14px', padding: '20px' }}>
+              <p style={{ fontSize: '36px', marginBottom: '8px' }}>🎉</p>
+              <p style={{ fontSize: '16px', fontWeight: '900', color: '#1D4ED8', marginBottom: '4px' }}>Course terminée !</p>
+              <p style={{ fontSize: '12px', color: '#3B82F6' }}>Le client a été notifié de votre arrivée.</p>
+            </div>
+          )}
+        </div>
+        <style>{`@keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:1;transform:scale(1.3);}}`}</style>
+      </div>
+    );
+  }
+
+  // ── DELIVERY MODE UI ──
   return (
     <div style={{ minHeight: '100vh', background: '#F0FDF4', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'system-ui, sans-serif' }}>
       <div style={{ width: '100%', maxWidth: '360px', background: '#fff', borderRadius: '24px', padding: '32px 24px', boxShadow: '0 8px 40px rgba(0,0,0,0.12)', textAlign: 'center' }}>

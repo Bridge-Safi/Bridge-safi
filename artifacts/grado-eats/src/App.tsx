@@ -2915,6 +2915,26 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
   );
 }
 
+// ─── TAXI TRACKING MAP ─────────────────────────────────────────────────────────
+
+function TaxiTrackingMap({driverPos,clientPos}:{driverPos:{lat:number;lng:number}|null;clientPos:{lat:number;lng:number}|null}) {
+  const center = driverPos ?? clientPos ?? {lat:32.2994,lng:-9.2372};
+  const taxiIcon = L.divIcon({className:'',html:'<div style="font-size:30px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">🚖</div>',iconSize:[34,34],iconAnchor:[17,17]});
+  const clientIcon = L.divIcon({className:'',html:'<div style="font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">📍</div>',iconSize:[30,30],iconAnchor:[15,30]});
+  function Recenter({pos}:{pos:{lat:number;lng:number}}) {
+    const map=useMap();
+    useEffect(()=>{ map.setView([pos.lat,pos.lng],15); },[pos.lat,pos.lng]);
+    return null;
+  }
+  return (
+    <MapContainer center={[center.lat,center.lng]} zoom={15} style={{width:'100%',height:'100%',borderRadius:0}} zoomControl={false} attributionControl={false}>
+      <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"/>
+      {driverPos&&<><Marker position={[driverPos.lat,driverPos.lng]} icon={taxiIcon}/><Recenter pos={driverPos}/></>}
+      {clientPos&&<Marker position={[clientPos.lat,clientPos.lng]} icon={clientIcon}/>}
+    </MapContainer>
+  );
+}
+
 // ─── TAXI PAGE ────────────────────────────────────────────────────────────────
 
 function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
@@ -2922,25 +2942,122 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   profile:UserProfile; saveProfile:(p:UserProfile)=>void;
 }) {
   const [showProfile,setShowProfile]=useState(false);
+  const [activeTab,setActiveTab]=useState<0|1>(0);
   const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
   const pillStyle:React.CSSProperties={
     background:'white',border:'2.5px solid #D9C5A0',color:'#065F46',
     boxShadow:'0 4px 20px rgba(6,95,70,0.15)',height:'44px',minWidth:'44px',
   };
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
+
+  // ── Booking form state ──
+  const [name,setName]=useState(profile.name??'');
+  const [phone,setPhone]=useState(profile.phone??'');
+  const [destination,setDestination]=useState('');
+  const [clientPos,setClientPos]=useState<{lat:number;lng:number}|null>(null);
+  const [clientAddress,setClientAddress]=useState('');
+  const [gettingGPS,setGettingGPS]=useState(false);
+  const [sending,setSending]=useState(false);
+  const [bookingRef,setBookingRef]=useState<string>(()=>{
+    try{return localStorage.getItem('bridge_taxi_ref')||'';}catch{return '';}
+  });
+  const [formErr,setFormErr]=useState('');
+
+  // ── Tracking state ──
+  const [trackData,setTrackData]=useState<{found:boolean;lat?:number;lng?:number;status?:string;driverName?:string;eta?:number;clientLat?:number;clientLng?:number}|null>(null);
+  const trackIntervalRef=useRef<number|null>(null);
+
+  const getClientGPS=()=>{
+    if(!navigator.geolocation){setClientAddress('GPS non disponible');return;}
+    setGettingGPS(true);
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      const {latitude:lat,longitude:lng}=pos.coords;
+      setClientPos({lat,lng});
+      setGettingGPS(false);
+      try{
+        const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+        const d=await r.json();
+        setClientAddress(d.display_name?.split(',').slice(0,3).join(', ')||`${lat.toFixed(5)}, ${lng.toFixed(5)}`);
+      }catch{setClientAddress(`${lat.toFixed(5)}, ${lng.toFixed(5)}`);}
+    },()=>{setGettingGPS(false);setClientAddress('Saisissez votre adresse manuellement');},{enableHighAccuracy:true,timeout:8000});
+  };
+
+  const handleBook=async()=>{
+    if(!name.trim()||!phone.trim()||!destination.trim()){setFormErr('*');return;}
+    setSending(true); setFormErr('');
+    const ref='TC-'+Math.floor(1000+Math.random()*9000);
+    const driverTrackUrl=`${window.location.origin}/driver/${ref}`;
+    const pickup=clientAddress||'Safi, Maroc';
+    try{
+      // 1. Create tracking entry (status=waiting)
+      await fetch(`/api/tracking/${ref}`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({clientLat:clientPos?.lat,clientLng:clientPos?.lng,clientAddress:pickup,destination:destination.trim(),customerName:name.trim(),customerPhone:phone.trim()}),
+      }).catch(()=>{});
+      // 2. Notify driver app
+      await fetch(`${DRIVER_APP_URL}/api/deliveries`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          trackingNumber:ref,customerName:name.trim(),customerPhone:phone.trim(),
+          pickupAddress:pickup,deliveryAddress:destination.trim(),
+          priority:'urgent',
+          notes:`🚖 BRIDGE TAXI LUXE\n📍 Départ: ${pickup}\n🏁 Destination: ${destination.trim()}\n👤 ${name.trim()} — ${phone.trim()}\n\n🔗 GPS Chauffeur: ${driverTrackUrl}`,
+          driverTrackUrl,
+        }),
+      }).catch(()=>{});
+      // 3. WhatsApp admin
+      const waMsg=encodeURIComponent(`🚖 *BRIDGE TAXI* — ${ref}\n👤 ${name.trim()} — ${phone.trim()}\n📍 Départ: ${pickup}\n🏁 Destination: ${destination.trim()}\n🔗 GPS: ${driverTrackUrl}`);
+      window.open(`https://wa.me/212764794856?text=${waMsg}`,'_blank');
+    }finally{setSending(false);}
+    localStorage.setItem('bridge_taxi_ref',ref);
+    setBookingRef(ref);
+    setActiveTab(1);
+  };
+
+  // Poll tracking when on suivi tab
+  useEffect(()=>{
+    if(activeTab!==1||!bookingRef) return;
+    const poll=async()=>{
+      try{
+        const r=await fetch(`/api/tracking/${bookingRef}`);
+        if(r.ok){const d=await r.json();setTrackData(d);}
+        else setTrackData({found:false});
+      }catch{setTrackData(null);}
+    };
+    poll();
+    trackIntervalRef.current=window.setInterval(poll,3000);
+    return()=>{if(trackIntervalRef.current)clearInterval(trackIntervalRef.current);};
+  },[activeTab,bookingRef]);
+
+  const driverPos=(trackData?.found&&trackData.lat&&trackData.lng&&trackData.status==='accepted')?{lat:trackData.lat,lng:trackData.lng}:null;
+  const mapClientPos=trackData?.clientLat&&trackData?.clientLng?{lat:trackData.clientLat,lng:trackData.clientLng}:clientPos;
+
+  const statusColor={waiting:'#F59E0B',accepted:'#10B981',arrived:'#3B82F6'}[trackData?.status||'waiting']||'#9CA3AF';
+  const statusLabel={
+    waiting:{fr:'En attente d\'un chauffeur…',en:'Waiting for a driver…',ar:'بانتظار سائق…',amz:'ⵔⴰⴷ ⵢⴰⵙ ⵓⵙⵔⴰⵜⵏ…'},
+    accepted:{fr:'Chauffeur en route 🚖',en:'Driver on the way 🚖',ar:'السائق في الطريق 🚖',amz:'ⴰⵎⴰⵏ ⵖ ⵓⵣⵣⵓⵍ 🚖'},
+    arrived:{fr:'Votre chauffeur est arrivé ! 🎉',en:'Your driver has arrived! 🎉',ar:'وصل سائقك! 🎉',amz:'ⵢⵓⵙ ⵓⵙⵔⴰⵜⵏ ⵉⵏⴽ! 🎉'},
+  }[trackData?.status||'']?.[lang]||'';
+
   const navItems=[
-    {label:{fr:'Accueil',en:'Home',ar:'الرئيسية',amz:'ⵜⴰⵣⵡⴰⵔⵜ'},icon:'🏠'},
+    {label:{fr:'Réserver',en:'Book',ar:'احجز',amz:'ⵙⵖⵏ'},icon:'🚖'},
     {label:{fr:'Suivi',en:'Track',ar:'تتبع',amz:'ⴰⵙⴽⵍⵙ'},icon:'📍'},
-    {label:{fr:'Panier',en:'Cart',ar:'السلة',amz:'ⴰⵙⵡⵉⵔ'},icon:'🛒'},
   ];
 
 
+
+  const inputStyle:React.CSSProperties={
+    width:'100%',borderRadius:12,border:'1.5px solid #E5E1D8',padding:'12px 14px',
+    fontSize:14,fontFamily:'system-ui,sans-serif',background:'#FDFCF9',color:'#1A2F23',
+    outline:'none',boxSizing:'border-box' as const,
+  };
+  const labelStyle:React.CSSProperties={fontSize:11,fontWeight:800,letterSpacing:'0.12em',color:'#78350F',textTransform:'uppercase',marginBottom:4,display:'block'};
 
   return(
     <div className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{background:'#FDFCF9',color:'#1A2F23'}}>
       <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
 
-      {/* ── Top-left: back to services ── */}
+      {/* ── Top-left: back ── */}
       <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
         <button onClick={onBack}
           className="flex items-center gap-0.5 px-1.5 rounded-full transition-all active:scale-90 hover:scale-110"
@@ -2972,99 +3089,194 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
         </button>
       </div>
 
-      {/* ── Content ── */}
-      <div className="relative flex flex-col px-5 pt-20 pb-28 max-w-sm mx-auto w-full">
+      {/* ── Main Content ── */}
+      <div className="relative flex flex-col pb-28 max-w-sm mx-auto w-full">
 
         {/* Cover photo */}
-        <div className="relative rounded-3xl overflow-hidden mb-5" style={{height:200,boxShadow:'0 8px 32px rgba(180,83,9,0.25)'}}>
+        <div className="relative overflow-hidden" style={{height:200}}>
           <img src="/cover-taxi.png" alt="Bridge Taxi Luxe" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center 40%'}}/>
-          <div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(120,53,15,0.8) 0%,rgba(120,53,15,0.1) 55%,transparent 100%)'}}/>
+          <div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(120,53,15,0.85) 0%,rgba(120,53,15,0.1) 55%,transparent 100%)'}}/>
           <div style={{position:'absolute',bottom:14,left:18}}>
             <p className="font-black text-white text-lg tracking-[0.3em]">BRIDGE TAXI</p>
             <p style={{color:'#FDE68A',fontSize:10,fontWeight:700,letterSpacing:'0.18em'}}>LUXE · CONFORT · SAFI</p>
           </div>
         </div>
 
-        {/* Animated taxi GPS map */}
-        <div className="rounded-3xl overflow-hidden mb-5" style={{height:512,position:'relative',background:'linear-gradient(145deg,#0d1117 0%,#161b22 50%,#0d1117 100%)',boxShadow:'0 8px 40px rgba(180,83,9,0.3)',border:'1.5px solid rgba(251,191,36,0.25)'}}>
-          {/* Grid road lines */}
-          <svg style={{position:'absolute',inset:0,width:'100%',height:'100%',opacity:0.12}} xmlns="http://www.w3.org/2000/svg">
-            {[0,1,2,3,4,5,6].map(i=>(
-              <line key={`h${i}`} x1="0" y1={`${i*16.6}%`} x2="100%" y2={`${i*16.6}%`} stroke="#F59E0B" strokeWidth="1"/>
-            ))}
-            {[0,1,2,3,4,5,6,7].map(i=>(
-              <line key={`v${i}`} x1={`${i*14.2}%`} y1="0" x2={`${i*14.2}%`} y2="100%" stroke="#F59E0B" strokeWidth="1"/>
-            ))}
-          </svg>
-          {/* Radar rings */}
-          <div style={{position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)'}}>
-            {[60,110,160].map((r,i)=>(
-              <div key={i} style={{
-                position:'absolute',top:'50%',left:'50%',
-                width:r*2,height:r*2,
-                transform:'translate(-50%,-50%)',
-                borderRadius:'50%',
-                border:'1.5px solid rgba(251,191,36,0.2)',
-              }}/>
-            ))}
-          </div>
-          {/* Orbiting taxis */}
-          <style>{`
-            @keyframes orbit-slow{from{transform:rotate(0deg) translateX(65px) rotate(0deg)}to{transform:rotate(360deg) translateX(65px) rotate(-360deg)}}
-            @keyframes orbit-med{from{transform:rotate(120deg) translateX(110px) rotate(-120deg)}to{transform:rotate(480deg) translateX(110px) rotate(-480deg)}}
-            @keyframes orbit-fast{from{transform:rotate(240deg) translateX(155px) rotate(-240deg)}to{transform:rotate(600deg) translateX(155px) rotate(-600deg)}}
-          `}</style>
-          <div style={{position:'absolute',top:'50%',left:'50%',width:0,height:0}}>
-            <div style={{position:'absolute',animation:'orbit-slow 8s linear infinite',fontSize:22,marginTop:-11,marginLeft:-11}}>🚖</div>
-            <div style={{position:'absolute',animation:'orbit-med 12s linear infinite',fontSize:22,marginTop:-11,marginLeft:-11}}>🚖</div>
-            <div style={{position:'absolute',animation:'orbit-fast 16s linear infinite',fontSize:22,marginTop:-11,marginLeft:-11}}>🚖</div>
-          </div>
-          {/* Central pin */}
-          <div style={{position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-55%)',textAlign:'center'}}>
-            <div style={{width:48,height:48,borderRadius:'50%',background:'linear-gradient(135deg,#78350F,#F59E0B)',border:'3px solid #FDE68A',boxShadow:'0 0 24px rgba(245,158,11,0.6)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,margin:'0 auto'}}>
-              📍
-            </div>
-            <div style={{marginTop:6,background:'rgba(245,158,11,0.15)',border:'1px solid rgba(251,191,36,0.4)',borderRadius:10,padding:'3px 10px',backdropFilter:'blur(8px)'}}>
-              <span style={{color:'#FDE68A',fontSize:9,fontWeight:900,letterSpacing:'0.15em'}}>SAFI CENTRE</span>
-            </div>
-          </div>
-          {/* EN ATTENTE badge */}
-          <div style={{position:'absolute',top:14,right:14,background:'rgba(220,38,38,0.85)',backdropFilter:'blur(8px)',borderRadius:20,padding:'4px 12px',border:'1px solid rgba(252,165,165,0.4)',display:'flex',alignItems:'center',gap:5}}>
-            <div style={{width:6,height:6,borderRadius:'50%',background:'#fff',animation:'pulse 1.2s ease-in-out infinite'}}/>
-            <span style={{color:'#fff',fontSize:8,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
-          </div>
-          {/* Top label */}
-          <div style={{position:'absolute',top:14,left:14}}>
-            <span style={{color:'#FDE68A',fontSize:9,fontWeight:900,letterSpacing:'0.15em',opacity:0.8}}>🚖 BRIDGE TAXI LIVE</span>
-          </div>
-          {/* Bottom info */}
-          <div style={{position:'absolute',bottom:0,left:0,right:0,padding:'12px 16px',background:'linear-gradient(to top,rgba(13,17,23,0.95),transparent)'}}>
-            <p className={`text-white font-black text-sm mb-0.5 ${fClass}`}>{T[lang].taxiSoon}</p>
-            <p className={`text-xs ${fClass}`} style={{color:'rgba(255,255,255,0.5)'}}>{T[lang].taxiDesc}</p>
-          </div>
+        {/* ── Tab bar ── */}
+        <div className="flex border-b sticky top-0 z-30" style={{background:'rgba(253,252,249,0.97)',backdropFilter:'blur(12px)',borderColor:'#E5E1D8'}}>
+          {navItems.map((tab,i)=>(
+            <button key={i} onClick={()=>setActiveTab(i as 0|1)}
+              className={`flex-1 flex flex-col items-center gap-1 py-3 transition-all ${isAMZ?'font-tifinagh':''}`}
+              style={{borderBottom:activeTab===i?'2.5px solid #78350F':'2.5px solid transparent',color:activeTab===i?'#78350F':'#9CA3AF'}}>
+              <span className="text-lg">{tab.icon}</span>
+              <span style={{fontSize:10,fontWeight:900,letterSpacing:'0.1em',textTransform:'uppercase'}}>{tab.label[lang]}</span>
+            </button>
+          ))}
         </div>
 
-        {/* WhatsApp booking */}
-        <a href="https://wa.me/212764794856?text=Bonjour%2C%20je%20voudrais%20r%C3%A9server%20un%20Bridge%20Taxi%20Confort%20%F0%9F%9A%96"
-          target="_blank" rel="noopener noreferrer"
-          className="w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 active:scale-95 transition-all"
-          style={{background:'#25D366',boxShadow:'0 6px 20px rgba(37,211,102,0.3)'}}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
-          {T[lang].taxiBook}
-        </a>
+        {/* ── TAB 0: Réserver ── */}
+        {activeTab===0&&(
+          <div className="px-5 pt-5 flex flex-col gap-4">
+            <div style={{background:'linear-gradient(135deg,#78350F,#92400E)',borderRadius:20,padding:'14px 18px',display:'flex',alignItems:'center',gap:12}}>
+              <span style={{fontSize:32}}>🚖</span>
+              <div>
+                <p style={{color:'#FDE68A',fontSize:13,fontWeight:900,letterSpacing:'0.1em'}}>BRIDGE TAXI LUXE</p>
+                <p style={{color:'rgba(253,230,138,0.7)',fontSize:11}}>Réservation instantanée · Safi</p>
+              </div>
+            </div>
+
+            {/* Pickup GPS */}
+            <div>
+              <label style={labelStyle}>📍 {lang==='ar'?'نقطة الانطلاق':lang==='amz'?'ⴰⵙⵔⵓ':lang==='en'?'Pickup location':'Point de départ'}</label>
+              <div style={{display:'flex',gap:8}}>
+                <input value={clientAddress} onChange={e=>setClientAddress(e.target.value)}
+                  placeholder={lang==='ar'?'عنوان الانطلاق':lang==='en'?'Your pickup address':'Votre adresse de départ'}
+                  style={{...inputStyle,flex:1}}/>
+                <button onClick={getClientGPS}
+                  className="rounded-xl flex items-center justify-center transition-all active:scale-90"
+                  style={{background:'#78350F',color:'white',border:'none',width:48,minWidth:48,fontSize:20,cursor:'pointer'}}>
+                  {gettingGPS?<span style={{fontSize:12,fontWeight:900,animation:'spin 1s linear infinite'}}>⟳</span>:'🎯'}
+                </button>
+              </div>
+              {clientPos&&<p style={{fontSize:10,color:'#10B981',marginTop:4,fontWeight:700}}>✓ GPS détecté · {clientPos.lat.toFixed(4)}, {clientPos.lng.toFixed(4)}</p>}
+            </div>
+
+            {/* Destination */}
+            <div>
+              <label style={labelStyle}>🏁 {lang==='ar'?'الوجهة':lang==='amz'?'ⴰⵎⵎⴰⵙ':lang==='en'?'Destination':'Destination'}</label>
+              <input value={destination} onChange={e=>setDestination(e.target.value)}
+                placeholder={lang==='ar'?'وجهتك':lang==='en'?'Where to?':'Où allez-vous ?'}
+                style={inputStyle}/>
+            </div>
+
+            {/* Name */}
+            <div>
+              <label style={labelStyle}>👤 {lang==='ar'?'الاسم':lang==='amz'?'ⵉⵙⵎ':lang==='en'?'Your name':'Votre nom'}</label>
+              <input value={name} onChange={e=>setName(e.target.value)}
+                placeholder={lang==='ar'?'اسمك':lang==='en'?'Full name':'Nom complet'}
+                style={inputStyle}/>
+            </div>
+
+            {/* Phone */}
+            <div>
+              <label style={labelStyle}>📞 {lang==='ar'?'الهاتف':lang==='amz'?'ⵜⵉⵍⵉⴼⵓⵏ':lang==='en'?'Phone':'Téléphone'}</label>
+              <input value={phone} onChange={e=>setPhone(e.target.value)} type="tel"
+                placeholder="+212 6XX XXX XXX"
+                style={inputStyle}/>
+            </div>
+
+            {formErr&&<p style={{color:'#DC2626',fontSize:12,fontWeight:700}}>
+              {lang==='ar'?'يرجى ملء جميع الحقول':lang==='en'?'Please fill all fields':'Veuillez remplir tous les champs'}
+            </p>}
+
+            <button onClick={handleBook} disabled={sending}
+              className="w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 active:scale-95 transition-all"
+              style={{background:sending?'#9CA3AF':'linear-gradient(135deg,#78350F,#F59E0B)',boxShadow:sending?'none':'0 6px 20px rgba(120,53,15,0.4)',cursor:sending?'wait':'pointer',border:'none',fontSize:15}}>
+              {sending?'⏳ Envoi…':'🚖 '+(lang==='ar'?'احجز الآن':lang==='amz'?'ⵙⵖⵏ':lang==='en'?'Book Now':'Réserver maintenant')}
+            </button>
+
+            {bookingRef&&(
+              <div style={{background:'#D1FAE5',borderRadius:14,padding:'12px 16px',display:'flex',alignItems:'center',gap:10}}>
+                <span style={{fontSize:20}}>✅</span>
+                <div>
+                  <p style={{fontSize:12,fontWeight:900,color:'#065F46'}}>Course #{bookingRef}</p>
+                  <p style={{fontSize:11,color:'#059669'}}>
+                    {lang==='ar'?'انتقل إلى تتبع مباشر':lang==='en'?'Switch to Live Track':'Suivez votre chauffeur →'}
+                  </p>
+                </div>
+                <button onClick={()=>setActiveTab(1)} style={{marginLeft:'auto',background:'#059669',color:'white',border:'none',borderRadius:10,padding:'6px 12px',fontSize:12,fontWeight:900,cursor:'pointer'}}>📍</button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── TAB 1: Suivi ── */}
+        {activeTab===1&&(
+          <div className="flex flex-col">
+            {!bookingRef?(
+              <div style={{padding:'40px 20px',textAlign:'center'}}>
+                <p style={{fontSize:40,marginBottom:12}}>🚖</p>
+                <p style={{fontWeight:900,color:'#78350F',marginBottom:6}}>
+                  {lang==='ar'?'لا يوجد حجز':lang==='en'?'No booking yet':'Aucune réservation'}
+                </p>
+                <p style={{fontSize:12,color:'#9CA3AF',marginBottom:20}}>
+                  {lang==='ar'?'احجز أولاً لتتبع سيارتك':lang==='en'?'Book first to track your taxi':'Réservez d\'abord pour suivre votre taxi'}
+                </p>
+                <button onClick={()=>setActiveTab(0)} style={{background:'#78350F',color:'white',border:'none',borderRadius:12,padding:'10px 24px',fontWeight:900,cursor:'pointer'}}>
+                  🚖 {lang==='ar'?'احجز الآن':lang==='en'?'Book Now':'Réserver'}
+                </button>
+              </div>
+            ):(
+              <>
+                {/* Status card */}
+                <div style={{margin:'16px 20px 0',background:'white',borderRadius:16,padding:'14px 16px',boxShadow:'0 2px 16px rgba(0,0,0,0.08)',border:`2px solid ${statusColor}20`}}>
+                  <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:6}}>
+                    <div style={{width:10,height:10,borderRadius:'50%',background:statusColor,flexShrink:0,animation:'pulse 1.5s infinite'}}/>
+                    <p style={{fontWeight:900,color:statusColor,fontSize:13}}>
+                      {statusLabel||{fr:'En attente…',en:'Waiting…',ar:'في الانتظار…',amz:'ⵔⴰⴷ…'}[lang]}
+                    </p>
+                  </div>
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                    <p style={{fontSize:11,color:'#9CA3AF'}}>Réf: <strong style={{color:'#1A2F23'}}>{bookingRef}</strong></p>
+                    {trackData?.driverName&&<p style={{fontSize:11,color:'#065F46',fontWeight:700}}>🚗 {trackData.driverName}</p>}
+                    {trackData?.eta&&<p style={{fontSize:11,color:'#78350F',fontWeight:900}}>⏱ {trackData.eta} min</p>}
+                  </div>
+                  {trackData?.status==='arrived'&&(
+                    <div style={{marginTop:10,background:'#EFF6FF',borderRadius:10,padding:'8px 12px',textAlign:'center'}}>
+                      <p style={{fontWeight:900,color:'#1D4ED8',fontSize:13}}>🎉 {lang==='ar'?'وصل سائقك!':lang==='en'?'Driver arrived!':'Votre chauffeur est là !'}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Live map */}
+                <div style={{margin:'12px 20px',borderRadius:20,overflow:'hidden',height:420,boxShadow:'0 4px 24px rgba(0,0,0,0.12)',position:'relative'}}>
+                  <TaxiTrackingMap driverPos={driverPos} clientPos={mapClientPos}/>
+                  {/* Overlay badge */}
+                  <div style={{position:'absolute',top:10,left:10,background:'rgba(13,17,23,0.85)',backdropFilter:'blur(8px)',borderRadius:12,padding:'4px 10px',display:'flex',alignItems:'center',gap:6}}>
+                    <div style={{width:6,height:6,borderRadius:'50%',background:statusColor,animation:'pulse 1.2s infinite'}}/>
+                    <span style={{color:'#FDE68A',fontSize:9,fontWeight:900,letterSpacing:'0.12em'}}>🚖 LIVE GPS</span>
+                  </div>
+                  {!driverPos&&trackData?.status!=='accepted'&&(
+                    <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(13,17,23,0.5)',backdropFilter:'blur(4px)'}}>
+                      <div style={{textAlign:'center',padding:20}}>
+                        <p style={{fontSize:36,marginBottom:8}}>🔍</p>
+                        <p style={{color:'#FDE68A',fontWeight:900,fontSize:13}}>
+                          {lang==='ar'?'نبحث عن سائق':lang==='en'?'Finding your driver…':'Recherche d\'un chauffeur…'}
+                        </p>
+                        <p style={{color:'rgba(255,255,255,0.5)',fontSize:11,marginTop:4}}>Mise à jour toutes les 3s</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Cancel / refresh */}
+                <div style={{display:'flex',gap:10,padding:'0 20px 8px'}}>
+                  <button onClick={()=>{setBookingRef('');localStorage.removeItem('bridge_taxi_ref');setActiveTab(0);}}
+                    style={{flex:1,background:'#FEE2E2',color:'#DC2626',border:'none',borderRadius:12,padding:'10px 0',fontWeight:900,fontSize:12,cursor:'pointer'}}>
+                    ✕ {lang==='ar'?'إلغاء':lang==='en'?'Cancel':'Annuler'}
+                  </button>
+                  <button onClick={()=>{if(trackIntervalRef.current)clearInterval(trackIntervalRef.current);setActiveTab(1);}}
+                    style={{flex:1,background:'#D1FAE5',color:'#065F46',border:'none',borderRadius:12,padding:'10px 0',fontWeight:900,fontSize:12,cursor:'pointer'}}>
+                    ↺ {lang==='ar'?'تحديث':lang==='en'?'Refresh':'Actualiser'}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
       </div>
 
-      {/* ── Bottom nav (same as delivery) ── */}
+      {/* ── Bottom nav ── */}
       <nav className="fixed bottom-0 inset-x-0 z-40"
         style={{background:'rgba(253,252,249,0.97)',backdropFilter:'blur(20px)',borderTop:'1px solid #E5E1D8'}}>
         <div className="max-w-md mx-auto flex">
           {navItems.map((tab,i)=>(
-            <button key={i}
-              className="flex-1 flex flex-col items-center gap-1 py-3 transition-all active:scale-90">
+            <button key={i} onClick={()=>setActiveTab(i as 0|1)}
+              className={`flex-1 flex flex-col items-center gap-1 py-3 transition-all active:scale-90 ${isAMZ?'font-tifinagh':''}`}
+              style={{color:activeTab===i?'#78350F':'#9CA3AF'}}>
               <span className="text-xl">{tab.icon}</span>
-              <span className={`text-[10px] font-black uppercase tracking-wide ${fClass}`} style={{color:'#9CA3AF'}}>
-                {tab.label[lang]}
-              </span>
+              <span style={{fontSize:10,fontWeight:900,letterSpacing:'0.1em',textTransform:'uppercase'}}>{tab.label[lang]}</span>
             </button>
           ))}
         </div>
