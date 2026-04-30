@@ -1665,11 +1665,23 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
     <div className="fixed inset-0 z-50 modal-overlay" style={{background:'rgba(10,30,20,0.55)',backdropFilter:'blur(6px)'}} onClick={onClose}>
       <div className="absolute right-0 top-0 bottom-0 w-full max-w-sm h-full overflow-y-auto"
         style={{background:'#FDFCF9',boxShadow:'-8px 0 40px rgba(0,0,0,0.15)',animation:'slideInRight 0.28s cubic-bezier(0.34,1,0.64,1)'}} onClick={e=>e.stopPropagation()}>
-        <div className="sticky top-0 z-10 px-4 py-3 flex items-center gap-2" style={{background:'rgba(253,252,249,0.96)',backdropFilter:'blur(12px)',borderBottom:'1px solid #E5E1D8'}}>
-          {/* Left: profile title */}
-          <div className="flex-1 min-w-0">
-            <p className={`font-black text-sm ${fClass}`} style={{color:'#065F46'}}>👤 {t.profileTitle}</p>
-            <p className={`text-[10px] mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{t.profileSub}</p>
+        <div className="sticky top-0 z-10 px-4 py-3 flex items-center gap-3" style={{background:'rgba(253,252,249,0.96)',backdropFilter:'blur(12px)',borderBottom:'1px solid #E5E1D8'}}>
+          {/* Left: avatar + profile title */}
+          <div className="flex items-center gap-2.5 flex-1 min-w-0">
+            <div className="relative flex-shrink-0" onClick={()=>avatarInputRef.current?.click()} style={{cursor:'pointer'}}>
+              <div style={{width:46,height:46,borderRadius:'50%',overflow:'hidden',border:'2.5px solid #D9C5A0',boxShadow:'0 2px 10px rgba(6,95,70,0.18)',background:'#F0EBE1',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                {form.avatar
+                  ?<img src={form.avatar} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+                  :<span style={{fontSize:22}}>👤</span>
+                }
+              </div>
+              <div style={{position:'absolute',bottom:-2,right:-2,width:18,height:18,borderRadius:'50%',background:'linear-gradient(135deg,#065F46,#059669)',border:'1.5px solid #fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:9}}>📷</div>
+              <input ref={avatarInputRef} type="file" accept="image/*" onChange={handleAvatarChange} style={{display:'none'}}/>
+            </div>
+            <div className="min-w-0">
+              <p className={`font-black text-sm leading-tight ${fClass}`} style={{color:'#065F46'}}>{t.profileTitle}</p>
+              <p className={`text-[10px] mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{t.profileSub}</p>
+            </div>
           </div>
           {/* Center: shark mascot + game ID + points — tap to open game */}
           <button
@@ -1693,35 +1705,6 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
           <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center font-black flex-shrink-0" style={{background:'#F3F4F6',color:'#6B7280',fontSize:14}}>✕</button>
         </div>
         <div className="px-5 py-5" style={{direction:isAR?'rtl':'ltr'}}>
-
-          {/* ── Photo de profil ── */}
-          <div className="flex flex-col items-center mb-5">
-            <div className="relative">
-              <div style={{width:88,height:88,borderRadius:'50%',overflow:'hidden',border:'3px solid #D9C5A0',boxShadow:'0 4px 20px rgba(6,95,70,0.2)',background:'#F0EBE1',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                {form.avatar
-                  ?<img src={form.avatar} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
-                  :<span style={{fontSize:36}}>👤</span>
-                }
-              </div>
-              <button onClick={()=>avatarInputRef.current?.click()}
-                style={{position:'absolute',bottom:0,right:0,width:28,height:28,borderRadius:'50%',background:'linear-gradient(135deg,#065F46,#059669)',border:'2.5px solid #fff',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',boxShadow:'0 2px 8px rgba(6,95,70,0.4)'}}>
-                <span style={{fontSize:13}}>📷</span>
-              </button>
-            </div>
-            <input ref={avatarInputRef} type="file" accept="image/*" onChange={handleAvatarChange} style={{display:'none'}}/>
-            <button onClick={()=>avatarInputRef.current?.click()}
-              className={`mt-2 text-[11px] font-black ${fClass}`}
-              style={{color:'#065F46',background:'none',border:'none',cursor:'pointer',letterSpacing:'0.05em'}}>
-              {form.avatar?'🔄 Changer la photo':'📷 Ajouter une photo'}
-            </button>
-            {form.avatar&&(
-              <button onClick={()=>setForm(f=>({...f,avatar:''}))}
-                className="text-[10px] mt-0.5"
-                style={{color:'#9CA3AF',background:'none',border:'none',cursor:'pointer'}}>
-                Supprimer
-              </button>
-            )}
-          </div>
 
           <div className="rounded-2xl p-4 mb-5" style={{background:errs.name||errs.phone?'#FFF5F5':'#F0FDF4',border:`1px solid ${errs.name||errs.phone?'#FCA5A5':'#BBF7D0'}`,transition:'all 0.2s'}}>
             <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#065F46'}}>👤 {t.nameLabel}</p>
