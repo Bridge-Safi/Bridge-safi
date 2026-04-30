@@ -720,11 +720,13 @@ function SessionKeepAlive() {
 const GAME_LANGS = ['fr','en','ar','amz'] as const;
 type GameLang = typeof GAME_LANGS[number];
 const GAME_LANG_LABELS: Record<GameLang,string> = {fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
+const GAME_URL = 'https://de74e39f-30c2-4a4e-81c6-35b38d5328e6-00-2kdljcxzty31v.riker.replit.dev/';
+const GAME_TARGET = 15000;
 const GAME_T = {
-  fr:{ back:'← Retour', playerId:'ID JOUEUR', diamonds:'DIAMANTS', soon:'Jeu en préparation', soonSub:'Collecte de 💎 · Points → Menus offerts', howTitle:'Comment jouer ?', how1:'Passez une commande', how2:'Gagnez des 💎 diamants', how3:'Échangez contre des menus offerts', rank:'Mon classement', rankSub:'Bientôt disponible', pts:'pts', rulesBtn:'📜 Règles du jeu' },
-  en:{ back:'← Back',   playerId:'PLAYER ID',  diamonds:'DIAMONDS',  soon:'Game coming soon',  soonSub:'Collect 💎 · Points → Free meals',           howTitle:'How to play?',   how1:'Place an order',    how2:'Earn 💎 diamonds',        how3:'Redeem for free meals',           rank:'My ranking',  rankSub:'Coming soon',       pts:'pts', rulesBtn:'📜 Game Rules' },
-  ar:{ back:'→ رجوع',   playerId:'معرّف اللاعب',diamonds:'الماسات',  soon:'اللعبة قريباً',     soonSub:'اجمع 💎 · نقاط → وجبات مجانية',             howTitle:'كيف تلعب؟',     how1:'اطلب وجبة',         how2:'اربح 💎 الماسات',        how3:'استبدل بوجبات مجانية',           rank:'ترتيبي',      rankSub:'قريباً',            pts:'نقطة', rulesBtn:'📜 قواعد اللعبة' },
-  amz:{ back:'← ⴰⵣⵣⵓⵍ', playerId:'ⴰⵏⴳⵔⴰⵡ',  diamonds:'ⵉⴷⵢⴰⵎⴰⵏ', soon:'ⴰⵎⴽⵙⴰⵡ ⵔⴰⴷ ⵢⴰⵙ', soonSub:'ⵙⴳⵎ 💎 · ⵜⵉⵏⵎⵍⴰⵏ → ⵉⵎⵏⵙⵉⵡⵏ',          howTitle:'ⵎⴰⵎⴽ ⴰⴷ ⵜⴽⵙⵎ?', how1:'ⴽ ⴰⵙⵙⴳⵏ',       how2:'ⵙⴳⵎ 💎 ⵉⴷⵢⴰⵎⴰⵏ',     how3:'ⵙⴽⵍⵙ ⵉⵎⵏⵙⵉⵡⵏ',          rank:'ⴰⵎⵣⵡⴰⵔⵓ',   rankSub:'ⵔⴰⴷ ⵢⴰⵙ',          pts:'ⵜⵉⵏⵎⵍⴰⵏ', rulesBtn:'📜 ⵜⵉⵖⵔⵉ ⵏ ⵓⵎⴽⵙⴰⵡ' },
+  fr:{ back:'← Retour', playerId:'ID JOUEUR', diamonds:'MES DIAMANTS', playBtn:'🎮 JOUER MAINTENANT', howTitle:'Comment gagner ?', how1:'🎮 Lance le jeu Bridge Shark', how2:'💎 Récoltez 1 000 💎 / heure', how3:'🎁 Échangez vos 💎 contre des cadeaux', rulesBtn:'📜 Règles du jeu', target:'OBJECTIF', progress:'PROGRESSION', days:'5 jours · 3-4h/jour', pts:'pts' },
+  en:{ back:'← Back',   playerId:'PLAYER ID',  diamonds:'MY DIAMONDS',  playBtn:'🎮 PLAY NOW',             howTitle:'How to win?',        how1:'🎮 Launch the Bridge Shark game', how2:'💎 Collect 1,000 💎 per hour', how3:'🎁 Redeem 💎 for free gifts',       rulesBtn:'📜 Game Rules',   target:'TARGET',    progress:'PROGRESS',    days:'5 days · 3-4h/day',  pts:'pts' },
+  ar:{ back:'→ رجوع',   playerId:'معرّف اللاعب',diamonds:'ماساتي',       playBtn:'🎮 العب الآن',             howTitle:'كيف تفوز؟',          how1:'🎮 شغّل لعبة Bridge Shark',      how2:'💎 اجمع 1 000 💎 كل ساعة',    how3:'🎁 استبدل 💎 بهدايا مجانية',       rulesBtn:'📜 قواعد اللعبة', target:'الهدف',     progress:'التقدم',      days:'5 أيام · 3-4 ساعات', pts:'نقطة' },
+  amz:{ back:'← ⴰⵣⵣⵓⵍ', playerId:'ⴰⵏⴳⵔⴰⵡ',  diamonds:'ⵉⴷⵢⴰⵎⴰⵏ ⵉⵏⵓ', playBtn:'🎮 ⵙⵖⵔ ⴷⴰⵖⵉ',             howTitle:'ⵎⴰⵎⴽ ⴰⴷ ⵜⴽⵙⵎ?',       how1:'🎮 ⵙⵏⵓⴱⴳ Bridge Shark',         how2:'💎 1 000 💎 ⵙ ⵜⵉⵙⵙⵓⵜ',        how3:'🎁 ⵙⴽⵍⵙ 💎',                       rulesBtn:'📜 ⵜⵉⵖⵔⵉ',        target:'ⴰⵎⵓⵟⵟⵓ',  progress:'ⴰⵎⵙⵉⵡⴹ',     days:'5 ⵡⴰⵙⵙⴰⵜⵏ',          pts:'ⵜⵉⵏⵎⵍⴰⵏ' },
 };
 
 // ─── BRIDGE GAME RULES MODAL ──────────────────────────────────────────────────
@@ -994,101 +996,142 @@ function GamePage() {
     try { return parseInt(localStorage.getItem(`bridge_game_pts_${user?.id||'guest'}`) || '0', 10); } catch { return 0; }
   })();
 
+  const pct = Math.min(100, Math.round((gamePoints / GAME_TARGET) * 100));
+
   return (
-    <div dir={isAR?'rtl':'ltr'} style={{minHeight:'100dvh',background:'linear-gradient(160deg,#020c07 0%,#0A2218 40%,#0D2E1A 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'2rem 1.5rem',position:'relative',overflow:'hidden'}}>
-      <div style={{position:'absolute',inset:0,opacity:0.04,backgroundImage:'repeating-linear-gradient(45deg,#ffffff 0,#ffffff 1px,transparent 0,transparent 50%)',backgroundSize:'20px 20px',pointerEvents:'none'}}/>
+    <div dir={isAR?'rtl':'ltr'} style={{minHeight:'100dvh',background:'linear-gradient(180deg,#04110A 0%,#071C11 50%,#050F08 100%)',display:'flex',flexDirection:'column',alignItems:'center',padding:'0 0 32px',position:'relative',overflow:'hidden'}}>
 
-      {/* Top bar */}
-      <div style={{position:'absolute',top:0,left:0,right:0,display:'flex',alignItems:'flex-start',justifyContent:'space-between',padding:'16px 16px 0'}}>
-        {/* Logo stamp */}
-        <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:16,padding:'8px 12px',backdropFilter:'blur(8px)'}}>
-          <div style={{width:52,height:52,borderRadius:'50%',overflow:'hidden',border:'2px solid #D9C5A0',boxShadow:'0 0 20px rgba(217,197,160,0.3)'}}>
-            <img src="/logo_splash_new.png" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.1)'}}/>
-          </div>
-          <span style={{color:'#D9C5A0',fontSize:8,fontWeight:900,letterSpacing:'0.25em'}}>BRIDGE</span>
-          <div style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.5)',borderRadius:6,padding:'2px 7px'}}>
-            <span style={{color:'#4ADE80',fontSize:7,fontWeight:900,letterSpacing:'0.15em'}}>GAME</span>
-          </div>
-        </div>
+      {/* Animated bg glows */}
+      <div style={{position:'absolute',top:-80,left:'10%',width:300,height:300,borderRadius:'50%',background:'radial-gradient(circle,rgba(74,222,128,0.12) 0%,transparent 70%)',pointerEvents:'none'}}/>
+      <div style={{position:'absolute',top:200,right:'-10%',width:220,height:220,borderRadius:'50%',background:'radial-gradient(circle,rgba(253,224,71,0.08) 0%,transparent 70%)',pointerEvents:'none'}}/>
+      <div style={{position:'absolute',bottom:0,left:'20%',width:280,height:200,borderRadius:'50%',background:'radial-gradient(circle,rgba(6,95,70,0.15) 0%,transparent 70%)',pointerEvents:'none'}}/>
 
-        {/* Right: lang toggle + rules + back */}
-        <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:8}}>
+      {/* ── TOP BAR ── */}
+      <div style={{width:'100%',maxWidth:420,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'52px 16px 0'}}>
+        <button onClick={()=>navigate('/')}
+          style={{display:'flex',alignItems:'center',gap:6,background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:12,padding:'8px 14px',color:'#fff',fontSize:13,fontWeight:800,cursor:'pointer'}}>
+          ← {t.back.replace('←','').replace('→','').trim()}
+        </button>
+        <div style={{display:'flex',gap:8}}>
           <button onClick={cycleLang}
-            style={{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.2)',color:'#D9C5A0',borderRadius:12,padding:'7px 14px',fontSize:12,fontWeight:900,cursor:'pointer',backdropFilter:'blur(8px)',letterSpacing:'0.1em'}}>
+            style={{background:'rgba(74,222,128,0.1)',border:'1px solid rgba(74,222,128,0.3)',color:'#4ADE80',borderRadius:10,padding:'7px 12px',fontSize:11,fontWeight:900,cursor:'pointer'}}>
             {GAME_LANG_LABELS[lang]}
           </button>
           <button onClick={()=>setShowRules(true)}
-            style={{background:'rgba(6,95,70,0.3)',border:'1px solid rgba(74,222,128,0.5)',color:'#4ADE80',borderRadius:12,padding:'8px 14px',fontSize:11,fontWeight:900,cursor:'pointer',backdropFilter:'blur(8px)',letterSpacing:'0.05em'}}>
-            {t.rulesBtn}
-          </button>
-          <button onClick={()=>navigate('/')}
-            style={{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',color:'#fff',borderRadius:12,padding:'8px 16px',fontSize:13,fontWeight:800,cursor:'pointer',backdropFilter:'blur(8px)'}}>
-            {t.back}
+            style={{background:'rgba(253,224,71,0.1)',border:'1px solid rgba(253,224,71,0.35)',color:'#FDE047',borderRadius:10,padding:'7px 12px',fontSize:11,fontWeight:900,cursor:'pointer'}}>
+            📜
           </button>
         </div>
       </div>
 
       {showRules && <GameRulesModal lang={lang} onClose={()=>setShowRules(false)}/>}
 
-      {/* Shark mascot */}
-      <div style={{position:'relative',marginBottom:'1.5rem'}}>
-        <div style={{width:210,height:210,borderRadius:'50%',overflow:'hidden',border:'3px solid #065F46',boxShadow:'0 0 60px rgba(6,95,70,0.6),0 0 120px rgba(6,95,70,0.2)',background:'#0A1A12'}}>
-          <img src="/bridge-shark.png" alt="Bridge Shark" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top'}}/>
-        </div>
-        <div style={{position:'absolute',inset:-8,borderRadius:'50%',border:'2px solid rgba(6,95,70,0.4)',animation:'pulse 2s ease-in-out infinite'}}/>
-      </div>
-
-      {/* Title */}
-      <h1 style={{color:'#fff',fontSize:'2rem',fontWeight:900,letterSpacing:4,textTransform:'uppercase',margin:0,textShadow:'0 0 30px rgba(6,95,70,0.8)'}}>BRIDGE</h1>
-      <h2 style={{color:'#4ADE80',fontSize:'1rem',fontWeight:700,letterSpacing:6,textTransform:'uppercase',margin:'4px 0 0',textShadow:'0 0 20px rgba(74,222,128,0.5)'}}>GAME</h2>
-
-      {/* Player ID */}
-      <div style={{marginTop:'1.5rem',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:16,padding:'10px 24px',backdropFilter:'blur(8px)',textAlign:'center'}}>
-        <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700,letterSpacing:3,textTransform:'uppercase',margin:'0 0 4px'}}>{t.playerId}</p>
-        <p style={{color:'#4ADE80',fontSize:18,fontWeight:900,letterSpacing:4,margin:0}}>{gameId}</p>
-      </div>
-
-      {/* Diamonds */}
-      <div style={{marginTop:'1rem',display:'flex',alignItems:'center',gap:10,background:'rgba(253,224,71,0.1)',border:'1px solid rgba(253,224,71,0.3)',borderRadius:16,padding:'10px 24px'}}>
-        <span style={{fontSize:28}}>💎</span>
-        <div>
-          <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700,letterSpacing:3,textTransform:'uppercase',margin:'0 0 2px'}}>{t.diamonds}</p>
-          <p style={{color:'#FDE047',fontSize:20,fontWeight:900,margin:0}}>{gamePoints} <span style={{fontSize:12}}>{t.pts}</span></p>
-        </div>
-      </div>
-
-      {/* How to play */}
-      <div style={{marginTop:'1.5rem',width:'100%',maxWidth:320,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:18,padding:'14px 18px',backdropFilter:'blur(8px)'}}>
-        <p style={{color:'#D9C5A0',fontSize:11,fontWeight:900,letterSpacing:2,textTransform:'uppercase',margin:'0 0 10px'}}>{t.howTitle}</p>
-        {[t.how1,t.how2,t.how3].map((step,i)=>(
-          <div key={i} style={{display:'flex',alignItems:'center',gap:10,marginBottom:8}}>
-            <div style={{width:24,height:24,borderRadius:'50%',background:'linear-gradient(135deg,#065F46,#059669)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-              <span style={{color:'#fff',fontSize:11,fontWeight:900}}>{i+1}</span>
-            </div>
-            <p style={{color:'rgba(255,255,255,0.7)',fontSize:12,margin:0}}>{step}</p>
+      {/* ── HERO SECTION ── */}
+      <div style={{display:'flex',flexDirection:'column',alignItems:'center',marginTop:20,marginBottom:0,position:'relative'}}>
+        {/* Outer ring */}
+        <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <div style={{position:'absolute',width:200,height:200,borderRadius:'50%',border:'2px solid rgba(74,222,128,0.2)',animation:'spin 12s linear infinite'}}/>
+          <div style={{position:'absolute',width:220,height:220,borderRadius:'50%',border:'1px dashed rgba(74,222,128,0.12)',animation:'spin 20s linear infinite reverse'}}/>
+          <div style={{width:175,height:175,borderRadius:'50%',overflow:'hidden',border:'3px solid #059669',boxShadow:'0 0 40px rgba(5,150,105,0.5),0 0 80px rgba(5,150,105,0.2)',background:'#071C11',position:'relative',zIndex:1}}>
+            <img src="/bridge-shark.png" alt="Bridge Shark" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top'}}/>
           </div>
-        ))}
-      </div>
+          {/* Live badge */}
+          <div style={{position:'absolute',bottom:8,right:8,background:'#059669',border:'2px solid #04110A',borderRadius:20,padding:'3px 10px',display:'flex',alignItems:'center',gap:4,zIndex:2}}>
+            <div style={{width:6,height:6,borderRadius:'50%',background:'#4ADE80',boxShadow:'0 0 6px #4ADE80',animation:'blink 1.2s ease-in-out infinite'}}/>
+            <span style={{color:'#fff',fontSize:9,fontWeight:900,letterSpacing:'0.1em'}}>LIVE</span>
+          </div>
+        </div>
 
-      {/* Coming soon */}
-      <div style={{marginTop:'1.5rem',textAlign:'center'}}>
-        <div style={{display:'inline-block',background:'rgba(6,95,70,0.3)',border:'1px solid #065F46',borderRadius:20,padding:'12px 32px',backdropFilter:'blur(8px)'}}>
-          <p style={{color:'#4ADE80',fontSize:22,margin:'0 0 4px'}}>🎮</p>
-          <p style={{color:'#fff',fontSize:14,fontWeight:900,margin:'0 0 4px',letterSpacing:1}}>{t.soon}</p>
-          <p style={{color:'rgba(255,255,255,0.4)',fontSize:11,margin:0}}>{t.soonSub}</p>
+        {/* Title */}
+        <h1 style={{color:'#fff',fontSize:'2.2rem',fontWeight:900,letterSpacing:'0.3em',margin:'16px 0 0',textShadow:'0 0 40px rgba(74,222,128,0.4)'}}>BRIDGE</h1>
+        <div style={{display:'flex',alignItems:'center',gap:8,marginTop:2}}>
+          <div style={{height:1,width:30,background:'linear-gradient(to right,transparent,#4ADE80)'}}/>
+          <span style={{color:'#4ADE80',fontSize:'0.75rem',fontWeight:900,letterSpacing:'0.5em'}}>SHARK</span>
+          <div style={{height:1,width:30,background:'linear-gradient(to left,transparent,#4ADE80)'}}/>
         </div>
       </div>
 
-      {/* Ranking teaser */}
-      <div style={{marginTop:'1rem',display:'flex',alignItems:'center',gap:10,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:14,padding:'10px 20px',width:'100%',maxWidth:320}}>
-        <span style={{fontSize:22}}>🏆</span>
-        <div>
-          <p style={{color:'rgba(255,255,255,0.7)',fontSize:12,fontWeight:800,margin:0}}>{t.rank}</p>
-          <p style={{color:'rgba(255,255,255,0.3)',fontSize:10,margin:0}}>{t.rankSub}</p>
+      {/* ── CARDS ROW ── */}
+      <div style={{display:'flex',gap:10,marginTop:20,width:'100%',maxWidth:380,padding:'0 16px'}}>
+        {/* Player ID */}
+        <div style={{flex:1,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(74,222,128,0.2)',borderRadius:16,padding:'12px 14px'}}>
+          <p style={{color:'rgba(255,255,255,0.4)',fontSize:9,fontWeight:800,letterSpacing:'0.15em',margin:'0 0 4px',textTransform:'uppercase'}}>{t.playerId}</p>
+          <p style={{color:'#4ADE80',fontSize:15,fontWeight:900,letterSpacing:'0.1em',margin:0}}>{gameId}</p>
+        </div>
+        {/* Days */}
+        <div style={{flex:1,background:'rgba(253,224,71,0.07)',border:'1px solid rgba(253,224,71,0.2)',borderRadius:16,padding:'12px 14px'}}>
+          <p style={{color:'rgba(255,255,255,0.4)',fontSize:9,fontWeight:800,letterSpacing:'0.1em',margin:'0 0 4px',textTransform:'uppercase'}}>⏱️ SESSION</p>
+          <p style={{color:'#FDE047',fontSize:11,fontWeight:900,margin:0,lineHeight:1.3}}>{t.days}</p>
         </div>
       </div>
 
-      <style>{`@keyframes pulse{0%,100%{opacity:.4;transform:scale(1);}50%{opacity:.8;transform:scale(1.04);}}`}</style>
+      {/* ── DIAMOND PROGRESS ── */}
+      <div style={{width:'100%',maxWidth:380,padding:'0 16px',marginTop:12}}>
+        <div style={{background:'rgba(253,224,71,0.07)',border:'1px solid rgba(253,224,71,0.25)',borderRadius:20,padding:'16px 18px'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+            <div>
+              <p style={{color:'rgba(255,255,255,0.4)',fontSize:9,fontWeight:800,letterSpacing:'0.15em',margin:'0 0 2px',textTransform:'uppercase'}}>{t.diamonds}</p>
+              <p style={{color:'#FDE047',fontSize:26,fontWeight:900,margin:0,lineHeight:1}}>
+                {gamePoints.toLocaleString()} <span style={{fontSize:14,color:'rgba(253,224,71,0.6)'}}>💎</span>
+              </p>
+            </div>
+            <div style={{textAlign:'right'}}>
+              <p style={{color:'rgba(255,255,255,0.4)',fontSize:9,fontWeight:800,letterSpacing:'0.1em',margin:'0 0 2px',textTransform:'uppercase'}}>{t.target}</p>
+              <p style={{color:'rgba(253,224,71,0.5)',fontSize:14,fontWeight:900,margin:0}}>{GAME_TARGET.toLocaleString()} 💎</p>
+            </div>
+          </div>
+          {/* Progress bar */}
+          <div style={{background:'rgba(0,0,0,0.3)',borderRadius:99,height:10,overflow:'hidden'}}>
+            <div style={{height:'100%',borderRadius:99,background:'linear-gradient(90deg,#065F46,#4ADE80)',width:`${pct}%`,transition:'width 0.5s ease',boxShadow:'0 0 10px rgba(74,222,128,0.5)'}}/>
+          </div>
+          <p style={{color:'rgba(255,255,255,0.35)',fontSize:10,fontWeight:700,margin:'6px 0 0',textAlign:'center'}}>{pct}% · {t.progress}</p>
+        </div>
+      </div>
+
+      {/* ── PLAY BUTTON ── */}
+      <div style={{width:'100%',maxWidth:380,padding:'0 16px',marginTop:14}}>
+        <a href={GAME_URL} target="_blank" rel="noreferrer" style={{display:'block',textDecoration:'none'}}>
+          <button style={{
+            width:'100%',padding:'18px 0',borderRadius:20,border:'none',cursor:'pointer',
+            background:'linear-gradient(135deg,#059669 0%,#4ADE80 50%,#059669 100%)',
+            backgroundSize:'200% 100%',
+            boxShadow:'0 0 30px rgba(74,222,128,0.4),0 4px 24px rgba(5,150,105,0.5)',
+            color:'#fff',fontSize:18,fontWeight:900,letterSpacing:'0.1em',
+            animation:'shimmer 2.5s linear infinite',
+          }}>
+            {t.playBtn}
+          </button>
+        </a>
+      </div>
+
+      {/* ── HOW TO WIN ── */}
+      <div style={{width:'100%',maxWidth:380,padding:'0 16px',marginTop:14}}>
+        <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:20,padding:'16px 18px'}}>
+          <p style={{color:'#D9C5A0',fontSize:11,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'0 0 12px'}}>{t.howTitle}</p>
+          {[t.how1,t.how2,t.how3].map((step,i)=>(
+            <div key={i} style={{display:'flex',alignItems:'center',gap:12,marginBottom: i<2?10:0,padding:'10px 14px',background:'rgba(255,255,255,0.03)',borderRadius:12,border:'1px solid rgba(255,255,255,0.06)'}}>
+              <div style={{width:28,height:28,borderRadius:'50%',background:['linear-gradient(135deg,#059669,#4ADE80)','linear-gradient(135deg,#B45309,#FDE047)','linear-gradient(135deg,#9D174D,#F472B6)'][i],display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:`0 0 10px ${['rgba(74,222,128,0.4)','rgba(253,224,71,0.4)','rgba(244,114,182,0.4)'][i]}`}}>
+                <span style={{color:'#fff',fontSize:12,fontWeight:900}}>{i+1}</span>
+              </div>
+              <p style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:0,lineHeight:1.3}}>{step}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── RULES BUTTON ── */}
+      <div style={{width:'100%',maxWidth:380,padding:'0 16px',marginTop:12}}>
+        <button onClick={()=>setShowRules(true)}
+          style={{width:'100%',padding:'13px 0',borderRadius:16,border:'1px solid rgba(253,224,71,0.3)',background:'rgba(253,224,71,0.06)',cursor:'pointer',color:'#FDE047',fontSize:13,fontWeight:900,letterSpacing:'0.05em'}}>
+          {t.rulesBtn}
+        </button>
+      </div>
+
+      <style>{`
+        @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+        @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+      `}</style>
     </div>
   );
 }
