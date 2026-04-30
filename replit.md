@@ -48,3 +48,21 @@ Key shared components in `App.tsx`:
 - `PayMethodType` — shared type `'cash'|'card'|'qr'|'apple'|'google'|null`
 
 To update the bank QR: change `BRIDGE_QR_PAY_URL` near line 198 in `artifacts/grado-eats/src/App.tsx`.
+
+## Bridge Game — Règles
+
+- Route: `/game` (requires Clerk auth)
+- Rules modal triggered by "📜 Règles du jeu" button (top-right), 4 languages, full rules explanation
+- `GameRulesModal` component in `main.tsx` above `GamePage`
+- Rules: 2 days × 3h/day = 6h; 1,000 💎/hour; 6,000 💎 target; missing 1,000 💎 = 5 DH; free delivery bonus at 7h
+
+## Bridge AI Assistant
+
+- Route: `/assistant` (accessible without auth)
+- Chat page backed by OpenAI (`gpt-4o-mini`) via Replit AI Integrations proxy
+- API endpoint: `POST /api/assistant/chat` — body: `{ messages, lang }`
+- System prompt: trained on all 4 Bridge services, order tracking, delivery, payment, game rules
+- Escalation: reply contains `[ESCALADE]` → frontend shows WhatsApp alert + button
+- Quick question buttons: suivi commande, retard livraison, paiement, autre
+- 4-language support: FR/EN/AR/AMZ
+- Owner WhatsApp: `+212600000000` (update in `BridgeAssistantPage` constant `BRIDGE_WA_NUMBER`)

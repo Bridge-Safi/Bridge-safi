@@ -721,11 +721,235 @@ const GAME_LANGS = ['fr','en','ar','amz'] as const;
 type GameLang = typeof GAME_LANGS[number];
 const GAME_LANG_LABELS: Record<GameLang,string> = {fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
 const GAME_T = {
-  fr:{ back:'← Retour', playerId:'ID JOUEUR', diamonds:'DIAMANTS', soon:'Jeu en préparation', soonSub:'Collecte de 💎 · Points → Menus offerts', howTitle:'Comment jouer ?', how1:'Passez une commande', how2:'Gagnez des 💎 diamants', how3:'Échangez contre des menus offerts', rank:'Mon classement', rankSub:'Bientôt disponible', pts:'pts' },
-  en:{ back:'← Back',   playerId:'PLAYER ID',  diamonds:'DIAMONDS',  soon:'Game coming soon',  soonSub:'Collect 💎 · Points → Free meals',           howTitle:'How to play?',   how1:'Place an order',    how2:'Earn 💎 diamonds',        how3:'Redeem for free meals',           rank:'My ranking',  rankSub:'Coming soon',       pts:'pts' },
-  ar:{ back:'→ رجوع',   playerId:'معرّف اللاعب',diamonds:'الماسات',  soon:'اللعبة قريباً',     soonSub:'اجمع 💎 · نقاط → وجبات مجانية',             howTitle:'كيف تلعب؟',     how1:'اطلب وجبة',         how2:'اربح 💎 الماسات',        how3:'استبدل بوجبات مجانية',           rank:'ترتيبي',      rankSub:'قريباً',            pts:'نقطة' },
-  amz:{ back:'← ⴰⵣⵣⵓⵍ', playerId:'ⴰⵏⴳⵔⴰⵡ',  diamonds:'ⵉⴷⵢⴰⵎⴰⵏ', soon:'ⴰⵎⴽⵙⴰⵡ ⵔⴰⴷ ⵢⴰⵙ', soonSub:'ⵙⴳⵎ 💎 · ⵜⵉⵏⵎⵍⴰⵏ → ⵉⵎⵏⵙⵉⵡⵏ',          howTitle:'ⵎⴰⵎⴽ ⴰⴷ ⵜⴽⵙⵎ?', how1:'ⴽ ⴰⵙⵙⴳⵏ',       how2:'ⵙⴳⵎ 💎 ⵉⴷⵢⴰⵎⴰⵏ',     how3:'ⵙⴽⵍⵙ ⵉⵎⵏⵙⵉⵡⵏ',          rank:'ⴰⵎⵣⵡⴰⵔⵓ',   rankSub:'ⵔⴰⴷ ⵢⴰⵙ',          pts:'ⵜⵉⵏⵎⵍⴰⵏ' },
+  fr:{ back:'← Retour', playerId:'ID JOUEUR', diamonds:'DIAMANTS', soon:'Jeu en préparation', soonSub:'Collecte de 💎 · Points → Menus offerts', howTitle:'Comment jouer ?', how1:'Passez une commande', how2:'Gagnez des 💎 diamants', how3:'Échangez contre des menus offerts', rank:'Mon classement', rankSub:'Bientôt disponible', pts:'pts', rulesBtn:'📜 Règles du jeu' },
+  en:{ back:'← Back',   playerId:'PLAYER ID',  diamonds:'DIAMONDS',  soon:'Game coming soon',  soonSub:'Collect 💎 · Points → Free meals',           howTitle:'How to play?',   how1:'Place an order',    how2:'Earn 💎 diamonds',        how3:'Redeem for free meals',           rank:'My ranking',  rankSub:'Coming soon',       pts:'pts', rulesBtn:'📜 Game Rules' },
+  ar:{ back:'→ رجوع',   playerId:'معرّف اللاعب',diamonds:'الماسات',  soon:'اللعبة قريباً',     soonSub:'اجمع 💎 · نقاط → وجبات مجانية',             howTitle:'كيف تلعب؟',     how1:'اطلب وجبة',         how2:'اربح 💎 الماسات',        how3:'استبدل بوجبات مجانية',           rank:'ترتيبي',      rankSub:'قريباً',            pts:'نقطة', rulesBtn:'📜 قواعد اللعبة' },
+  amz:{ back:'← ⴰⵣⵣⵓⵍ', playerId:'ⴰⵏⴳⵔⴰⵡ',  diamonds:'ⵉⴷⵢⴰⵎⴰⵏ', soon:'ⴰⵎⴽⵙⴰⵡ ⵔⴰⴷ ⵢⴰⵙ', soonSub:'ⵙⴳⵎ 💎 · ⵜⵉⵏⵎⵍⴰⵏ → ⵉⵎⵏⵙⵉⵡⵏ',          howTitle:'ⵎⴰⵎⴽ ⴰⴷ ⵜⴽⵙⵎ?', how1:'ⴽ ⴰⵙⵙⴳⵏ',       how2:'ⵙⴳⵎ 💎 ⵉⴷⵢⴰⵎⴰⵏ',     how3:'ⵙⴽⵍⵙ ⵉⵎⵏⵙⵉⵡⵏ',          rank:'ⴰⵎⵣⵡⴰⵔⵓ',   rankSub:'ⵔⴰⴷ ⵢⴰⵙ',          pts:'ⵜⵉⵏⵎⵍⴰⵏ', rulesBtn:'📜 ⵜⵉⵖⵔⵉ ⵏ ⵓⵎⴽⵙⴰⵡ' },
 };
+
+// ─── BRIDGE GAME RULES MODAL ──────────────────────────────────────────────────
+
+function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void }) {
+  const isAR = lang === 'ar';
+  const rules = {
+    fr: {
+      title: '📜 Règles du Jeu',
+      subtitle: 'Bridge Shark — Comment gagner ?',
+      sections: [
+        {
+          icon: '⏱️', title: 'Durée de jeu',
+          points: [
+            'Jouez 3 heures par jour pendant 2 jours consécutifs',
+            'Durée totale minimum : 6 heures sur 2 jours',
+            '🎁 +1h de jeu = livraison GRATUITE (7h en tout)',
+          ]
+        },
+        {
+          icon: '💎', title: 'Diamants à récolter',
+          points: [
+            'Objectif : récolter 6 000 💎 en 2 jours',
+            'Rythme : 1 000 💎 par heure de jeu',
+            'Chaque 1 000 💎 vaut 5 DH',
+          ]
+        },
+        {
+          icon: '💸', title: 'Diamants manquants',
+          points: [
+            'Si vous atteignez votre objectif → tout est offert ! 🎉',
+            'S\'il manque 1 000 💎 → vous payez 5 DH',
+            'S\'il manque 2 000 💎 → vous payez 10 DH',
+            'Calcul : diamants manquants ÷ 1 000 × 5 DH',
+          ]
+        },
+        {
+          icon: '🎁', title: 'Comment utiliser vos gains',
+          points: [
+            '🛵 Un menu depuis Bridge Eats',
+            '🚬 Un paquet de cigarettes via Bridge Tabac',
+            '🌹 Une coupe de fleurs via Bridge Fleurs',
+            'Échangez directement dans l\'application !',
+          ]
+        },
+      ],
+      example: '💡 Exemple : vous terminez avec 4 000 💎 au lieu de 6 000 → il manque 2 000 💎 → vous payez 10 DH seulement.',
+      close: 'J\'ai compris ! 🦈',
+    },
+    en: {
+      title: '📜 Game Rules',
+      subtitle: 'Bridge Shark — How to win?',
+      sections: [
+        {
+          icon: '⏱️', title: 'Playing time',
+          points: [
+            'Play 3 hours per day for 2 consecutive days',
+            'Minimum total: 6 hours over 2 days',
+            '🎁 +1 extra hour = FREE delivery (7h total)',
+          ]
+        },
+        {
+          icon: '💎', title: 'Diamonds to collect',
+          points: [
+            'Goal: collect 6,000 💎 in 2 days',
+            'Pace: 1,000 💎 per hour of play',
+            'Every 1,000 💎 = 5 MAD value',
+          ]
+        },
+        {
+          icon: '💸', title: 'Missing diamonds',
+          points: [
+            'Reach the goal → everything is free! 🎉',
+            'Missing 1,000 💎 → you pay 5 MAD',
+            'Missing 2,000 💎 → you pay 10 MAD',
+            'Formula: missing diamonds ÷ 1,000 × 5 MAD',
+          ]
+        },
+        {
+          icon: '🎁', title: 'How to use your winnings',
+          points: [
+            '🛵 A meal from Bridge Eats',
+            '🚬 A pack of cigarettes from Bridge Tabac',
+            '🌹 A bunch of flowers from Bridge Fleurs',
+            'Redeem directly in the app!',
+          ]
+        },
+      ],
+      example: '💡 Example: you finish with 4,000 💎 instead of 6,000 → missing 2,000 💎 → you pay only 10 MAD.',
+      close: 'Got it! 🦈',
+    },
+    ar: {
+      title: '📜 قواعد اللعبة',
+      subtitle: 'Bridge Shark — كيف تفوز؟',
+      sections: [
+        {
+          icon: '⏱️', title: 'وقت اللعب',
+          points: [
+            'العب 3 ساعات يومياً لمدة يومين متتاليين',
+            'الحد الأدنى : 6 ساعات على مدى يومين',
+            '🎁 ساعة إضافية = توصيل مجاني (7 ساعات مجموعة)',
+          ]
+        },
+        {
+          icon: '💎', title: 'الماسات المطلوبة',
+          points: [
+            'الهدف : جمع 6 000 💎 خلال يومين',
+            'الوتيرة : 1 000 💎 في كل ساعة لعب',
+            'كل 1 000 💎 يساوي 5 درهم',
+          ]
+        },
+        {
+          icon: '💸', title: 'الماسات الناقصة',
+          points: [
+            'حققت الهدف → كل شيء مجاني! 🎉',
+            'ناقص 1 000 💎 → تدفع 5 دراهم',
+            'ناقص 2 000 💎 → تدفع 10 دراهم',
+            'الحساب : الماسات الناقصة ÷ 1 000 × 5 درهم',
+          ]
+        },
+        {
+          icon: '🎁', title: 'كيف تستخدم مكاسبك',
+          points: [
+            '🛵 وجبة من Bridge Eats',
+            '🚬 علبة سجائر من Bridge Tabac',
+            '🌹 باقة ورد من Bridge Fleurs',
+            'استبدل مباشرة من التطبيق!',
+          ]
+        },
+      ],
+      example: '💡 مثال : أنهيت اللعبة بـ 4 000 💎 بدلاً من 6 000 → ناقص 2 000 💎 → تدفع 10 دراهم فقط.',
+      close: 'فهمت! 🦈',
+    },
+    amz: {
+      title: '📜 ⵜⵉⵖⵔⵉ ⵏ ⵓⵎⴽⵙⴰⵡ',
+      subtitle: 'Bridge Shark',
+      sections: [
+        {
+          icon: '⏱️', title: 'ⴰⵣⵎⵣ ⵏ ⵓⵎⴽⵙⴰⵡ',
+          points: [
+            '3 ⵜⵉⵙⵙⵓⵜⵉⵏ ⵙ ⵡⴰⵙⵙ, 2 ⵡⴰⵙⵙⴰⵜⵏ',
+            'ⴰⵣⵎⵣ ⴰⵎⵏⵣⵡⴰⵔⵓ : 6 ⵜⵉⵙⵙⵓⵜⵉⵏ',
+            '🎁 +1 ⵜⵉⵙⵙⵓⵜ = ⴰⵣⵏⵏⵣ ⴱⵍⴰ ⴽⵔⴰ ⵏ ⵓⵣⵔⴼ',
+          ]
+        },
+        {
+          icon: '💎', title: 'ⵉⴷⵢⴰⵎⴰⵏ ⵉⵍⴰⵎⵎⴰⵏ',
+          points: [
+            'ⴰⵎⵓⵟⵟⵓ : 6 000 💎 ⵙ 2 ⵡⴰⵙⵙⴰⵜⵏ',
+            '1 000 💎 ⵙ ⵜⵉⵙⵙⵓⵜ ⵢⴰⵜⵜ',
+            '1 000 💎 = 5 ⴷⵔⵀⵎ',
+          ]
+        },
+        {
+          icon: '💸', title: 'ⵉⴷⵢⴰⵎⴰⵏ ⵉⵍⵍⴰⵏ',
+          points: [
+            'ⵓⵚⴽⵉⴷ ⴰⵎⵓⵟⵟⵓ → ⴽⵓⵍⵍⵓ ⵢⵉⵍⵉ ⵖⵔⴰⵜⴽ! 🎉',
+            'ⵢⵍⵍⴰ 1 000 💎 → 5 ⴷⵔⵀⵎ',
+            'ⵢⵍⵍⴰ 2 000 💎 → 10 ⴷⵔⵀⵎ',
+          ]
+        },
+        {
+          icon: '🎁', title: 'ⵎⴰⵎⴽ ⵜⵙⵖⵔⵙⴷ ⵉⵔⵏⵓⵜⵏ ⵏⵏⴽ',
+          points: [
+            '🛵 ⴰⵎⵏⵙⵉ ⵙ Bridge Eats',
+            '🚬 ⵜⴰⴱⴰⵖⵓⵔⵜ ⵙ Bridge Tabac',
+            '🌹 ⵉⵣⵓⵍⴰⵏ ⵙ Bridge Fleurs',
+          ]
+        },
+      ],
+      example: '💡 4 000 💎 ⴷⴳ 6 000 → ⵢⵍⵍⴰ 2 000 → 10 ⴷⵔⵀⵎ.',
+      close: 'ⵙⵙⵉⵏⵖ! 🦈',
+    },
+  };
+
+  const r = rules[lang];
+  return (
+    <div style={{position:'fixed',inset:0,zIndex:300,background:'rgba(0,0,0,0.85)',backdropFilter:'blur(6px)',display:'flex',flexDirection:'column',overflowY:'auto'}}
+      onClick={onClose}>
+      <div style={{maxWidth:420,width:'100%',margin:'auto',padding:'16px 12px'}} onClick={e=>e.stopPropagation()}>
+        <div style={{background:'linear-gradient(160deg,#020c07 0%,#0A2218 60%,#0D2E1A 100%)',borderRadius:24,border:'2px solid rgba(74,222,128,0.3)',overflow:'hidden',boxShadow:'0 24px 80px rgba(0,0,0,0.7)'}}>
+          {/* Header */}
+          <div style={{padding:'24px 20px 16px',textAlign:'center',background:'linear-gradient(180deg,rgba(6,95,70,0.3) 0%,transparent 100%)'}}>
+            <div style={{width:72,height:72,borderRadius:'50%',overflow:'hidden',border:'2.5px solid #065F46',margin:'0 auto 12px',boxShadow:'0 0 30px rgba(6,95,70,0.5)'}}>
+              <img src="/bridge-shark.png" alt="Bridge Shark" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top'}}/>
+            </div>
+            <h2 style={{color:'#fff',fontSize:20,fontWeight:900,margin:'0 0 4px',letterSpacing:1}}>{r.title}</h2>
+            <p style={{color:'rgba(255,255,255,0.5)',fontSize:12,margin:0}}>{r.subtitle}</p>
+          </div>
+
+          {/* Rules sections */}
+          <div style={{padding:'0 16px 8px',direction:isAR?'rtl':'ltr'}}>
+            {r.sections.map((s, si) => (
+              <div key={si} style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:16,padding:'14px 16px',marginBottom:10}}>
+                <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10,flexDirection:isAR?'row-reverse':'row'}}>
+                  <span style={{fontSize:20}}>{s.icon}</span>
+                  <p style={{color:'#4ADE80',fontSize:12,fontWeight:900,margin:0,letterSpacing:0.5,textTransform:'uppercase'}}>{s.title}</p>
+                </div>
+                {s.points.map((p, pi) => (
+                  <div key={pi} style={{display:'flex',alignItems:'flex-start',gap:8,marginBottom:6,flexDirection:isAR?'row-reverse':'row'}}>
+                    <div style={{width:6,height:6,borderRadius:'50%',background:'#FDE047',marginTop:5,flexShrink:0}}/>
+                    <p style={{color:'rgba(255,255,255,0.8)',fontSize:13,margin:0,lineHeight:1.5}}>{p}</p>
+                  </div>
+                ))}
+              </div>
+            ))}
+
+            {/* Example */}
+            <div style={{background:'rgba(253,224,71,0.1)',border:'1px solid rgba(253,224,71,0.3)',borderRadius:14,padding:'12px 14px',marginBottom:16}}>
+              <p style={{color:'#FDE047',fontSize:12,margin:0,lineHeight:1.6}}>{r.example}</p>
+            </div>
+          </div>
+
+          {/* Close button */}
+          <div style={{padding:'0 16px 20px'}}>
+            <button onClick={onClose}
+              style={{width:'100%',padding:'14px',borderRadius:16,background:'linear-gradient(135deg,#065F46,#059669)',border:'none',color:'#fff',fontSize:15,fontWeight:900,cursor:'pointer',boxShadow:'0 6px 24px rgba(6,95,70,0.5)',letterSpacing:0.5}}>
+              {r.close}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function GamePage() {
   const { isLoaded, isSignedIn, user } = useUser();
@@ -750,6 +974,8 @@ function GamePage() {
     } catch {}
     return next;
   });
+
+  const [showRules, setShowRules] = useState(false);
 
   const t = GAME_T[lang];
   const isAR = lang === 'ar';
@@ -785,11 +1011,15 @@ function GamePage() {
           </div>
         </div>
 
-        {/* Right: lang toggle + back */}
+        {/* Right: lang toggle + rules + back */}
         <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:8}}>
           <button onClick={cycleLang}
             style={{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.2)',color:'#D9C5A0',borderRadius:12,padding:'7px 14px',fontSize:12,fontWeight:900,cursor:'pointer',backdropFilter:'blur(8px)',letterSpacing:'0.1em'}}>
             {GAME_LANG_LABELS[lang]}
+          </button>
+          <button onClick={()=>setShowRules(true)}
+            style={{background:'rgba(6,95,70,0.3)',border:'1px solid rgba(74,222,128,0.5)',color:'#4ADE80',borderRadius:12,padding:'8px 14px',fontSize:11,fontWeight:900,cursor:'pointer',backdropFilter:'blur(8px)',letterSpacing:'0.05em'}}>
+            {t.rulesBtn}
           </button>
           <button onClick={()=>navigate('/')}
             style={{background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',color:'#fff',borderRadius:12,padding:'8px 16px',fontSize:13,fontWeight:800,cursor:'pointer',backdropFilter:'blur(8px)'}}>
@@ -797,6 +1027,8 @@ function GamePage() {
           </button>
         </div>
       </div>
+
+      {showRules && <GameRulesModal lang={lang} onClose={()=>setShowRules(false)}/>}
 
       {/* Shark mascot */}
       <div style={{position:'relative',marginBottom:'1.5rem'}}>
@@ -1141,6 +1373,268 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
   );
 }
 
+// ─── BRIDGE AI ASSISTANT PAGE ────────────────────────────────────────────────
+
+type AssistMsg = { role: 'user' | 'assistant'; content: string };
+
+const ASSISTANT_T = {
+  fr: {
+    title: 'Bridge Assistant',
+    subtitle: 'Votre conseiller IA 24/7',
+    placeholder: 'Écrivez votre question...',
+    send: 'Envoyer',
+    thinking: 'Bridge IA réfléchit...',
+    greeting: 'Bonjour ! 👋 Je suis votre assistant Bridge Safi. Comment puis-je vous aider aujourd\'hui ?',
+    quickTitle: 'Questions fréquentes',
+    q1: '📦 Suivre ma commande',
+    q2: '🚚 Retard de livraison',
+    q3: '💳 Problème de paiement',
+    q4: '❓ Autre question',
+    escalated: '🔔 Un responsable Bridge vous contacte sous 30 min',
+    wa: '📱 Contacter via WhatsApp',
+    back: '← Retour',
+  },
+  en: {
+    title: 'Bridge Assistant',
+    subtitle: 'Your AI advisor 24/7',
+    placeholder: 'Write your question...',
+    send: 'Send',
+    thinking: 'Bridge AI is thinking...',
+    greeting: 'Hello! 👋 I\'m your Bridge Safi assistant. How can I help you today?',
+    quickTitle: 'Frequent questions',
+    q1: '📦 Track my order',
+    q2: '🚚 Delivery delay',
+    q3: '💳 Payment issue',
+    q4: '❓ Other question',
+    escalated: '🔔 A Bridge manager will contact you within 30 min',
+    wa: '📱 Contact via WhatsApp',
+    back: '← Back',
+  },
+  ar: {
+    title: 'مساعد بريدج',
+    subtitle: 'مستشارك الذكي 24/7',
+    placeholder: 'اكتب سؤالك...',
+    send: 'إرسال',
+    thinking: 'بريدج AI يفكر...',
+    greeting: 'أهلاً! 👋 أنا مساعدك الذكي من Bridge Safi. كيف يمكنني مساعدتك اليوم؟',
+    quickTitle: 'أسئلة شائعة',
+    q1: '📦 تتبع طلبي',
+    q2: '🚚 تأخر التوصيل',
+    q3: '💳 مشكلة في الدفع',
+    q4: '❓ سؤال آخر',
+    escalated: '🔔 سيتصل بك مسؤول Bridge خلال 30 دقيقة',
+    wa: '📱 تواصل عبر واتساب',
+    back: '→ رجوع',
+  },
+  amz: {
+    title: 'ⴰⵎⵙⴰⵡⴰⵍ Bridge',
+    subtitle: 'ⴰⵎⵙⴰⵡⴰⵍ ⵏⵏⴽ 24/7',
+    placeholder: 'ⴽⵜⴱ ⵓⵙⵉⴹⵏ ⵏⵏⴽ...',
+    send: 'ⵥⵥⵍ',
+    thinking: 'Bridge AI ⵉⵜⵜⴼⴽⴽⵉⵔ...',
+    greeting: 'ⴰⵣⵓⵍ! 👋 ⵏⴽⴽ ⴰⵎⵙⴰⵡⴰⵍ ⵏⵏⴽ ⵏ Bridge Safi.',
+    quickTitle: 'ⵉⵙⵙⵉⴹⵏⵏ ⵉⵎⵥⵍⴰⵢⵏ',
+    q1: '📦 ⵙⵍⴳⵏ ⴰⵣⵏⵓⵥ ⵏⵏⵉ',
+    q2: '🚚 ⴰⵃⵟⵟⵓ ⵏ ⵓⵣⵏⵉ',
+    q3: '💳 ⴰⵎⴽⴽⵓⵙ ⵏ ⵓⵙⵓⵔⴼ',
+    q4: '❓ ⴰⵙⵙⵉⴹ ⵢⴰⴹⵏ',
+    escalated: '🔔 ⴰⵎⵙⵉⵡⵍ Bridge ⴰⴷ ⴽ ⵉⵙⵙⵏⵖ ⵖ 30 ⵜⵓⵙⴷⴰⵜⵉⵏ',
+    wa: '📱 ⵙⵙⵏⵎⵍ ⵙ WhatsApp',
+    back: '← ⴰⵣⵣⵓⵍ',
+  },
+};
+
+type AssistLang = 'fr'|'en'|'ar'|'amz';
+const ASSIST_LANGS: AssistLang[] = ['fr','en','ar','amz'];
+const ASSIST_LANG_LABELS: Record<AssistLang,string> = {fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
+
+function BridgeAssistantPage() {
+  const [, navigate] = useLocation();
+  const [lang, setLang] = useState<AssistLang>(()=>{
+    try { const r = localStorage.getItem('bridge_nav_state'); if(r){const p=JSON.parse(r);if(ASSIST_LANGS.includes(p.lang)) return p.lang;} } catch{}
+    return 'fr';
+  });
+  const t = ASSISTANT_T[lang];
+  const isAR = lang==='ar';
+
+  const [messages, setMessages] = useState<AssistMsg[]>([{ role:'assistant', content: ASSISTANT_T[lang].greeting }]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [escalated, setEscalated] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  const BRIDGE_WA_NUMBER = '+212600000000';
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior:'smooth' });
+  }, [messages, loading]);
+
+  // Re-set greeting when language changes
+  useEffect(() => {
+    setMessages(prev => {
+      if (prev.length === 1 && prev[0].role === 'assistant') {
+        return [{ role:'assistant', content: ASSISTANT_T[lang].greeting }];
+      }
+      return prev;
+    });
+  }, [lang]);
+
+  const sendMessage = async (text: string) => {
+    if (!text.trim() || loading) return;
+    const userMsg: AssistMsg = { role:'user', content: text.trim() };
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
+    setInput('');
+    setLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.BASE_URL}api/assistant/chat`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ messages: newMessages, lang }),
+      });
+      const data = await res.json() as { reply: string; isEscalation: boolean };
+      setMessages(prev => [...prev, { role:'assistant', content: data.reply }]);
+      if (data.isEscalation) setEscalated(true);
+    } catch {
+      setMessages(prev => [...prev, { role:'assistant', content: '⚠️ Service temporairement indisponible. Réessayez dans quelques instants.' }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const quickQuestions = [t.q1, t.q2, t.q3, t.q4];
+
+  return (
+    <div dir={isAR?'rtl':'ltr'} style={{minHeight:'100dvh',background:'linear-gradient(160deg,#030712 0%,#0f172a 50%,#1e1b4b 100%)',display:'flex',flexDirection:'column',position:'relative',overflow:'hidden'}}>
+      {/* Ambient glows */}
+      <div style={{position:'absolute',top:-80,left:-80,width:300,height:300,borderRadius:'50%',background:'rgba(99,102,241,0.12)',filter:'blur(80px)',pointerEvents:'none'}}/>
+      <div style={{position:'absolute',bottom:-60,right:-60,width:250,height:250,borderRadius:'50%',background:'rgba(14,165,233,0.1)',filter:'blur(70px)',pointerEvents:'none'}}/>
+
+      {/* Header */}
+      <div style={{position:'sticky',top:0,zIndex:50,background:'rgba(3,7,18,0.85)',backdropFilter:'blur(16px)',borderBottom:'1px solid rgba(99,102,241,0.2)',padding:'14px 16px'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',maxWidth:480,margin:'0 auto'}}>
+          <button onClick={()=>navigate('/')} style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',color:'#94a3b8',borderRadius:12,padding:'8px 14px',fontSize:12,fontWeight:700,cursor:'pointer'}}>
+            {t.back}
+          </button>
+          <div style={{textAlign:'center'}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,justifyContent:'center'}}>
+              <div style={{width:8,height:8,borderRadius:'50%',background:'#4ADE80',boxShadow:'0 0 8px #4ADE80'}}/>
+              <p style={{color:'#fff',fontSize:15,fontWeight:900,margin:0,letterSpacing:0.5}}>{t.title}</p>
+            </div>
+            <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,margin:0}}>{t.subtitle}</p>
+          </div>
+          <button onClick={()=>setLang(l=>{const i=ASSIST_LANGS.indexOf(l);return ASSIST_LANGS[(i+1)%ASSIST_LANGS.length];})}
+            style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',color:'#94a3b8',borderRadius:12,padding:'8px 14px',fontSize:12,fontWeight:700,cursor:'pointer'}}>
+            {ASSIST_LANG_LABELS[lang]}
+          </button>
+        </div>
+      </div>
+
+      {/* Chat messages */}
+      <div style={{flex:1,overflowY:'auto',padding:'16px',maxWidth:480,width:'100%',margin:'0 auto',boxSizing:'border-box'}}>
+
+        {/* Quick actions (only when chat is at greeting) */}
+        {messages.length <= 1 && (
+          <div style={{marginBottom:16}}>
+            <p style={{color:'rgba(255,255,255,0.4)',fontSize:11,fontWeight:700,letterSpacing:2,textTransform:'uppercase',textAlign:'center',marginBottom:10}}>{t.quickTitle}</p>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+              {quickQuestions.map((q,i) => (
+                <button key={i} onClick={()=>sendMessage(q)}
+                  style={{background:'rgba(99,102,241,0.12)',border:'1px solid rgba(99,102,241,0.3)',color:'rgba(255,255,255,0.8)',borderRadius:14,padding:'12px 10px',fontSize:12,fontWeight:600,cursor:'pointer',textAlign:'center',lineHeight:1.4}}>
+                  {q}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Messages */}
+        {messages.map((msg, idx) => (
+          <div key={idx} style={{display:'flex',flexDirection:'column',alignItems:msg.role==='user'?(isAR?'flex-start':'flex-end'):(isAR?'flex-end':'flex-start'),marginBottom:12}}>
+            {msg.role==='assistant' && (
+              <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:4,flexDirection:isAR?'row-reverse':'row'}}>
+                <div style={{width:28,height:28,borderRadius:'50%',overflow:'hidden',border:'1px solid rgba(99,102,241,0.4)'}}>
+                  <img src="/logo_splash.jpeg" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+                </div>
+                <span style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700}}>Bridge AI</span>
+              </div>
+            )}
+            <div style={{
+              maxWidth:'82%',
+              background: msg.role==='user'
+                ? 'linear-gradient(135deg,#4f46e5,#7c3aed)'
+                : 'rgba(255,255,255,0.07)',
+              border: msg.role==='user' ? 'none' : '1px solid rgba(255,255,255,0.1)',
+              borderRadius: msg.role==='user'
+                ? isAR ? '18px 18px 18px 4px' : '18px 18px 4px 18px'
+                : isAR ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+              padding:'12px 14px',
+              boxShadow: msg.role==='user' ? '0 4px 16px rgba(79,70,229,0.3)' : 'none',
+            }}>
+              <p style={{color:'#fff',fontSize:13,lineHeight:1.6,margin:0,whiteSpace:'pre-wrap'}}>{msg.content}</p>
+            </div>
+          </div>
+        ))}
+
+        {/* Loading */}
+        {loading && (
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
+            <div style={{width:28,height:28,borderRadius:'50%',overflow:'hidden',border:'1px solid rgba(99,102,241,0.4)'}}>
+              <img src="/logo_splash.jpeg" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+            </div>
+            <div style={{background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'18px 18px 18px 4px',padding:'12px 16px',display:'flex',gap:6,alignItems:'center'}}>
+              {[0,1,2].map(i=>(
+                <div key={i} style={{width:7,height:7,borderRadius:'50%',background:'#6366f1',animation:`dotBounce 1.2s ease-in-out ${i*0.2}s infinite`}}/>
+              ))}
+            </div>
+            <span style={{color:'rgba(255,255,255,0.35)',fontSize:10}}>{t.thinking}</span>
+          </div>
+        )}
+
+        {/* Escalation alert */}
+        {escalated && (
+          <div style={{background:'rgba(234,179,8,0.1)',border:'1px solid rgba(234,179,8,0.4)',borderRadius:16,padding:'14px 16px',marginBottom:12,textAlign:'center'}}>
+            <p style={{color:'#FDE047',fontSize:13,fontWeight:700,margin:'0 0 10px'}}>{t.escalated}</p>
+            <a href={`https://wa.me/${BRIDGE_WA_NUMBER.replace('+','')}`} target="_blank" rel="noreferrer"
+              style={{display:'inline-flex',alignItems:'center',gap:8,background:'#25d366',color:'#fff',borderRadius:12,padding:'10px 18px',fontSize:13,fontWeight:800,textDecoration:'none'}}>
+              {t.wa}
+            </a>
+          </div>
+        )}
+
+        <div ref={bottomRef}/>
+      </div>
+
+      {/* Input bar */}
+      <div style={{background:'rgba(3,7,18,0.9)',backdropFilter:'blur(16px)',borderTop:'1px solid rgba(99,102,241,0.2)',padding:'12px 16px',paddingBottom:'max(12px,env(safe-area-inset-bottom))'}}>
+        <div style={{display:'flex',gap:10,maxWidth:480,margin:'0 auto',alignItems:'flex-end'}}>
+          <textarea
+            value={input}
+            onChange={e=>setInput(e.target.value)}
+            onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage(input);}}}
+            placeholder={t.placeholder}
+            rows={1}
+            style={{flex:1,background:'rgba(255,255,255,0.07)',border:'1px solid rgba(99,102,241,0.3)',color:'#fff',borderRadius:16,padding:'12px 14px',fontSize:14,outline:'none',resize:'none',minHeight:46,maxHeight:120,lineHeight:1.5,fontFamily:'inherit'}}
+          />
+          <button
+            onClick={()=>sendMessage(input)}
+            disabled={loading||!input.trim()}
+            style={{width:46,height:46,borderRadius:14,background:loading||!input.trim()?'rgba(79,70,229,0.3)':'linear-gradient(135deg,#4f46e5,#7c3aed)',border:'none',color:'#fff',fontSize:20,cursor:loading||!input.trim()?'default':'pointer',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',transition:'all 0.2s',boxShadow:loading||!input.trim()?'none':'0 4px 14px rgba(79,70,229,0.4)'}}>
+            {loading ? '⏳' : '↑'}
+          </button>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes dotBounce {
+          0%,80%,100%{transform:translateY(0);}
+          40%{transform:translateY(-6px);}
+        }
+      `}</style>
+    </div>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 function ClerkProviderWithRoutes() {
@@ -1161,6 +1655,7 @@ function ClerkProviderWithRoutes() {
           <Route path="/sign-up/*?" component={SignUpPage} />
           <Route path="/forgot-password" component={ForgotPasswordPage} />
           <Route path="/game" component={GamePage} />
+          <Route path="/assistant" component={BridgeAssistantPage} />
           <Route path="/driver/:ref" component={DriverTrackerPage} />
           <Route component={App} />
         </Switch>
