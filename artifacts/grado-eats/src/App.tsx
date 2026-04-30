@@ -1074,9 +1074,9 @@ function Field({label,value,onChange,placeholder,type='text',lang,error,errorMsg
 
 // ─── ADDRESS AUTOCOMPLETE (Photon / OSM) ──────────────────────────────────────
 
-function AddressAutocomplete({label,value,onChange,placeholder,lang,error}:{
+function AddressAutocomplete({label,value,onChange,placeholder,lang,error,nationwide}:{
   label:string; value:string; onChange:(v:string)=>void;
-  placeholder:string; lang:Lang; error?:boolean;
+  placeholder:string; lang:Lang; error?:boolean; nationwide?:boolean;
 }) {
   const fClass=fontClass(lang);
   const [suggestions,setSuggestions]=useState<string[]>([]);
@@ -1097,26 +1097,29 @@ function AddressAutocomplete({label,value,onChange,placeholder,lang,error}:{
     timerRef.current=setTimeout(async()=>{
       setLoading(true);
       try{
-        // Nominatim — filtré strictement sur Maroc (countrycodes=ma) + boîte Safi (bounded=1)
-        const url=`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+' Safi')}&format=json&countrycodes=ma&viewbox=-9.35,32.42,-9.10,32.15&bounded=1&limit=6&addressdetails=1&accept-language=fr`;
+        // Nominatim — Maroc complet si nationwide, sinon borné à Safi
+        const safiBox=nationwide?'':'&viewbox=-9.35,32.42,-9.10,32.15&bounded=1';
+        const query=nationwide?q:q+' Safi';
+        const url=`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&countrycodes=ma${safiBox}&limit=7&addressdetails=1&accept-language=fr`;
         const res=await fetch(url,{headers:{'Accept-Language':'fr'}});
         const data:any[]=await res.json();
         const items=data.map((f:any)=>{
           const a=f.address||{};
+          const city=a.city||a.town||a.village||'';
           const parts=[
             a.road||a.pedestrian||a.footway||'',
             a.house_number||'',
             a.suburb||a.quarter||a.neighbourhood||'',
-            a.city||a.town||a.village||'Safi',
+            city,
           ].filter(Boolean);
-          return parts.join(', ');
+          return parts.join(', ') || f.display_name?.split(',').slice(0,3).join(', ');
         }).filter(Boolean);
-        const unique=[...new Set(items)];
+        const unique=[...new Set(items)] as string[];
         setSuggestions(unique);
         setOpen(unique.length>0);
       }catch{setSuggestions([]);}
       finally{setLoading(false);}
-    },400);
+    },380);
   };
 
   return(
@@ -3158,26 +3161,32 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
 
             {/* Pickup GPS */}
             <div>
-              <label style={labelStyle}>📍 {lang==='ar'?'نقطة الانطلاق':lang==='amz'?'ⴰⵙⵔⵓ':lang==='en'?'Pickup location':'Point de départ'}</label>
-              <div style={{display:'flex',gap:8}}>
-                <input value={clientAddress} onChange={e=>setClientAddress(e.target.value)}
-                  placeholder={lang==='ar'?'عنوان الانطلاق':lang==='en'?'Your pickup address':'Votre adresse de départ'}
-                  style={{...inputStyle,flex:1}}/>
-                <button onClick={getClientGPS}
-                  className="rounded-xl flex items-center justify-center transition-all active:scale-90"
-                  style={{background:'#78350F',color:'white',border:'none',width:48,minWidth:48,fontSize:20,cursor:'pointer'}}>
-                  {gettingGPS?<span style={{fontSize:12,fontWeight:900,animation:'spin 1s linear infinite'}}>⟳</span>:'🎯'}
-                </button>
-              </div>
-              {clientPos&&<p style={{fontSize:10,color:'#10B981',marginTop:4,fontWeight:700}}>✓ GPS détecté · {clientPos.lat.toFixed(4)}, {clientPos.lng.toFixed(4)}</p>}
+              <AddressAutocomplete
+                label={`📍 ${lang==='ar'?'نقطة الانطلاق':lang==='amz'?'ⴰⵙⵔⵓ':lang==='en'?'Pickup location':'Point de départ'}`}
+                value={clientAddress}
+                onChange={setClientAddress}
+                placeholder={lang==='ar'?'Rechercher une adresse à Safi':lang==='en'?'Search an address in Safi':'Rechercher une adresse à Safi'}
+                lang={lang}/>
+              <button onClick={getClientGPS}
+                className="w-full rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 mb-1"
+                style={{background:'#78350F',color:'white',border:'none',padding:'9px 14px',fontSize:12,fontWeight:900,cursor:'pointer',marginTop:-8}}>
+                {gettingGPS
+                  ?<><span style={{fontSize:13,animation:'spin 1s linear infinite'}}>⟳</span>{lang==='ar'?'يتم التحديد…':lang==='en'?'Detecting…':'Détection GPS…'}</>
+                  :<><span style={{fontSize:16}}>🎯</span>{lang==='ar'?'تحديد موقعي':lang==='en'?'Detect my location':'Détecter ma position GPS'}</>
+                }
+              </button>
+              {clientPos&&<p style={{fontSize:10,color:'#10B981',marginTop:2,fontWeight:700}}>✓ GPS · {clientPos.lat.toFixed(4)}, {clientPos.lng.toFixed(4)}</p>}
             </div>
 
             {/* Destination */}
             <div>
-              <label style={labelStyle}>🏁 {lang==='ar'?'الوجهة':lang==='amz'?'ⴰⵎⵎⴰⵙ':lang==='en'?'Destination':'Destination'}</label>
-              <input value={destination} onChange={e=>setDestination(e.target.value)}
-                placeholder={lang==='ar'?'وجهتك':lang==='en'?'Where to?':'Où allez-vous ?'}
-                style={inputStyle}/>
+              <AddressAutocomplete
+                label={`🏁 ${lang==='ar'?'الوجهة':lang==='amz'?'ⴰⵎⵎⴰⵙ':lang==='en'?'Destination':'Destination'}`}
+                value={destination}
+                onChange={setDestination}
+                placeholder={lang==='ar'?'وجهتك (أي مكان بالمغرب)':lang==='en'?'Where to? (anywhere in Morocco)':'Destination (partout au Maroc)'}
+                lang={lang}
+                nationwide/>
             </div>
 
             {/* Name */}
@@ -4008,11 +4017,13 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
               placeholder={t.namePh} value={name} onChange={e=>{setName(e.target.value);setErr('');}}/>
           </div>
           {delivMode==='delivery'&&(
-            <div>
-              <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:'#065F46'}}>📍 {t.addrLabel}</p>
-              <input className={inputCls} style={inputStyle(!!err&&!addr.trim())}
-                placeholder={t.addrPh} value={addr} onChange={e=>{setAddr(e.target.value);setErr('');}}/>
-            </div>
+            <AddressAutocomplete
+              label={`📍 ${t.addrLabel}`}
+              value={addr}
+              onChange={v=>{setAddr(v);setErr('');}}
+              placeholder={t.addrPh}
+              lang={lang}
+              error={!!err&&!addr.trim()}/>
           )}
           {delivMode==='collect'&&(
             <div className="rounded-xl px-4 py-3" style={{background:'#FEF3C7',border:'1.5px solid #FDE68A'}}>
