@@ -1459,6 +1459,417 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
   );
 }
 
+// ─── DISPATCH PAGE (livreur + chauffeur taxi) ─────────────────────────────────
+
+type DispatchRole = 'choose' | 'eats' | 'taxi';
+
+interface PendingOrder { id: number; ref: string; customerName: string; customerAddress: string; restaurantName: string | null; total: number; items: string; }
+interface PendingTaxi { ref: string; customerName?: string; clientAddress?: string; destination?: string; clientLat?: number; clientLng?: number; }
+
+async function registerPush(driverName: string): Promise<boolean> {
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const keyRes = await fetch('/api/push/vapid-key');
+    const { publicKey } = await keyRes.json();
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: publicKey,
+    });
+    const key = sub.getKey('p256dh');
+    const auth = sub.getKey('auth');
+    if (!key || !auth) return false;
+    await fetch('/api/push/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        endpoint: sub.endpoint,
+        keys: {
+          p256dh: btoa(String.fromCharCode(...new Uint8Array(key))),
+          auth: btoa(String.fromCharCode(...new Uint8Array(auth))),
+        },
+        driverName,
+      }),
+    });
+    return true;
+  } catch { return false; }
+}
+
+function playAlarm() {
+  try {
+    const ctx = new AudioContext();
+    const beep = (freq: number, start: number, dur: number) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(0.8, ctx.currentTime + start);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+      o.start(ctx.currentTime + start);
+      o.stop(ctx.currentTime + start + dur + 0.05);
+    };
+    [0, 0.25, 0.5, 0.8, 1.05, 1.3].forEach((t, i) => beep(i % 2 === 0 ? 880 : 1100, t, 0.2));
+  } catch {}
+  try { navigator.vibrate?.([300, 150, 300, 150, 600, 200, 600]); } catch {}
+}
+
+function DispatchPage() {
+  const [, navigate] = useLocation();
+  const [role, setRole] = useState<DispatchRole>('choose');
+  const [driverName, setDriverName] = useState(() => { try { return localStorage.getItem('bridge_driver_name') || ''; } catch { return ''; } });
+  const [pushOk, setPushOk] = useState(false);
+  const [pushLoading, setPushLoading] = useState(false);
+
+  // Eats state
+  const [eatsOrders, setEatsOrders] = useState<PendingOrder[]>([]);
+  const [activeEatsOrder, setActiveEatsOrder] = useState<PendingOrder | null>(null);
+  const [eatsGPS, setEatsGPS] = useState<'idle' | 'active' | 'denied'>('idle');
+  const [eatsCoords, setEatsCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const eatsWatchId = useRef<number | null>(null);
+  const eatsSeenIds = useRef<Set<number>>(new Set());
+  const sseRef = useRef<EventSource | null>(null);
+
+  // Taxi state
+  const [taxiBookings, setTaxiBookings] = useState<PendingTaxi[]>([]);
+  const [activeTaxi, setActiveTaxi] = useState<PendingTaxi | null>(null);
+  const [taxiGPS, setTaxiGPS] = useState<'idle' | 'active' | 'denied'>('idle');
+  const taxiWatchId = useRef<number | null>(null);
+  const taxiSeenRefs = useRef<Set<string>>(new Set());
+
+  const handleSetRole = async (r: 'eats' | 'taxi') => {
+    const name = driverName.trim() || (r === 'taxi' ? 'Chauffeur' : 'Livreur');
+    localStorage.setItem('bridge_driver_name', name);
+    setRole(r);
+    setPushLoading(true);
+    const ok = await registerPush(name);
+    setPushOk(ok);
+    setPushLoading(false);
+  };
+
+  // ── EATS: SSE stream for new orders ──
+  useEffect(() => {
+    if (role !== 'eats') return;
+    const es = new EventSource('/api/orders/stream');
+    sseRef.current = es;
+    es.onmessage = (e) => {
+      try {
+        const msg = JSON.parse(e.data);
+        if (msg.type === 'NEW_ORDER') {
+          // Re-fetch pending orders
+          fetchEatsOrders();
+        }
+      } catch {}
+    };
+    fetchEatsOrders();
+    const iv = setInterval(fetchEatsOrders, 10000);
+    return () => { es.close(); clearInterval(iv); if (eatsWatchId.current != null) navigator.geolocation.clearWatch(eatsWatchId.current); };
+  }, [role]);
+
+  const fetchEatsOrders = async () => {
+    try {
+      const res = await fetch('/api/orders?status=pending', { cache: 'no-store' });
+      if (!res.ok) return;
+      const data = await res.json();
+      const orders: PendingOrder[] = (data.orders || []).filter((o: any) => o.service === 'delivery' || o.service === 'eats');
+      setEatsOrders(orders);
+      // Ring alarm for new unseen orders
+      const newOnes = orders.filter(o => !eatsSeenIds.current.has(o.id));
+      if (newOnes.length > 0) {
+        newOnes.forEach(o => eatsSeenIds.current.add(o.id));
+        playAlarm();
+      }
+    } catch {}
+  };
+
+  const acceptEatsOrder = async (order: PendingOrder) => {
+    setActiveEatsOrder(order);
+    await fetch(`/api/orders/${order.id}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'on_the_way', driverName: driverName || 'Livreur' }),
+    }).catch(() => {});
+  };
+
+  const startEatsGPS = () => {
+    if (!navigator.geolocation) { setEatsGPS('denied'); return; }
+    if (!activeEatsOrder) return;
+    const ref = activeEatsOrder.ref;
+    eatsWatchId.current = navigator.geolocation.watchPosition(
+      pos => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        setEatsCoords({ lat, lng });
+        setEatsGPS('active');
+        fetch(`/api/tracking/${ref}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lat, lng, driverName: driverName || 'Livreur' }),
+        }).catch(() => {});
+      },
+      () => setEatsGPS('denied'),
+      { enableHighAccuracy: true, maximumAge: 3000 }
+    );
+  };
+
+  const finishEatsDelivery = () => {
+    if (eatsWatchId.current != null) navigator.geolocation.clearWatch(eatsWatchId.current);
+    if (activeEatsOrder) fetch(`/api/tracking/${activeEatsOrder.ref}`, { method: 'DELETE' }).catch(() => {});
+    if (activeEatsOrder) fetch(`/api/orders/${activeEatsOrder.id}/status`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'delivered' }),
+    }).catch(() => {});
+    setActiveEatsOrder(null);
+    setEatsGPS('idle');
+    setEatsCoords(null);
+    fetchEatsOrders();
+  };
+
+  // ── TAXI: poll for pending bookings ──
+  useEffect(() => {
+    if (role !== 'taxi') return;
+    const poll = async () => {
+      try {
+        const res = await fetch('/api/tracking-pending', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        const bookings: PendingTaxi[] = data.bookings || [];
+        setTaxiBookings(bookings);
+        const newOnes = bookings.filter(b => !taxiSeenRefs.current.has(b.ref));
+        if (newOnes.length > 0) {
+          newOnes.forEach(b => taxiSeenRefs.current.add(b.ref));
+          playAlarm();
+        }
+      } catch {}
+    };
+    poll();
+    const iv = setInterval(poll, 5000);
+    return () => { clearInterval(iv); if (taxiWatchId.current != null) navigator.geolocation.clearWatch(taxiWatchId.current); };
+  }, [role]);
+
+  const acceptTaxi = async (booking: PendingTaxi) => {
+    setActiveTaxi(booking);
+    setTaxiBookings(prev => prev.filter(b => b.ref !== booking.ref));
+    await fetch(`/api/tracking/${booking.ref}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'accepted', driverName: driverName || 'Chauffeur' }),
+    }).catch(() => {});
+    // Start GPS immediately
+    if (!navigator.geolocation) { setTaxiGPS('denied'); return; }
+    taxiWatchId.current = navigator.geolocation.watchPosition(
+      pos => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        setTaxiGPS('active');
+        fetch(`/api/tracking/${booking.ref}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lat, lng, status: 'accepted', driverName: driverName || 'Chauffeur' }),
+        }).catch(() => {});
+      },
+      () => setTaxiGPS('denied'),
+      { enableHighAccuracy: true, maximumAge: 3000 }
+    );
+  };
+
+  const finishTaxi = async () => {
+    if (taxiWatchId.current != null) navigator.geolocation.clearWatch(taxiWatchId.current);
+    if (activeTaxi) await fetch(`/api/tracking/${activeTaxi.ref}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'arrived' }),
+    }).catch(() => {});
+    setActiveTaxi(null);
+    setTaxiGPS('idle');
+  };
+
+  // ── UI ──
+  const cardStyle: React.CSSProperties = { background: '#fff', borderRadius: 20, padding: '18px 16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', marginBottom: 12, border: '1.5px solid #E5E7EB' };
+
+  // CHOOSE ROLE
+  if (role === 'choose') {
+    return (
+      <div style={{ minHeight: '100dvh', background: 'linear-gradient(160deg,#020c07 0%,#071C11 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 20px' }}>
+        <div style={{ width: 70, height: 70, borderRadius: '50%', overflow: 'hidden', border: '2px solid #059669', marginBottom: 16 }}>
+          <img src="/logo_splash_new.png" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        </div>
+        <h1 style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 900, letterSpacing: '0.2em', margin: '0 0 4px' }}>BRIDGE DISPATCH</h1>
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, margin: '0 0 28px', letterSpacing: '0.1em' }}>PANNEAU CHAUFFEUR / LIVREUR</p>
+
+        <input
+          value={driverName}
+          onChange={e => setDriverName(e.target.value)}
+          placeholder="Votre prénom (ex: Youssef)"
+          style={{ width: '100%', maxWidth: 340, padding: '12px 16px', borderRadius: 14, border: '1px solid rgba(74,222,128,0.3)', background: 'rgba(255,255,255,0.06)', color: '#fff', fontSize: 14, marginBottom: 20, outline: 'none', boxSizing: 'border-box' }}
+        />
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 340 }}>
+          <button onClick={() => handleSetRole('eats')}
+            style={{ padding: '18px 0', borderRadius: 18, border: 'none', background: 'linear-gradient(135deg,#059669,#4ADE80)', color: '#fff', fontSize: 18, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 24px rgba(74,222,128,0.35)' }}>
+            🛵 Je suis Livreur Bridge Eats
+          </button>
+          <button onClick={() => handleSetRole('taxi')}
+            style={{ padding: '18px 0', borderRadius: 18, border: 'none', background: 'linear-gradient(135deg,#B45309,#F59E0B)', color: '#fff', fontSize: 18, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 24px rgba(245,158,11,0.35)' }}>
+            🚖 Je suis Chauffeur Taxi
+          </button>
+        </div>
+        <button onClick={() => navigate('/')} style={{ marginTop: 24, color: 'rgba(255,255,255,0.4)', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer' }}>← Retour</button>
+      </div>
+    );
+  }
+
+  const isTaxi = role === 'taxi';
+  const accent = isTaxi ? '#F59E0B' : '#059669';
+  const accentLight = isTaxi ? '#FEF3C7' : '#D1FAE5';
+  const accentDark = isTaxi ? '#B45309' : '#065F46';
+  const icon = isTaxi ? '🚖' : '🛵';
+  const label = isTaxi ? 'Taxi Confort' : 'Bridge Eats';
+
+  return (
+    <div style={{ minHeight: '100dvh', background: '#F0FDF4', fontFamily: 'system-ui,sans-serif' }}>
+      {/* Header */}
+      <div style={{ background: accentDark, padding: '52px 20px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 10, fontWeight: 800, letterSpacing: '0.2em', margin: '0 0 2px' }}>BRIDGE DISPATCH</p>
+          <h1 style={{ color: '#fff', fontSize: '1.1rem', fontWeight: 900, margin: 0 }}>{icon} {driverName || label}</h1>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {pushLoading && <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>⏳</span>}
+          {pushOk && <span style={{ background: 'rgba(74,222,128,0.2)', border: '1px solid rgba(74,222,128,0.4)', borderRadius: 20, padding: '3px 10px', color: '#4ADE80', fontSize: 10, fontWeight: 900 }}>🔔 Notifs ON</span>}
+          <button onClick={() => { setRole('choose'); setActiveEatsOrder(null); setActiveTaxi(null); }}
+            style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', borderRadius: 10, padding: '6px 12px', fontSize: 12, cursor: 'pointer' }}>⟵</button>
+        </div>
+      </div>
+
+      <div style={{ padding: '20px 16px', maxWidth: 480, margin: '0 auto' }}>
+
+        {/* ── EATS MODE ── */}
+        {role === 'eats' && !activeEatsOrder && (
+          <>
+            <p style={{ fontSize: 11, fontWeight: 800, color: '#9CA3AF', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 12 }}>COMMANDES EN ATTENTE ({eatsOrders.length})</p>
+            {eatsOrders.length === 0 ? (
+              <div style={{ ...cardStyle, textAlign: 'center', padding: '40px 20px' }}>
+                <p style={{ fontSize: 32, margin: '0 0 10px' }}>⏳</p>
+                <p style={{ color: '#6B7280', fontSize: 14, fontWeight: 700, margin: 0 }}>En attente de commandes…</p>
+                <p style={{ color: '#9CA3AF', fontSize: 11, margin: '4px 0 0' }}>La sonnette retentira automatiquement</p>
+              </div>
+            ) : eatsOrders.map(order => (
+              <div key={order.id} style={{ ...cardStyle, borderColor: '#BBF7D0', borderWidth: 2 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+                  <div>
+                    <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, margin: '0 0 2px', letterSpacing: '0.1em' }}>COMMANDE</p>
+                    <p style={{ fontSize: 16, fontWeight: 900, color: '#059669', margin: 0 }}>{order.ref}</p>
+                  </div>
+                  <span style={{ background: '#D1FAE5', color: '#065F46', fontSize: 12, fontWeight: 900, borderRadius: 20, padding: '4px 12px' }}>{order.total} MAD</span>
+                </div>
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 2px' }}>👤 {order.customerName}</p>
+                {order.restaurantName && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>🥘 {order.restaurantName}</p>}
+                <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 12px' }}>📍 {order.customerAddress}</p>
+                <button onClick={() => acceptEatsOrder(order)}
+                  style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#059669,#4ADE80)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(5,150,105,0.3)' }}>
+                  ✅ Accepter cette commande
+                </button>
+              </div>
+            ))}
+          </>
+        )}
+
+        {role === 'eats' && activeEatsOrder && (
+          <>
+            <div style={{ ...cardStyle, borderColor: '#BBF7D0', borderWidth: 2 }}>
+              <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 8px' }}>COMMANDE ACCEPTÉE</p>
+              <p style={{ fontSize: 18, fontWeight: 900, color: '#059669', margin: '0 0 6px' }}>{activeEatsOrder.ref}</p>
+              <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 2px' }}>👤 {activeEatsOrder.customerName}</p>
+              {activeEatsOrder.restaurantName && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>🥘 Récupérer chez : {activeEatsOrder.restaurantName}</p>}
+              <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 16px' }}>📍 Livrer à : {activeEatsOrder.customerAddress}</p>
+
+              {eatsGPS === 'idle' && (
+                <button onClick={startEatsGPS}
+                  style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#065F46,#059669)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', marginBottom: 10, boxShadow: '0 4px 16px rgba(5,150,105,0.3)' }}>
+                  📡 J'ai la commande — Démarrer GPS
+                </button>
+              )}
+
+              {eatsGPS === 'active' && (
+                <div style={{ background: '#D1FAE5', borderRadius: 12, padding: '12px 14px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#059669', display: 'inline-block', animation: 'pulse 1.5s infinite' }}/>
+                  <div>
+                    <p style={{ fontSize: 12, fontWeight: 900, color: '#065F46', margin: 0 }}>GPS EN DIRECT — Client vous suit</p>
+                    {eatsCoords && <p style={{ fontSize: 10, color: '#6B7280', margin: '2px 0 0', fontFamily: 'monospace' }}>{eatsCoords.lat.toFixed(5)}, {eatsCoords.lng.toFixed(5)}</p>}
+                  </div>
+                </div>
+              )}
+
+              {eatsGPS === 'denied' && <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 10 }}>❌ GPS refusé — activez la localisation</p>}
+
+              <button onClick={finishEatsDelivery}
+                style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#1D4ED8,#3B82F6)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer' }}>
+                ✅ Livraison terminée
+              </button>
+            </div>
+            <style>{`@keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:1;transform:scale(1.3);}}`}</style>
+          </>
+        )}
+
+        {/* ── TAXI MODE ── */}
+        {role === 'taxi' && !activeTaxi && (
+          <>
+            <p style={{ fontSize: 11, fontWeight: 800, color: '#9CA3AF', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 12 }}>COURSES EN ATTENTE ({taxiBookings.length})</p>
+            {taxiBookings.length === 0 ? (
+              <div style={{ ...cardStyle, textAlign: 'center', padding: '40px 20px' }}>
+                <p style={{ fontSize: 32, margin: '0 0 10px' }}>⏳</p>
+                <p style={{ color: '#6B7280', fontSize: 14, fontWeight: 700, margin: 0 }}>En attente de courses…</p>
+                <p style={{ color: '#9CA3AF', fontSize: 11, margin: '4px 0 0' }}>La sonnette retentira automatiquement</p>
+              </div>
+            ) : taxiBookings.map(booking => (
+              <div key={booking.ref} style={{ ...cardStyle, borderColor: '#FDE68A', borderWidth: 2 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+                  <div>
+                    <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, margin: '0 0 2px', letterSpacing: '0.1em' }}>COURSE TAXI</p>
+                    <p style={{ fontSize: 16, fontWeight: 900, color: '#B45309', margin: 0 }}>{booking.ref}</p>
+                  </div>
+                  <span style={{ background: '#FEF3C7', color: '#B45309', fontSize: 11, fontWeight: 900, borderRadius: 20, padding: '4px 10px' }}>NOUVEAU</span>
+                </div>
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>👤 {booking.customerName || 'Client'}</p>
+                {booking.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>📍 Départ : {booking.clientAddress}</p>}
+                {booking.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 12px' }}>🏁 Destination : {booking.destination}</p>}
+                <button onClick={() => acceptTaxi(booking)}
+                  style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#B45309,#F59E0B)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(180,83,9,0.3)' }}>
+                  ✅ Accepter la course
+                </button>
+              </div>
+            ))}
+          </>
+        )}
+
+        {role === 'taxi' && activeTaxi && (
+          <div style={{ ...cardStyle, borderColor: '#FDE68A', borderWidth: 2 }}>
+            <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 8px' }}>COURSE ACCEPTÉE</p>
+            <p style={{ fontSize: 18, fontWeight: 900, color: '#B45309', margin: '0 0 6px' }}>{activeTaxi.ref}</p>
+            <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>👤 {activeTaxi.customerName || 'Client'}</p>
+            {activeTaxi.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>📍 Départ : {activeTaxi.clientAddress}</p>}
+            {activeTaxi.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 14px' }}>🏁 Destination : {activeTaxi.destination}</p>}
+
+            {taxiGPS === 'active' ? (
+              <div style={{ background: '#FEF3C7', borderRadius: 12, padding: '12px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#F59E0B', display: 'inline-block', animation: 'pulse 1.5s infinite' }}/>
+                <p style={{ fontSize: 12, fontWeight: 900, color: '#B45309', margin: 0 }}>GPS EN DIRECT — Client vous suit sur la carte</p>
+              </div>
+            ) : taxiGPS === 'denied' ? (
+              <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 12 }}>❌ GPS refusé — activez la localisation</p>
+            ) : (
+              <p style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 12 }}>⏳ Démarrage GPS…</p>
+            )}
+
+            <button onClick={finishTaxi}
+              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#1D4ED8,#3B82F6)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer' }}>
+              🏁 Course terminée — Arrivé !
+            </button>
+            <style>{`@keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:1;transform:scale(1.3);}}`}</style>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
 // ─── BRIDGE AI ASSISTANT PAGE ────────────────────────────────────────────────
 
 type AssistMsg = { role: 'user' | 'assistant'; content: string };
@@ -1742,6 +2153,7 @@ function ClerkProviderWithRoutes() {
           <Route path="/forgot-password" component={ForgotPasswordPage} />
           <Route path="/game" component={GamePage} />
           <Route path="/assistant" component={BridgeAssistantPage} />
+          <Route path="/dispatch" component={DispatchPage} />
           <Route path="/driver/:ref" component={DriverTrackerPage} />
           <Route component={App} />
         </Switch>

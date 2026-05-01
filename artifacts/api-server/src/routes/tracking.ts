@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { logger } from "../lib/logger";
+import { notifyDrivers } from "./push";
 
 const router = Router();
 
@@ -33,6 +34,18 @@ function cleanup() {
 }
 setInterval(cleanup, 10 * 60 * 1000);
 
+// List all pending taxi bookings (for driver dispatch panel)
+router.get("/tracking-pending", (_req, res) => {
+  const pending: Array<{ ref: string } & TrackPos> = [];
+  for (const [ref, pos] of positions) {
+    if (ref.startsWith('TC-') && pos.status === 'waiting') {
+      pending.push({ ref, ...pos });
+    }
+  }
+  res.set("Cache-Control", "no-store");
+  res.json({ bookings: pending });
+});
+
 // Client → create taxi booking (initial, status=waiting)
 router.post("/tracking/:ref", (req, res) => {
   const { ref } = req.params;
@@ -51,6 +64,14 @@ router.post("/tracking/:ref", (req, res) => {
   });
   req.log.info({ ref }, "taxi booking created");
   res.json({ ok: true });
+
+  // Notify all drivers with push notification
+  notifyDrivers({
+    type: "NEW_TAXI",
+    title: "🚖 Nouvelle course Taxi !",
+    body: `${customerName || 'Client'} → ${destination || '?'} · ${clientAddress || 'Safi'}`,
+    data: { ref, url: "/dispatch" },
+  }).catch(() => {});
 });
 
 // Driver → push position / update status

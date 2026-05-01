@@ -34,6 +34,7 @@ self.addEventListener('push', e => {
   const title = data.title || '🛵 Nouvelle commande Bridge !';
   const body  = data.body  || 'Une nouvelle commande vous attend.';
   const orderId = data.data?.orderId;
+  const targetUrl = data.data?.url || '/';
 
   const options = {
     body,
@@ -71,7 +72,7 @@ self.addEventListener('notificationclick', e => {
         existingClient.postMessage({ type: 'NOTIFICATION_CLICKED', action, data: orderData });
         return existingClient.focus();
       }
-      return self.clients.openWindow('/').then(wc => {
+      return self.clients.openWindow(orderData.url || '/').then(wc => {
         if (wc) {
           setTimeout(() => wc.postMessage({ type: 'NOTIFICATION_CLICKED', action, data: orderData }), 1500);
         }
