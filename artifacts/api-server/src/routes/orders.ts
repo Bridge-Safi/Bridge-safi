@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { db, ordersTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
-import { notifyDrivers, notifySpecificDrivers } from "./push";
+import { notifyDrivers, notifySpecificDrivers, notifyDriversExcept } from "./push";
 import { getDriverPositions } from "./tracking";
 import { addSSEClient, removeSSEClient, broadcastOrder } from "../lib/sse";
 import { logger } from "../lib/logger";
@@ -31,33 +31,41 @@ function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): nu
 const NEARBY_KM = 2;       // radius to notify first
 const DISPATCH_DELAY = 120_000; // 2 minutes in ms
 
-/** Smart dispatch: notify nearby drivers first, then all after 2 min. */
+/** Smart dispatch: notify nearby drivers first, then ALL remaining after 2 min.
+ *
+ *  Bug fix: "far" list only included GPS-tracked drivers. Drivers whose position
+ *  wasn't yet reported (page not yet open, GPS initializing) were invisible and
+ *  never notified. Now after 2 min we notify ALL subscriptions except those
+ *  already notified, so no driver is ever skipped.
+ */
 async function smartDispatch(restaurantName: string | null | undefined, payload: object) {
   const coordKey = (restaurantName && RESTAURANT_COORDS[restaurantName]) ? restaurantName : "__default__";
   const { lat: rLat, lng: rLng } = RESTAURANT_COORDS[coordKey];
 
   const driverMap = getDriverPositions();
   const nearbyEndpoints: string[] = [];
-  const farEndpoints: string[] = [];
 
   for (const [endpoint, loc] of driverMap) {
     const dist = haversineKm(rLat, rLng, loc.lat, loc.lng);
     if (dist <= NEARBY_KM) nearbyEndpoints.push(endpoint);
-    else farEndpoints.push(endpoint);
   }
 
   if (nearbyEndpoints.length > 0) {
     // Notify nearby drivers immediately
     await notifySpecificDrivers(nearbyEndpoints, payload);
-    logger.info({ nearbyCount: nearbyEndpoints.length, farCount: farEndpoints.length }, "smart dispatch: nearby drivers notified");
-    // After 2 minutes, notify far drivers
+    logger.info({ nearbyCount: nearbyEndpoints.length }, "smart dispatch: nearby drivers notified first");
+
+    // After 2 minutes, notify ALL subscribed drivers EXCEPT those already notified.
+    // This catches drivers not yet GPS-tracked (page opening, GPS initializing, etc.)
+    const alreadyNotified = new Set(nearbyEndpoints);
     setTimeout(() => {
-      notifySpecificDrivers(farEndpoints, payload).catch(() => {});
+      notifyDriversExcept(alreadyNotified, payload).catch(() => {});
+      logger.info({ excludedCount: alreadyNotified.size }, "smart dispatch: 2-min broadcast sent to remaining drivers");
     }, DISPATCH_DELAY);
   } else {
     // No nearby drivers — notify everyone immediately
     await notifyDrivers(payload);
-    logger.info("smart dispatch: no nearby drivers, notified all");
+    logger.info("smart dispatch: no nearby drivers, notified all immediately");
   }
 }
 
