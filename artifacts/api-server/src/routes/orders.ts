@@ -1,9 +1,64 @@
 import { Router } from "express";
 import { db, ordersTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
-import { notifyDrivers } from "./push";
+import { notifyDrivers, notifySpecificDrivers } from "./push";
+import { getDriverPositions } from "./tracking";
 import { addSSEClient, removeSSEClient, broadcastOrder } from "../lib/sse";
 import { logger } from "../lib/logger";
+
+// ── Restaurant coordinates in Safi ───────────────────────────────────────────
+// Used for proximity-based smart dispatch (notify nearest drivers first)
+const RESTAURANT_COORDS: Record<string, { lat: number; lng: number }> = {
+  "Kebab Express Safi":    { lat: 32.3012, lng: -9.2305 },
+  "Pizza Safi":            { lat: 32.2980, lng: -9.2350 },
+  "Burger House Safi":     { lat: 32.3040, lng: -9.2290 },
+  "Restaurant Al Bahr":    { lat: 32.2930, lng: -9.2320 },
+  "Café Central Safi":     { lat: 32.2994, lng: -9.2372 },
+  // Default Safi centre médina
+  "__default__":           { lat: 32.2994, lng: -9.2372 },
+};
+
+/** Haversine distance in km between two GPS points. */
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+const NEARBY_KM = 2;       // radius to notify first
+const DISPATCH_DELAY = 120_000; // 2 minutes in ms
+
+/** Smart dispatch: notify nearby drivers first, then all after 2 min. */
+async function smartDispatch(restaurantName: string | null | undefined, payload: object) {
+  const coordKey = (restaurantName && RESTAURANT_COORDS[restaurantName]) ? restaurantName : "__default__";
+  const { lat: rLat, lng: rLng } = RESTAURANT_COORDS[coordKey];
+
+  const driverMap = getDriverPositions();
+  const nearbyEndpoints: string[] = [];
+  const farEndpoints: string[] = [];
+
+  for (const [endpoint, loc] of driverMap) {
+    const dist = haversineKm(rLat, rLng, loc.lat, loc.lng);
+    if (dist <= NEARBY_KM) nearbyEndpoints.push(endpoint);
+    else farEndpoints.push(endpoint);
+  }
+
+  if (nearbyEndpoints.length > 0) {
+    // Notify nearby drivers immediately
+    await notifySpecificDrivers(nearbyEndpoints, payload);
+    logger.info({ nearbyCount: nearbyEndpoints.length, farCount: farEndpoints.length }, "smart dispatch: nearby drivers notified");
+    // After 2 minutes, notify far drivers
+    setTimeout(() => {
+      notifySpecificDrivers(farEndpoints, payload).catch(() => {});
+    }, DISPATCH_DELAY);
+  } else {
+    // No nearby drivers — notify everyone immediately
+    await notifyDrivers(payload);
+    logger.info("smart dispatch: no nearby drivers, notified all");
+  }
+}
 
 const router = Router();
 
@@ -90,7 +145,7 @@ router.post("/orders/inbound", async (req, res) => {
     // Diffusion instantanée aux livreurs connectés
     broadcastOrder({ type: "NEW_ORDER", orderId: order.id, ref: order.ref, source });
 
-    notifyDrivers({
+    smartDispatch(restaurantLabel, {
       type: "NEW_ORDER",
       title: `🛵 Commande ${source ? `[${source}]` : "externe"} !`,
       body: `${customerName} · ${Number(total)} MAD · ${deliveryAddress}`,
@@ -179,8 +234,8 @@ router.post("/orders", async (req, res) => {
     // Instant push to all connected driver panels via SSE
     broadcastOrder({ type: "NEW_ORDER", orderId: order.id, ref: order.ref });
 
-    // Push notification to phones (for locked screens)
-    notifyDrivers({
+    // Smart dispatch: nearby drivers first, then all after 2 min
+    smartDispatch(restaurantName, {
       type: "NEW_ORDER",
       title: "🛵 Nouvelle commande !",
       body: `${customerName} · ${Number(total)} MAD${restaurantName ? ` · ${restaurantName}` : ""}`,

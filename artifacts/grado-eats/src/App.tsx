@@ -348,6 +348,7 @@ const T = {
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 Total: ${total} MAD\n\n👤 Nom: ${name}\n📍 Adresse: ${addr}, Safi\n📞 Tél: ${phone}\n\nMerci de confirmer ma commande ! 🙏`,
     chooseService:'Choisissez votre service',
     deliverySub:'Livraison rapide', taxiSub:'Confort & style', fleursSub:'Fleurs & cadeaux',
+    pharmaeSub:'De nuit & de jour 🌙',
     taxiSoon:'Service disponible très bientôt',
     taxiDesc:'Bridge Taxi Confort — trajets premium à Safi, en toute élégance.',
     taxiBook:'Réserver sur WhatsApp Business',
@@ -444,6 +445,7 @@ const T = {
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 Total: ${total} MAD\n\n👤 Name: ${name}\n📍 Address: ${addr}, Safi\n📞 Phone: ${phone}\n\nPlease confirm my order! 🙏`,
     chooseService:'Choose your service',
     deliverySub:'Fast delivery', taxiSub:'Comfort & style', fleursSub:'Flowers & gifts',
+    pharmaeSub:'Night & day 🌙',
     taxiSoon:'Service coming soon',
     taxiDesc:'Bridge Taxi Confort — premium rides in Safi, in pure elegance.',
     taxiBook:'Book on WhatsApp Business',
@@ -541,6 +543,7 @@ const T = {
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 المجموع: ${total} MAD\n\n👤 الاسم: ${name}\n📍 العنوان: ${addr}، آسفي\n📞 الهاتف: ${phone}\n\nأرجو تأكيد طلبي! 🙏`,
     chooseService:'اختر خدمتك',
     deliverySub:'توصيل سريع', taxiSub:'راحة وأناقة', fleursSub:'ورود وهدايا',
+    pharmaeSub:'ليلاً ونهاراً 🌙',
     taxiSoon:'الخدمة قادمة قريباً',
     taxiDesc:'بريدج تاكسي كونفور — رحلات مميزة في آسفي بأناقة.',
     taxiBook:'احجز عبر واتساب بيزنس',
@@ -638,6 +641,7 @@ const T = {
     waMsgFooter:(total:number,name:string,addr:string,phone:string)=>`\n💰 ⴰⵎⵎⴰⵙ: ${total} MAD\n\n👤 ⵉⵙⵎ: ${name}\n📍 ⵜⴰⵙⵓⵏⵜ: ${addr}, ⵙⴰⴼⵉ\n📞 ⴰⵙⵓⵍ: ${phone}\n\nⵙⵛⴷ ⵜⴰⵖⵓⵍⵜ ⵉⵏⵓ! 🙏`,
     chooseService:'ⴼⵔ ⵜⴰⵎⵙⴽⴰⵔⵜ',
     deliverySub:'ⴰⵙⵙⵓⴼⵖ ⵣⵔⵉⵔⵉ', taxiSub:'ⵓⵏⵍⵍⵉ ⴷ ⵓⵙⵏⴼⵍ', fleursSub:'ⵉⵣⵓⵍⴰⵏ ⴷ ⵉⵡⴰⵔⴳⵉⵡⵏ',
+    pharmaeSub:'ⵉⴹ ⴷ ⵡⴰⵙⵙ 🌙',
     taxiSoon:'ⵜⴰⵎⵙⴽⴰⵔⵜ ⵜⴰⵖ ⴷ ⵓⴳⵉⵏ',
     taxiDesc:'ⴱⵔⵉⴷⵊ ⵜⴰⴽⵙⵉ — ⵜⵉⵔⴰⵡⵉⵏ ⵜⵉⴼⵓⵍⴽⵉⵏ ⵖ ⵙⴰⴼⵉ.',
     taxiBook:'ⵙⵇⵇⵔ ⵙ WhatsApp Business',
@@ -2854,16 +2858,81 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
   );
 }
 
+// ─── BRIDGE PHARMACIE PAGE ────────────────────────────────────────────────────
+
+function PharmaciePage({onBack,lang}:{onBack:()=>void;lang:Lang}) {
+  const fClass=fontClass(lang); const isAR=lang==='ar';
+  const msgs:{fr:string;en:string;ar:string;amz:string}={
+    fr:'Bridge Pharmacie sera lancé très bientôt.\nLivraison de médicaments & produits parapharmacie,\nde jour comme de nuit à Safi.',
+    en:'Bridge Pharmacie launching very soon.\nMedication & parapharmacy delivery,\nday and night in Safi.',
+    ar:'سيُطلق بريدج فارماسي قريباً جداً.\nتوصيل الأدوية ومستلزمات الصيدلية،\nليلاً ونهاراً في آسفي.',
+    amz:'Bridge Pharmacie ⵜⴰⵖ ⴷ ⵓⴳⵉⵏ.\nⴰⵙⵙⵓⴼⵖ ⵏ ⵉⵙⵙⴰⵏ ⴷ ⵉⵙⴽⵉⵔⵏ,\nⵉⴹ ⴷ ⵡⴰⵙⵙ ⵖ ⵙⴰⴼⵉ.',
+  };
+  return(
+    <div className={`min-h-screen flex flex-col items-center justify-center ${fClass}`}
+      dir={isAR?'rtl':'ltr'}
+      style={{background:'linear-gradient(160deg,#060818 0%,#0C0E2B 40%,#1E1B4B 70%,#0F172A 100%)',padding:24,position:'relative',overflow:'hidden'}}>
+      {/* Stars background */}
+      {Array.from({length:30}).map((_,i)=>(
+        <div key={i} style={{position:'absolute',borderRadius:'50%',background:'#fff',
+          width:Math.random()*2+1,height:Math.random()*2+1,
+          top:`${Math.random()*100}%`,left:`${Math.random()*100}%`,
+          opacity:Math.random()*0.6+0.2,
+          animation:`pulse2 ${(Math.random()*3+2).toFixed(1)}s ease-in-out infinite`,
+          animationDelay:`${(Math.random()*3).toFixed(1)}s`,
+        }}/>
+      ))}
+      {/* Back button */}
+      <button onClick={onBack}
+        style={{position:'absolute',top:20,left:isAR?'auto':20,right:isAR?20:'auto',background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',borderRadius:50,padding:'10px 18px',color:'#fff',fontWeight:700,fontSize:13,cursor:'pointer',backdropFilter:'blur(12px)',zIndex:10,display:'flex',alignItems:'center',gap:6}}>
+        <span style={{fontSize:16}}>←</span>
+        {lang==='ar'?'رجوع':lang==='en'?'Back':lang==='amz'?'ⴰⴷⴷⵓ':'Retour'}
+      </button>
+      {/* Content */}
+      <div style={{textAlign:'center',maxWidth:320,zIndex:1}}>
+        {/* Night moon illustration */}
+        <div style={{marginBottom:28,position:'relative',display:'inline-block'}}>
+          <div style={{width:100,height:100,borderRadius:'50%',background:'linear-gradient(135deg,#1E1B4B,#312E81)',border:'2px solid rgba(165,180,252,0.4)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 40px rgba(99,102,241,0.5)',margin:'0 auto'}}>
+            <span style={{fontSize:52}}>💊</span>
+          </div>
+          <div style={{position:'absolute',top:-8,right:-8,background:'rgba(99,102,241,0.3)',borderRadius:'50%',width:30,height:30,display:'flex',alignItems:'center',justifyContent:'center',border:'1px solid rgba(165,180,252,0.4)'}}>
+            <span style={{fontSize:16}}>🌙</span>
+          </div>
+        </div>
+        <p style={{color:'rgba(165,180,252,0.6)',fontSize:10,fontWeight:900,letterSpacing:'0.2em',textTransform:'uppercase',margin:'0 0 8px'}}>Bridge Services</p>
+        <h1 style={{color:'#fff',fontSize:26,fontWeight:900,margin:'0 0 6px',letterSpacing:'0.04em'}}>Bridge Pharmacie</h1>
+        {/* EN ATTENTE badge */}
+        <div style={{display:'inline-flex',alignItems:'center',gap:7,background:'rgba(239,68,68,0.15)',border:'1.5px solid rgba(239,68,68,0.4)',borderRadius:50,padding:'6px 16px',marginBottom:24}}>
+          <span style={{width:8,height:8,borderRadius:'50%',background:'#EF4444',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
+          <span style={{color:'#FCA5A5',fontSize:11,fontWeight:900,letterSpacing:'0.15em'}}>EN ATTENTE</span>
+        </div>
+        <p style={{color:'rgba(199,210,254,0.75)',fontSize:14,lineHeight:1.7,margin:'0 0 32px',whiteSpace:'pre-line'}}>{msgs[lang]}</p>
+        {/* Feature previews */}
+        {[
+          {icon:'🌙',fr:'Disponible la nuit',en:'Available at night',ar:'متاح ليلاً',amz:'ⴰⵙⵙⵓⴼⵖ ⵉⴹ'},
+          {icon:'🚚',fr:'Livraison express',en:'Express delivery',ar:'توصيل سريع',amz:'ⴰⵙⵙⵓⴼⵖ ⵣⵔⵉⵔⵉ'},
+          {icon:'💊',fr:'Médicaments & para',en:'Meds & parapharmacy',ar:'أدوية ومستلزمات',amz:'ⵉⵙⵙⴰⵏ ⴷ ⵉⵙⴽⵉⵔⵏ'},
+        ].map(f=>(
+          <div key={f.icon} style={{display:'flex',alignItems:'center',gap:12,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:14,padding:'12px 16px',marginBottom:10,textAlign:isAR?'right':'left'}}>
+            <span style={{fontSize:22,flexShrink:0}}>{f.icon}</span>
+            <span style={{color:'rgba(199,210,254,0.85)',fontSize:13,fontWeight:600}}>{f[lang]}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── SERVICE SELECT PAGE ──────────────────────────────────────────────────────
 
-function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSelect:(s:'delivery'|'taxi'|'tabac'|'fleurs')=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void}) {
-  const [pressed,setPressed]=useState<'delivery'|'taxi'|'tabac'|'fleurs'|null>(null);
+function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSelect:(s:'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie')=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void}) {
+  const [pressed,setPressed]=useState<'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'|null>(null);
   const [showProfile,setShowProfile]=useState(false);
   const [,navigate]=useLocation();
   const { user } = useUser();
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
-  const choose=(s:'delivery'|'taxi'|'tabac'|'fleurs')=>{setPressed(s);setTimeout(()=>onSelect(s),320);};
+  const choose=(s:'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie')=>{setPressed(s);setTimeout(()=>onSelect(s),320);};
   // Avatar: custom upload > Clerk photo > initials
   const avatarSrc=profile.avatar||user?.imageUrl||null;
   const initials=(profile.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
@@ -2942,7 +3011,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
 
         {/* 2×2 service grid — Glassmorphism iOS 18 */}
         {(()=>{
-          const items=[
+          const topItems=[
             {key:'delivery' as const, label:'Bridge Eats',  sub:t.deliverySub, emoji:'🛵',
              pending:false, active:true,
              grad:'linear-gradient(145deg,#064E3B 0%,#065F46 45%,#059669 100%)',
@@ -2951,6 +3020,8 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
              pending:true,
              grad:'linear-gradient(145deg,#78350F 0%,#B45309 55%,#F59E0B 100%)',
              glow:'rgba(245,158,11,0.45)', border:'rgba(251,191,36,0.45)'},
+          ];
+          const botItems=[
             {key:'fleurs'   as const, label:'Bridge Fleurs',sub:t.fleursSub,   emoji:'🌹',
              pending:false, active:true,
              grad:'linear-gradient(145deg,#831843 0%,#DB2777 55%,#F472B6 100%)',
@@ -2960,66 +3031,87 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
              grad:'linear-gradient(145deg,#1C0A00 0%,#7D4F2E 55%,#A0623A 100%)',
              glow:'rgba(125,79,46,0.5)', border:'rgba(160,98,58,0.4)'},
           ];
+          const renderCard=(item:{key:'delivery'|'taxi'|'fleurs'|'tabac'|'pharmacie';label:string;sub:string;emoji:string;pending?:boolean;grad:string;glow:string;border:string})=>{
+            const isPressed=pressed===item.key;
+            return(
+              <button key={item.key} onClick={()=>choose(item.key)}
+                style={{
+                  background:'none',border:'none',cursor:'pointer',padding:0,
+                  transform:isPressed?'scale(0.94)':'scale(1)',
+                  transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',
+                  opacity:item.pending?0.78:1,
+                }}>
+                <div style={{
+                  background: item.grad,
+                  borderRadius:24,
+                  border:`1.5px solid ${isPressed?'rgba(255,255,255,0.55)':item.border}`,
+                  boxShadow: isPressed
+                    ? `0 0 0 3px ${item.glow},0 16px 40px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.25)`
+                    : `0 8px 32px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.2)`,
+                  padding:'22px 12px 16px',
+                  display:'flex',flexDirection:'column',alignItems:'center',gap:8,
+                  position:'relative',overflow:'hidden',
+                  transition:'box-shadow 0.25s,border-color 0.25s',
+                  minHeight:140,
+                }}>
+                  <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'24px 24px 60% 60%',pointerEvents:'none'}}/>
+                  {item.pending&&(
+                    <div style={{position:'absolute',top:10,right:isAR?'auto':10,left:isAR?10:'auto',background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'3px 10px',display:'flex',alignItems:'center',gap:5,backdropFilter:'blur(6px)'}}>
+                      <span style={{width:6,height:6,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
+                      <span style={{color:'#fff',fontSize:9,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
+                    </div>
+                  )}
+                  <span style={{fontSize:44,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>{item.emoji}</span>
+                  <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.08em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>{item.label}</p>
+                  <p style={{color:'rgba(255,255,255,0.75)',fontSize:10,fontWeight:600,margin:0,textAlign:'center'}}>{item.sub}</p>
+                </div>
+              </button>
+            );
+          };
           return(
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px',width:'100%',maxWidth:320,padding:'0 4px'}}>
-              {items.map(item=>{
-                const isPressed=pressed===item.key;
+            <div style={{display:'flex',flexDirection:'column',gap:'16px',width:'100%',maxWidth:320,padding:'0 4px'}}>
+              {/* Row 1: Eats + Taxi */}
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
+                {topItems.map(renderCard)}
+              </div>
+              {/* Row 2: Bridge Pharmacie — full width, centered */}
+              {(()=>{
+                const isPh=pressed==='pharmacie';
                 return(
-                  <button key={item.key} onClick={()=>choose(item.key)}
-                    style={{
-                      background:'none',border:'none',cursor:'pointer',padding:0,
-                      transform:isPressed?'scale(0.94)':'scale(1)',
-                      transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',
-                      opacity:item.pending?0.78:1,
-                    }}>
-                    {/* Glass card */}
+                  <button onClick={()=>choose('pharmacie')} style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:isPh?'scale(0.97)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',opacity:0.82}}>
                     <div style={{
-                      background: item.grad,
-                      borderRadius:24,
-                      border:`1.5px solid ${isPressed?'rgba(255,255,255,0.55)':item.border}`,
-                      boxShadow: isPressed
-                        ? `0 0 0 3px ${item.glow},0 16px 40px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.25)`
-                        : `0 8px 32px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.2)`,
-                      padding:'22px 12px 16px',
-                      display:'flex',flexDirection:'column',alignItems:'center',gap:8,
-                      position:'relative',overflow:'hidden',
-                      transition:'box-shadow 0.25s,border-color 0.25s',
-                      minHeight:140,
+                      background:'linear-gradient(145deg,#0C0E2B 0%,#1E1B4B 35%,#312E81 65%,#1D4ED8 100%)',
+                      borderRadius:24,border:`1.5px solid ${isPh?'rgba(255,255,255,0.5)':'rgba(99,102,241,0.5)'}`,
+                      boxShadow:isPh?'0 0 0 3px rgba(99,102,241,0.5),0 16px 40px rgba(99,102,241,0.4),inset 0 1px 0 rgba(255,255,255,0.2)':'0 8px 32px rgba(30,27,75,0.7),inset 0 1px 0 rgba(255,255,255,0.15)',
+                      padding:'18px 20px',display:'flex',alignItems:'center',gap:16,position:'relative',overflow:'hidden',
                     }}>
-                      {/* Frosted glass highlight */}
-                      <div style={{
-                        position:'absolute',top:0,left:0,right:0,height:'55%',
-                        background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',
-                        borderRadius:'24px 24px 60% 60%',pointerEvents:'none',
-                      }}/>
-                      {/* Status badge */}
-                      <div style={{
-                        position:'absolute',top:10,right:10,
-                        display:'flex',alignItems:'center',gap:3,
-                        background:item.pending?'rgba(220,38,38,0.85)':'rgba(5,150,105,0.85)',
-                        backdropFilter:'blur(8px)',
-                        borderRadius:20,padding:'2px 7px',
-                        border:`1px solid ${item.pending?'rgba(252,165,165,0.4)':'rgba(110,231,183,0.4)'}`,
-                      }}>
-                        <div style={{
-                          width:5,height:5,borderRadius:'50%',background:'#fff',
-                          animation:item.pending?'pulse 1.5s infinite':'pulse 2s infinite',
-                        }}/>
-                        <span style={{color:'#fff',fontSize:7,fontWeight:900,letterSpacing:'0.06em'}}>
-                          {item.pending?'EN ATTENTE':'ACTIVÉ'}
-                        </span>
+                      <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0) 100%)',borderRadius:'24px 24px 60% 60%',pointerEvents:'none'}}/>
+                      {/* Night stars decoration */}
+                      <div style={{position:'absolute',top:8,right:16,fontSize:10,opacity:0.5}}>✨</div>
+                      <div style={{position:'absolute',top:14,right:32,fontSize:7,opacity:0.3}}>★</div>
+                      <div style={{position:'absolute',top:5,right:48,fontSize:8,opacity:0.4}}>✦</div>
+                      <div style={{background:'rgba(255,255,255,0.1)',borderRadius:16,padding:'10px 12px',flexShrink:0}}>
+                        <span style={{fontSize:36,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.4))'}}>💊</span>
                       </div>
-                      {/* Emoji */}
-                      <span style={{fontSize:'3.2rem',filter:'drop-shadow(0 4px 8px rgba(0,0,0,0.35))',lineHeight:1,zIndex:1}}>{item.emoji}</span>
-                      {/* Text */}
-                      <div style={{textAlign:'center',zIndex:1}}>
-                        <p style={{color:'#fff',fontWeight:900,fontSize:11,letterSpacing:'0.07em',textTransform:'uppercase',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)'}}>{item.label}</p>
-                        <p style={{color:'rgba(255,255,255,0.7)',fontWeight:600,fontSize:9,margin:'3px 0 0',letterSpacing:'0.03em'}}>{item.sub}</p>
+                      <div style={{textAlign:'left',flex:1}}>
+                        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
+                          <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.06em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)'}}>Bridge Pharmacie</p>
+                          <span style={{background:'rgba(239,68,68,0.85)',borderRadius:20,padding:'2px 8px',display:'flex',alignItems:'center',gap:4,flexShrink:0}}>
+                            <span style={{width:5,height:5,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
+                            <span style={{color:'#fff',fontSize:8,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
+                          </span>
+                        </div>
+                        <p style={{color:'rgba(255,255,255,0.8)',fontSize:11,fontWeight:700,margin:'0 0 2px'}}>🌙 Ouverte la nuit · 💊 Disponible 24h/24</p>
+                        <p style={{color:'rgba(255,255,255,0.5)',fontSize:10,margin:0}}>{t.pharmaeSub}</p>
                       </div>
                     </div>
                   </button>
                 );
-              })}
+              })()}
+              {/* Row 3: Fleurs + Tabac */}
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
+                {botItems.map(renderCard)}
+              </div>
             </div>
           );
         })()}
@@ -4417,7 +4509,7 @@ function loadNav() {
   try {
     const raw=localStorage.getItem(NAV_KEY);
     if(!raw) return null;
-    return JSON.parse(raw) as {lang:Lang;service:'none'|'delivery'|'taxi'|'tabac'|'fleurs';page:Page;restaurantId:string|null};
+    return JSON.parse(raw) as {lang:Lang;service:'none'|'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie';page:Page;restaurantId:string|null};
   } catch { return null; }
 }
 
@@ -4443,7 +4535,7 @@ export default function App() {
   const [page,setPage]         = useState<Page>(saved?.page??'home');
   // splashDone becomes true after 3s; we also wait for Clerk to load
   const [splashDone,setSplashDone] = useState(false);
-  const [service,setService]       = useState<'none'|'delivery'|'taxi'|'tabac'|'fleurs'>(saved?.service??'none');
+  const [service,setService]       = useState<'none'|'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'>(saved?.service??'none');
   const [cart,setCart]         = useState<CartItem[]>([]);
   const [showCart,setShowCart] = useState(false);
   const [showProfile,setShowProfile] = useState(false);
@@ -4536,6 +4628,7 @@ export default function App() {
   if(service==='taxi') return <DarkModeCtx.Provider value={dv}><TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
   if(service==='tabac') return <DarkModeCtx.Provider value={dv}><TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
   if(service==='fleurs') return <DarkModeCtx.Provider value={dv}><FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
+  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={()=>setService('none')} lang={lang}/></DarkModeCtx.Provider>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={

@@ -34,6 +34,43 @@ function cleanup() {
 }
 setInterval(cleanup, 10 * 60 * 1000);
 
+// ── Driver live positions (for smart dispatch) ────────────────────────────────
+// endpoint → { lat, lng, driverName, updatedAt }
+// Drivers on the dispatch page report their GPS every 30s
+export interface DriverLoc {
+  lat: number;
+  lng: number;
+  driverName?: string;
+  updatedAt: number;
+}
+const driverPositions = new Map<string, DriverLoc>();
+const DRIVER_TTL_MS = 5 * 60 * 1000; // 5 minutes without ping = offline
+
+function cleanupDrivers() {
+  const now = Date.now();
+  for (const [ep, loc] of driverPositions) {
+    if (now - loc.updatedAt > DRIVER_TTL_MS) driverPositions.delete(ep);
+  }
+}
+setInterval(cleanupDrivers, 60 * 1000);
+
+/** Returns map of endpoint → DriverLoc for all currently-active drivers. */
+export function getDriverPositions(): Map<string, DriverLoc> {
+  cleanupDrivers();
+  return driverPositions;
+}
+
+// Driver → report their live GPS (called every 30s from dispatch page)
+router.post("/tracking/driver-location", (req, res) => {
+  const { endpoint, lat, lng, driverName } = req.body;
+  if (!endpoint || typeof lat !== "number" || typeof lng !== "number") {
+    res.status(400).json({ error: "endpoint, lat and lng required" });
+    return;
+  }
+  driverPositions.set(endpoint, { lat, lng, driverName: driverName || undefined, updatedAt: Date.now() });
+  res.json({ ok: true });
+});
+
 // List all pending taxi bookings (for driver dispatch panel)
 router.get("/tracking-pending", (_req, res) => {
   const pending: Array<{ ref: string } & TrackPos> = [];

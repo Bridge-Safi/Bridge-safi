@@ -67,4 +67,31 @@ export async function notifyDrivers(payload: object) {
   } catch (_) {}
 }
 
+/** Send push notification only to specific driver endpoints. */
+export async function notifySpecificDrivers(endpoints: string[], payload: object) {
+  if (endpoints.length === 0) return;
+  try {
+    const subs = await db.select().from(pushSubscriptionsTable);
+    const targets = subs.filter(s => endpoints.includes(s.endpoint));
+    const results = await Promise.allSettled(
+      targets.map(sub =>
+        webpush.sendNotification(
+          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+          JSON.stringify(payload),
+        )
+      )
+    );
+    const deadEndpoints = targets
+      .filter((_, i) => results[i].status === "rejected")
+      .map(s => s.endpoint);
+    if (deadEndpoints.length > 0) {
+      await Promise.allSettled(
+        deadEndpoints.map(ep =>
+          db.delete(pushSubscriptionsTable).where(eq(pushSubscriptionsTable.endpoint, ep))
+        )
+      );
+    }
+  } catch (_) {}
+}
+
 export default router;

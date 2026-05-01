@@ -1545,6 +1545,46 @@ function DispatchPage() {
     setPushLoading(false);
   };
 
+  // ── GPS reporting to server (for smart dispatch proximity) ──
+  // Reports driver position every 30s so the API knows who is nearby which restaurant
+  const gpsReportRef = useRef<number | null>(null);
+  const liveGPSRef = useRef<{ lat: number; lng: number } | null>(null);
+  useEffect(() => {
+    if (role === 'choose') return;
+    // Get push subscription endpoint (needed as driver ID)
+    let endpoint = '';
+    navigator.serviceWorker.ready
+      .then(reg => reg.pushManager.getSubscription())
+      .then(sub => { if (sub) endpoint = sub.endpoint; })
+      .catch(() => {});
+    // Watch GPS
+    let watchId: number | null = null;
+    if (navigator.geolocation) {
+      watchId = navigator.geolocation.watchPosition(
+        pos => { liveGPSRef.current = { lat: pos.coords.latitude, lng: pos.coords.longitude }; },
+        () => {},
+        { enableHighAccuracy: true, maximumAge: 10000 }
+      );
+    }
+    // Report every 30s
+    const report = () => {
+      if (!endpoint || !liveGPSRef.current) return;
+      fetch('/api/tracking/driver-location', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ endpoint, lat: liveGPSRef.current.lat, lng: liveGPSRef.current.lng, driverName: driverName || undefined }),
+      }).catch(() => {});
+    };
+    // Initial report after 3s (give time to get GPS fix)
+    const initTimeout = setTimeout(report, 3000);
+    gpsReportRef.current = window.setInterval(report, 30_000);
+    return () => {
+      clearTimeout(initTimeout);
+      if (gpsReportRef.current !== null) clearInterval(gpsReportRef.current);
+      if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+    };
+  }, [role, driverName]);
+
   // ── EATS: SSE stream for new orders ──
   useEffect(() => {
     if (role !== 'eats') return;
