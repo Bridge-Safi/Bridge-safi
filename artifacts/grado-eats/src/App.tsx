@@ -4548,7 +4548,7 @@ export default function App() {
 
   // Splash timer — 3 seconds
   useEffect(()=>{
-    const t=setTimeout(()=>setSplashDone(true),3000);
+    const t=setTimeout(()=>setSplashDone(true),1500);
     return()=>clearTimeout(t);
   },[]);
 
