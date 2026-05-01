@@ -5,6 +5,7 @@ import { notifyDrivers, notifySpecificDrivers } from "./push";
 import { getDriverPositions } from "./tracking";
 import { addSSEClient, removeSSEClient, broadcastOrder } from "../lib/sse";
 import { logger } from "../lib/logger";
+import { notifyRestaurant } from "../lib/notify-restaurant";
 
 // ── Restaurant coordinates in Safi ───────────────────────────────────────────
 // Used for proximity-based smart dispatch (notify nearest drivers first)
@@ -152,6 +153,18 @@ router.post("/orders/inbound", async (req, res) => {
       data: { orderId: order.id, ref: order.ref, url: "/" },
     }).catch(() => {});
 
+    // Notify restaurant via WhatsApp + phone call
+    notifyRestaurant(restaurantLabel, {
+      ref: order.ref,
+      customerName: order.customerName,
+      customerPhone: order.customerPhone,
+      deliveryAddress: order.customerAddress,
+      items: order.items,
+      total: order.total,
+      deliveryMode: order.deliveryMode ?? "delivery",
+      paymentMethod: order.paymentMethod ?? "cash",
+    }).catch(() => {});
+
   } catch (err) {
     console.error("Inbound webhook error:", err);
     res.status(500).json({ error: "Failed to process inbound order" });
@@ -248,6 +261,18 @@ router.post("/orders", async (req, res) => {
 
     // Forward to restaurant webhook if configured
     forwardToRestaurant(order).catch(() => {});
+
+    // Notify restaurant via WhatsApp + phone call
+    notifyRestaurant(restaurantName, {
+      ref: order.ref,
+      customerName: order.customerName,
+      customerPhone: order.customerPhone,
+      deliveryAddress: order.customerAddress,
+      items: order.items,
+      total: order.total,
+      deliveryMode: order.deliveryMode ?? "delivery",
+      paymentMethod: order.paymentMethod ?? "cash",
+    }).catch(() => {});
 
   } catch (err) {
     res.status(500).json({ error: "Failed to create order" });
