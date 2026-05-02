@@ -1641,11 +1641,15 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
     ? 'BR-' + user.id.replace(/[^a-z0-9]/gi,'').slice(-7).toUpperCase()
     : 'BR-???????';
 
-  // Diamond points stored per user
-  const ptsKey = `bridge_game_pts_${user?.id||'guest'}`;
-  const [gamePoints] = useState(() => {
-    try { return parseInt(localStorage.getItem(ptsKey)||'0',10); } catch { return 0; }
-  });
+  // Diamond points from server (anti-cheat)
+  const [gamePoints, setGamePoints] = useState(0);
+  useEffect(() => {
+    if (!user?.id) return;
+    fetch('/api/game/diamonds', { credentials: 'include' })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d && typeof d.diamonds === 'number') setGamePoints(d.diamonds); })
+      .catch(() => {});
+  }, [user?.id]);
 
   // ── Validation helpers ──────────────────────────────────────────────────────
   const validateName=(v:string)=>v.trim().length>=3&&/\s/.test(v.trim());
@@ -2076,14 +2080,21 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
     setPromoDiscount(d=>d+disc);
     setPromoMsg(t.promoOk(disc));setPromoIsErr(false);setPromoInput('');
   };
-  // Game diamonds → MAD
-  const gamePts=useMemo(()=>{try{return parseInt(localStorage.getItem(`bridge_game_pts_${user?.id||'guest'}`)||'0',10);}catch{return 0;}},[user?.id]);
+  // Game diamonds → MAD (fetched from server, anti-cheat)
+  const [gamePts,setGamePts]=useState(0);
+  useEffect(()=>{
+    if(!user?.id) return;
+    fetch('/api/game/diamonds',{credentials:'include'})
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{if(d&&typeof d.diamonds==='number')setGamePts(d.diamonds);})
+      .catch(()=>{});
+  },[user?.id]);
   const maxPtsMAD=Math.floor(gamePts/100);
   const [ptsUsed,setPtsUsed]=useState(0);
   const usePts=(mad:number)=>{
     const clamped=Math.min(mad,maxPtsMAD);
     setPtsUsed(clamped);
-    try{localStorage.setItem(`bridge_game_pts_${user?.id||'guest'}`,String(Math.max(0,gamePts-clamped*100)));}catch(_){}
+    // Deduct server-side when order is confirmed (see sendOrderToAPI)
   };
   const [serviceFeeEnabled,setServiceFeeEnabled]=useState(false);
   const isServiceFeeForced=baseTotal<serviceFeeThreshold;
@@ -2172,6 +2183,15 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
           collectCode:delivMode==='collect'?collectCode:null,
         }),
       });
+      // Deduct diamonds server-side if used
+      if(ptsUsed>0){
+        const diamondsToSpend=ptsUsed*100;
+        fetch('/api/game/diamonds/spend',{
+          method:'POST',credentials:'include',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({spend:diamondsToSpend}),
+        }).catch(()=>{});
+      }
     }catch(_){/* silent */}
   };
 
