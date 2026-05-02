@@ -1013,19 +1013,62 @@ function GamePage() {
   const t = GAME_T[lang];
   const isAR = lang === 'ar';
 
-  useEffect(() => {
-    if (isLoaded && !isSignedIn) navigate('/sign-in');
-  }, [isLoaded, isSignedIn]);
+  // Server-side diamonds state
+  const [serverDiamonds, setServerDiamonds] = useState<number | null>(null);
 
-  if (!isSignedIn) return null;
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn || !user?.id) return;
+    fetch('/api/game/diamonds', { credentials: 'include' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data && typeof data.diamonds === 'number') setServerDiamonds(data.diamonds); })
+      .catch(() => {});
+  }, [isLoaded, isSignedIn, user?.id]);
+
+  // Show lock screen if not signed in (instead of hard redirect)
+  if (isLoaded && !isSignedIn) {
+    const lockT = {
+      fr: { title: 'CONNEXION BRIDGE REQUISE', game: 'SAFI RUNNER', desc: 'Pour jouer, connecte-toi d\'abord sur Bridge avec ton email et ton numéro. Tu seras automatiquement reconnu sur le jeu et tes diamants seront synchronisés.', btn: 'ME CONNECTER SUR BRIDGE', note: 'Bridge gère la connexion. Tes 💎 sont liés à ton compte — joue depuis n\'importe quel appareil avec le même email.' },
+      en: { title: 'BRIDGE LOGIN REQUIRED', game: 'SAFI RUNNER', desc: 'To play, first sign in to Bridge with your email and phone number. You\'ll be automatically recognized and your diamonds will be synced.', btn: 'SIGN IN TO BRIDGE', note: 'Bridge manages your login. Your 💎 are linked to your account — play from any device with the same email.' },
+      ar: { title: 'تسجيل الدخول مطلوب', game: 'SAFI RUNNER', desc: 'للعب، سجّل دخولك أولاً على Bridge بالبريد الإلكتروني والهاتف. سيتم التعرف عليك تلقائياً وسيتم مزامنة ماساتك.', btn: 'تسجيل الدخول على Bridge', note: 'Bridge يدير حسابك. 💎 مرتبطة بحسابك — العب من أي جهاز.' },
+      amz: { title: 'ⴰⵙⵉⵔⴳ ⴰⴷ BRIDGE', game: 'SAFI RUNNER', desc: 'ⵉⵔⵉ ⴰⴷ ⵜⵙⵖⵔⴷ, ⴽⵛⵎ ⵉ Bridge ⵙ email ⴷ ⵓⵜⵉⵍⵉⴼⵓⵏ. ⵉⴷⵢⴰⵎⴰⵏ ⵖⵉⴽ ⴷ ⴰⵔⵓⴷ ⵙ ⵓⵃⵙⴰⴱ ⵏⵏⴽ.', btn: 'ⴽⵛⵎ ⵉ Bridge', note: 'Bridge ⵉⵙⴼⵍⵙ ⵓⵃⵙⴰⴱ ⵏⵏⴽ. 💎 ⵔⴱⵓⵏⵜ ⵉ ⵓⵃⵙⴰⴱ ⵏⵏⴽ.' },
+    }[lang];
+    const isAR2 = lang === 'ar';
+    return (
+      <div dir={isAR2 ? 'rtl' : 'ltr'} style={{minHeight:'100dvh',background:'linear-gradient(180deg,#04110A 0%,#071C11 60%,#050F08 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'32px 20px',gap:0}}>
+        <div style={{position:'absolute',top:-60,left:'10%',width:280,height:280,borderRadius:'50%',background:'radial-gradient(circle,rgba(74,222,128,0.1) 0%,transparent 70%)',pointerEvents:'none'}}/>
+        <div style={{position:'absolute',bottom:40,right:'5%',width:200,height:200,borderRadius:'50%',background:'radial-gradient(circle,rgba(253,224,71,0.06) 0%,transparent 70%)',pointerEvents:'none'}}/>
+        <div style={{width:'100%',maxWidth:360,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(74,222,128,0.2)',borderRadius:28,padding:'36px 24px 28px',display:'flex',flexDirection:'column',alignItems:'center',gap:16,backdropFilter:'blur(12px)'}}>
+          <div style={{fontSize:52,lineHeight:1}}>🔒</div>
+          <p style={{color:'#4ADE80',fontSize:10,fontWeight:900,letterSpacing:'0.18em',margin:0,textAlign:'center',textTransform:'uppercase'}}>{lockT.title}</p>
+          <p style={{color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.12em',margin:0,textAlign:'center'}}>🦈 {lockT.game}</p>
+          <p style={{color:'rgba(255,255,255,0.65)',fontSize:13,fontWeight:500,lineHeight:1.6,textAlign:'center',margin:0}}>{lockT.desc}</p>
+          <button onClick={()=>navigate('/sign-in')} style={{width:'100%',padding:'18px 0',borderRadius:18,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669 0%,#4ADE80 50%,#059669 100%)',backgroundSize:'200% 100%',color:'#fff',fontSize:15,fontWeight:900,letterSpacing:'0.08em',marginTop:4,boxShadow:'0 0 24px rgba(74,222,128,0.35)'}}>
+            🛵 {lockT.btn}
+          </button>
+          <p style={{color:'rgba(255,255,255,0.28)',fontSize:10,fontWeight:600,textAlign:'center',margin:0,lineHeight:1.5}}>🔐 {lockT.note}</p>
+        </div>
+        <div style={{marginTop:20,display:'flex',gap:8}}>
+          {GAME_LANGS.map(l => (
+            <button key={l} onClick={()=>setLang(l)} style={{background: l===lang ? 'rgba(74,222,128,0.15)' : 'rgba(255,255,255,0.04)',border: l===lang ? '1px solid rgba(74,222,128,0.4)' : '1px solid rgba(255,255,255,0.1)',borderRadius:8,padding:'6px 10px',color: l===lang ? '#4ADE80' : 'rgba(255,255,255,0.4)',fontSize:10,fontWeight:900,cursor:'pointer'}}>
+              {GAME_LANG_LABELS[l]}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (!isLoaded) return null;
 
   const gameId = user?.id
     ? 'BR-' + user.id.replace(/[^a-z0-9]/gi, '').slice(-7).toUpperCase()
     : 'BR-???????';
 
-  const gamePoints = (() => {
+  const localDiamonds = (() => {
     try { return parseInt(localStorage.getItem(`bridge_game_pts_${user?.id||'guest'}`) || '0', 10); } catch { return 0; }
   })();
+
+  const gamePoints = serverDiamonds !== null ? Math.max(serverDiamonds, localDiamonds) : localDiamonds;
 
   const pct = Math.min(100, Math.round((gamePoints / GAME_TARGET) * 100));
 
@@ -1121,7 +1164,7 @@ function GamePage() {
 
       {/* ── PLAY BUTTON ── */}
       <div style={{width:'100%',maxWidth:380,padding:'0 16px',marginTop:14}}>
-        <a href={GAME_URL} target="_blank" rel="noreferrer" style={{display:'block',textDecoration:'none'}}>
+        <a href={`${GAME_URL}?userId=${encodeURIComponent(user?.id||'')}&gameId=${encodeURIComponent(gameId)}`} target="_blank" rel="noreferrer" style={{display:'block',textDecoration:'none'}}>
           <button style={{
             width:'100%',padding:'18px 0',borderRadius:20,border:'none',cursor:'pointer',
             background:'linear-gradient(135deg,#059669 0%,#4ADE80 50%,#059669 100%)',
