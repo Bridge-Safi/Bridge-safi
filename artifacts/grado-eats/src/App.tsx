@@ -215,12 +215,12 @@ interface CartItem {
   extraPrice: number; totalPerUnit: number;
 }
 
-interface UserProfile { name:string; address:string; phone:string; cardNumber:string; cardExpiry:string; cardName:string; paymentMethod?:'card'|'paypal'; paypalEmail?:string; onboardingComplete?:boolean; avatar?:string; }
+interface UserProfile { name:string; address:string; phone:string; email:string; cardNumber:string; cardExpiry:string; cardName:string; paymentMethod?:'card'|'paypal'; paypalEmail?:string; onboardingComplete?:boolean; avatar?:string; }
 
 // ─── PROFILE STORAGE ──────────────────────────────────────────────────────────
 
 const PROFILE_KEY = 'bridge_eats_profile';
-const emptyProfile = (): UserProfile => ({ name:'', address:'', phone:'', cardNumber:'', cardExpiry:'', cardName:'', paymentMethod:'card', paypalEmail:'', onboardingComplete:false });
+const emptyProfile = (): UserProfile => ({ name:'', address:'', phone:'', email:'', cardNumber:'', cardExpiry:'', cardName:'', paymentMethod:'card', paypalEmail:'', onboardingComplete:false });
 
 // ── Card type detection ────────────────────────────────────────────────────────
 type CardType = 'visa'|'mastercard'|'unknown';
@@ -289,8 +289,8 @@ const T = {
     addWithOptions:'Ajouter au panier', totalLabel:'Total',
     cartTitle:'Votre Panier', cartEmpty:'Votre panier est vide', total:'Total',
     checkout:'Commander', checkoutTitle:'Vos coordonnées',
-    nameLabel:'Votre prénom', addrLabel:'Adresse à Safi', phoneLabel:'Numéro de téléphone',
-    namePh:'Ex: Youssef', addrPh:'Ex: Plateau, Av. Hassan II, Safi', phonePh:'06 00 00 00 00',
+    nameLabel:'Votre prénom', addrLabel:'Adresse à Safi', phoneLabel:'Numéro de téléphone', emailLabel:'Adresse e-mail',
+    namePh:'Ex: Youssef', addrPh:'Ex: Plateau, Av. Hassan II, Safi', phonePh:'06 00 00 00 00', emailPh:'exemple@email.com',
     fillAll:'Merci de remplir tous les champs', continueBtn:'Continuer →',
     payModeTitle:'Mode de Paiement',
     cashOption:'Paiement à la livraison', cashOptionDesc:'Payez en espèces à la réception · Gratuit',
@@ -387,8 +387,8 @@ const T = {
     addWithOptions:'Add to cart', totalLabel:'Total',
     cartTitle:'Your Cart', cartEmpty:'Your cart is empty', total:'Total',
     checkout:'Order Now', checkoutTitle:'Your Details',
-    nameLabel:'Your name', addrLabel:'Address in Safi', phoneLabel:'Phone number',
-    namePh:'e.g. Youssef', addrPh:'e.g. Plateau, Av. Hassan II, Safi', phonePh:'06 00 00 00 00',
+    nameLabel:'Your name', addrLabel:'Address in Safi', phoneLabel:'Phone number', emailLabel:'Email address',
+    namePh:'e.g. Youssef', addrPh:'e.g. Plateau, Av. Hassan II, Safi', phonePh:'06 00 00 00 00', emailPh:'example@email.com',
     fillAll:'Please fill in all fields', continueBtn:'Continue →',
     payModeTitle:'Payment Method',
     cashOption:'Cash on Delivery', cashOptionDesc:'Pay cash upon receipt · Free',
@@ -484,8 +484,8 @@ const T = {
     addWithOptions:'أضف إلى السلة', totalLabel:'المجموع',
     cartTitle:'سلة الطلبات', cartEmpty:'السلة فارغة', total:'المجموع',
     checkout:'اطلب الآن', checkoutTitle:'بياناتك',
-    nameLabel:'اسمك', addrLabel:'عنوانك في آسفي', phoneLabel:'رقم الهاتف',
-    namePh:'مثال: يوسف', addrPh:'مثال: الهضبة، ش. الحسن الثاني، آسفي', phonePh:'06 00 00 00 00',
+    nameLabel:'اسمك', addrLabel:'عنوانك في آسفي', phoneLabel:'رقم الهاتف', emailLabel:'البريد الإلكتروني',
+    namePh:'مثال: يوسف', addrPh:'مثال: الهضبة، ش. الحسن الثاني، آسفي', phonePh:'06 00 00 00 00', emailPh:'مثال@email.com',
     fillAll:'يرجى ملء جميع الحقول', continueBtn:'متابعة →',
     payModeTitle:'طريقة الدفع',
     cashOption:'الدفع عند الاستلام', cashOptionDesc:'ادفع نقداً عند استلام طلبك · مجاني',
@@ -582,8 +582,8 @@ const T = {
     addWithOptions:'ⵔⵏⵓ ⵖ ⵜⵓⴽⴽⵙⴰ', totalLabel:'ⴰⵎⵎⴰⵙ',
     cartTitle:'ⵜⵓⴽⴽⵙⴰ', cartEmpty:'ⵜⵓⴽⴽⵙⴰ ⵉⵔⵉⵔⵉ', total:'ⴰⵎⵎⴰⵙ',
     checkout:'ⵔⵏⵓ ⴰⴷ', checkoutTitle:'ⵉⵙⴼⴰⵡⵏ ⵏⵏⴽ',
-    nameLabel:'ⵉⵙⵎ ⵏⵏⴽ', addrLabel:'ⵜⴰⵙⵓⵏⵜ ⵖ ⵙⴰⴼⵉ', phoneLabel:'ⴰⵏⵓⵎⵔ ⵏ ⵓⵙⵓⵍ',
-    namePh:'ⴰⵎ: ⵢⵓⵙⴼ', addrPh:'ⴰⵎ: ⴰⴱⵍⴰⵟⵓ, ⵙⴰⴼⵉ', phonePh:'06 00 00 00 00',
+    nameLabel:'ⵉⵙⵎ ⵏⵏⴽ', addrLabel:'ⵜⴰⵙⵓⵏⵜ ⵖ ⵙⴰⴼⵉ', phoneLabel:'ⴰⵏⵓⵎⵔ ⵏ ⵓⵙⵓⵍ', emailLabel:'ⵉⵎⴰⵢⵍ',
+    namePh:'ⴰⵎ: ⵢⵓⵙⴼ', addrPh:'ⴰⵎ: ⴰⴱⵍⴰⵟⵓ, ⵙⴰⴼⵉ', phonePh:'06 00 00 00 00', emailPh:'mail@email.com',
     fillAll:'ⵎⵍⴰ ⵉⵍⵉⵙ ⴽⵓⵍⵍⵓ ⵉⴳⵎⴰⵎⵏ', continueBtn:'ⵙⴷⴷⵉⴷ →',
     payModeTitle:'ⴰⵏⴰⵡ ⵏ ⵓⵙⵙⴼⵍⵍⴷ',
     cashOption:'ⴰⴷⵔⵉⵎ ⵎⵎⵉ ⵢⴰⵙⵍⵎⴷ', cashOptionDesc:'ⵙⵙⴼⵍⵍⴷ ⵙ ⵓⴷⵔⵉⵎ · ⵉⵥⵍⵉ',
@@ -1763,6 +1763,7 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
             <Field label={t.nameLabel} value={form.name} onChange={v=>{set('name')(v);if(errs.name&&validateName(v))setErrs(e=>({...e,name:false}));}} placeholder={t.namePh} lang={lang} required error={errs.name} errorMsg={t.errName}/>
             <Field label={t.addrLabel} value={form.address} onChange={set('address')} placeholder={t.addrPh} lang={lang}/>
             <Field label={t.phoneLabel} value={form.phone} onChange={v=>{set('phone')(v);if(errs.phone&&validatePhone(v))setErrs(e=>({...e,phone:false}));}} placeholder={t.phonePh} type="tel" lang={lang} required error={errs.phone} errorMsg={t.errPhone}/>
+            <Field label={t.emailLabel} value={form.email||''} onChange={set('email')} placeholder={t.emailPh} type="email" lang={lang}/>
           </div>
           {/* ── Payment section ───────────────────────────────────── */}
           <div className="rounded-2xl p-4 mb-5" style={{
