@@ -3716,12 +3716,6 @@ function ProfileOnboardingScreen({lang,profile,saveProfile,onDone}:{
           {completedCount===total?`✓ ${t.onboardSave}`:`${t.onboardSave} (${completedCount}/${total})`}
         </button>
 
-        <button onClick={handleSkip}
-          className={`w-full text-xs ${fClass}`}
-          style={{height:40,borderRadius:14,background:'transparent',
-            color:'rgba(255,255,255,0.4)',border:'1px solid rgba(255,255,255,0.1)',cursor:'pointer'}}>
-          {t.onboardSkip} →
-        </button>
       </div>
     </div>
   );

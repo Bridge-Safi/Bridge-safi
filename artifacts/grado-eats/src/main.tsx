@@ -546,19 +546,19 @@ function SignUpPage() {
   const clerk = useClerk();
   const { isLoaded, isSignedIn } = useUser();
   const [, navigate] = useLocation();
-  const [step, setStep] = useState<'form' | 'verify-email' | 'verify-phone'>('form');
+  const [step, setStep] = useState<'form' | 'verify'>('form');
   const [firstName, setFirstName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Already signed in → go straight to the app
   useEffect(() => {
     if (isLoaded && isSignedIn) navigate(basePath || '/');
   }, [isLoaded, isSignedIn, navigate]);
+
+  const isPhone = /^\+?[0-9\s]{7,}$/.test(identifier.trim());
 
   const fmtPhone = (v: string) => {
     let d = v.replace(/[^\d+]/g, '');
@@ -569,46 +569,39 @@ function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
-    const emailVal = email.trim();
-    const phoneVal = fmtPhone(phone.trim());
     if (!firstName.trim()) { setError('Le prénom est obligatoire.'); return; }
-    if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailVal)) { setError('Adresse email invalide.'); return; }
-    if (!phoneVal || phoneVal.replace(/\D/g,'').length < 9) { setError('Numéro de téléphone invalide.'); return; }
+    if (!identifier.trim()) { setError('Email ou numéro de téléphone requis.'); return; }
     if (password.length < 8) { setError('Mot de passe trop court (8 caractères min.).'); return; }
     setLoading(true); setError('');
     try {
-      await clerk.client.signUp.create({
-        firstName: firstName.trim(),
-        emailAddress: emailVal,
-        phoneNumber: phoneVal,
-        password,
-      });
-      await clerk.client.signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
-      setStep('verify-email');
+      const params: Record<string, string> = { firstName: firstName.trim(), password };
+      if (isPhone) params.phoneNumber = fmtPhone(identifier.trim());
+      else params.emailAddress = identifier.trim();
+      await clerk.client.signUp.create(params);
+      if (isPhone) await clerk.client.signUp.preparePhoneNumberVerification({ strategy: 'phone_code' });
+      else await clerk.client.signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
+      setStep('verify');
     } catch (err: any) {
       const msg = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || '';
       if (msg.toLowerCase().includes('email')) setError('Email invalide ou déjà utilisé.');
-      else if (msg.toLowerCase().includes('phone')) setError('Numéro de téléphone invalide ou déjà utilisé.');
+      else if (msg.toLowerCase().includes('phone')) setError('Numéro invalide ou déjà utilisé.');
       else if (msg.toLowerCase().includes('password')) setError('Mot de passe trop faible (8 caractères min.).');
       else setError(msg || 'Erreur lors de la création du compte.');
     }
     setLoading(false);
   };
 
-  const handleVerifyEmail = async (e: React.FormEvent) => {
+  const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
     setLoading(true); setError('');
     try {
-      const result = await clerk.client.signUp.attemptEmailAddressVerification({ code });
+      const result = isPhone
+        ? await clerk.client.signUp.attemptPhoneNumberVerification({ code })
+        : await clerk.client.signUp.attemptEmailAddressVerification({ code });
       if (result.status === 'complete') {
         await clerk.setActive({ session: result.createdSessionId });
         navigate(basePath || '/');
-      } else if (result.status === 'missing_requirements') {
-        // Phone verification needed next
-        await clerk.client.signUp.preparePhoneNumberVerification({ strategy: 'phone_code' });
-        setCode('');
-        setStep('verify-phone');
       } else {
         setError('Code incorrect. Réessayez.');
       }
@@ -618,29 +611,14 @@ function SignUpPage() {
     setLoading(false);
   };
 
-  const handleVerifyPhone = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (loading) return;
-    setLoading(true); setError('');
-    try {
-      const result = await clerk.client.signUp.attemptPhoneNumberVerification({ code });
-      if (result.status === 'complete') {
-        await clerk.setActive({ session: result.createdSessionId });
-        navigate(basePath || '/');
-      } else {
-        setError('Code SMS incorrect. Réessayez.');
-      }
-    } catch (err: any) {
-      setError(err?.errors?.[0]?.longMessage || 'Code SMS incorrect ou expiré.');
-    }
-    setLoading(false);
-  };
-
-  if (step === 'verify-email') return (
+  if (step === 'verify') return (
     <AuthPageWrapper>
-      <AuthCardHeader title="Vérification Email · Email Verify" sub={`Code envoyé à ${email.trim()}`} />
-      <form onSubmit={handleVerifyEmail} style={{ display: 'flex', flexDirection: 'column' }}>
-        <FocusInput label="Code de vérification email (6 chiffres)" value={code} onChange={setCode}
+      <AuthCardHeader
+        title="Vérification · Verify"
+        sub={isPhone ? `SMS envoyé au ${fmtPhone(identifier.trim())}` : `Code envoyé à ${identifier.trim()}`}
+      />
+      <form onSubmit={handleVerify} style={{ display: 'flex', flexDirection: 'column' }}>
+        <FocusInput label="Code de vérification (6 chiffres)" value={code} onChange={setCode}
           placeholder="123456" autoComplete="one-time-code" type="tel" />
         {error && <div style={errStyle}>{error}</div>}
         <button type="submit" style={{...btn, opacity: loading ? 0.7 : 1}} disabled={loading}>
@@ -656,36 +634,17 @@ function SignUpPage() {
     </AuthPageWrapper>
   );
 
-  if (step === 'verify-phone') return (
-    <AuthPageWrapper>
-      <AuthCardHeader title="Vérification SMS · Phone Verify" sub={`SMS envoyé au ${fmtPhone(phone.trim())}`} />
-      <form onSubmit={handleVerifyPhone} style={{ display: 'flex', flexDirection: 'column' }}>
-        <FocusInput label="Code SMS reçu (6 chiffres)" value={code} onChange={setCode}
-          placeholder="123456" autoComplete="one-time-code" type="tel" />
-        {error && <div style={errStyle}>{error}</div>}
-        <button type="submit" style={{...btn, opacity: loading ? 0.7 : 1}} disabled={loading}>
-          {loading ? '...' : 'Confirmer →'}
-        </button>
-      </form>
-    </AuthPageWrapper>
-  );
-
   return (
     <AuthPageWrapper>
-      <AuthCardHeader title="Créer un compte · Sign up" sub="Email + téléphone + mot de passe — obligatoires" />
+      <AuthCardHeader title="Créer un compte · Sign up" sub="Email ou téléphone + mot de passe" />
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
         <FocusInput label="Prénom *" value={firstName} onChange={setFirstName}
           placeholder="Mohamed, Fatima..." autoComplete="given-name" />
-        <FocusInput label="Adresse email *" type="email" value={email} onChange={setEmail}
-          placeholder="votre@email.com" autoComplete="email" />
-        <FocusInput label="Numéro de téléphone * (+212...)" type="tel" value={phone} onChange={setPhone}
-          placeholder="06XX XXX XXX ou +212 6XX..." autoComplete="tel" />
+        <FocusInput label="Email ou numéro de téléphone *" value={identifier} onChange={setIdentifier}
+          placeholder="+212 6XX XXX XXX ou email@..." autoComplete="username" />
         <FocusInput label="Mot de passe * (8 caractères min.)" type="password" value={password} onChange={setPassword}
           placeholder="••••••••" autoComplete="new-password" />
         {error && <div style={errStyle}>{error}</div>}
-        <p style={{ fontSize: '0.68rem', color: '#9CA3AF', margin: '-6px 0 10px', textAlign: 'center' }}>
-          🔒 Ces informations sont liées à votre compte jeu · 💎 anti-triche
-        </p>
         <button type="submit" style={{...btn, opacity: loading ? 0.7 : 1}} disabled={loading}>
           {loading ? 'Création...' : 'Créer mon compte →'}
         </button>
