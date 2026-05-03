@@ -988,6 +988,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
 function GamePage() {
   const { isLoaded, isSignedIn, user } = useUser();
   const [, navigate] = useLocation();
+  const [showGame, setShowGame] = useState(false);
 
   // Read language from persisted nav state, default fr
   const [lang, setLang] = useState<GameLang>(()=>{
@@ -1165,19 +1166,42 @@ function GamePage() {
 
       {/* ── PLAY BUTTON ── */}
       <div style={{width:'100%',maxWidth:380,padding:'0 16px',marginTop:14}}>
-        <a href={`${GAME_URL}?userId=${encodeURIComponent(user?.id||'')}&gameId=${encodeURIComponent(gameId)}`} target="_blank" rel="noreferrer" style={{display:'block',textDecoration:'none'}}>
-          <button style={{
-            width:'100%',padding:'18px 0',borderRadius:20,border:'none',cursor:'pointer',
-            background:'linear-gradient(135deg,#059669 0%,#4ADE80 50%,#059669 100%)',
-            backgroundSize:'200% 100%',
-            boxShadow:'0 0 30px rgba(74,222,128,0.4),0 4px 24px rgba(5,150,105,0.5)',
-            color:'#fff',fontSize:18,fontWeight:900,letterSpacing:'0.1em',
-            animation:'shimmer 2.5s linear infinite',
-          }}>
-            {t.playBtn}
-          </button>
-        </a>
+        <button onClick={()=>setShowGame(true)} style={{
+          width:'100%',padding:'18px 0',borderRadius:20,border:'none',cursor:'pointer',
+          background:'linear-gradient(135deg,#059669 0%,#4ADE80 50%,#059669 100%)',
+          backgroundSize:'200% 100%',
+          boxShadow:'0 0 30px rgba(74,222,128,0.4),0 4px 24px rgba(5,150,105,0.5)',
+          color:'#fff',fontSize:18,fontWeight:900,letterSpacing:'0.1em',
+          animation:'shimmer 2.5s linear infinite',
+        }}>
+          {t.playBtn}
+        </button>
       </div>
+
+      {/* ── FULLSCREEN GAME IFRAME OVERLAY ── */}
+      {showGame && (
+        <div style={{position:'fixed',inset:0,zIndex:9999,background:'#000',display:'flex',flexDirection:'column'}}>
+          {/* Header bar with back button */}
+          <div style={{display:'flex',alignItems:'center',gap:12,padding:'12px 16px',background:'#04110A',borderBottom:'1px solid rgba(74,222,128,0.2)',flexShrink:0}}>
+            <button onClick={()=>setShowGame(false)} style={{
+              display:'flex',alignItems:'center',gap:6,
+              background:'rgba(74,222,128,0.12)',border:'1px solid rgba(74,222,128,0.3)',
+              borderRadius:12,padding:'8px 14px',color:'#4ADE80',fontSize:13,fontWeight:900,cursor:'pointer'
+            }}>
+              ← {lang==='ar'?'رجوع':lang==='en'?'Back':lang==='amz'?'ⴰⵣⵣⵓⵍ':'Retour'}
+            </button>
+            <span style={{color:'#4ADE80',fontSize:12,fontWeight:900,letterSpacing:'0.1em'}}>🦈 SAFI RUNNER</span>
+            <span style={{marginLeft:'auto',color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700}}>{gameId}</span>
+          </div>
+          {/* Game iframe */}
+          <iframe
+            src={`${GAME_URL}?userId=${encodeURIComponent(user?.id||'')}&gameId=${encodeURIComponent(gameId)}`}
+            style={{flex:1,border:'none',width:'100%'}}
+            allow="accelerometer; gyroscope"
+            title="Safi Runner"
+          />
+        </div>
+      )}
 
       {/* ── HOW TO WIN ── */}
       <div style={{width:'100%',maxWidth:380,padding:'0 16px',marginTop:14}}>
