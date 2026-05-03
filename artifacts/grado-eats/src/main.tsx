@@ -722,12 +722,64 @@ const GAME_LANGS = ['fr','en','ar','amz'] as const;
 type GameLang = typeof GAME_LANGS[number];
 const GAME_LANG_LABELS: Record<GameLang,string> = {fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
 const GAME_URL = 'https://de74e39f-30c2-4a4e-81c6-35b38d5328e6-00-2kdljcxzty31v.riker.replit.dev/';
-const GAME_TARGET = 15000;
+const GAME_TARGET = 60000;
 const GAME_T = {
-  fr:{ back:'← Retour', playerId:'ID JOUEUR', diamonds:'MES DIAMANTS', playBtn:'🎮 JOUER MAINTENANT', howTitle:'Comment gagner ?', how1:'🎮 Lance le jeu Bridge Shark', how2:'💎 Récoltez 1 000 💎 / heure', how3:'🎁 Échangez vos 💎 contre des cadeaux', rulesBtn:'📜 Règles du jeu', target:'OBJECTIF', progress:'PROGRESSION', days:'5 jours · 3-4h/jour', pts:'pts', bonusTitle:'🎁 BONUS LIVRAISON OFFERTE', bonusDesc:'Jouez 2h de plus → votre prochaine livraison est GRATUITE !', bonusDiaTitle:'💎 BONUS DIAMANTS', bonusDiaDesc:'+2 000 💎 offerts si vous jouez 2h supplémentaires par jour' },
-  en:{ back:'← Back',   playerId:'PLAYER ID',  diamonds:'MY DIAMONDS',  playBtn:'🎮 PLAY NOW',             howTitle:'How to win?',        how1:'🎮 Launch the Bridge Shark game', how2:'💎 Collect 1,000 💎 per hour', how3:'🎁 Redeem 💎 for free gifts',       rulesBtn:'📜 Game Rules',   target:'TARGET',    progress:'PROGRESS',    days:'5 days · 3-4h/day',  pts:'pts', bonusTitle:'🎁 FREE DELIVERY BONUS', bonusDesc:'Play 2 extra hours → your next delivery is FREE!', bonusDiaTitle:'💎 DIAMOND BONUS', bonusDiaDesc:'+2,000 💎 bonus if you play 2 extra hours per day' },
-  ar:{ back:'→ رجوع',   playerId:'معرّف اللاعب',diamonds:'ماساتي',       playBtn:'🎮 العب الآن',             howTitle:'كيف تفوز؟',          how1:'🎮 شغّل لعبة Bridge Shark',      how2:'💎 اجمع 1 000 💎 كل ساعة',    how3:'🎁 استبدل 💎 بهدايا مجانية',       rulesBtn:'📜 قواعد اللعبة', target:'الهدف',     progress:'التقدم',      days:'5 أيام · 3-4 ساعات', pts:'نقطة', bonusTitle:'🎁 مكافأة التوصيل المجاني', bonusDesc:'العب ساعتين إضافيتين → توصيلك التالي مجاني!', bonusDiaTitle:'💎 مكافأة الماسات', bonusDiaDesc:'+2 000 💎 إضافية إذا لعبت ساعتين أكثر في اليوم' },
-  amz:{ back:'← ⴰⵣⵣⵓⵍ', playerId:'ⴰⵏⴳⵔⴰⵡ',  diamonds:'ⵉⴷⵢⴰⵎⴰⵏ ⵉⵏⵓ', playBtn:'🎮 ⵙⵖⵔ ⴷⴰⵖⵉ',             howTitle:'ⵎⴰⵎⴽ ⴰⴷ ⵜⴽⵙⵎ?',       how1:'🎮 ⵙⵏⵓⴱⴳ Bridge Shark',         how2:'💎 1 000 💎 ⵙ ⵜⵉⵙⵙⵓⵜ',        how3:'🎁 ⵙⴽⵍⵙ 💎',                       rulesBtn:'📜 ⵜⵉⵖⵔⵉ',        target:'ⴰⵎⵓⵟⵟⵓ',  progress:'ⴰⵎⵙⵉⵡⴹ',     days:'5 ⵡⴰⵙⵙⴰⵜⵏ',          pts:'ⵜⵉⵏⵎⵍⴰⵏ', bonusTitle:'🎁 ⴰⵣⵏⵏⵣ ⴱⵍⴰ ⴰⵣⵔⴼ', bonusDesc:'+2 ⵜⵉⵙⵙⵓⵜⵉⵏ → ⴰⵣⵏⵏⵣ ⵢⵉⵍⵉ ⵖⵔⴰⵜⴽ!', bonusDiaTitle:'💎 ⴱⵓⵏⵓⵙ ⵉⴷⵢⴰⵎⴰⵏ', bonusDiaDesc:'+2 000 💎 ⵙ 2 ⵜⵉⵙⵙⵓⵜⵉⵏ ⵢⴰⴹⵏⵉⵏ' },
+  fr:{
+    back:'← Retour', playerId:'ID JOUEUR', diamonds:'MES DIAMANTS', playBtn:'🎮 JOUER MAINTENANT',
+    rulesBtn:'📜 Règles du jeu', target:'OBJECTIF', progress:'PROGRESSION',
+    days:'3 jours · 3h/jour', pts:'pts',
+    howTitle:'🏆 COMMENT GAGNER ?',
+    sec1Title:'⏱️ DURÉE DE JEU',
+    sec1:'Jouez 3h/jour pendant 3 jours · Durée totale : 9h · Plus vous jouez, plus vous gagnez de 💎 !',
+    sec2Title:'💎 DIAMANTS À RÉCOLTER',
+    sec2:'Objectif : 60 000 💎 en 3 jours · Rythme : 6 000 💎/heure (3h × 3j = 54 000 💎) · +2 000 💎/jour bonus (1h en plus) = 60 000 💎 = livraison gratuite',
+    sec3Title:'🐝 DIAMANTS MANQUANTS',
+    sec3:'Objectif atteint → tout est offert 🎉 · Manque 1 000 💎 → vous payez 5 DH · Calcul : diamants manquants ÷ 1 000 × 5 DH',
+    bonusTitle:'🎁 BONUS — LIVRAISON GRATUITE',
+    bonusDesc:'Jouez 4h/jour (1h bonus) → +2 000 💎/jour → 60 000 💎 = livraison 100% GRATUITE 🎁 · Sinon le jeu s\'arrête net à 3h, revenez le lendemain',
+  },
+  en:{
+    back:'← Back', playerId:'PLAYER ID', diamonds:'MY DIAMONDS', playBtn:'🎮 PLAY NOW',
+    rulesBtn:'📜 Game Rules', target:'TARGET', progress:'PROGRESS',
+    days:'3 days · 3h/day', pts:'pts',
+    howTitle:'🏆 HOW TO WIN?',
+    sec1Title:'⏱️ PLAY TIME',
+    sec1:'Play 3h/day for 3 days · Total: 9h · The more you play, the more 💎 you earn!',
+    sec2Title:'💎 DIAMONDS TO COLLECT',
+    sec2:'Goal: 60,000 💎 in 3 days · Rate: 6,000 💎/hour (3h × 3j = 54,000 💎) · +2,000 💎/day bonus (1 extra hour) = 60,000 💎 = free delivery',
+    sec3Title:'🐝 MISSING DIAMONDS',
+    sec3:'Goal reached → everything is free 🎉 · Missing 1,000 💎 → you pay 5 DH · Formula: missing ÷ 1,000 × 5 DH',
+    bonusTitle:'🎁 BONUS — FREE DELIVERY',
+    bonusDesc:'Play 4h/day (1 bonus hour) → +2,000 💎/day → 60,000 💎 = 100% FREE delivery 🎁 · Otherwise the game stops at 3h, come back tomorrow',
+  },
+  ar:{
+    back:'→ رجوع', playerId:'معرّف اللاعب', diamonds:'ماساتي', playBtn:'🎮 العب الآن',
+    rulesBtn:'📜 قواعد اللعبة', target:'الهدف', progress:'التقدم',
+    days:'3 أيام · 3 ساعات/يوم', pts:'نقطة',
+    howTitle:'🏆 كيف تفوز؟',
+    sec1Title:'⏱️ مدة اللعب',
+    sec1:'العب 3 ساعات/يوم لمدة 3 أيام · المجموع: 9 ساعات · كلما لعبت أكثر، كسبت 💎 أكثر!',
+    sec2Title:'💎 الماسات المطلوبة',
+    sec2:'الهدف: 60 000 💎 في 3 أيام · 6 000 💎/ساعة (3س × 3أ = 54 000 💎) · +2 000 💎/يوم مكافأة (ساعة إضافية) = 60 000 💎 = توصيل مجاني',
+    sec3Title:'🐝 الماسات الناقصة',
+    sec3:'وصلت للهدف → كل شيء مجاني 🎉 · نقص 1 000 💎 → تدفع 5 درهم · الحساب: الناقص ÷ 1 000 × 5 درهم',
+    bonusTitle:'🎁 مكافأة — توصيل مجاني',
+    bonusDesc:'العب 4 ساعات/يوم (ساعة إضافية) → +2 000 💎/يوم → 60 000 💎 = توصيل مجاني 100% 🎁 · وإلا توقف اللعبة عند 3 ساعات، عد غداً',
+  },
+  amz:{
+    back:'← ⴰⵣⵣⵓⵍ', playerId:'ⴰⵏⴳⵔⴰⵡ', diamonds:'ⵉⴷⵢⴰⵎⴰⵏ ⵉⵏⵓ', playBtn:'🎮 ⵙⵖⵔ ⴷⴰⵖⵉ',
+    rulesBtn:'📜 ⵜⵉⵖⵔⵉ', target:'ⴰⵎⵓⵟⵟⵓ', progress:'ⴰⵎⵙⵉⵡⴹ',
+    days:'3 ⵡⴰⵙⵙⴰⵜⵏ · 3 ⵜⵉⵙⵙⵓⵜⵉⵏ/ⴰⵙⵙ', pts:'ⵜⵉⵏⵎⵍⴰⵏ',
+    howTitle:'🏆 ⵎⴰⵎⴽ ⴰⴷ ⵜⴽⵙⵎ?',
+    sec1Title:'⏱️ ⴰⵣⵎⵣ ⵏ ⵓⵣⵔⴰⵔ',
+    sec1:'ⵣⵔ 3 ⵜⵉⵙⵙⵓⵜⵉⵏ/ⴰⵙⵙ · 3 ⵡⴰⵙⵙⴰⵜⵏ · ⴰⵎⵎⴰⵙ: 9 ⵜⵉⵙⵙⵓⵜⵉⵏ',
+    sec2Title:'💎 ⵉⴷⵢⴰⵎⴰⵏ ⴰⴷ ⵜⴽⵛⵎⴷ',
+    sec2:'ⴰⵎⵓⵟⵟⵓ: 60 000 💎 · 6 000 💎/ⵜⵉⵙⵙⵓⵜ · +2 000 💎/ⴰⵙⵙ ⴱⵓⵏⵓⵙ = ⴰⵣⵏⵏⵣ ⵉⵥⵍⵉ',
+    sec3Title:'🐝 ⵉⴷⵢⴰⵎⴰⵏ ⵉⵔⵓⵔⵏ',
+    sec3:'ⵡⴰⵅⵅⴰ ⴰⵎⵓⵟⵟⵓ → ⴽⵓⵍⵍⵓ ⵉⵥⵍⵉ 🎉 · 1 000 💎 ⵉⵔⵓⵔ → 5 DH · ⵓⵔ: ⵉⵔⵓⵔⵏ ÷ 1 000 × 5',
+    bonusTitle:'🎁 ⴱⵓⵏⵓⵙ — ⴰⵣⵏⵏⵣ ⵉⵥⵍⵉ',
+    bonusDesc:'ⵣⵔ 4 ⵜⵉⵙⵙⵓⵜⵉⵏ/ⴰⵙⵙ → +2 000 💎 → 60 000 💎 = ⴰⵣⵏⵏⵣ ⵉⵥⵍⵉ 100% 🎁',
+  },
 };
 
 // ─── BRIDGE GAME RULES MODAL ──────────────────────────────────────────────────
@@ -1203,29 +1255,42 @@ function GamePage() {
         </div>
       )}
 
-      {/* ── HOW TO WIN ── */}
-      <div style={{width:'100%',maxWidth:380,padding:'0 16px',marginTop:14}}>
-        <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:20,padding:'16px 18px'}}>
-          <p style={{color:'#D9C5A0',fontSize:11,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'0 0 12px'}}>{t.howTitle}</p>
-          {[t.how1,t.how2,t.how3].map((step,i)=>(
-            <div key={i} style={{display:'flex',alignItems:'center',gap:12,marginBottom: i<2?10:0,padding:'10px 14px',background:'rgba(255,255,255,0.03)',borderRadius:12,border:'1px solid rgba(255,255,255,0.06)'}}>
-              <div style={{width:28,height:28,borderRadius:'50%',background:['linear-gradient(135deg,#059669,#4ADE80)','linear-gradient(135deg,#B45309,#FDE047)','linear-gradient(135deg,#9D174D,#F472B6)'][i],display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:`0 0 10px ${['rgba(74,222,128,0.4)','rgba(253,224,71,0.4)','rgba(244,114,182,0.4)'][i]}`}}>
-                <span style={{color:'#fff',fontSize:12,fontWeight:900}}>{i+1}</span>
-              </div>
-              <p style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:0,lineHeight:1.3}}>{step}</p>
-            </div>
+      {/* ── HOW TO WIN — 4 sections ── */}
+      <div style={{width:'100%',maxWidth:380,padding:'0 16px',marginTop:14,display:'flex',flexDirection:'column',gap:10}}>
+        <p style={{color:'#D9C5A0',fontSize:11,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'0 0 4px',textAlign:'center'}}>{t.howTitle}</p>
+
+        {/* Section 1 — Durée */}
+        <div style={{background:'rgba(5,150,105,0.1)',border:'1px solid rgba(74,222,128,0.25)',borderRadius:16,padding:'12px 14px'}}>
+          <p style={{color:'#4ADE80',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 6px'}}>{t.sec1Title}</p>
+          {t.sec1.split(' · ').map((line,i)=>(
+            <p key={i} style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:'0 0 3px',lineHeight:1.4}}>• {line}</p>
           ))}
         </div>
-      </div>
 
-      {/* ── BONUS CARDS ── */}
-      <div style={{width:'100%',maxWidth:380,padding:'0 16px',marginTop:12,display:'flex',flexDirection:'column',gap:10}}>
-        {/* Bonus livraison */}
-        <div style={{background:'linear-gradient(135deg,rgba(217,119,6,0.15) 0%,rgba(251,191,36,0.08) 100%)',border:'1px solid rgba(251,191,36,0.4)',borderRadius:18,padding:'14px 16px',display:'flex',alignItems:'flex-start',gap:12}}>
-          <div style={{fontSize:26,flexShrink:0,lineHeight:1}}>🚴</div>
+        {/* Section 2 — Diamants */}
+        <div style={{background:'rgba(180,83,9,0.12)',border:'1px solid rgba(253,224,71,0.3)',borderRadius:16,padding:'12px 14px'}}>
+          <p style={{color:'#FCD34D',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 6px'}}>{t.sec2Title}</p>
+          {t.sec2.split(' · ').map((line,i)=>(
+            <p key={i} style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:'0 0 3px',lineHeight:1.4}}>• {line}</p>
+          ))}
+        </div>
+
+        {/* Section 3 — Manquants */}
+        <div style={{background:'rgba(220,38,38,0.1)',border:'1px solid rgba(248,113,113,0.3)',borderRadius:16,padding:'12px 14px'}}>
+          <p style={{color:'#F87171',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 6px'}}>{t.sec3Title}</p>
+          {t.sec3.split(' · ').map((line,i)=>(
+            <p key={i} style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:'0 0 3px',lineHeight:1.4}}>• {line}</p>
+          ))}
+        </div>
+
+        {/* Section 4 — Bonus livraison */}
+        <div style={{background:'linear-gradient(135deg,rgba(217,119,6,0.15),rgba(251,191,36,0.08))',border:'1px solid rgba(251,191,36,0.4)',borderRadius:16,padding:'12px 14px',display:'flex',alignItems:'flex-start',gap:10}}>
+          <span style={{fontSize:22,flexShrink:0}}>🎁</span>
           <div>
-            <p style={{color:'#FCD34D',fontSize:11,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 4px'}}>{t.bonusTitle}</p>
-            <p style={{color:'rgba(255,255,255,0.75)',fontSize:12,fontWeight:600,margin:0,lineHeight:1.4}}>{t.bonusDesc}</p>
+            <p style={{color:'#FCD34D',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 5px'}}>{t.bonusTitle}</p>
+            {t.bonusDesc.split(' · ').map((line,i)=>(
+              <p key={i} style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:'0 0 3px',lineHeight:1.4}}>• {line}</p>
+            ))}
           </div>
         </div>
       </div>

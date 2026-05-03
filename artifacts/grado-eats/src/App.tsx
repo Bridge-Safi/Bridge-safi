@@ -2090,7 +2090,8 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
       .then(d=>{if(d&&typeof d.diamonds==='number')setGamePts(d.diamonds);})
       .catch(()=>{});
   },[user?.id]);
-  const maxPtsMAD=Math.floor(gamePts/100);
+  // 1 000 💎 = 5 MAD → 200 💎 = 1 MAD
+  const maxPtsMAD=Math.floor(gamePts/200);
   const [ptsUsed,setPtsUsed]=useState(0);
   const usePts=(mad:number)=>{
     const clamped=Math.min(mad,maxPtsMAD);
@@ -2186,7 +2187,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
       });
       // Deduct diamonds server-side if used
       if(ptsUsed>0){
-        const diamondsToSpend=ptsUsed*100;
+        const diamondsToSpend=ptsUsed*200; // 200 💎 = 1 MAD (1 000 💎 = 5 MAD)
         fetch('/api/game/diamonds/spend',{
           method:'POST',credentials:'include',
           headers:{'Content-Type':'application/json'},
