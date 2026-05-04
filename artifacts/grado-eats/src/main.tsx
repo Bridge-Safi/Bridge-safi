@@ -1261,7 +1261,7 @@ function GamePage() {
         <div style={{background:'rgba(5,150,105,0.1)',border:'1px solid rgba(74,222,128,0.25)',borderRadius:16,padding:'12px 14px'}}>
           <p style={{color:'#4ADE80',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 6px'}}>{t.sec1Title}</p>
           {t.sec1.split(' · ').map((line,i)=>(
-            <p key={i} style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:'0 0 3px',lineHeight:1.4}}>• {line}</p>
+            <p key={i} dir="auto" style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:'0 0 3px',lineHeight:1.4}}>• {line}</p>
           ))}
         </div>
 
@@ -1269,7 +1269,7 @@ function GamePage() {
         <div style={{background:'rgba(180,83,9,0.12)',border:'1px solid rgba(253,224,71,0.3)',borderRadius:16,padding:'12px 14px'}}>
           <p style={{color:'#FCD34D',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 6px'}}>{t.sec2Title}</p>
           {t.sec2.split(' · ').map((line,i)=>(
-            <p key={i} style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:'0 0 3px',lineHeight:1.4}}>• {line}</p>
+            <p key={i} dir="auto" style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:'0 0 3px',lineHeight:1.4}}>• {line}</p>
           ))}
         </div>
 
@@ -1277,7 +1277,7 @@ function GamePage() {
         <div style={{background:'rgba(220,38,38,0.1)',border:'1px solid rgba(248,113,113,0.3)',borderRadius:16,padding:'12px 14px'}}>
           <p style={{color:'#F87171',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 6px'}}>{t.sec3Title}</p>
           {t.sec3.split(' · ').map((line,i)=>(
-            <p key={i} style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:'0 0 3px',lineHeight:1.4}}>• {line}</p>
+            <p key={i} dir="auto" style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:'0 0 3px',lineHeight:1.4}}>• {line}</p>
           ))}
         </div>
 
@@ -1287,7 +1287,7 @@ function GamePage() {
           <div>
             <p style={{color:'#FCD34D',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 5px'}}>{t.bonusTitle}</p>
             {t.bonusDesc.split(' · ').map((line,i)=>(
-              <p key={i} style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:'0 0 3px',lineHeight:1.4}}>• {line}</p>
+              <p key={i} dir="auto" style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:'0 0 3px',lineHeight:1.4}}>• {line}</p>
             ))}
           </div>
         </div>
