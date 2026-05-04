@@ -1010,7 +1010,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
                 {s.points.map((p, pi) => (
                   <div key={pi} style={{display:'flex',alignItems:'flex-start',gap:8,marginBottom:6,flexDirection:isAR?'row-reverse':'row'}}>
                     <div style={{width:6,height:6,borderRadius:'50%',background:'#FDE047',marginTop:5,flexShrink:0}}/>
-                    <p style={{color:'rgba(255,255,255,0.8)',fontSize:13,margin:0,lineHeight:1.5}}>{p}</p>
+                    <p dir="auto" style={{color:'rgba(255,255,255,0.8)',fontSize:13,margin:0,lineHeight:1.5}}>{p}</p>
                   </div>
                 ))}
               </div>
@@ -1018,7 +1018,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
 
             {/* Example */}
             <div style={{background:'rgba(253,224,71,0.1)',border:'1px solid rgba(253,224,71,0.3)',borderRadius:14,padding:'12px 14px',marginBottom:16}}>
-              <p style={{color:'#FDE047',fontSize:12,margin:0,lineHeight:1.6}}>{r.example}</p>
+              <p dir="auto" style={{color:'#FDE047',fontSize:12,margin:0,lineHeight:1.6}}>{r.example}</p>
             </div>
           </div>
 
