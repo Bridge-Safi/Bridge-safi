@@ -1225,10 +1225,10 @@ function GamePage() {
   // Not signed in — show minimal lock screen
   if (!isSignedIn) {
     const lockT = {
-      fr: { title: 'CONNEXION BRIDGE REQUISE', game: 'SAFI RUNNER', desc: 'Pour jouer, connecte-toi d\'abord sur Bridge avec ton email et ton numéro. Tu seras automatiquement reconnu sur le jeu et tes diamants seront synchronisés.', btn: 'ME CONNECTER SUR BRIDGE' },
-      en: { title: 'BRIDGE LOGIN REQUIRED', game: 'SAFI RUNNER', desc: 'To play, first sign in to Bridge with your email and phone number. You\'ll be automatically recognized and your diamonds will be synced.', btn: 'SIGN IN TO BRIDGE' },
-      ar: { title: 'تسجيل الدخول مطلوب', game: 'SAFI RUNNER', desc: 'للعب، سجّل دخولك أولاً على Bridge بالبريد الإلكتروني والهاتف.', btn: 'تسجيل الدخول' },
-      amz: { title: 'ⴰⵙⵉⵔⴳ ⴰⴷ BRIDGE', game: 'SAFI RUNNER', desc: 'ⵉⵔⵉ ⴰⴷ ⵜⵙⵖⵔⴷ, ⴽⵛⵎ ⵉ Bridge ⵙ email ⴷ ⵓⵜⵉⵍⵉⴼⵓⵏ.', btn: 'ⴽⵛⵎ ⵉ Bridge' },
+      fr: { title: 'CONNEXION BRIDGE REQUISE', game: 'SAFI RUNNER', desc: 'Tes 💎 sont liés à ton compte — joue depuis n\'importe quel appareil avec le même email.', signInBtn: 'Déjà inscrit sur Bridge ? Entre juste ton numéro', signUpLink: 'Pas encore inscrit ? Créer un compte' },
+      en: { title: 'BRIDGE LOGIN REQUIRED', game: 'SAFI RUNNER', desc: 'Your 💎 are linked to your account — play from any device with the same email.', signInBtn: 'Already on Bridge? Just enter your number', signUpLink: 'Not registered yet? Create an account' },
+      ar: { title: 'تسجيل الدخول مطلوب', game: 'SAFI RUNNER', desc: '💎 مرتبطة بحسابك — العب من أي جهاز.', signInBtn: 'مسجل بالفعل؟ أدخل رقمك', signUpLink: 'ليس لديك حساب؟ أنشئ واحداً' },
+      amz: { title: 'ⴰⵙⵉⵔⴳ ⴰⴷ BRIDGE', game: 'SAFI RUNNER', desc: '💎 ⵔⴱⵓⵏⵜ ⵉ ⵓⵃⵙⴰⴱ ⵏⵏⴽ.', signInBtn: 'ⵉⵍⵉⵖ ⴰⴷ ⵜⵙⵉⵔⴳⴷ? ⴽⵛⵎ ⵙ ⵓⵜⵉⵍⵉⴼⵓⵏ', signUpLink: 'ⵓⵔ ⵜⵙⵖⵔⴷ ⴰⵔⴰ? ⵙⵏⴼⵍ ⵓⵃⵙⴰⴱ' },
     }[lang];
     return (
       <div dir={isAR ? 'rtl' : 'ltr'} style={{minHeight:'100dvh',background:'linear-gradient(180deg,#04110A 0%,#071C11 60%,#050F08 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'32px 20px',gap:0}}>
@@ -1236,9 +1236,14 @@ function GamePage() {
           <div style={{fontSize:52,lineHeight:1}}>🔒</div>
           <p style={{color:'#4ADE80',fontSize:10,fontWeight:900,letterSpacing:'0.18em',margin:0,textAlign:'center',textTransform:'uppercase'}}>{lockT.title}</p>
           <p style={{color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.12em',margin:0,textAlign:'center'}}>🦈 {lockT.game}</p>
-          <p style={{color:'rgba(255,255,255,0.65)',fontSize:13,fontWeight:500,lineHeight:1.6,textAlign:'center',margin:0}}>{lockT.desc}</p>
-          <button onClick={()=>navigate('/sign-in')} style={{width:'100%',padding:'18px 0',borderRadius:18,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669 0%,#4ADE80 50%,#059669 100%)',color:'#fff',fontSize:15,fontWeight:900,letterSpacing:'0.08em',marginTop:4,boxShadow:'0 0 24px rgba(74,222,128,0.35)'}}>
-            🛵 {lockT.btn}
+          <p style={{color:'rgba(255,255,255,0.55)',fontSize:12,fontWeight:500,lineHeight:1.6,textAlign:'center',margin:0}}>🔐 {lockT.desc}</p>
+          {/* PRIMARY — déjà inscrit → connexion */}
+          <button onClick={()=>navigate('/sign-in')} style={{width:'100%',padding:'18px 0',borderRadius:18,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669 0%,#4ADE80 50%,#059669 100%)',color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.04em',marginTop:4,boxShadow:'0 0 24px rgba(74,222,128,0.35)'}}>
+            🛵 {lockT.signInBtn}
+          </button>
+          {/* SECONDARY — pas encore inscrit → inscription */}
+          <button onClick={()=>navigate('/sign-up')} style={{background:'none',border:'none',cursor:'pointer',color:'rgba(255,255,255,0.45)',fontSize:12,fontWeight:700,textDecoration:'underline',padding:'4px 0',marginTop:-4}}>
+            {lockT.signUpLink}
           </button>
         </div>
       </div>
