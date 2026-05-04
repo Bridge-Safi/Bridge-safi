@@ -220,30 +220,55 @@ function FocusInput({ label: labelText, type = 'text', value, onChange, placehol
 function ForgotPasswordPage() {
   const clerk = useClerk();
   const [, navigate] = useLocation();
-  const [step, setStep] = useState<'email' | 'reset'>('email');
+  const [step, setStep] = useState<'identifier' | 'reset'>('identifier');
   const [identifier, setIdentifier] = useState('');
+  const [resetStrategy, setResetStrategy] = useState<'reset_password_email_code' | 'reset_password_phone_code'>('reset_password_email_code');
   const [code, setCode] = useState('');
   const [newPwd, setNewPwd] = useState('');
   const [confirmPwd, setConfirmPwd] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Normalize Moroccan phone to E.164 (+212XXXXXXXXX)
+  const normalizePhone = (v: string): string => {
+    const digits = v.replace(/\D/g, '');
+    if (digits.startsWith('212') && digits.length >= 11) return '+' + digits;
+    if (digits.startsWith('0') && digits.length === 10) return '+212' + digits.slice(1);
+    if (digits.length === 9) return '+212' + digits;
+    return v.trim();
+  };
+
+  // Detect if input looks like a phone number
+  const isPhone = (v: string) => {
+    const d = v.trim().replace(/[\s\-().]/g, '');
+    return /^(\+|00)?[0-9]{9,15}$/.test(d) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+  };
+
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
+    if (!identifier.trim()) { setError('Entrez votre email ou numéro de téléphone.'); return; }
     setLoading(true); setError('');
+
+    const phone = isPhone(identifier);
+    const normalizedId = phone ? normalizePhone(identifier) : identifier.trim();
+    const strategy = phone ? 'reset_password_phone_code' : 'reset_password_email_code';
+
     try {
-      await clerk.client.signIn.create({
-        strategy: 'reset_password_email_code',
-        identifier: identifier.trim(),
-      });
+      await clerk.client.signIn.create({ strategy, identifier: normalizedId });
+      setResetStrategy(strategy);
       setStep('reset');
     } catch (err: any) {
-      const msg = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || '';
-      if (msg.toLowerCase().includes('not found') || msg.toLowerCase().includes('identifier')) {
-        setError('Aucun compte trouvé avec cet email ou téléphone.');
+      const msg = (err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || '').toLowerCase();
+      if (msg.includes('not found') || msg.includes('identifier') || msg.includes('no user')) {
+        setError(phone
+          ? `Aucun compte trouvé pour le numéro ${normalizedId}. Vérifiez le format (+212 6XX XXX XXX).`
+          : `Aucun compte trouvé pour ${identifier.trim()}. Vérifiez votre email.`
+        );
+      } else if (msg.includes('phone') || msg.includes('sms')) {
+        setError('La réinitialisation par SMS n\'est pas activée. Utilisez votre adresse email à la place.');
       } else {
-        setError(msg || 'Erreur lors de l\'envoi du code. Réessayez.');
+        setError('Erreur lors de l\'envoi du code. Réessayez dans quelques secondes.');
       }
     }
     setLoading(false);
@@ -252,31 +277,33 @@ function ForgotPasswordPage() {
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
-    if (newPwd.length < 8) { setError('Mot de passe trop faible (8 caractères min.).'); return; }
+    if (!code.trim()) { setError('Entrez le code reçu.'); return; }
+    if (newPwd.length < 8) { setError('Mot de passe trop faible (8 caractères minimum).'); return; }
     if (newPwd !== confirmPwd) { setError('Les mots de passe ne correspondent pas.'); return; }
     setLoading(true); setError('');
     try {
       const result = await clerk.client.signIn.attemptFirstFactor({
-        strategy: 'reset_password_email_code',
-        code,
+        strategy: resetStrategy,
+        code: code.trim(),
         password: newPwd,
       } as any);
       if (result.status === 'complete') {
+        localStorage.setItem('bridge_was_signed_in', '1');
         await clerk.setActive({ session: result.createdSessionId });
         navigate(basePath || '/');
       } else if (result.status === 'needs_second_factor') {
-        setError('Vérification 2FA requise. Reconnectez-vous normalement.');
+        setError('Vérification supplémentaire requise. Contactez le support Bridge.');
       } else {
         setError('Réinitialisation incomplète. Réessayez.');
       }
     } catch (err: any) {
-      const msg = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || '';
-      if (msg.toLowerCase().includes('incorrect') || msg.toLowerCase().includes('invalid')) {
-        setError('Code incorrect ou expiré. Réessayez.');
-      } else if (msg.toLowerCase().includes('password')) {
-        setError('Mot de passe trop faible. Choisissez-en un plus fort.');
+      const msg = (err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || '').toLowerCase();
+      if (msg.includes('incorrect') || msg.includes('invalid') || msg.includes('expired')) {
+        setError('Code incorrect ou expiré. Demandez un nouveau code.');
+      } else if (msg.includes('password')) {
+        setError('Mot de passe trop faible. Choisissez-en un plus solide.');
       } else {
-        setError(msg || 'Erreur. Réessayez.');
+        setError('Erreur. Réessayez ou contactez le support.');
       }
     }
     setLoading(false);
@@ -286,7 +313,9 @@ function ForgotPasswordPage() {
     <AuthPageWrapper>
       <AuthCardHeader
         title="Nouveau mot de passe"
-        sub={`Code envoyé à ${identifier.trim()} · Vérifiez vos emails`}
+        sub={isPhone(identifier)
+          ? `SMS envoyé au ${normalizePhone(identifier)} · Entrez le code reçu`
+          : `Code envoyé à ${identifier.trim()} · Vérifiez vos emails`}
       />
       <form onSubmit={handleReset} style={{ display: 'flex', flexDirection: 'column' }}>
         <FocusInput label="Code reçu (6 chiffres)" value={code} onChange={setCode}
