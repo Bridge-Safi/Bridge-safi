@@ -1705,11 +1705,12 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
     setPhoneTaken(false);
     if(!validateName(form.name))       e.name=true;
     if(!validatePhone(form.phone))     e.phone=true;
-    if(payTab==='card'){
+    // Payment fields are optional — only validate if user has started filling them in
+    if(payTab==='card' && form.cardNumber.replace(/\D/g,'').length>0){
       if(!validateCard(form.cardNumber)) e.card=true;
-      if(!validateExpiry(form.cardExpiry)) e.expiry=true;
-      if(!validateCardName(form.cardName)) e.cardName=true;
-    } else {
+      if(form.cardExpiry && !validateExpiry(form.cardExpiry)) e.expiry=true;
+      if(form.cardName && !validateCardName(form.cardName)) e.cardName=true;
+    } else if(payTab==='paypal' && (form.paypalEmail||'').trim().length>0){
       if(!validatePaypal(form.paypalEmail||'')) e.paypal=true;
     }
     setErrs(e);
@@ -1784,7 +1785,7 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
             <Field label={t.phoneLabel} value={form.phone} onChange={v=>{set('phone')(v);if(errs.phone&&validatePhone(v)){setErrs(e=>({...e,phone:false}));setPhoneTaken(false);}}} placeholder={t.phonePh} type="tel" lang={lang} required error={errs.phone} errorMsg={phoneTaken?(lang==='ar'?'هذا الرقم مستخدم بحساب آخر':lang==='en'?'Number already linked to another account':'Numéro déjà utilisé par un autre compte'):t.errPhone}/>
             <Field label={t.emailLabel} value={form.email||''} onChange={set('email')} placeholder={t.emailPh} type="email" lang={lang}/>
           </div>
-          {/* ── Payment section ───────────────────────────────────── */}
+          {/* ── Payment section (optional) ───────────────────────── */}
           <div className="rounded-2xl p-4 mb-5" style={{
             background: payTab==='paypal'
               ? (errs.paypal?'#FFF5F5':'#EFF6FF')
@@ -1793,6 +1794,16 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
               ? (errs.paypal?'#FCA5A5':'#BFDBFE')
               : (errs.card||errs.expiry||errs.cardName?'#C4B5FD':'#C7D2FE')}`,
             transition:'all 0.2s'}}>
+            {/* Optional badge */}
+            <div className="flex items-center justify-between mb-3">
+              <p className={`text-[10px] font-black uppercase tracking-widest ${fClass}`} style={{color:'#4F46E5'}}>💳 {t.payModeTitle}</p>
+              <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${fClass}`} style={{background:'#F0FDF4',color:'#065F46',border:'1px solid #BBF7D0'}}>
+                {lang==='ar'?'اختياري':lang==='en'?'Optional':lang==='amz'?'ⵉⵅⵜⵉⵢⴰⵔⵉ':'Facultatif'}
+              </span>
+            </div>
+            <p className={`text-[10px] mb-3 ${fClass}`} style={{color:'#9CA3AF'}}>
+              {lang==='ar'?'يمكنك الدفع نقداً عند التسليم بدون بطاقة':lang==='en'?'You can always pay cash on delivery — no card needed':lang==='amz'?'Tzemreḍ ad tsessefleḍ s udrimen':'Tu peux toujours payer en espèces à la livraison — aucune carte requise'}
+            </p>
             {/* Tab switcher */}
             <div className="flex gap-2 mb-4 p-1 rounded-xl" style={{background:'rgba(0,0,0,0.05)'}}>
               {(['card','paypal'] as const).map(tab=>(
