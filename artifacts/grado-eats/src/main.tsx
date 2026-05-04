@@ -542,17 +542,169 @@ function SignInPage() {
 
 // ─── SIGN-UP PAGE (custom — name + email/phone + password, then OTP) ──────
 
+const SIGNUP_LANGS = ['fr','en','ar','amz'] as const;
+type SignUpLang = typeof SIGNUP_LANGS[number];
+
+const SIGNUP_T: Record<SignUpLang, {
+  title: string; sub: string; emailLabel: string; emailPh: string;
+  passLabel: string; passPh: string; btnCreate: string; btnCreating: string;
+  errEmail: string; errPhone: string; errPass: string; errId: string;
+  alreadyHave: string; login: string;
+  verifyTitle: string; verifySub: (id: string) => string; verifyLabel: string;
+  btnVerify: string; btnVerifying: string; errCode: string; back: string;
+  loadMsgs: string[];
+}> = {
+  fr: {
+    title:'Créer un compte · Sign up', sub:'Email ou téléphone + mot de passe',
+    emailLabel:'EMAIL OU NUMÉRO DE TÉLÉPHONE *', emailPh:'+212 6XX XXX XXX ou email@...',
+    passLabel:'MOT DE PASSE * (8 CARACTÈRES MIN.)', passPh:'••••••••',
+    btnCreate:'Créer mon compte →', btnCreating:'Création en cours...',
+    errEmail:'Email invalide ou déjà utilisé.', errPhone:'Numéro invalide ou déjà utilisé.',
+    errPass:'Mot de passe trop faible (8 caractères min.).', errId:'Email ou téléphone requis.',
+    alreadyHave:'Déjà un compte ?', login:'Se connecter',
+    verifyTitle:'Vérification · Verify', verifySub:(id)=>`Code envoyé à ${id}`,
+    verifyLabel:'CODE DE VÉRIFICATION (6 CHIFFRES)', btnVerify:'Vérifier →', btnVerifying:'Vérification...',
+    errCode:'Code incorrect ou expiré.', back:'← Retour',
+    loadMsgs:['Bienvenue chez Bridge Safi 🇲🇦','Création de votre compte...','Préparation de vos services...','Presque prêt ✨','Connexion sécurisée 🔒'],
+  },
+  en: {
+    title:'Create account · Créer un compte', sub:'Email or phone + password',
+    emailLabel:'EMAIL OR PHONE NUMBER *', emailPh:'+212 6XX XXX XXX or email@...',
+    passLabel:'PASSWORD * (MIN. 8 CHARACTERS)', passPh:'••••••••',
+    btnCreate:'Create my account →', btnCreating:'Creating account...',
+    errEmail:'Invalid or already used email.', errPhone:'Invalid or already used number.',
+    errPass:'Password too weak (min. 8 characters).', errId:'Email or phone required.',
+    alreadyHave:'Already have an account?', login:'Sign in',
+    verifyTitle:'Verification · Vérification', verifySub:(id)=>`Code sent to ${id}`,
+    verifyLabel:'VERIFICATION CODE (6 DIGITS)', btnVerify:'Verify →', btnVerifying:'Verifying...',
+    errCode:'Wrong or expired code.', back:'← Back',
+    loadMsgs:['Welcome to Bridge Safi 🇲🇦','Creating your account...','Setting up your services...','Almost ready ✨','Securing your connection 🔒'],
+  },
+  ar: {
+    title:'إنشاء حساب · Sign up', sub:'البريد أو الهاتف + كلمة المرور',
+    emailLabel:'البريد الإلكتروني أو رقم الهاتف *', emailPh:'+212 6XX XXX XXX أو email@...',
+    passLabel:'كلمة المرور * (8 أحرف على الأقل)', passPh:'••••••••',
+    btnCreate:'إنشاء حسابي ←', btnCreating:'جارٍ الإنشاء...',
+    errEmail:'البريد غير صالح أو مستخدم مسبقاً.', errPhone:'الرقم غير صالح أو مستخدم مسبقاً.',
+    errPass:'كلمة المرور ضعيفة (8 أحرف على الأقل).', errId:'البريد أو الهاتف مطلوب.',
+    alreadyHave:'لديك حساب؟', login:'تسجيل الدخول',
+    verifyTitle:'التحقق · Verify', verifySub:(id)=>`تم إرسال الرمز إلى ${id}`,
+    verifyLabel:'رمز التحقق (6 أرقام)', btnVerify:'تحقق ←', btnVerifying:'جارٍ التحقق...',
+    errCode:'الرمز خاطئ أو منتهي الصلاحية.', back:'رجوع →',
+    loadMsgs:['أهلاً بك في Bridge Safi 🇲🇦','جارٍ إنشاء حسابك...','تجهيز خدماتك...','تقريباً جاهز ✨','تأمين اتصالك 🔒'],
+  },
+  amz: {
+    title:'ⴰⵙⵏⴼⴰⵔ · Sign up', sub:'ⴰⵎⴻⵢⵍ ⵏⵖ ⵓⵟⵟⵓⵏ + ⵜⴰⴱⵔⴰⵜ',
+    emailLabel:'ⴰⵎⴻⵢⵍ ⵏⵖ ⵓⵟⵟⵓⵏ *', emailPh:'+212 6XX XXX XXX ⵏⵖ email@...',
+    passLabel:'ⵜⴰⴱⵔⴰⵜ * (8 ⵉⵙⴽⴽⵉⵏⴻⵏ)', passPh:'••••••••',
+    btnCreate:'ⴰⵙⵏⴼⴰⵔ ⵏ ⵓⵎⵓⵔ ←', btnCreating:'ⵉⵙⴽⴽⴰ...',
+    errEmail:'ⴰⵎⴻⵢⵍ ⵓⵔ ⵢⵓⴷⴼⴻⵏ.', errPhone:'ⵓⵟⵟⵓⵏ ⵓⵔ ⵢⵓⴷⴼⴻⵏ.',
+    errPass:'ⵜⴰⴱⵔⴰⵜ ⵜⴰⵎⵥⵥⵢⴰⵏⵜ (8).', errId:'ⴰⵎⴻⵢⵍ ⵏⵖ ⵓⵟⵟⵓⵏ ⵉⵍⴰⵔ.',
+    alreadyHave:'ⵎⴰⵛ ⵉⵍⵍⴰ ⵓⵎⵓⵔ?', login:'ⴽⵛⵎ',
+    verifyTitle:'ⴰⵙⵉⵏⴼ · Verify', verifySub:(id)=>`ⴰⵙⵉⵏⴼ ⵉⵜⵜⵓⵙⴽⴰⵔ ${id}`,
+    verifyLabel:'ⵓⵟⵟⵓⵏ ⵏ ⵓⵙⵉⵏⴼ (6)', btnVerify:'ⵙⵉⵏⴼ ←', btnVerifying:'ⵉⵙⴽⴽⴰ...',
+    errCode:'ⵓⵟⵟⵓⵏ ⵓⵔ ⵢⵓⴷⴼⴻⵏ.', back:'← ⴰⵣⵣⵓⵍ',
+    loadMsgs:['ⴰⵣⵓⵍ Bridge Safi 🇲🇦','ⵉⵙⴽⴽⴰ ⵓⵎⵓⵔ...','ⵜⵓⴷⴷⵓⵜ ⵏ ⵜⵎⵙⴽⴰⵔⵉⵏ...','ⴰⴽⴽⴰⴹ ⵢⵓⵙⴰ ✨','ⵜⵓⵜⵜⵔⴰ 🔒'],
+  },
+};
+
+const LANG_FLAGS: Record<SignUpLang, string> = { fr:'🇫🇷', en:'🇬🇧', ar:'🇲🇦', amz:'ⵣ' };
+
+function SignUpLoadingOverlay({ msgs, lang }: { msgs: string[]; lang: SignUpLang }) {
+  const [msgIdx, setMsgIdx] = useState(0);
+  const [dotCount, setDotCount] = useState(1);
+  useEffect(() => {
+    const t1 = setInterval(() => setMsgIdx(i => (i + 1) % msgs.length), 1400);
+    const t2 = setInterval(() => setDotCount(d => d === 3 ? 1 : d + 1), 500);
+    return () => { clearInterval(t1); clearInterval(t2); };
+  }, [msgs]);
+  const isRtl = lang === 'ar' || lang === 'amz';
+  return (
+    <div style={{
+      position:'fixed', inset:0, zIndex:9999,
+      background:'linear-gradient(160deg, #011c15 0%, #054130 35%, #065F46 70%, #033d2c 100%)',
+      display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:32,
+    }}>
+      {/* Animated logo */}
+      <div style={{ position:'relative', width:110, height:110 }}>
+        {/* Spinning ring */}
+        <div style={{
+          position:'absolute', inset:-8,
+          border:'3px solid transparent',
+          borderTopColor:'#D9C5A0', borderRightColor:'rgba(217,197,160,0.3)',
+          borderRadius:'50%',
+          animation:'spin360 1.1s linear infinite',
+        }}/>
+        <div style={{
+          position:'absolute', inset:-16,
+          border:'2px solid transparent',
+          borderBottomColor:'rgba(217,197,160,0.2)', borderLeftColor:'rgba(217,197,160,0.1)',
+          borderRadius:'50%',
+          animation:'spin360 1.9s linear infinite reverse',
+        }}/>
+        {/* Logo */}
+        <div style={{
+          width:110, height:110, borderRadius:'50%', overflow:'hidden',
+          border:'3px solid #D9C5A0',
+          boxShadow:'0 0 40px rgba(217,197,160,0.3), 0 0 80px rgba(6,95,70,0.4)',
+        }}>
+          <img src="/logo_splash_new.png" alt="Bridge"
+            style={{ width:'100%', height:'100%', objectFit:'cover', transform:'scale(1.2)' }}/>
+        </div>
+      </div>
+
+      {/* Dots loader */}
+      <div style={{ display:'flex', gap:10 }}>
+        {[0,1,2].map(i => (
+          <div key={i} style={{
+            width:10, height:10, borderRadius:'50%',
+            background: i < dotCount ? '#D9C5A0' : 'rgba(217,197,160,0.2)',
+            transition:'background 0.3s',
+            boxShadow: i < dotCount ? '0 0 12px rgba(217,197,160,0.6)' : 'none',
+          }}/>
+        ))}
+      </div>
+
+      {/* Animated message */}
+      <div style={{
+        textAlign:'center', maxWidth:280, padding:'0 24px',
+        direction: isRtl ? 'rtl' : 'ltr',
+      }}>
+        <p style={{
+          color:'#D9C5A0', fontWeight:800, fontSize:'1rem',
+          letterSpacing:'0.04em', margin:0,
+          textShadow:'0 2px 12px rgba(0,0,0,0.4)',
+          transition:'opacity 0.4s',
+        }}>
+          {msgs[msgIdx]}
+        </p>
+        <p style={{ color:'rgba(255,255,255,0.3)', fontSize:'0.65rem', marginTop:8, letterSpacing:'0.15em' }}>
+          BRIDGE SAFI · آسفي · ⵙⴰⴼⵉ
+        </p>
+      </div>
+
+      <style>{`@keyframes spin360{to{transform:rotate(360deg);}}`}</style>
+    </div>
+  );
+}
+
 function SignUpPage() {
   const clerk = useClerk();
   const { isLoaded, isSignedIn } = useUser();
   const [, navigate] = useLocation();
   const [step, setStep] = useState<'form' | 'verify'>('form');
-  const [firstName, setFirstName] = useState('');
+  const [lang, setLang] = useState<SignUpLang>(() => {
+    try { const r = localStorage.getItem('bridge_nav_state'); if (r) { const p = JSON.parse(r); if (SIGNUP_LANGS.includes(p.lang)) return p.lang as SignUpLang; } } catch {}
+    return 'fr';
+  });
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const t = SIGNUP_T[lang];
+  const isRtl = lang === 'ar' || lang === 'amz';
 
   useEffect(() => {
     if (isLoaded && isSignedIn) navigate(basePath || '/');
@@ -569,12 +721,11 @@ function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
-    if (!firstName.trim()) { setError('Le prénom est obligatoire.'); return; }
-    if (!identifier.trim()) { setError('Email ou numéro de téléphone requis.'); return; }
-    if (password.length < 8) { setError('Mot de passe trop court (8 caractères min.).'); return; }
+    if (!identifier.trim()) { setError(t.errId); return; }
+    if (password.length < 8) { setError(t.errPass); return; }
     setLoading(true); setError('');
     try {
-      const params: Record<string, string> = { firstName: firstName.trim(), password };
+      const params: Record<string, string> = { password };
       if (isPhone) params.phoneNumber = fmtPhone(identifier.trim());
       else params.emailAddress = identifier.trim();
       await clerk.client.signUp.create(params);
@@ -583,10 +734,10 @@ function SignUpPage() {
       setStep('verify');
     } catch (err: any) {
       const msg = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || '';
-      if (msg.toLowerCase().includes('email')) setError('Email invalide ou déjà utilisé.');
-      else if (msg.toLowerCase().includes('phone')) setError('Numéro invalide ou déjà utilisé.');
-      else if (msg.toLowerCase().includes('password')) setError('Mot de passe trop faible (8 caractères min.).');
-      else setError(msg || 'Erreur lors de la création du compte.');
+      if (msg.toLowerCase().includes('email')) setError(t.errEmail);
+      else if (msg.toLowerCase().includes('phone')) setError(t.errPhone);
+      else if (msg.toLowerCase().includes('password')) setError(t.errPass);
+      else setError(msg || t.errEmail);
     }
     setLoading(false);
   };
@@ -603,32 +754,53 @@ function SignUpPage() {
         await clerk.setActive({ session: result.createdSessionId });
         navigate(basePath || '/');
       } else {
-        setError('Code incorrect. Réessayez.');
+        setError(t.errCode);
       }
     } catch (err: any) {
-      setError(err?.errors?.[0]?.longMessage || 'Code incorrect ou expiré.');
+      setError(err?.errors?.[0]?.longMessage || t.errCode);
     }
     setLoading(false);
   };
 
+  /* Language selector shared component */
+  const LangSelector = () => (
+    <div style={{ display:'flex', gap:6, justifyContent:'center', marginBottom:18 }}>
+      {SIGNUP_LANGS.map(l => (
+        <button key={l} onClick={() => setLang(l)} type="button" style={{
+          padding:'5px 10px', borderRadius:10, border:'none', cursor:'pointer',
+          fontWeight:900, fontSize:'0.7rem', letterSpacing:'0.05em',
+          background: l === lang ? '#065F46' : '#E9EDE9',
+          color: l === lang ? 'white' : '#6B7280',
+          boxShadow: l === lang ? '0 3px 10px rgba(6,95,70,0.3)' : 'none',
+          transition:'all 0.2s',
+        }}>
+          {LANG_FLAGS[l]} {l.toUpperCase()}
+        </button>
+      ))}
+    </div>
+  );
+
+  if (loading) return <SignUpLoadingOverlay msgs={t.loadMsgs} lang={lang} />;
+
   if (step === 'verify') return (
     <AuthPageWrapper>
+      <LangSelector />
       <AuthCardHeader
-        title="Vérification · Verify"
-        sub={isPhone ? `SMS envoyé au ${fmtPhone(identifier.trim())}` : `Code envoyé à ${identifier.trim()}`}
+        title={t.verifyTitle}
+        sub={t.verifySub(isPhone ? fmtPhone(identifier.trim()) : identifier.trim())}
       />
-      <form onSubmit={handleVerify} style={{ display: 'flex', flexDirection: 'column' }}>
-        <FocusInput label="Code de vérification (6 chiffres)" value={code} onChange={setCode}
+      <form onSubmit={handleVerify} style={{ display:'flex', flexDirection:'column', direction: isRtl ? 'rtl' : 'ltr' }}>
+        <FocusInput label={t.verifyLabel} value={code} onChange={setCode}
           placeholder="123456" autoComplete="one-time-code" type="tel" />
         {error && <div style={errStyle}>{error}</div>}
-        <button type="submit" style={{...btn, opacity: loading ? 0.7 : 1}} disabled={loading}>
-          {loading ? '...' : 'Vérifier →'}
+        <button type="submit" style={btn}>
+          {t.btnVerify}
         </button>
       </form>
-      <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+      <div style={{ textAlign:'center', marginTop:'1rem' }}>
         <button onClick={() => { setStep('form'); setCode(''); setError(''); }}
-          style={{ background: 'none', border: 'none', color: '#9CA3AF', fontSize: '0.75rem', cursor: 'pointer' }}>
-          ← Retour
+          style={{ background:'none', border:'none', color:'#9CA3AF', fontSize:'0.75rem', cursor:'pointer' }}>
+          {t.back}
         </button>
       </div>
     </AuthPageWrapper>
@@ -636,24 +808,23 @@ function SignUpPage() {
 
   return (
     <AuthPageWrapper>
-      <AuthCardHeader title="Créer un compte · Sign up" sub="Email ou téléphone + mot de passe" />
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-        <FocusInput label="Prénom *" value={firstName} onChange={setFirstName}
-          placeholder="Mohamed, Fatima..." autoComplete="given-name" />
-        <FocusInput label="Email ou numéro de téléphone *" value={identifier} onChange={setIdentifier}
-          placeholder="+212 6XX XXX XXX ou email@..." autoComplete="username" />
-        <FocusInput label="Mot de passe * (8 caractères min.)" type="password" value={password} onChange={setPassword}
-          placeholder="••••••••" autoComplete="new-password" />
+      <LangSelector />
+      <AuthCardHeader title={t.title} sub={t.sub} />
+      <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', direction: isRtl ? 'rtl' : 'ltr' }}>
+        <FocusInput label={t.emailLabel} value={identifier} onChange={setIdentifier}
+          placeholder={t.emailPh} autoComplete="username" />
+        <FocusInput label={t.passLabel} type="password" value={password} onChange={setPassword}
+          placeholder={t.passPh} autoComplete="new-password" />
         {error && <div style={errStyle}>{error}</div>}
-        <button type="submit" style={{...btn, opacity: loading ? 0.7 : 1}} disabled={loading}>
-          {loading ? 'Création...' : 'Créer mon compte →'}
+        <button type="submit" style={btn}>
+          {t.btnCreate}
         </button>
       </form>
-      <div style={{ textAlign: 'center', marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid #E5E1D8' }}>
-        <span style={{ fontSize: '0.75rem', color: '#9CA3AF' }}>Déjà un compte ? </span>
+      <div style={{ textAlign:'center', marginTop:'1.25rem', paddingTop:'1rem', borderTop:'1px solid #E5E1D8' }}>
+        <span style={{ fontSize:'0.75rem', color:'#9CA3AF' }}>{t.alreadyHave} </span>
         <button onClick={() => navigate('/sign-in')}
-          style={{ background: 'none', border: 'none', color: '#065F46', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}>
-          Se connecter
+          style={{ background:'none', border:'none', color:'#065F46', fontWeight:700, fontSize:'0.75rem', cursor:'pointer' }}>
+          {t.login}
         </button>
       </div>
     </AuthPageWrapper>
