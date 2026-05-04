@@ -734,7 +734,7 @@ const GAME_T = {
     sec2Title:'💎 DIAMANTS À RÉCOLTER',
     sec2:'Objectif : 60 000 💎 en 3 jours · Rythme : 6 000 💎/heure (3h × 3j = 54 000 💎) · +2 000 💎/jour bonus (1h en plus) = 60 000 💎 = livraison gratuite',
     sec3Title:'🐝 DIAMANTS MANQUANTS',
-    sec3:'Objectif atteint → tout est offert 🎉 · Manque 1 000 💎 → vous payez 5 DH · Calcul : diamants manquants ÷ 1 000 × 5 DH',
+    sec3:'Objectif atteint → tout est offert 🎉 · Manque 200 💎 → vous payez 1 MAD · Calcul : diamants manquants ÷ 200 = MAD à payer',
     bonusTitle:'🎁 BONUS — LIVRAISON GRATUITE',
     bonusDesc:'Jouez 4h/jour (1h bonus) → +2 000 💎/jour → 60 000 💎 = livraison 100% GRATUITE 🎁 · Sinon le jeu s\'arrête net à 3h, revenez le lendemain',
   },
@@ -748,7 +748,7 @@ const GAME_T = {
     sec2Title:'💎 DIAMONDS TO COLLECT',
     sec2:'Goal: 60,000 💎 in 3 days · Rate: 6,000 💎/hour (3h × 3j = 54,000 💎) · +2,000 💎/day bonus (1 extra hour) = 60,000 💎 = free delivery',
     sec3Title:'🐝 MISSING DIAMONDS',
-    sec3:'Goal reached → everything is free 🎉 · Missing 1,000 💎 → you pay 5 DH · Formula: missing ÷ 1,000 × 5 DH',
+    sec3:'Goal reached → everything is free 🎉 · Missing 200 💎 → you pay 1 MAD · Formula: missing ÷ 200 = MAD to pay',
     bonusTitle:'🎁 BONUS — FREE DELIVERY',
     bonusDesc:'Play 4h/day (1 bonus hour) → +2,000 💎/day → 60,000 💎 = 100% FREE delivery 🎁 · Otherwise the game stops at 3h, come back tomorrow',
   },
@@ -762,7 +762,7 @@ const GAME_T = {
     sec2Title:'💎 الماسات المطلوبة',
     sec2:'الهدف: 60 000 💎 في 3 أيام · 6 000 💎/ساعة (3س × 3أ = 54 000 💎) · +2 000 💎/يوم مكافأة (ساعة إضافية) = 60 000 💎 = توصيل مجاني',
     sec3Title:'🐝 الماسات الناقصة',
-    sec3:'وصلت للهدف → كل شيء مجاني 🎉 · نقص 1 000 💎 → تدفع 5 درهم · الحساب: الناقص ÷ 1 000 × 5 درهم',
+    sec3:'وصلت للهدف → كل شيء مجاني 🎉 · نقص 200 💎 → تدفع 1 درهم · الحساب: الناقص ÷ 200 = دراهم تُدفع',
     bonusTitle:'🎁 مكافأة — توصيل مجاني',
     bonusDesc:'العب 4 ساعات/يوم (ساعة إضافية) → +2 000 💎/يوم → 60 000 💎 = توصيل مجاني 100% 🎁 · وإلا توقف اللعبة عند 3 ساعات، عد غداً',
   },
@@ -776,7 +776,7 @@ const GAME_T = {
     sec2Title:'💎 ⵉⴷⵢⴰⵎⴰⵏ ⴰⴷ ⵜⴽⵛⵎⴷ',
     sec2:'ⴰⵎⵓⵟⵟⵓ: 60 000 💎 · 6 000 💎/ⵜⵉⵙⵙⵓⵜ · +2 000 💎/ⴰⵙⵙ ⴱⵓⵏⵓⵙ = ⴰⵣⵏⵏⵣ ⵉⵥⵍⵉ',
     sec3Title:'🐝 ⵉⴷⵢⴰⵎⴰⵏ ⵉⵔⵓⵔⵏ',
-    sec3:'ⵡⴰⵅⵅⴰ ⴰⵎⵓⵟⵟⵓ → ⴽⵓⵍⵍⵓ ⵉⵥⵍⵉ 🎉 · 1 000 💎 ⵉⵔⵓⵔ → 5 DH · ⵓⵔ: ⵉⵔⵓⵔⵏ ÷ 1 000 × 5',
+    sec3:'ⵡⴰⵅⵅⴰ ⴰⵎⵓⵟⵟⵓ → ⴽⵓⵍⵍⵓ ⵉⵥⵍⵉ 🎉 · 200 💎 ⵉⵔⵓⵔ → 1 ⴷⵔⵀⵎ · ⵓⵔ: ⵉⵔⵓⵔⵏ ÷ 200 = ⴷⵔⵀⵎ',
     bonusTitle:'🎁 ⴱⵓⵏⵓⵙ — ⴰⵣⵏⵏⵣ ⵉⵥⵍⵉ',
     bonusDesc:'ⵣⵔ 4 ⵜⵉⵙⵙⵓⵜⵉⵏ/ⴰⵙⵙ → +2 000 💎 → 60 000 💎 = ⴰⵣⵏⵏⵣ ⵉⵥⵍⵉ 100% 🎁',
   },
@@ -794,34 +794,33 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
         {
           icon: '⏱️', title: 'Durée de jeu',
           points: [
-            'Jouez 3 à 4 heures par jour pendant 5 jours consécutifs',
-            'Durée totale minimum : 15 heures sur 5 jours',
+            'Jouez autant que vous voulez, à votre rythme',
+            'Objectif total : atteindre 60 000 💎',
             '🎁 Plus vous jouez, plus vous gagnez de 💎 !',
           ]
         },
         {
           icon: '💎', title: 'Diamants à récolter',
           points: [
-            'Objectif : récolter 15 000 💎 en 5 jours',
-            'Rythme : 1 000 💎 par heure de jeu',
-            'Chaque 1 000 💎 vaut 5 DH',
+            'Objectif : récolter 60 000 💎',
+            '200 💎 = 1 MAD de réduction sur votre commande',
+            '60 000 💎 = 300 MAD offerts !',
           ]
         },
         {
           icon: '💸', title: 'Diamants manquants',
           points: [
-            'Si vous atteignez votre objectif → tout est offert ! 🎉',
-            'S\'il manque 1 000 💎 → vous payez 5 DH',
-            'S\'il manque 3 000 💎 → vous payez 15 DH',
-            'Calcul : diamants manquants ÷ 1 000 × 5 DH',
+            'Si vous atteignez 60 000 💎 → tout est offert ! 🎉',
+            'S\'il manque 200 💎 → vous payez 1 MAD',
+            'S\'il manque 1 000 💎 → vous payez 5 MAD',
+            'Calcul : diamants manquants ÷ 200 = MAD à payer',
           ]
         },
         {
           icon: '🚴', title: 'BONUS — Livraison gratuite',
           points: [
-            'Jouez 2h DE PLUS que votre session normale',
-            '→ Votre prochaine livraison est 100% GRATUITE 🎁',
-            '→ Vous gagnez aussi +2 000 💎 bonus !',
+            'Atteignez 60 000 💎 → prochaine livraison 100% GRATUITE 🎁',
+            'Chaque commande jouée booste vos diamants !',
           ]
         },
         {
@@ -834,7 +833,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           ]
         },
       ],
-      example: '💡 Exemple : vous terminez avec 12 000 💎 au lieu de 15 000 → il manque 3 000 💎 → vous payez 15 DH seulement.',
+      example: '💡 Exemple : vous avez 58 000 💎 au lieu de 60 000 → il manque 2 000 💎 → vous payez seulement 10 MAD.',
       close: 'J\'ai compris ! 🦈',
     },
     en: {
@@ -844,34 +843,33 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
         {
           icon: '⏱️', title: 'Playing time',
           points: [
-            'Play 3 to 4 hours per day for 5 consecutive days',
-            'Minimum total: 15 hours over 5 days',
+            'Play at your own pace, whenever you want',
+            'Total goal: reach 60,000 💎',
             '🎁 The more you play, the more 💎 you earn!',
           ]
         },
         {
           icon: '💎', title: 'Diamonds to collect',
           points: [
-            'Goal: collect 15,000 💎 in 5 days',
-            'Pace: 1,000 💎 per hour of play',
-            'Every 1,000 💎 = 5 MAD value',
+            'Goal: collect 60,000 💎',
+            '200 💎 = 1 MAD discount on your order',
+            '60,000 💎 = 300 MAD off!',
           ]
         },
         {
           icon: '💸', title: 'Missing diamonds',
           points: [
-            'Reach the goal → everything is free! 🎉',
+            'Reach 60,000 💎 → everything is free! 🎉',
+            'Missing 200 💎 → you pay 1 MAD',
             'Missing 1,000 💎 → you pay 5 MAD',
-            'Missing 3,000 💎 → you pay 15 MAD',
-            'Formula: missing diamonds ÷ 1,000 × 5 MAD',
+            'Formula: missing diamonds ÷ 200 = MAD to pay',
           ]
         },
         {
           icon: '🚴', title: 'BONUS — Free delivery',
           points: [
-            'Play 2 EXTRA hours beyond your normal session',
-            '→ Your next delivery is 100% FREE 🎁',
-            '→ You also earn +2,000 💎 bonus!',
+            'Reach 60,000 💎 → next delivery 100% FREE 🎁',
+            'Every order played boosts your diamonds!',
           ]
         },
         {
@@ -884,7 +882,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           ]
         },
       ],
-      example: '💡 Example: you finish with 12,000 💎 instead of 15,000 → missing 3,000 💎 → you pay only 15 MAD.',
+      example: '💡 Example: you have 58,000 💎 instead of 60,000 → missing 2,000 💎 → you pay only 10 MAD.',
       close: 'Got it! 🦈',
     },
     ar: {
@@ -894,34 +892,33 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
         {
           icon: '⏱️', title: 'وقت اللعب',
           points: [
-            'العب من 3 إلى 4 ساعات يومياً لمدة 5 أيام متتالية',
-            'الحد الأدنى : 15 ساعة على مدى 5 أيام',
+            'العب بالوتيرة التي تريدها، متى شئت',
+            'الهدف الكلي : الوصول إلى 60 000 💎',
             '🎁 كلما لعبت أكثر، كسبت ماسات أكثر!',
           ]
         },
         {
           icon: '💎', title: 'الماسات المطلوبة',
           points: [
-            'الهدف : جمع 15 000 💎 خلال 5 أيام',
-            'الوتيرة : 1 000 💎 في كل ساعة لعب',
-            'كل 1 000 💎 يساوي 5 درهم',
+            'الهدف : جمع 60 000 💎',
+            '200 💎 = 1 درهم خصم على طلبك',
+            '60 000 💎 = 300 درهم مجاناً!',
           ]
         },
         {
           icon: '💸', title: 'الماسات الناقصة',
           points: [
-            'حققت الهدف → كل شيء مجاني! 🎉',
+            'حققت 60 000 💎 → كل شيء مجاني! 🎉',
+            'ناقص 200 💎 → تدفع 1 درهم',
             'ناقص 1 000 💎 → تدفع 5 دراهم',
-            'ناقص 3 000 💎 → تدفع 15 درهماً',
-            'الحساب : الماسات الناقصة ÷ 1 000 × 5 درهم',
+            'الحساب : الماسات الناقصة ÷ 200 = دراهم تُدفع',
           ]
         },
         {
           icon: '🚴', title: 'مكافأة — توصيل مجاني',
           points: [
-            'العب ساعتين إضافيتين فوق جلستك العادية',
-            '→ توصيلك التالي مجاني 100% 🎁',
-            '→ تكسب أيضاً +2 000 💎 إضافية!',
+            'اجمع 60 000 💎 → توصيلك التالي مجاني 100% 🎁',
+            'كل طلب يلعبه يرفع رصيدك من الماسات!',
           ]
         },
         {
@@ -934,7 +931,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           ]
         },
       ],
-      example: '💡 مثال : أنهيت اللعبة بـ 12 000 💎 بدلاً من 15 000 → ناقص 3 000 💎 → تدفع 15 درهماً فقط.',
+      example: '💡 مثال : لديك 58 000 💎 بدلاً من 60 000 → ناقص 2 000 💎 → تدفع 10 دراهم فقط.',
       close: 'فهمت! 🦈',
     },
     amz: {
@@ -944,32 +941,33 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
         {
           icon: '⏱️', title: 'ⴰⵣⵎⵣ ⵏ ⵓⵎⴽⵙⴰⵡ',
           points: [
-            '3 ⴰⵔ 4 ⵜⵉⵙⵙⵓⵜⵉⵏ ⵙ ⵡⴰⵙⵙ, 5 ⵡⴰⵙⵙⴰⵜⵏ',
-            'ⴰⵣⵎⵣ ⴰⵎⵏⵣⵡⴰⵔⵓ : 15 ⵜⵉⵙⵙⵓⵜⵉⵏ',
+            'ⵙⵖⵔ ⵎⴰⵎⴽ ⵜⵔⵉⴷ, ⴰⵎⵎⴰⵙ ⵜⵔⵉⴷ',
+            'ⴰⵎⵓⵟⵟⵓ : 60 000 💎',
             '🎁 ⴽⵓⵍⵍⵓ ⵉⵍⵎⵎⴰⵏ → ⵉⵍⵎⵎⴰⵏ ⵉⵏⵙ 💎!',
           ]
         },
         {
           icon: '💎', title: 'ⵉⴷⵢⴰⵎⴰⵏ ⵉⵍⴰⵎⵎⴰⵏ',
           points: [
-            'ⴰⵎⵓⵟⵟⵓ : 15 000 💎 ⵙ 5 ⵡⴰⵙⵙⴰⵜⵏ',
-            '1 000 💎 ⵙ ⵜⵉⵙⵙⵓⵜ ⵢⴰⵜⵜ',
-            '1 000 💎 = 5 ⴷⵔⵀⵎ',
+            'ⴰⵎⵓⵟⵟⵓ : 60 000 💎',
+            '200 💎 = 1 ⴷⵔⵀⵎ ⵙ ⵜⴼⴰⴷⴰ',
+            '60 000 💎 = 300 ⴷⵔⵀⵎ ⵉⵍⵉ ⵖⵔⴰⵜⴽ!',
           ]
         },
         {
           icon: '💸', title: 'ⵉⴷⵢⴰⵎⴰⵏ ⵉⵍⵍⴰⵏ',
           points: [
-            'ⵓⵚⴽⵉⴷ ⴰⵎⵓⵟⵟⵓ → ⴽⵓⵍⵍⵓ ⵢⵉⵍⵉ ⵖⵔⴰⵜⴽ! 🎉',
+            '60 000 💎 → ⴽⵓⵍⵍⵓ ⵢⵉⵍⵉ ⵖⵔⴰⵜⴽ! 🎉',
+            'ⵢⵍⵍⴰ 200 💎 → 1 ⴷⵔⵀⵎ',
             'ⵢⵍⵍⴰ 1 000 💎 → 5 ⴷⵔⵀⵎ',
-            'ⵢⵍⵍⴰ 3 000 💎 → 15 ⴷⵔⵀⵎ',
+            'ⵓⵔ: ⵉⵔⵓⵔⵏ ÷ 200 = ⴷⵔⵀⵎ',
           ]
         },
         {
           icon: '🚴', title: 'ⴱⵓⵏⵓⵙ — ⴰⵣⵏⵏⵣ ⴱⵍⴰ ⴰⵣⵔⴼ',
           points: [
-            '+2 ⵜⵉⵙⵙⵓⵜⵉⵏ ⵢⴰⴹⵏⵉⵏ → ⴰⵣⵏⵏⵣ ⵢⵉⵍⵉ ⵖⵔⴰⵜⴽ 🎁',
-            '+2 000 💎 ⴱⵓⵏⵓⵙ!',
+            '60 000 💎 → ⴰⵣⵏⵏⵣ ⵢⵉⵍⵉ ⵖⵔⴰⵜⴽ 100% 🎁',
+            'ⴽⵓⵍⵍⵓ ⴰⵎⵔ ⵉⵙⵙⵓⴼⵖ 💎 ⵉⵢⴰⴹⵏⵉⵏ!',
           ]
         },
         {
@@ -981,7 +979,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           ]
         },
       ],
-      example: '💡 12 000 💎 ⴷⴳ 15 000 → ⵢⵍⵍⴰ 3 000 → 15 ⴷⵔⵀⵎ.',
+      example: '💡 58 000 💎 ⴷⴳ 60 000 → ⵢⵍⵍⴰ 2 000 → 10 ⴷⵔⵀⵎ.',
       close: 'ⵙⵙⵉⵏⵖ! 🦈',
     },
   };
