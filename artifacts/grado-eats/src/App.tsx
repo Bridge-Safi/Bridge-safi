@@ -217,6 +217,13 @@ interface CartItem {
 
 interface UserProfile { name:string; address:string; phone:string; email:string; cardNumber:string; cardExpiry:string; cardName:string; paymentMethod?:'card'|'paypal'; paypalEmail?:string; onboardingComplete?:boolean; avatar?:string; }
 
+// ─── BRIDGE ID — identifiant universel partagé partout ────────────────────────
+// Déterministe : BR- + 7 derniers chars alphanumériques du Clerk userId (uppercase)
+export function getBridgeId(userId: string|undefined|null): string {
+  if (!userId) return 'BR-???????';
+  return 'BR-' + userId.replace(/[^a-z0-9]/gi,'').slice(-7).toUpperCase();
+}
+
 // ─── PROFILE STORAGE ──────────────────────────────────────────────────────────
 
 const PROFILE_KEY = 'bridge_eats_profile';
@@ -2983,8 +2990,8 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
 
       {/* ── TOP BAR ── */}
 
-      {/* Profile button — LEFT */}
-      <div className={`absolute top-4 z-50 ${isAR?'right-4':'left-4'}`}>
+      {/* Profile button + Bridge ID — LEFT */}
+      <div className={`absolute top-3 z-50 flex flex-col items-center gap-1 ${isAR?'right-3':'left-3'}`}>
         <button onClick={()=>setShowProfile(true)}
           style={{width:40,height:40,borderRadius:'50%',overflow:'hidden',border:'2.5px solid #D9C5A0',background:'#F0EBE1',boxShadow:'0 4px 14px rgba(6,95,70,0.15)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',padding:0}}>
           {avatarSrc
@@ -2992,6 +2999,11 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
             :<span style={{fontSize:13,fontWeight:900,color:'#065F46',lineHeight:1}}>{initials}</span>
           }
         </button>
+        <div style={{background:'rgba(6,95,70,0.12)',border:'1px solid rgba(6,95,70,0.3)',borderRadius:6,padding:'2px 5px'}}>
+          <span style={{fontSize:7,fontWeight:900,color:'#065F46',letterSpacing:'0.06em'}}>
+            {getBridgeId(user?.id)}
+          </span>
+        </div>
       </div>
 
       {/* Language + Dark toggle — RIGHT */}
@@ -3248,6 +3260,7 @@ function TaxiTrackingMap({driverPos,clientPos}:{driverPos:{lat:number;lng:number
 function SharkDiamondWidget({onNavigate}:{onNavigate:()=>void}) {
   const {user}=useUser();
   const [gems,setGems]=useState(0);
+  const bridgeId=getBridgeId(user?.id);
   useEffect(()=>{
     if(!user?.id) return;
     fetch('/api/game/diamonds',{credentials:'include'})
@@ -3256,7 +3269,7 @@ function SharkDiamondWidget({onNavigate}:{onNavigate:()=>void}) {
       .catch(()=>{});
   },[user?.id]);
   return(
-    <button onClick={onNavigate} title="Bridge Game — Mes Diamants"
+    <button onClick={onNavigate} title={`${bridgeId} — Bridge Game`}
       style={{background:'none',border:'none',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',gap:2,padding:'2px 4px',borderRadius:12}}>
       <img src="/logo_splash_new.png" alt="Bridge Shark"
         style={{width:32,height:32,objectFit:'cover',objectPosition:'center 20%',borderRadius:'50%',border:'2px solid #D9C5A0',boxShadow:'0 2px 10px rgba(6,95,70,0.35)',background:'#0A1A12'}}/>
@@ -3264,6 +3277,7 @@ function SharkDiamondWidget({onNavigate}:{onNavigate:()=>void}) {
         <span style={{fontSize:9}}>💎</span>
         <span style={{fontSize:8,fontWeight:900,color:'#92400E'}}>{gems.toLocaleString()}</span>
       </div>
+      <span style={{fontSize:7,fontWeight:900,color:'#065F46',letterSpacing:'0.08em',opacity:0.8}}>{bridgeId}</span>
     </button>
   );
 }
@@ -3286,7 +3300,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   const [phone,setPhone]=useState(profile.phone??'');
   const [destination,setDestination]=useState('');
   const [clientPos,setClientPos]=useState<{lat:number;lng:number}|null>(null);
-  const [clientAddress,setClientAddress]=useState('');
+  const [clientAddress,setClientAddress]=useState(profile.address??'');
   const [gettingGPS,setGettingGPS]=useState(false);
   const [sending,setSending]=useState(false);
   const [bookingRef,setBookingRef]=useState<string>(()=>{
@@ -4699,6 +4713,21 @@ export default function App() {
       }));
     } catch {}
   },[lang,service,page,selectedRestaurant]);
+
+  // ── Auto-sync Clerk user data → profile (email + name si vide) ──────────────
+  useEffect(()=>{
+    if(!user) return;
+    const clerkEmail = user.primaryEmailAddress?.emailAddress || '';
+    const clerkPhone = user.primaryPhoneNumber?.phoneNumber || '';
+    const clerkName  = [user.firstName, user.lastName].filter(Boolean).join(' ');
+    let updated = false;
+    const patch: Partial<UserProfile> = {};
+    if (clerkEmail && !profile.email) { patch.email = clerkEmail; updated = true; }
+    if (clerkPhone && !profile.phone) { patch.phone = clerkPhone; updated = true; }
+    if (clerkName  && !profile.name)  { patch.name  = clerkName;  updated = true; }
+    if (updated) saveProfile({ ...profile, ...patch });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[user?.id]);
 
   const t=T[lang]; const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
   const cycleLang=()=>setLang(l=>LANG_CYCLE[(LANG_CYCLE.indexOf(l)+1)%LANG_CYCLE.length]);
