@@ -4650,7 +4650,7 @@ function loadNav() {
 
 export default function App() {
   const saved = loadNav();
-  const { isLoaded, isSignedIn } = useUser();
+  const { isLoaded, isSignedIn, user } = useUser();
   const [, navigate] = useLocation();
 
   // ── Dark mode ──────────────────────────────────────────────────────────────
