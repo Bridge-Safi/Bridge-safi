@@ -721,7 +721,7 @@ function SessionKeepAlive() {
 const GAME_LANGS = ['fr','en','ar','amz'] as const;
 type GameLang = typeof GAME_LANGS[number];
 const GAME_LANG_LABELS: Record<GameLang,string> = {fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
-const GAME_URL = 'https://de74e39f-30c2-4a4e-81c6-35b38d5328e6-00-2kdljcxzty31v.riker.replit.dev/';
+const GAME_URL = 'https://bridge-safi.replit.app';
 const GAME_TARGET = 60000;
 const GAME_T = {
   fr:{
