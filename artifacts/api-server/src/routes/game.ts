@@ -1,10 +1,55 @@
 import { Router } from "express";
+import { randomUUID } from "crypto";
 import { getAuth } from "@clerk/express";
-import { db, gameDiamondsTable } from "@workspace/db";
+import { db, gameDiamondsTable, userProfilesTable } from "@workspace/db";
 import { eq, sql } from "drizzle-orm";
 import { logger } from "../lib/logger";
 
+// ── Tokens de jeu à usage unique (validité 10 min) ──────────────────────────
+interface GameToken { userId: string; phone: string; expiresAt: number; }
+const gameTokens = new Map<string, GameToken>();
+setInterval(() => {
+  const now = Date.now();
+  for (const [k, v] of gameTokens) if (v.expiresAt < now) gameTokens.delete(k);
+}, 60_000);
+
 const router = Router();
+
+// POST /api/game/token — génère un token sécurisé avec le vrai numéro du compte
+// Le jeu externe appelle /api/game/verify-token pour valider le numéro
+router.post("/game/token", async (req, res) => {
+  const { userId } = getAuth(req);
+  if (!userId) { res.status(401).json({ error: "Non authentifié" }); return; }
+  try {
+    const rows = await db.select().from(userProfilesTable).where(eq(userProfilesTable.userId, userId)).limit(1);
+    const phone = rows[0]?.phone ?? null;
+    if (!phone) {
+      res.status(400).json({ error: "no_phone", message: "Aucun numéro enregistré sur ce compte" });
+      return;
+    }
+    const token = randomUUID();
+    gameTokens.set(token, { userId, phone, expiresAt: Date.now() + 10 * 60_000 });
+    logger.info({ userId }, "Game token generated");
+    res.json({ token, phone });
+  } catch (err) {
+    req.log.error({ err }, "Failed to generate game token");
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+});
+
+// GET /api/game/verify-token?token=XXX — appelé par le jeu externe pour vérifier le numéro
+// Retourne le userId + phone si le token est valide (CORS ouvert pour le domaine du jeu)
+router.get("/game/verify-token", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  const token = String(req.query.token ?? "").trim();
+  if (!token) { res.status(400).json({ error: "Token manquant" }); return; }
+  const data = gameTokens.get(token);
+  if (!data || data.expiresAt < Date.now()) {
+    res.status(401).json({ error: "Token invalide ou expiré" });
+    return;
+  }
+  res.json({ valid: true, userId: data.userId, phone: data.phone });
+});
 
 // GET /api/game/diamonds — returns current diamond count for authenticated user
 router.get("/game/diamonds", async (req, res) => {

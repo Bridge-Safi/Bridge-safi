@@ -63,4 +63,18 @@ router.post("/profile/sync", async (req, res) => {
   }
 });
 
+// GET /api/profile — retourne le profil de l'utilisateur connecté
+router.get("/profile", async (req, res) => {
+  const { userId } = getAuth(req);
+  if (!userId) { res.status(401).json({ error: "Non authentifié" }); return; }
+  try {
+    const rows = await db.select().from(userProfilesTable).where(eq(userProfilesTable.userId, userId)).limit(1);
+    if (rows.length === 0) { res.json({ userId, phone: null, name: null }); return; }
+    res.json(rows[0]);
+  } catch (err) {
+    req.log.error({ err }, "Failed to fetch profile");
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+});
+
 export default router;

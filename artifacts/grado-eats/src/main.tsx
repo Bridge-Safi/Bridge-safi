@@ -1250,26 +1250,88 @@ function GamePage() {
     );
   }
 
-  // Signed in — show Safi Runner directly in fullscreen iframe
-  const gameId = 'BR-' + user.id.replace(/[^a-z0-9]/gi, '').slice(-7).toUpperCase();
+  // Signed in — fetch game token then show Safi Runner
+  return <GameIframe userId={user.id} lang={lang} isAR={isAR} />;
+}
+
+/** Fetches a verified phone token then loads the game iframe */
+function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; isAR: boolean }) {
+  const [, navigate] = useLocation();
+  const [state, setState] = useState<'loading'|'ready'|'no_phone'|'error'>('loading');
+  const [gameToken, setGameToken] = useState<string | null>(null);
+  const [phone, setPhone] = useState<string | null>(null);
+
+  const gameId = 'BR-' + userId.replace(/[^a-z0-9]/gi, '').slice(-7).toUpperCase();
+
+  useEffect(() => {
+    fetch('/api/game/token', { method: 'POST', credentials: 'include' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.error === 'no_phone') { setState('no_phone'); return; }
+        if (data.token && data.phone) { setGameToken(data.token); setPhone(data.phone); setState('ready'); }
+        else setState('error');
+      })
+      .catch(() => setState('error'));
+  }, [userId]);
+
+  const noPhoneMsg = {
+    fr: { title: 'NUMÉRO REQUIS', body: 'Pour jouer, tu dois d\'abord enregistrer ton numéro de téléphone dans ton profil Bridge. Ce numéro sera lié définitivement à ton compte.', btn: 'Aller à mon profil' },
+    en: { title: 'PHONE REQUIRED', body: 'To play, you must first add your phone number to your Bridge profile. This number will be permanently linked to your account.', btn: 'Go to my profile' },
+    ar: { title: 'رقم الهاتف مطلوب', body: 'للعب، يجب عليك أولاً إضافة رقم هاتفك في ملفك الشخصي.', btn: 'الملف الشخصي' },
+    amz: { title: 'AṬILIFUN ILAQ', body: 'Ad tsɣeṛḍ, ɛemmreɣ aṭilifun inek.', btn: 'Aḥsab inek' },
+  }[lang];
+
+  if (state === 'loading') {
+    return (
+      <div style={{minHeight:'100dvh',background:'#04110A',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:16}}>
+        <div style={{width:44,height:44,border:'3px solid rgba(74,222,128,0.3)',borderTop:'3px solid #4ADE80',borderRadius:'50%',animation:'spin 0.9s linear infinite'}}/>
+        <p style={{color:'rgba(255,255,255,0.4)',fontSize:12,fontWeight:700,letterSpacing:'0.1em'}}>{isAR?'تحميل...':lang==='en'?'Loading...':'Chargement...'}</p>
+        <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+      </div>
+    );
+  }
+
+  if (state === 'no_phone') {
+    return (
+      <div dir={isAR?'rtl':'ltr'} style={{minHeight:'100dvh',background:'linear-gradient(180deg,#04110A,#071C11)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'32px 20px'}}>
+        <div style={{width:'100%',maxWidth:360,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(248,113,113,0.3)',borderRadius:28,padding:'36px 24px',display:'flex',flexDirection:'column',alignItems:'center',gap:14,backdropFilter:'blur(12px)'}}>
+          <div style={{fontSize:48}}>📵</div>
+          <p style={{color:'#F87171',fontSize:10,fontWeight:900,letterSpacing:'0.18em',margin:0,textAlign:'center',textTransform:'uppercase'}}>{noPhoneMsg.title}</p>
+          <p style={{color:'rgba(255,255,255,0.65)',fontSize:13,fontWeight:500,lineHeight:1.6,textAlign:'center',margin:0}}>{noPhoneMsg.body}</p>
+          <button onClick={()=>navigate('/')} style={{width:'100%',padding:'16px 0',borderRadius:16,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669,#4ADE80)',color:'#fff',fontSize:14,fontWeight:900,marginTop:4}}>
+            👤 {noPhoneMsg.btn}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (state === 'error') {
+    return (
+      <div style={{minHeight:'100dvh',background:'#04110A',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:12}}>
+        <p style={{color:'#F87171',fontSize:13,fontWeight:700}}>{isAR?'خطأ في التحميل':lang==='en'?'Failed to load game':'Erreur de chargement'}</p>
+        <button onClick={()=>navigate('/')} style={{padding:'12px 24px',borderRadius:14,border:'none',background:'rgba(74,222,128,0.15)',color:'#4ADE80',fontSize:13,fontWeight:900,cursor:'pointer'}}>
+          ← {isAR?'رجوع':lang==='en'?'Back':'Retour'}
+        </button>
+      </div>
+    );
+  }
+
+  // Build secure game URL with token + verified phone
+  const gameApiBase = window.location.origin;
+  const gameSrc = `${GAME_URL}?userId=${encodeURIComponent(userId)}&gameId=${encodeURIComponent(gameId)}&token=${encodeURIComponent(gameToken!)}&phone=${encodeURIComponent(phone!)}&verifyUrl=${encodeURIComponent(`${gameApiBase}/api/game/verify-token`)}`;
 
   return (
     <div style={{position:'fixed',inset:0,zIndex:9999,background:'#000',display:'flex',flexDirection:'column'}}>
-      {/* Minimal top bar */}
       <div style={{display:'flex',alignItems:'center',gap:12,padding:'12px 16px',background:'#04110A',borderBottom:'1px solid rgba(74,222,128,0.2)',flexShrink:0}}>
-        <button onClick={()=>navigate('/')} style={{
-          display:'flex',alignItems:'center',gap:6,
-          background:'rgba(74,222,128,0.12)',border:'1px solid rgba(74,222,128,0.3)',
-          borderRadius:12,padding:'8px 14px',color:'#4ADE80',fontSize:13,fontWeight:900,cursor:'pointer'
-        }}>
+        <button onClick={()=>navigate('/')} style={{display:'flex',alignItems:'center',gap:6,background:'rgba(74,222,128,0.12)',border:'1px solid rgba(74,222,128,0.3)',borderRadius:12,padding:'8px 14px',color:'#4ADE80',fontSize:13,fontWeight:900,cursor:'pointer'}}>
           ← {isAR?'رجوع':lang==='en'?'Back':lang==='amz'?'ⴰⵣⵣⵓⵍ':'Retour'}
         </button>
         <span style={{color:'#4ADE80',fontSize:12,fontWeight:900,letterSpacing:'0.1em'}}>🦈 SAFI RUNNER</span>
         <span style={{marginLeft:'auto',color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700}}>{gameId}</span>
       </div>
-      {/* Safi Runner game */}
       <iframe
-        src={`${GAME_URL}?userId=${encodeURIComponent(user.id)}&gameId=${encodeURIComponent(gameId)}`}
+        src={gameSrc}
         style={{flex:1,border:'none',width:'100%'}}
         allow="accelerometer; gyroscope"
         title="Safi Runner"
