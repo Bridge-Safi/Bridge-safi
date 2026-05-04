@@ -292,7 +292,7 @@ router.patch("/orders/:id/status", async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) return res.status(400).json({ error: "Invalid id" });
     const { status, driverName } = req.body;
-    const allowed = ["pending", "preparing", "on_the_way", "delivered", "cancelled"];
+    const allowed = ["pending", "preparing", "on_the_way", "delivered", "cancelled", "refused", "accepted", "ready"];
     if (!allowed.includes(status)) return res.status(400).json({ error: "Invalid status" });
     const [order] = await db
       .update(ordersTable)
@@ -303,6 +303,58 @@ router.patch("/orders/:id/status", async (req, res) => {
     res.json({ order });
   } catch (err) {
     res.status(500).json({ error: "Failed to update order" });
+  }
+});
+
+// ── Restaurant owner PIN auth ─────────────────────────────────────────────────
+const RESTAURANT_PINS: Record<string, string> = {
+  "McDonald's Safi":      "1234",
+  "Bridge Pizza & Tacos": "2345",
+  "Safi Seafood Palace":  "3456",
+  "Kebab Express Safi":   "4567",
+  "Burger Corner Safi":   "5678",
+};
+
+// GET /api/orders/by-restaurant?name=X&pin=Y
+router.get("/orders/by-restaurant", async (req, res) => {
+  try {
+    const name = (req.query.name as string || "").trim();
+    const pin  = (req.query.pin  as string || "").trim();
+    if (!name) return res.status(400).json({ error: "name required" });
+    const correctPin = RESTAURANT_PINS[name];
+    if (!correctPin || pin !== correctPin) return res.status(401).json({ error: "PIN incorrect" });
+    const orders = await db
+      .select()
+      .from(ordersTable)
+      .where(eq(ordersTable.restaurantName, name))
+      .orderBy(desc(ordersTable.createdAt))
+      .limit(50);
+    res.json({ orders });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch orders" });
+  }
+});
+
+// PATCH /api/orders/by-ref/:ref/status — update status by ref (for restaurant owner)
+router.patch("/orders/by-ref/:ref/status", async (req, res) => {
+  try {
+    const { ref } = req.params;
+    const { status, pin, restaurantName } = req.body;
+    const allowed = ["accepted", "refused", "preparing", "ready", "delivered", "cancelled"];
+    if (!allowed.includes(status)) return res.status(400).json({ error: "Invalid status" });
+    // Verify PIN
+    const correctPin = restaurantName ? RESTAURANT_PINS[restaurantName] : undefined;
+    if (!correctPin || pin !== correctPin) return res.status(401).json({ error: "PIN incorrect" });
+    const { eq: eqFn } = await import("drizzle-orm");
+    const [order] = await db
+      .update(ordersTable)
+      .set({ status, updatedAt: new Date() })
+      .where(eqFn(ordersTable.ref, ref))
+      .returning();
+    if (!order) return res.status(404).json({ error: "Not found" });
+    res.json({ order });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update" });
   }
 });
 

@@ -2116,6 +2116,313 @@ const ASSISTANT_T = {
 
 type AssistLang = 'fr'|'en'|'ar'|'amz';
 const ASSIST_LANGS: AssistLang[] = ['fr','en','ar','amz'];
+// ─── RESTAURANT OWNER PAGE ────────────────────────────────────────────────────
+
+const RESTO_RESTAURANTS = [
+  "McDonald's Safi",
+  "Bridge Pizza & Tacos",
+  "Safi Seafood Palace",
+  "Kebab Express Safi",
+  "Burger Corner Safi",
+];
+
+type RestoOrder = {
+  id: number; ref: string; customerName: string; customerPhone: string;
+  customerAddress: string; items: unknown; total: number;
+  deliveryMode: string; paymentMethod: string; status: string;
+  createdAt: string; restaurantName: string | null;
+};
+
+function playAlert() {
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.setValueAtTime(660, ctx.currentTime + 0.15);
+    gain.gain.setValueAtTime(0.4, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.5);
+  } catch {}
+}
+
+function statusLabel(s: string) {
+  const m: Record<string,{label:string;color:string}> = {
+    pending:   {label:'🟡 En attente',   color:'#F59E0B'},
+    accepted:  {label:'🟢 Acceptée',     color:'#10B981'},
+    preparing: {label:'🔵 En préparation',color:'#3B82F6'},
+    ready:     {label:'✅ Prêt',         color:'#059669'},
+    delivered: {label:'📦 Livrée',       color:'#6B7280'},
+    refused:   {label:'❌ Refusée',      color:'#EF4444'},
+    cancelled: {label:'🚫 Annulée',      color:'#EF4444'},
+    on_the_way:{label:'🚴 En route',     color:'#8B5CF6'},
+  };
+  return m[s] || {label:s, color:'#9CA3AF'};
+}
+
+function RestaurantOwnerPage() {
+  const [, navigate] = useLocation();
+  const [restoName, setRestoName] = useState('');
+  const [pin, setPin] = useState('');
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [loginErr, setLoginErr] = useState('');
+  const [orders, setOrders] = useState<RestoOrder[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
+  const seenRefs = useRef<Set<string>>(new Set());
+  const pollRef = useRef<number|null>(null);
+
+  // Restore session
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('bridge_resto_session');
+      if (saved) { const s = JSON.parse(saved); setRestoName(s.name); setPin(s.pin); setLoggedIn(true); }
+    } catch {}
+  }, []);
+
+  const fetchOrders = async (name: string, p: string) => {
+    try {
+      const r = await fetch(`/api/orders/by-restaurant?name=${encodeURIComponent(name)}&pin=${encodeURIComponent(p)}`);
+      if (!r.ok) return;
+      const data = await r.json();
+      const newOrders: RestoOrder[] = data.orders || [];
+      // Alert for new pending orders
+      const newPending = newOrders.filter(o => o.status === 'pending' && !seenRefs.current.has(o.ref));
+      if (newPending.length > 0) { playAlert(); newPending.forEach(o => seenRefs.current.add(o.ref)); }
+      newOrders.forEach(o => seenRefs.current.add(o.ref));
+      setOrders(newOrders);
+    } catch {}
+  };
+
+  useEffect(() => {
+    if (!loggedIn) return;
+    fetchOrders(restoName, pin);
+    pollRef.current = window.setInterval(() => fetchOrders(restoName, pin), 12000);
+    return () => { if (pollRef.current) clearInterval(pollRef.current); };
+  }, [loggedIn, restoName, pin]);
+
+  const handleLogin = async () => {
+    setLoginErr(''); setLoading(true);
+    try {
+      const r = await fetch(`/api/orders/by-restaurant?name=${encodeURIComponent(restoName)}&pin=${encodeURIComponent(pin)}`);
+      if (r.status === 401) { setLoginErr('PIN incorrect — réessayez'); setLoading(false); return; }
+      if (!r.ok) { setLoginErr('Erreur serveur'); setLoading(false); return; }
+      localStorage.setItem('bridge_resto_session', JSON.stringify({name:restoName, pin}));
+      const data = await r.json();
+      const o: RestoOrder[] = data.orders || [];
+      o.forEach(x => seenRefs.current.add(x.ref));
+      setOrders(o); setLoggedIn(true);
+    } catch { setLoginErr('Erreur de connexion'); }
+    setLoading(false);
+  };
+
+  const updateStatus = async (ref: string, status: string) => {
+    await fetch(`/api/orders/by-ref/${ref}/status`, {
+      method:'PATCH', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({status, pin, restaurantName: restoName}),
+    });
+    setOrders(prev => prev.map(o => o.ref === ref ? {...o, status} : o));
+  };
+
+  const logout = () => {
+    localStorage.removeItem('bridge_resto_session');
+    setLoggedIn(false); setOrders([]); setPin(''); seenRefs.current.clear();
+  };
+
+  const pending = orders.filter(o => o.status === 'pending');
+  const active  = orders.filter(o => ['accepted','preparing'].includes(o.status));
+  const done    = orders.filter(o => ['ready','delivered','refused','cancelled','on_the_way'].includes(o.status));
+
+  // ── LOGIN SCREEN ────────────────────────────────────────────────────────────
+  if (!loggedIn) return (
+    <div style={{minHeight:'100dvh',background:'linear-gradient(135deg,#0A1A0F 0%,#0D2E1A 50%,#0A1A0F 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'20px',fontFamily:'system-ui'}}>
+      <div style={{fontSize:48,marginBottom:12}}>🍽️</div>
+      <h1 style={{color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.1em',margin:'0 0 4px',textAlign:'center'}}>ESPACE RESTAURATEURS</h1>
+      <p style={{color:'rgba(255,255,255,0.4)',fontSize:12,fontWeight:600,margin:'0 0 28px',textAlign:'center'}}>Bridge Safi · Interface partenaire</p>
+
+      <div style={{width:'100%',maxWidth:340,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:24,padding:'24px 20px',display:'flex',flexDirection:'column',gap:14}}>
+        <div>
+          <label style={{color:'rgba(255,255,255,0.5)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',display:'block',marginBottom:6}}>Votre Restaurant</label>
+          <select value={restoName} onChange={e=>setRestoName(e.target.value)}
+            style={{width:'100%',padding:'13px 14px',borderRadius:14,background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',color: restoName?'#fff':'rgba(255,255,255,0.4)',fontSize:14,fontWeight:700,outline:'none',appearance:'none'}}>
+            <option value="">-- Sélectionner --</option>
+            {RESTO_RESTAURANTS.map(r=><option key={r} value={r} style={{background:'#1a2e1f',color:'#fff'}}>{r}</option>)}
+          </select>
+        </div>
+
+        <div>
+          <label style={{color:'rgba(255,255,255,0.5)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',display:'block',marginBottom:6}}>Code PIN (4 chiffres)</label>
+          <input type="password" inputMode="numeric" maxLength={4} value={pin} onChange={e=>setPin(e.target.value.replace(/\D/g,'').slice(0,4))}
+            placeholder="••••"
+            style={{width:'100%',boxSizing:'border-box',padding:'13px 14px',borderRadius:14,background:'rgba(255,255,255,0.08)',border:`1px solid ${loginErr?'#EF4444':'rgba(255,255,255,0.15)'}`,color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.5em',textAlign:'center',outline:'none'}}
+            onKeyDown={e=>{if(e.key==='Enter')handleLogin();}}/>
+          {loginErr && <p style={{color:'#F87171',fontSize:11,fontWeight:700,margin:'6px 0 0'}}>{loginErr}</p>}
+        </div>
+
+        <button onClick={handleLogin} disabled={!restoName||pin.length!==4||loading}
+          style={{width:'100%',padding:'15px 0',borderRadius:14,border:'none',cursor:!restoName||pin.length!==4||loading?'not-allowed':'pointer',
+            background:!restoName||pin.length!==4||loading?'rgba(255,255,255,0.1)':'linear-gradient(135deg,#059669,#4ADE80)',
+            color:!restoName||pin.length!==4||loading?'rgba(255,255,255,0.4)':'#fff',fontSize:15,fontWeight:900,letterSpacing:'0.05em'}}>
+          {loading ? 'Connexion...' : 'Se connecter →'}
+        </button>
+      </div>
+
+      <button onClick={()=>navigate('/')} style={{marginTop:20,background:'none',border:'none',color:'rgba(255,255,255,0.35)',fontSize:12,fontWeight:700,cursor:'pointer'}}>
+        ← Retour à Bridge
+      </button>
+    </div>
+  );
+
+  // ── ORDER CARD ──────────────────────────────────────────────────────────────
+  const OrderCard = ({o}: {o: RestoOrder}) => {
+    const st = statusLabel(o.status);
+    const items = Array.isArray(o.items) ? o.items as {name:string;qty:number;price:number}[] : [];
+    const time = new Date(o.createdAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    return (
+      <div style={{background:'rgba(255,255,255,0.04)',border:`1px solid ${o.status==='pending'?'rgba(245,158,11,0.5)':o.status==='refused'?'rgba(239,68,68,0.3)':'rgba(255,255,255,0.08)'}`,borderRadius:18,padding:'14px 16px',marginBottom:10}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+          <div>
+            <span style={{color:'#D9C5A0',fontSize:11,fontWeight:900,letterSpacing:'0.1em'}}>{o.ref}</span>
+            <span style={{color:'rgba(255,255,255,0.3)',fontSize:10,fontWeight:600,marginLeft:8}}>{time}</span>
+          </div>
+          <span style={{color:st.color,fontSize:10,fontWeight:900,background:`${st.color}18`,padding:'3px 8px',borderRadius:8}}>{st.label}</span>
+        </div>
+
+        <p style={{color:'#fff',fontSize:13,fontWeight:700,margin:'0 0 2px'}}>👤 {o.customerName} · 📞 {o.customerPhone}</p>
+        <p style={{color:'rgba(255,255,255,0.5)',fontSize:11,fontWeight:600,margin:'0 0 8px'}}>📍 {o.customerAddress} · {o.deliveryMode==='collect'?'Click & Collect':'Livraison'}</p>
+
+        {items.length>0 && (
+          <div style={{background:'rgba(0,0,0,0.2)',borderRadius:10,padding:'8px 10px',marginBottom:10}}>
+            {items.map((it,i)=>(
+              <p key={i} style={{color:'rgba(255,255,255,0.75)',fontSize:11,fontWeight:600,margin:'0 0 2px'}}>
+                × {it.qty} {it.name} — {it.price} MAD
+              </p>
+            ))}
+          </div>
+        )}
+
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom: o.status==='pending'||o.status==='accepted'||o.status==='preparing'?10:0}}>
+          <span style={{color:'#4ADE80',fontSize:14,fontWeight:900}}>💰 {o.total} MAD</span>
+          <span style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700}}>{o.paymentMethod==='cash'?'💵 Cash':o.paymentMethod==='card'?'💳 Carte':'💳'}</span>
+        </div>
+
+        {o.status==='pending' && (
+          <div style={{display:'flex',gap:8}}>
+            <button onClick={()=>updateStatus(o.ref,'accepted')}
+              style={{flex:1,padding:'11px 0',borderRadius:12,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669,#4ADE80)',color:'#fff',fontSize:13,fontWeight:900}}>
+              ✅ Accepter
+            </button>
+            <button onClick={()=>updateStatus(o.ref,'refused')}
+              style={{flex:1,padding:'11px 0',borderRadius:12,cursor:'pointer',background:'rgba(239,68,68,0.2)',border:'1px solid rgba(239,68,68,0.5)',color:'#F87171',fontSize:13,fontWeight:900}}>
+              ❌ Refuser
+            </button>
+          </div>
+        )}
+        {o.status==='accepted' && (
+          <button onClick={()=>updateStatus(o.ref,'preparing')}
+            style={{width:'100%',padding:'11px 0',borderRadius:12,cursor:'pointer',background:'rgba(59,130,246,0.2)',border:'1px solid rgba(59,130,246,0.5)',color:'#60A5FA',fontSize:13,fontWeight:900}}>
+            👨‍🍳 En préparation
+          </button>
+        )}
+        {o.status==='preparing' && (
+          <button onClick={()=>updateStatus(o.ref,'ready')}
+            style={{width:'100%',padding:'11px 0',borderRadius:12,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669,#4ADE80)',color:'#fff',fontSize:13,fontWeight:900}}>
+            🔔 Commande Prête !
+          </button>
+        )}
+      </div>
+    );
+  };
+
+  // ── DASHBOARD SCREEN ────────────────────────────────────────────────────────
+  return (
+    <div style={{minHeight:'100dvh',background:'linear-gradient(135deg,#0A1A0F 0%,#0D2E1A 50%,#0A1A0F 100%)',fontFamily:'system-ui',paddingBottom:30}}>
+      {/* Header */}
+      <div style={{position:'sticky',top:0,zIndex:100,background:'rgba(4,17,10,0.95)',backdropFilter:'blur(12px)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'12px 16px',display:'flex',alignItems:'center',gap:10}}>
+        <span style={{fontSize:20}}>🍽️</span>
+        <div style={{flex:1}}>
+          <p style={{color:'#fff',fontSize:13,fontWeight:900,margin:0,lineHeight:1}}>{restoName}</p>
+          <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:600,margin:0}}>Espace restaurateur</p>
+        </div>
+        {/* Open/Closed toggle */}
+        <button onClick={()=>setIsOpen(p=>!p)}
+          style={{padding:'7px 14px',borderRadius:20,cursor:'pointer',
+            background: isOpen?'rgba(74,222,128,0.2)':'rgba(239,68,68,0.2)',
+            border: `1px solid ${isOpen?'rgba(74,222,128,0.4)':'rgba(239,68,68,0.4)'}`,
+            color: isOpen?'#4ADE80':'#F87171', fontSize:11,fontWeight:900}}>
+          {isOpen?'🟢 OUVERT':'🔴 FERMÉ'}
+        </button>
+        <button onClick={logout} style={{padding:'7px 12px',borderRadius:20,border:'1px solid rgba(255,255,255,0.1)',background:'transparent',color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700,cursor:'pointer'}}>
+          Déco.
+        </button>
+      </div>
+
+      {/* Stats bar */}
+      <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+        {[
+          {label:'En attente', count:pending.length, color:'#F59E0B'},
+          {label:'En cours',   count:active.length,  color:'#3B82F6'},
+          {label:'Terminées',  count:done.length,     color:'#6B7280'},
+        ].map(s=>(
+          <div key={s.label} style={{flex:1,padding:'10px 0',textAlign:'center',borderRight:'1px solid rgba(255,255,255,0.06)'}}>
+            <p style={{color:s.color,fontSize:20,fontWeight:900,margin:0}}>{s.count}</p>
+            <p style={{color:'rgba(255,255,255,0.35)',fontSize:9,fontWeight:700,margin:0,textTransform:'uppercase'}}>{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div style={{padding:'14px 14px 0'}}>
+        {/* Refresh button */}
+        <button onClick={()=>fetchOrders(restoName,pin)}
+          style={{width:'100%',padding:'10px 0',borderRadius:14,border:'1px solid rgba(255,255,255,0.1)',background:'rgba(255,255,255,0.04)',color:'rgba(255,255,255,0.5)',fontSize:12,fontWeight:700,cursor:'pointer',marginBottom:14}}>
+          🔄 Actualiser les commandes
+        </button>
+
+        {/* Pending */}
+        {pending.length>0 && (
+          <>
+            <p style={{color:'#F59E0B',fontSize:10,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'0 0 10px'}}>
+              🟡 EN ATTENTE ({pending.length})
+            </p>
+            {pending.map(o=><OrderCard key={o.ref} o={o}/>)}
+          </>
+        )}
+
+        {/* Active */}
+        {active.length>0 && (
+          <>
+            <p style={{color:'#60A5FA',fontSize:10,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'14px 0 10px'}}>
+              👨‍🍳 EN COURS ({active.length})
+            </p>
+            {active.map(o=><OrderCard key={o.ref} o={o}/>)}
+          </>
+        )}
+
+        {/* Done */}
+        {done.length>0 && (
+          <>
+            <p style={{color:'rgba(255,255,255,0.25)',fontSize:10,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'14px 0 10px'}}>
+              📦 TERMINÉES ({done.length})
+            </p>
+            {done.map(o=><OrderCard key={o.ref} o={o}/>)}
+          </>
+        )}
+
+        {orders.length===0 && (
+          <div style={{textAlign:'center',paddingTop:40}}>
+            <div style={{fontSize:48,marginBottom:12}}>🍽️</div>
+            <p style={{color:'rgba(255,255,255,0.3)',fontSize:14,fontWeight:700}}>Aucune commande pour l'instant</p>
+            <p style={{color:'rgba(255,255,255,0.2)',fontSize:12,fontWeight:600}}>Actualisation automatique toutes les 12 secondes</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── END RESTAURANT OWNER PAGE ────────────────────────────────────────────────
+
 const ASSIST_LANG_LABELS: Record<AssistLang,string> = {fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
 
 function BridgeAssistantPage() {
@@ -2328,6 +2635,7 @@ function ClerkProviderWithRoutes() {
           <Route path="/assistant" component={BridgeAssistantPage} />
           <Route path="/dispatch" component={DispatchPage} />
           <Route path="/driver/:ref" component={DriverTrackerPage} />
+          <Route path="/resto" component={RestaurantOwnerPage} />
           <Route component={App} />
         </Switch>
       </QueryClientProvider>
