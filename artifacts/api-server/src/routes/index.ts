@@ -5,6 +5,7 @@ import pushRouter from "./push";
 import trackingRouter from "./tracking";
 import assistantRouter from "./assistant";
 import gameRouter from "./game";
+import profilesRouter from "./profiles";
 
 const router: IRouter = Router();
 
@@ -14,5 +15,6 @@ router.use(pushRouter);
 router.use(trackingRouter);
 router.use(assistantRouter);
 router.use(gameRouter);
+router.use(profilesRouter);
 
 export default router;

@@ -20,3 +20,4 @@
 export * from "./orders";
 export * from "./push_subscriptions";
 export * from "./game";
+export * from "./profiles";

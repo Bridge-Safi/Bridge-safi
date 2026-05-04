@@ -316,7 +316,7 @@ const T = {
     errLuhn:'Numéro de carte invalide — vérifiez les chiffres',
     promoLabel:'Code promo / Cadeau', promoPh:'Ex : BRIDGE10', promoApply:'Appliquer',
     promoOk:(d:number)=>`-${d} MAD appliqué 🎉`, promoErr:'Code invalide ou déjà utilisé',
-    diamondsSection:'💎 Mes Diamants Bridge', diamondsAvail:(n:number)=>`${n} pts disponibles (= ${Math.floor(n/100)} MAD)`,
+    diamondsSection:'💎 Mes Diamants Bridge', diamondsAvail:(n:number)=>`${n} pts disponibles (= ${Math.floor(n/200)} MAD)`,
     diamondsUse:'Convertir en réduction', diamondsNone:'Aucun diamant pour l\'instant — jouez !',
     discountRow:(d:number)=>`Réduction appliquée : -${d} MAD`,
     deliveryFeeRow:'Frais de livraison',
@@ -413,7 +413,7 @@ const T = {
     errLuhn:'Invalid card number — please check the digits',
     promoLabel:'Promo code / Gift', promoPh:'E.g.: BRIDGE10', promoApply:'Apply',
     promoOk:(d:number)=>`-${d} MAD applied 🎉`, promoErr:'Invalid or already used code',
-    diamondsSection:'💎 My Bridge Diamonds', diamondsAvail:(n:number)=>`${n} pts available (= ${Math.floor(n/100)} MAD)`,
+    diamondsSection:'💎 My Bridge Diamonds', diamondsAvail:(n:number)=>`${n} pts available (= ${Math.floor(n/200)} MAD)`,
     diamondsUse:'Convert to discount', diamondsNone:'No diamonds yet — play to earn!',
     discountRow:(d:number)=>`Discount applied: -${d} MAD`,
     deliveryFeeRow:'Delivery fee',
@@ -510,7 +510,7 @@ const T = {
     errLuhn:'رقم البطاقة غير صالح — تحقق من الأرقام',
     promoLabel:'رمز ترويجي / هدية', promoPh:'مثال: BRIDGE10', promoApply:'تطبيق',
     promoOk:(d:number)=>`تم تطبيق -${d} MAD 🎉`, promoErr:'الرمز غير صالح أو مستخدم',
-    diamondsSection:'💎 ماساتي Bridge', diamondsAvail:(n:number)=>`${n} نقطة (= ${Math.floor(n/100)} MAD)`,
+    diamondsSection:'💎 ماساتي Bridge', diamondsAvail:(n:number)=>`${n} نقطة (= ${Math.floor(n/200)} MAD)`,
     diamondsUse:'تحويل إلى خصم', diamondsNone:'لا توجد نقاط بعد — العب لتكسبها!',
     discountRow:(d:number)=>`الخصم المطبق: -${d} MAD`,
     deliveryFeeRow:'رسوم التوصيل',
@@ -608,7 +608,7 @@ const T = {
     errLuhn:'ⴰⵏⵓⵎⵔ ⵏ ⵜⴰⴽⴰⵔⴷⵜ ⵓⵔ ⵉⵍⵓⵍ — ⵅⵛⵎ ⵉⵎⵔⴰⵡⵏ',
     promoLabel:'ⴰⵙⵉⴼⴼⴰⵖ / ⵜⵉⵡⵍⴰⴼⵜ', promoPh:'ⴰⵎⴷⵢⴰ: BRIDGE10', promoApply:'ⵙⴱⴷⴷ',
     promoOk:(d:number)=>` -${d} MAD ⵜⵓⵙⵉⵏ 🎉`, promoErr:'ⴰⵙⵉⴼⴼⴰⵖ ⵓⵔ ⵉⵍⵓⵍ',
-    diamondsSection:'💎 ⵉⵎⴰⵙⵙⵏ ⵉⵏⵓ Bridge', diamondsAvail:(n:number)=>`${n} ⵏⵇⴰⵟ (= ${Math.floor(n/100)} MAD)`,
+    diamondsSection:'💎 ⵉⵎⴰⵙⵙⵏ ⵉⵏⵓ Bridge', diamondsAvail:(n:number)=>`${n} ⵏⵇⴰⵟ (= ${Math.floor(n/200)} MAD)`,
     diamondsUse:'ⵙⴱⴷⴷ ⵖ ⵜⵙⵇⵇⵉⵎⵜ', diamondsNone:'ⵓⵔ ⵉⵍⵍⴰ ⵉⵎⴰⵙ — ⵉⵍⵓ !',
     discountRow:(d:number)=>`ⵜⴰⵙⵇⵇⵉⵎⵜ: -${d} MAD`,
     deliveryFeeRow:'ⵉⵎⵙⴽⴰⵔⵏ ⵏ ⵓⵙⵙⵓⴼⵖ',
@@ -1634,6 +1634,7 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
   const [, navigate] = useLocation();
   const { user } = useUser();
   const [errs,setErrs]=useState<Record<string,boolean>>({});
+  const [phoneTaken,setPhoneTaken]=useState(false);
   const [payTab,setPayTab]=useState<'card'|'paypal'>(profile.paymentMethod==='paypal'?'paypal':'card');
 
   // Generate deterministic game ID from Clerk userId
@@ -1692,8 +1693,9 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
     setPwdLoading(false);
   };
 
-  const handleSave=()=>{
+  const handleSave=async()=>{
     const e:Record<string,boolean>={};
+    setPhoneTaken(false);
     if(!validateName(form.name))       e.name=true;
     if(!validatePhone(form.phone))     e.phone=true;
     if(payTab==='card'){
@@ -1705,6 +1707,16 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
     }
     setErrs(e);
     if(Object.keys(e).length>0) return;
+    if(form.phone.trim()){
+      try{
+        const r=await fetch('/api/profile/sync',{
+          method:'POST',credentials:'include',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({phone:form.phone.trim(),name:form.name.trim()}),
+        });
+        if(!r.ok){const d=await r.json().catch(()=>({error:''}));if(d.error==='phone_taken'){setPhoneTaken(true);setErrs({...e,phone:true});return;}}
+      }catch{}
+    }
     onSave({...form, paymentMethod:payTab});
     setSaved(true);setTimeout(()=>setSaved(false),2000);
   };
@@ -1762,7 +1774,7 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
             <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#065F46'}}>👤 {t.nameLabel}</p>
             <Field label={t.nameLabel} value={form.name} onChange={v=>{set('name')(v);if(errs.name&&validateName(v))setErrs(e=>({...e,name:false}));}} placeholder={t.namePh} lang={lang} required error={errs.name} errorMsg={t.errName}/>
             <Field label={t.addrLabel} value={form.address} onChange={set('address')} placeholder={t.addrPh} lang={lang}/>
-            <Field label={t.phoneLabel} value={form.phone} onChange={v=>{set('phone')(v);if(errs.phone&&validatePhone(v))setErrs(e=>({...e,phone:false}));}} placeholder={t.phonePh} type="tel" lang={lang} required error={errs.phone} errorMsg={t.errPhone}/>
+            <Field label={t.phoneLabel} value={form.phone} onChange={v=>{set('phone')(v);if(errs.phone&&validatePhone(v)){setErrs(e=>({...e,phone:false}));setPhoneTaken(false);}}} placeholder={t.phonePh} type="tel" lang={lang} required error={errs.phone} errorMsg={phoneTaken?(lang==='ar'?'هذا الرقم مستخدم بحساب آخر':lang==='en'?'Number already linked to another account':'Numéro déjà utilisé par un autre compte'):t.errPhone}/>
             <Field label={t.emailLabel} value={form.email||''} onChange={set('email')} placeholder={t.emailPh} type="email" lang={lang}/>
           </div>
           {/* ── Payment section ───────────────────────────────────── */}
@@ -2884,6 +2896,7 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
 
 function PharmaciePage({onBack,lang}:{onBack:()=>void;lang:Lang}) {
   const fClass=fontClass(lang); const isAR=lang==='ar';
+  const [,navigatePharm]=useLocation();
   const msgs:{fr:string;en:string;ar:string;amz:string}={
     fr:'Bridge Pharmacie sera lancé très bientôt.\nLivraison de médicaments & produits parapharmacie,\nde jour comme de nuit à Safi.',
     en:'Bridge Pharmacie launching very soon.\nMedication & parapharmacy delivery,\nday and night in Safi.',
@@ -2910,6 +2923,10 @@ function PharmaciePage({onBack,lang}:{onBack:()=>void;lang:Lang}) {
         <span style={{fontSize:16}}>←</span>
         {lang==='ar'?'رجوع':lang==='en'?'Back':lang==='amz'?'ⴰⴷⴷⵓ':'Retour'}
       </button>
+      {/* Shark diamond widget top-right */}
+      <div style={{position:'absolute',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:10}}>
+        <SharkDiamondWidget onNavigate={()=>navigatePharm('/game')}/>
+      </div>
       {/* Content */}
       <div style={{textAlign:'center',maxWidth:320,zIndex:1}}>
         {/* Night moon illustration */}
@@ -3227,6 +3244,30 @@ function TaxiTrackingMap({driverPos,clientPos}:{driverPos:{lat:number;lng:number
 
 // ─── TAXI PAGE ────────────────────────────────────────────────────────────────
 
+// ─── SHARK DIAMOND WIDGET ────────────────────────────────────────────────────
+function SharkDiamondWidget({onNavigate}:{onNavigate:()=>void}) {
+  const {user}=useUser();
+  const [gems,setGems]=useState(0);
+  useEffect(()=>{
+    if(!user?.id) return;
+    fetch('/api/game/diamonds',{credentials:'include'})
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{if(d&&typeof d.diamonds==='number')setGems(d.diamonds);})
+      .catch(()=>{});
+  },[user?.id]);
+  return(
+    <button onClick={onNavigate} title="Bridge Game — Mes Diamants"
+      style={{background:'none',border:'none',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',gap:2,padding:'2px 4px',borderRadius:12}}>
+      <img src="/logo_splash_new.png" alt="Bridge Shark"
+        style={{width:32,height:32,objectFit:'cover',objectPosition:'center 20%',borderRadius:'50%',border:'2px solid #D9C5A0',boxShadow:'0 2px 10px rgba(6,95,70,0.35)',background:'#0A1A12'}}/>
+      <div style={{display:'flex',alignItems:'center',gap:2,background:'rgba(254,252,232,0.95)',border:'1px solid #FDE047',borderRadius:8,padding:'1px 5px'}}>
+        <span style={{fontSize:9}}>💎</span>
+        <span style={{fontSize:8,fontWeight:900,color:'#92400E'}}>{gems.toLocaleString()}</span>
+      </div>
+    </button>
+  );
+}
+
 function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   onBack:()=>void; lang:Lang; cycleLang:()=>void;
   profile:UserProfile; saveProfile:(p:UserProfile)=>void;
@@ -3254,6 +3295,18 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   const [formErr,setFormErr]=useState('');
   const [taxiPayMethod,setTaxiPayMethod]=useState<PayMethodType>(null);
   const [showTaxiQR,setShowTaxiQR]=useState(false);
+  const {user:taxiUser}=useUser();
+  const [,navigateTaxi]=useLocation();
+  const [taxiGems,setTaxiGems]=useState(0);
+  const [taxiGemMAD,setTaxiGemMAD]=useState(0);
+  const maxTaxiGemMAD=Math.floor(taxiGems/200);
+  useEffect(()=>{
+    if(!taxiUser?.id) return;
+    fetch('/api/game/diamonds',{credentials:'include'})
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{if(d&&typeof d.diamonds==='number')setTaxiGems(d.diamonds);})
+      .catch(()=>{});
+  },[taxiUser?.id]);
 
   // ── Tracking state ──
   const [trackData,setTrackData]=useState<{found:boolean;lat?:number;lng?:number;status?:string;driverName?:string;eta?:number;clientLat?:number;clientLng?:number}|null>(null);
@@ -3320,6 +3373,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
         }),
       }).catch(()=>{});
     }finally{setSending(false);}
+    if(taxiGemMAD>0){fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({spend:taxiGemMAD*200})}).catch(()=>{});}
     localStorage.setItem('bridge_taxi_ref',ref);
     setBookingRef(ref);
     if(taxiPayMethod==='qr') setShowTaxiQR(true);
@@ -3399,6 +3453,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
           style={{...pillStyle,fontSize:'13px'}}>
           {LANG_LABELS[lang]}
         </button>
+        <SharkDiamondWidget onNavigate={()=>navigateTaxi('/game')}/>
         <DarkToggle/>
       </div>
 
@@ -3478,6 +3533,23 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
               {lang==='ar'?'يرجى ملء جميع الحقول':lang==='en'?'Please fill all fields':'Veuillez remplir tous les champs'}
             </p>}
 
+            {/* 💎 Diamond reduction — Taxi */}
+            {maxTaxiGemMAD>0&&(
+              <div className="rounded-2xl p-4" style={{background:'#FEFCE8',border:'1.5px solid #FDE047'}}>
+                <p className="text-[10px] font-black uppercase tracking-widest mb-2" style={{color:'#92400E'}}>
+                  💎 {lang==='ar'?'خصم بالماسات':lang==='en'?'Diamond discount':lang==='amz'?'ⵙⵙⵎⵔⵙ ⵉⵎⴰⵙⵙⵏ':'Réduction Diamants'}
+                </p>
+                <p className="text-xs mb-2" style={{color:'#78350F',fontWeight:600}}>
+                  {taxiGems.toLocaleString()} 💎 = {maxTaxiGemMAD} MAD {lang==='ar'?'متاح':lang==='en'?'available':'disponible'}
+                </p>
+                <div className="flex items-center gap-3">
+                  <input type="range" min={0} max={maxTaxiGemMAD} value={taxiGemMAD}
+                    onChange={e=>setTaxiGemMAD(Number(e.target.value))}
+                    className="flex-1" style={{accentColor:'#F59E0B'}}/>
+                  <span className="font-black text-sm" style={{color:'#065F46',minWidth:52}}>-{taxiGemMAD} MAD</span>
+                </div>
+              </div>
+            )}
             {/* ── Mode de paiement ── */}
             <div className="rounded-2xl p-4" style={{background:'var(--c-card)',border:'1.5px solid var(--c-border)'}}>
               <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${lang==='amz'?'font-tifinagh':''}`} style={{color:'#78350F'}}>
@@ -3922,6 +3994,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   profile:UserProfile; saveProfile:(p:UserProfile)=>void;
   onOrderSuccess?:(ref:string)=>void;
 }) {
+  const [,navigateFleur]=useLocation();
   const [showProfile,setShowProfile]=useState(false);
   const [activeCat,setActiveCat]=useState('bouquet');
   const [cart,setCart]=useState<{id:string;qty:number}[]>([]);
@@ -3989,6 +4062,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           style={{...pillStyle,fontSize:'13px'}}>
           {LANG_LABELS[lang]}
         </button>
+        <SharkDiamondWidget onNavigate={()=>navigateFleur('/game')}/>
         <DarkToggle/>
       </div>
 
@@ -4302,6 +4376,18 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   const [orderRef]=useState(()=>`TB-${Math.floor(1000+Math.random()*9000)}`);
   const [tabacPayMethod,setTabacPayMethod]=useState<PayMethodType>(null);
   const [showTabacQR,setShowTabacQR]=useState(false);
+  const {user:tabacUser}=useUser();
+  const [,navigateTabac]=useLocation();
+  const [tabacGems,setTabacGems]=useState(0);
+  const [tabacGemMAD,setTabacGemMAD]=useState(0);
+  const maxTabacGemMAD=Math.floor(tabacGems/200);
+  useEffect(()=>{
+    if(!tabacUser?.id) return;
+    fetch('/api/game/diamonds',{credentials:'include'})
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{if(d&&typeof d.diamonds==='number')setTabacGems(d.diamonds);})
+      .catch(()=>{});
+  },[tabacUser?.id]);
 
   const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
   const t=T[lang];
@@ -4365,6 +4451,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
         }),
       }).catch(()=>{});
     } finally { setSending(false); }
+    if(tabacGemMAD>0){fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({spend:tabacGemMAD*200})}).catch(()=>{});}
     localStorage.setItem('bridge_last_ref',orderRef);
     setSent(true);
     onOrderSuccess?.(orderRef);
@@ -4405,6 +4492,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           }
           {profile.name&&<span className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{background:'#10B981'}}/>}
         </button>
+        <SharkDiamondWidget onNavigate={()=>navigateTabac('/game')}/>
         <DarkToggle/>
       </div>
 
@@ -4483,6 +4571,23 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           </div>
         )}
 
+        {/* 💎 Diamond reduction — Tabac */}
+        {!sent&&maxTabacGemMAD>0&&(
+          <div className="w-full rounded-2xl p-4" style={{background:'#FEFCE8',border:'1.5px solid #FDE047'}}>
+            <p className={`text-[10px] font-black uppercase tracking-widest mb-2 ${fClass}`} style={{color:'#92400E'}}>
+              💎 {lang==='ar'?'خصم بالماسات':lang==='en'?'Diamond discount':lang==='amz'?'ⵙⵙⵎⵔⵙ ⵉⵎⴰⵙⵙⵏ':'Réduction Diamants'}
+            </p>
+            <p className={`text-xs mb-2 ${fClass}`} style={{color:'#78350F',fontWeight:600}}>
+              {tabacGems.toLocaleString()} 💎 = {maxTabacGemMAD} MAD {lang==='ar'?'متاح':lang==='en'?'available':'disponible'}
+            </p>
+            <div className="flex items-center gap-3">
+              <input type="range" min={0} max={maxTabacGemMAD} value={tabacGemMAD}
+                onChange={e=>setTabacGemMAD(Number(e.target.value))}
+                className="flex-1" style={{accentColor:'#065F46'}}/>
+              <span className="font-black text-sm" style={{color:'#065F46',minWidth:52}}>-{tabacGemMAD} MAD</span>
+            </div>
+          </div>
+        )}
         {/* ── Mode de paiement ── */}
         {!sent&&(
           <div className="rounded-2xl p-4" style={{background:'var(--c-card)',border:'1.5px solid var(--c-border)'}}>

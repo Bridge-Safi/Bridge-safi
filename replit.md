@@ -49,6 +49,21 @@ Key shared components in `App.tsx`:
 
 To update the bank QR: change `BRIDGE_QR_PAY_URL` near line 198 in `artifacts/grado-eats/src/App.tsx`.
 
+## Diamond System (Bridge Game sync)
+
+- Conversion: **200 💎 = 1 MAD** (60,000 💎 = 300 MAD)
+- `SharkDiamondWidget` component: shows shark logo + live diamond balance; visible in all service page headers (Taxi, Tabac, Fleurs, Pharmacie). Tapping navigates to `/game`.
+- Diamond payment slider: visible in Taxi & Tabac checkout when user has ≥ 200 💎. Deducts via `POST /api/game/diamonds/spend`.
+- Fleurs uses `CheckoutDrawer` which already has diamond payment built in.
+- Diamond balance fetched server-side: `GET /api/game/diamonds` (Clerk-authenticated).
+
+## Phone Uniqueness
+
+- DB table: `user_profiles` (userId PK, phone UNIQUE, name, updatedAt) — created 2026-05-04.
+- API: `POST /api/profile/sync` — registers phone + checks uniqueness; returns 409 `{error:"phone_taken"}` if another account already has the number.
+- API: `GET /api/profile/check-phone?phone=X` — returns `{taken: bool}`.
+- ProfileModal `handleSave` is async; calls `/api/profile/sync` before saving locally. Phone field shows "Numéro déjà utilisé par un autre compte" if taken.
+
 ## Bridge Game — Règles
 
 - Route: `/game` (requires Clerk auth)
