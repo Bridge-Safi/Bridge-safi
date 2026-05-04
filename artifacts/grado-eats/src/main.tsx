@@ -1209,274 +1209,66 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
 function GamePage() {
   const { isLoaded, isSignedIn, user } = useUser();
   const [, navigate] = useLocation();
-  const [showGame, setShowGame] = useState(false);
 
-  // Read language from persisted nav state, default fr
-  const [lang, setLang] = useState<GameLang>(()=>{
+  const lang: GameLang = (() => {
     try {
       const raw = localStorage.getItem('bridge_nav_state');
-      if (raw) { const p = JSON.parse(raw); if (GAME_LANGS.includes(p.lang)) return p.lang; }
+      if (raw) { const p = JSON.parse(raw); if (GAME_LANGS.includes(p.lang)) return p.lang as GameLang; }
     } catch {}
     return 'fr';
-  });
-  const cycleLang = () => setLang(l => {
-    const idx = GAME_LANGS.indexOf(l);
-    const next = GAME_LANGS[(idx+1)%GAME_LANGS.length];
-    // persist back
-    try {
-      const raw = localStorage.getItem('bridge_nav_state');
-      const state = raw ? JSON.parse(raw) : {};
-      localStorage.setItem('bridge_nav_state', JSON.stringify({...state, lang: next}));
-    } catch {}
-    return next;
-  });
+  })();
 
-  const [showRules, setShowRules] = useState(false);
-
-  const t = GAME_T[lang];
   const isAR = lang === 'ar';
 
-  // Server-side diamonds state
-  const [serverDiamonds, setServerDiamonds] = useState<number | null>(null);
+  if (!isLoaded) return null;
 
-  useEffect(() => {
-    if (!isLoaded || !isSignedIn || !user?.id) return;
-    fetch('/api/game/diamonds', { credentials: 'include' })
-      .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data && typeof data.diamonds === 'number') setServerDiamonds(data.diamonds); })
-      .catch(() => {});
-  }, [isLoaded, isSignedIn, user?.id]);
-
-  // Show lock screen if not signed in (instead of hard redirect)
-  if (isLoaded && !isSignedIn) {
+  // Not signed in — show minimal lock screen
+  if (!isSignedIn) {
     const lockT = {
-      fr: { title: 'CONNEXION BRIDGE REQUISE', game: 'SAFI RUNNER', desc: 'Pour jouer, connecte-toi d\'abord sur Bridge avec ton email et ton numéro. Tu seras automatiquement reconnu sur le jeu et tes diamants seront synchronisés.', btn: 'ME CONNECTER SUR BRIDGE', note: 'Bridge gère la connexion. Tes 💎 sont liés à ton compte — joue depuis n\'importe quel appareil avec le même email.' },
-      en: { title: 'BRIDGE LOGIN REQUIRED', game: 'SAFI RUNNER', desc: 'To play, first sign in to Bridge with your email and phone number. You\'ll be automatically recognized and your diamonds will be synced.', btn: 'SIGN IN TO BRIDGE', note: 'Bridge manages your login. Your 💎 are linked to your account — play from any device with the same email.' },
-      ar: { title: 'تسجيل الدخول مطلوب', game: 'SAFI RUNNER', desc: 'للعب، سجّل دخولك أولاً على Bridge بالبريد الإلكتروني والهاتف. سيتم التعرف عليك تلقائياً وسيتم مزامنة ماساتك.', btn: 'تسجيل الدخول على Bridge', note: 'Bridge يدير حسابك. 💎 مرتبطة بحسابك — العب من أي جهاز.' },
-      amz: { title: 'ⴰⵙⵉⵔⴳ ⴰⴷ BRIDGE', game: 'SAFI RUNNER', desc: 'ⵉⵔⵉ ⴰⴷ ⵜⵙⵖⵔⴷ, ⴽⵛⵎ ⵉ Bridge ⵙ email ⴷ ⵓⵜⵉⵍⵉⴼⵓⵏ. ⵉⴷⵢⴰⵎⴰⵏ ⵖⵉⴽ ⴷ ⴰⵔⵓⴷ ⵙ ⵓⵃⵙⴰⴱ ⵏⵏⴽ.', btn: 'ⴽⵛⵎ ⵉ Bridge', note: 'Bridge ⵉⵙⴼⵍⵙ ⵓⵃⵙⴰⴱ ⵏⵏⴽ. 💎 ⵔⴱⵓⵏⵜ ⵉ ⵓⵃⵙⴰⴱ ⵏⵏⴽ.' },
+      fr: { title: 'CONNEXION BRIDGE REQUISE', game: 'SAFI RUNNER', desc: 'Pour jouer, connecte-toi d\'abord sur Bridge avec ton email et ton numéro. Tu seras automatiquement reconnu sur le jeu et tes diamants seront synchronisés.', btn: 'ME CONNECTER SUR BRIDGE' },
+      en: { title: 'BRIDGE LOGIN REQUIRED', game: 'SAFI RUNNER', desc: 'To play, first sign in to Bridge with your email and phone number. You\'ll be automatically recognized and your diamonds will be synced.', btn: 'SIGN IN TO BRIDGE' },
+      ar: { title: 'تسجيل الدخول مطلوب', game: 'SAFI RUNNER', desc: 'للعب، سجّل دخولك أولاً على Bridge بالبريد الإلكتروني والهاتف.', btn: 'تسجيل الدخول' },
+      amz: { title: 'ⴰⵙⵉⵔⴳ ⴰⴷ BRIDGE', game: 'SAFI RUNNER', desc: 'ⵉⵔⵉ ⴰⴷ ⵜⵙⵖⵔⴷ, ⴽⵛⵎ ⵉ Bridge ⵙ email ⴷ ⵓⵜⵉⵍⵉⴼⵓⵏ.', btn: 'ⴽⵛⵎ ⵉ Bridge' },
     }[lang];
-    const isAR2 = lang === 'ar';
     return (
-      <div dir={isAR2 ? 'rtl' : 'ltr'} style={{minHeight:'100dvh',background:'linear-gradient(180deg,#04110A 0%,#071C11 60%,#050F08 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'32px 20px',gap:0}}>
-        <div style={{position:'absolute',top:-60,left:'10%',width:280,height:280,borderRadius:'50%',background:'radial-gradient(circle,rgba(74,222,128,0.1) 0%,transparent 70%)',pointerEvents:'none'}}/>
-        <div style={{position:'absolute',bottom:40,right:'5%',width:200,height:200,borderRadius:'50%',background:'radial-gradient(circle,rgba(253,224,71,0.06) 0%,transparent 70%)',pointerEvents:'none'}}/>
+      <div dir={isAR ? 'rtl' : 'ltr'} style={{minHeight:'100dvh',background:'linear-gradient(180deg,#04110A 0%,#071C11 60%,#050F08 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'32px 20px',gap:0}}>
         <div style={{width:'100%',maxWidth:360,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(74,222,128,0.2)',borderRadius:28,padding:'36px 24px 28px',display:'flex',flexDirection:'column',alignItems:'center',gap:16,backdropFilter:'blur(12px)'}}>
           <div style={{fontSize:52,lineHeight:1}}>🔒</div>
           <p style={{color:'#4ADE80',fontSize:10,fontWeight:900,letterSpacing:'0.18em',margin:0,textAlign:'center',textTransform:'uppercase'}}>{lockT.title}</p>
           <p style={{color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.12em',margin:0,textAlign:'center'}}>🦈 {lockT.game}</p>
           <p style={{color:'rgba(255,255,255,0.65)',fontSize:13,fontWeight:500,lineHeight:1.6,textAlign:'center',margin:0}}>{lockT.desc}</p>
-          <button onClick={()=>navigate('/sign-in')} style={{width:'100%',padding:'18px 0',borderRadius:18,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669 0%,#4ADE80 50%,#059669 100%)',backgroundSize:'200% 100%',color:'#fff',fontSize:15,fontWeight:900,letterSpacing:'0.08em',marginTop:4,boxShadow:'0 0 24px rgba(74,222,128,0.35)'}}>
+          <button onClick={()=>navigate('/sign-in')} style={{width:'100%',padding:'18px 0',borderRadius:18,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669 0%,#4ADE80 50%,#059669 100%)',color:'#fff',fontSize:15,fontWeight:900,letterSpacing:'0.08em',marginTop:4,boxShadow:'0 0 24px rgba(74,222,128,0.35)'}}>
             🛵 {lockT.btn}
           </button>
-          <p style={{color:'rgba(255,255,255,0.28)',fontSize:10,fontWeight:600,textAlign:'center',margin:0,lineHeight:1.5}}>🔐 {lockT.note}</p>
-        </div>
-        <div style={{marginTop:20,display:'flex',gap:8}}>
-          {GAME_LANGS.map(l => (
-            <button key={l} onClick={()=>setLang(l)} style={{background: l===lang ? 'rgba(74,222,128,0.15)' : 'rgba(255,255,255,0.04)',border: l===lang ? '1px solid rgba(74,222,128,0.4)' : '1px solid rgba(255,255,255,0.1)',borderRadius:8,padding:'6px 10px',color: l===lang ? '#4ADE80' : 'rgba(255,255,255,0.4)',fontSize:10,fontWeight:900,cursor:'pointer'}}>
-              {GAME_LANG_LABELS[l]}
-            </button>
-          ))}
         </div>
       </div>
     );
   }
 
-  if (!isLoaded) return null;
-
-  const gameId = user?.id
-    ? 'BR-' + user.id.replace(/[^a-z0-9]/gi, '').slice(-7).toUpperCase()
-    : 'BR-???????';
-
-  const localDiamonds = (() => {
-    try { return parseInt(localStorage.getItem(`bridge_game_pts_${user?.id||'guest'}`) || '0', 10); } catch { return 0; }
-  })();
-
-  const gamePoints = serverDiamonds !== null ? Math.max(serverDiamonds, localDiamonds) : localDiamonds;
-
-  const pct = Math.min(100, Math.round((gamePoints / GAME_TARGET) * 100));
+  // Signed in — show Safi Runner directly in fullscreen iframe
+  const gameId = 'BR-' + user.id.replace(/[^a-z0-9]/gi, '').slice(-7).toUpperCase();
 
   return (
-    <div dir={isAR?'rtl':'ltr'} style={{minHeight:'100dvh',background:'linear-gradient(180deg,#04110A 0%,#071C11 50%,#050F08 100%)',display:'flex',flexDirection:'column',alignItems:'center',padding:'0 0 32px',position:'relative',overflow:'hidden'}}>
-
-      {/* Animated bg glows */}
-      <div style={{position:'absolute',top:-80,left:'10%',width:300,height:300,borderRadius:'50%',background:'radial-gradient(circle,rgba(74,222,128,0.12) 0%,transparent 70%)',pointerEvents:'none'}}/>
-      <div style={{position:'absolute',top:200,right:'-10%',width:220,height:220,borderRadius:'50%',background:'radial-gradient(circle,rgba(253,224,71,0.08) 0%,transparent 70%)',pointerEvents:'none'}}/>
-      <div style={{position:'absolute',bottom:0,left:'20%',width:280,height:200,borderRadius:'50%',background:'radial-gradient(circle,rgba(6,95,70,0.15) 0%,transparent 70%)',pointerEvents:'none'}}/>
-
-      {/* ── TOP BAR ── */}
-      <div style={{width:'100%',maxWidth:420,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'52px 16px 0'}}>
-        <button onClick={()=>navigate('/')}
-          style={{display:'flex',alignItems:'center',gap:6,background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:12,padding:'8px 14px',color:'#fff',fontSize:13,fontWeight:800,cursor:'pointer'}}>
-          ← {t.back.replace('←','').replace('→','').trim()}
-        </button>
-        <div style={{display:'flex',gap:8}}>
-          <button onClick={cycleLang}
-            style={{background:'rgba(74,222,128,0.1)',border:'1px solid rgba(74,222,128,0.3)',color:'#4ADE80',borderRadius:10,padding:'7px 12px',fontSize:11,fontWeight:900,cursor:'pointer'}}>
-            {GAME_LANG_LABELS[lang]}
-          </button>
-          <button onClick={()=>setShowRules(true)}
-            style={{background:'rgba(253,224,71,0.1)',border:'1px solid rgba(253,224,71,0.35)',color:'#FDE047',borderRadius:10,padding:'7px 12px',fontSize:11,fontWeight:900,cursor:'pointer'}}>
-            📜
-          </button>
-        </div>
-      </div>
-
-      {showRules && <GameRulesModal lang={lang} onClose={()=>setShowRules(false)}/>}
-
-      {/* ── HERO SECTION ── */}
-      <div style={{display:'flex',flexDirection:'column',alignItems:'center',marginTop:20,marginBottom:0,position:'relative'}}>
-        {/* Outer ring */}
-        <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center'}}>
-          <div style={{position:'absolute',width:200,height:200,borderRadius:'50%',border:'2px solid rgba(74,222,128,0.2)',animation:'spin 12s linear infinite'}}/>
-          <div style={{position:'absolute',width:220,height:220,borderRadius:'50%',border:'1px dashed rgba(74,222,128,0.12)',animation:'spin 20s linear infinite reverse'}}/>
-          <div style={{width:175,height:175,borderRadius:'50%',overflow:'hidden',border:'3px solid #059669',boxShadow:'0 0 40px rgba(5,150,105,0.5),0 0 80px rgba(5,150,105,0.2)',background:'#071C11',position:'relative',zIndex:1}}>
-            <img src="/bridge-shark.png" alt="Bridge Shark" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top'}}/>
-          </div>
-          {/* Live badge */}
-          <div style={{position:'absolute',bottom:8,right:8,background:'#059669',border:'2px solid #04110A',borderRadius:20,padding:'3px 10px',display:'flex',alignItems:'center',gap:4,zIndex:2}}>
-            <div style={{width:6,height:6,borderRadius:'50%',background:'#4ADE80',boxShadow:'0 0 6px #4ADE80',animation:'blink 1.2s ease-in-out infinite'}}/>
-            <span style={{color:'#fff',fontSize:9,fontWeight:900,letterSpacing:'0.1em'}}>LIVE</span>
-          </div>
-        </div>
-
-        {/* Title */}
-        <h1 style={{color:'#fff',fontSize:'2.2rem',fontWeight:900,letterSpacing:'0.3em',margin:'16px 0 0',textShadow:'0 0 40px rgba(74,222,128,0.4)'}}>BRIDGE</h1>
-        <div style={{display:'flex',alignItems:'center',gap:8,marginTop:2}}>
-          <div style={{height:1,width:30,background:'linear-gradient(to right,transparent,#4ADE80)'}}/>
-          <span style={{color:'#4ADE80',fontSize:'0.75rem',fontWeight:900,letterSpacing:'0.5em'}}>SHARK</span>
-          <div style={{height:1,width:30,background:'linear-gradient(to left,transparent,#4ADE80)'}}/>
-        </div>
-      </div>
-
-      {/* ── CARDS ROW ── */}
-      <div style={{display:'flex',gap:10,marginTop:20,width:'100%',maxWidth:380,padding:'0 16px'}}>
-        {/* Player ID */}
-        <div style={{flex:1,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(74,222,128,0.2)',borderRadius:16,padding:'12px 14px'}}>
-          <p style={{color:'rgba(255,255,255,0.4)',fontSize:9,fontWeight:800,letterSpacing:'0.15em',margin:'0 0 4px',textTransform:'uppercase'}}>{t.playerId}</p>
-          <p style={{color:'#4ADE80',fontSize:15,fontWeight:900,letterSpacing:'0.1em',margin:0}}>{gameId}</p>
-        </div>
-        {/* Days */}
-        <div style={{flex:1,background:'rgba(253,224,71,0.07)',border:'1px solid rgba(253,224,71,0.2)',borderRadius:16,padding:'12px 14px'}}>
-          <p style={{color:'rgba(255,255,255,0.4)',fontSize:9,fontWeight:800,letterSpacing:'0.1em',margin:'0 0 4px',textTransform:'uppercase'}}>⏱️ SESSION</p>
-          <p style={{color:'#FDE047',fontSize:11,fontWeight:900,margin:0,lineHeight:1.3}}>{t.days}</p>
-        </div>
-      </div>
-
-      {/* ── DIAMOND PROGRESS ── */}
-      <div style={{width:'100%',maxWidth:380,padding:'0 16px',marginTop:12}}>
-        <div style={{background:'rgba(253,224,71,0.07)',border:'1px solid rgba(253,224,71,0.25)',borderRadius:20,padding:'16px 18px'}}>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
-            <div>
-              <p style={{color:'rgba(255,255,255,0.4)',fontSize:9,fontWeight:800,letterSpacing:'0.15em',margin:'0 0 2px',textTransform:'uppercase'}}>{t.diamonds}</p>
-              <p style={{color:'#FDE047',fontSize:26,fontWeight:900,margin:0,lineHeight:1}}>
-                {gamePoints.toLocaleString()} <span style={{fontSize:14,color:'rgba(253,224,71,0.6)'}}>💎</span>
-              </p>
-            </div>
-            <div style={{textAlign:'right'}}>
-              <p style={{color:'rgba(255,255,255,0.4)',fontSize:9,fontWeight:800,letterSpacing:'0.1em',margin:'0 0 2px',textTransform:'uppercase'}}>{t.target}</p>
-              <p style={{color:'rgba(253,224,71,0.5)',fontSize:14,fontWeight:900,margin:0}}>{GAME_TARGET.toLocaleString()} 💎</p>
-            </div>
-          </div>
-          {/* Progress bar */}
-          <div style={{background:'rgba(0,0,0,0.3)',borderRadius:99,height:10,overflow:'hidden'}}>
-            <div style={{height:'100%',borderRadius:99,background:'linear-gradient(90deg,#065F46,#4ADE80)',width:`${pct}%`,transition:'width 0.5s ease',boxShadow:'0 0 10px rgba(74,222,128,0.5)'}}/>
-          </div>
-          <p style={{color:'rgba(255,255,255,0.35)',fontSize:10,fontWeight:700,margin:'6px 0 0',textAlign:'center'}}>{pct}% · {t.progress}</p>
-        </div>
-      </div>
-
-      {/* ── PLAY BUTTON ── */}
-      <div style={{width:'100%',maxWidth:380,padding:'0 16px',marginTop:14}}>
-        <button onClick={()=>setShowGame(true)} style={{
-          width:'100%',padding:'18px 0',borderRadius:20,border:'none',cursor:'pointer',
-          background:'linear-gradient(135deg,#059669 0%,#4ADE80 50%,#059669 100%)',
-          backgroundSize:'200% 100%',
-          boxShadow:'0 0 30px rgba(74,222,128,0.4),0 4px 24px rgba(5,150,105,0.5)',
-          color:'#fff',fontSize:18,fontWeight:900,letterSpacing:'0.1em',
-          animation:'shimmer 2.5s linear infinite',
+    <div style={{position:'fixed',inset:0,zIndex:9999,background:'#000',display:'flex',flexDirection:'column'}}>
+      {/* Minimal top bar */}
+      <div style={{display:'flex',alignItems:'center',gap:12,padding:'12px 16px',background:'#04110A',borderBottom:'1px solid rgba(74,222,128,0.2)',flexShrink:0}}>
+        <button onClick={()=>navigate('/')} style={{
+          display:'flex',alignItems:'center',gap:6,
+          background:'rgba(74,222,128,0.12)',border:'1px solid rgba(74,222,128,0.3)',
+          borderRadius:12,padding:'8px 14px',color:'#4ADE80',fontSize:13,fontWeight:900,cursor:'pointer'
         }}>
-          {t.playBtn}
+          ← {isAR?'رجوع':lang==='en'?'Back':lang==='amz'?'ⴰⵣⵣⵓⵍ':'Retour'}
         </button>
+        <span style={{color:'#4ADE80',fontSize:12,fontWeight:900,letterSpacing:'0.1em'}}>🦈 SAFI RUNNER</span>
+        <span style={{marginLeft:'auto',color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700}}>{gameId}</span>
       </div>
-
-      {/* ── FULLSCREEN GAME IFRAME OVERLAY ── */}
-      {showGame && (
-        <div style={{position:'fixed',inset:0,zIndex:9999,background:'#000',display:'flex',flexDirection:'column'}}>
-          {/* Header bar with back button */}
-          <div style={{display:'flex',alignItems:'center',gap:12,padding:'12px 16px',background:'#04110A',borderBottom:'1px solid rgba(74,222,128,0.2)',flexShrink:0}}>
-            <button onClick={()=>setShowGame(false)} style={{
-              display:'flex',alignItems:'center',gap:6,
-              background:'rgba(74,222,128,0.12)',border:'1px solid rgba(74,222,128,0.3)',
-              borderRadius:12,padding:'8px 14px',color:'#4ADE80',fontSize:13,fontWeight:900,cursor:'pointer'
-            }}>
-              ← {lang==='ar'?'رجوع':lang==='en'?'Back':lang==='amz'?'ⴰⵣⵣⵓⵍ':'Retour'}
-            </button>
-            <span style={{color:'#4ADE80',fontSize:12,fontWeight:900,letterSpacing:'0.1em'}}>🦈 SAFI RUNNER</span>
-            <span style={{marginLeft:'auto',color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700}}>{gameId}</span>
-          </div>
-          {/* Game iframe */}
-          <iframe
-            src={`${GAME_URL}?userId=${encodeURIComponent(user?.id||'')}&gameId=${encodeURIComponent(gameId)}`}
-            style={{flex:1,border:'none',width:'100%'}}
-            allow="accelerometer; gyroscope"
-            title="Safi Runner"
-          />
-        </div>
-      )}
-
-      {/* ── HOW TO WIN — 4 sections ── */}
-      <div style={{width:'100%',maxWidth:380,padding:'0 16px',marginTop:14,display:'flex',flexDirection:'column',gap:10}}>
-        <p style={{color:'#D9C5A0',fontSize:11,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'0 0 4px',textAlign:'center'}}>{t.howTitle}</p>
-
-        {/* Section 1 — Durée */}
-        <div style={{background:'rgba(5,150,105,0.1)',border:'1px solid rgba(74,222,128,0.25)',borderRadius:16,padding:'12px 14px'}}>
-          <p style={{color:'#4ADE80',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 6px'}}>{t.sec1Title}</p>
-          {t.sec1.split(' · ').map((line,i)=>(
-            <p key={i} dir="auto" style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:'0 0 3px',lineHeight:1.4}}>• {line}</p>
-          ))}
-        </div>
-
-        {/* Section 2 — Diamants */}
-        <div style={{background:'rgba(180,83,9,0.12)',border:'1px solid rgba(253,224,71,0.3)',borderRadius:16,padding:'12px 14px'}}>
-          <p style={{color:'#FCD34D',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 6px'}}>{t.sec2Title}</p>
-          {t.sec2.split(' · ').map((line,i)=>(
-            <p key={i} dir="auto" style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:'0 0 3px',lineHeight:1.4}}>• {line}</p>
-          ))}
-        </div>
-
-        {/* Section 3 — Manquants */}
-        <div style={{background:'rgba(220,38,38,0.1)',border:'1px solid rgba(248,113,113,0.3)',borderRadius:16,padding:'12px 14px'}}>
-          <p style={{color:'#F87171',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 6px'}}>{t.sec3Title}</p>
-          {t.sec3.split(' · ').map((line,i)=>(
-            <p key={i} dir="auto" style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:'0 0 3px',lineHeight:1.4}}>• {line}</p>
-          ))}
-        </div>
-
-        {/* Section 4 — Bonus livraison */}
-        <div style={{background:'linear-gradient(135deg,rgba(217,119,6,0.15),rgba(251,191,36,0.08))',border:'1px solid rgba(251,191,36,0.4)',borderRadius:16,padding:'12px 14px',display:'flex',alignItems:'flex-start',gap:10}}>
-          <span style={{fontSize:22,flexShrink:0}}>🎁</span>
-          <div>
-            <p style={{color:'#FCD34D',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 5px'}}>{t.bonusTitle}</p>
-            {t.bonusDesc.split(' · ').map((line,i)=>(
-              <p key={i} dir="auto" style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:600,margin:'0 0 3px',lineHeight:1.4}}>• {line}</p>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── RULES BUTTON ── */}
-      <div style={{width:'100%',maxWidth:380,padding:'0 16px',marginTop:12}}>
-        <button onClick={()=>setShowRules(true)}
-          style={{width:'100%',padding:'13px 0',borderRadius:16,border:'1px solid rgba(253,224,71,0.3)',background:'rgba(253,224,71,0.06)',cursor:'pointer',color:'#FDE047',fontSize:13,fontWeight:900,letterSpacing:'0.05em'}}>
-          {t.rulesBtn}
-        </button>
-      </div>
-
-      <style>{`
-        @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-        @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
-        @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-      `}</style>
+      {/* Safi Runner game */}
+      <iframe
+        src={`${GAME_URL}?userId=${encodeURIComponent(user.id)}&gameId=${encodeURIComponent(gameId)}`}
+        style={{flex:1,border:'none',width:'100%'}}
+        allow="accelerometer; gyroscope"
+        title="Safi Runner"
+      />
     </div>
   );
 }
