@@ -1890,7 +1890,7 @@ function DispatchPage() {
   // ── EATS: SSE stream for new orders ──
   useEffect(() => {
     if (role !== 'eats') return;
-    const es = new EventSource('/api/orders/stream');
+    const es = new EventSource('/api/orders/stream?driverKey=BRIDGE-DRIVER-2025');
     sseRef.current = es;
     es.onmessage = (e) => {
       try {
@@ -1906,9 +1906,10 @@ function DispatchPage() {
     return () => { es.close(); clearInterval(iv); if (eatsWatchId.current != null) navigator.geolocation.clearWatch(eatsWatchId.current); };
   }, [role]);
 
+  const DKEY = 'BRIDGE-DRIVER-2025';
   const fetchEatsOrders = async () => {
     try {
-      const res = await fetch('/api/orders?status=pending', { cache: 'no-store' });
+      const res = await fetch('/api/orders?status=pending', { cache: 'no-store', headers: { 'x-driver-key': DKEY } });
       if (!res.ok) return;
       const data = await res.json();
       const orders: PendingOrder[] = (data.orders || []).filter((o: any) => o.service === 'delivery' || o.service === 'eats');
@@ -1926,7 +1927,7 @@ function DispatchPage() {
     setActiveEatsOrder(order);
     await fetch(`/api/orders/${order.id}/status`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-driver-key': DKEY },
       body: JSON.stringify({ status: 'on_the_way', driverName: driverName || 'Livreur' }),
     }).catch(() => {});
   };
@@ -1955,7 +1956,7 @@ function DispatchPage() {
     if (eatsWatchId.current != null) navigator.geolocation.clearWatch(eatsWatchId.current);
     if (activeEatsOrder) fetch(`/api/tracking/${activeEatsOrder.ref}`, { method: 'DELETE' }).catch(() => {});
     if (activeEatsOrder) fetch(`/api/orders/${activeEatsOrder.id}/status`, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-driver-key': DKEY },
       body: JSON.stringify({ status: 'delivered' }),
     }).catch(() => {});
     setActiveEatsOrder(null);

@@ -4443,7 +4443,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
     try {
       await fetch('/api/orders/inbound',{
         method:'POST',
-        headers:{'Content-Type':'application/json','x-bridge-secret':'bridge-safi-8b269bba03fd8c0205116f3f'},
+        headers:{'Content-Type':'application/json','x-bridge-secret':'bridge-safi-8b269bba03fd8c0205116f3f'}, 
         body:JSON.stringify({
           customerName:name.trim(),customerPhone:phone.trim(),
           deliveryAddress,pickupAddress:'Bridge Tabac — Safi',

@@ -1,11 +1,37 @@
-import { Router } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { db, ordersTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
+import { getAuth } from "@clerk/express";
 import { notifyDrivers, notifySpecificDrivers, notifyDriversExcept } from "./push";
 import { getDriverPositions } from "./tracking";
 import { addSSEClient, removeSSEClient, broadcastOrder } from "../lib/sse";
 import { logger } from "../lib/logger";
 import { notifyRestaurant } from "../lib/notify-restaurant";
+
+// ── Auth keys (env vars — ne jamais hardcoder en production) ─────────────────
+const DRIVER_KEY           = process.env.DRIVER_KEY           ?? "BRIDGE-DRIVER-2025";
+const BRIDGE_INBOUND_SECRET = process.env.BRIDGE_INBOUND_SECRET ?? "bridge-safi-8b269bba03fd8c0205116f3f";
+
+/** Middleware — vérifie que le livreur envoie la bonne clé (header ou query) */
+function requireDriverKey(req: Request, res: Response, next: NextFunction): void {
+  const key = (req.headers["x-driver-key"] as string | undefined)
+           ?? (req.query.driverKey as string | undefined);
+  if (key !== DRIVER_KEY) {
+    res.status(401).json({ error: "Accès non autorisé — clé livreur invalide" });
+    return;
+  }
+  next();
+}
+
+/** Middleware — vérifie l'authentification Clerk du client */
+function requireClerkAuth(req: Request, res: Response, next: NextFunction): void {
+  const { userId } = getAuth(req);
+  if (!userId) {
+    res.status(401).json({ error: "Non authentifié" });
+    return;
+  }
+  next();
+}
 
 // ── Restaurant coordinates in Safi ───────────────────────────────────────────
 // Used for proximity-based smart dispatch (notify nearest drivers first)
@@ -71,8 +97,6 @@ async function smartDispatch(restaurantName: string | null | undefined, payload:
 
 const router = Router();
 
-const BRIDGE_SECRET = "bridge-safi-8b269bba03fd8c0205116f3f";
-
 // ── Webhooks par restaurant ─────────────────────────────────────────────────
 const RESTAURANT_WEBHOOKS: Record<string, string> = {
   "Kebab Express Safi": "https://303eedda-22da-41f3-8687-e84c69502bcd-00-2g2wlpsf6p1h3.riker.replit.dev/api/webhook/orders",
@@ -86,7 +110,7 @@ async function forwardToRestaurant(order: typeof ordersTable.$inferSelect) {
   try {
     await fetch(webhookUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "x-bridge-secret": BRIDGE_SECRET },
+      headers: { "Content-Type": "application/json", "x-bridge-secret": BRIDGE_INBOUND_SECRET },
       body: JSON.stringify({
         ref: order.ref,
         customerName: order.customerName,
@@ -111,7 +135,7 @@ async function forwardToRestaurant(order: typeof ordersTable.$inferSelect) {
 router.post("/orders/inbound", async (req, res) => {
   try {
     const secret = req.headers["x-bridge-secret"];
-    if (secret !== BRIDGE_SECRET) {
+    if (secret !== BRIDGE_INBOUND_SECRET) {
       return res.status(401).json({ error: "Unauthorized — invalid secret" });
     }
 
@@ -179,7 +203,7 @@ router.post("/orders/inbound", async (req, res) => {
   }
 });
 
-router.get("/orders", async (req, res) => {
+router.get("/orders", requireDriverKey, async (req, res) => {
   try {
     const { status, service } = req.query;
     const orders = await db.select().from(ordersTable).orderBy(desc(ordersTable.createdAt));
@@ -195,7 +219,7 @@ router.get("/orders", async (req, res) => {
 });
 
 // SSE — MUST be before /:id to avoid "stream" being parsed as an id
-router.get("/orders/stream", (req, res) => {
+router.get("/orders/stream", requireDriverKey, (req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
@@ -218,7 +242,7 @@ router.get("/orders/stream", (req, res) => {
   });
 });
 
-router.get("/orders/:id", async (req, res) => {
+router.get("/orders/:id", requireDriverKey, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     if (isNaN(id)) return res.status(400).json({ error: "Invalid id" });
@@ -230,7 +254,7 @@ router.get("/orders/:id", async (req, res) => {
   }
 });
 
-router.post("/orders", async (req, res) => {
+router.post("/orders", requireClerkAuth, async (req, res) => {
   try {
     const { ref, service, customerName, customerPhone, customerAddress, items, total, deliveryMode, paymentMethod, restaurantName } = req.body;
     if (!ref || !service || !customerName || !customerPhone || !customerAddress || !items || total === undefined) {
@@ -287,7 +311,7 @@ router.post("/orders", async (req, res) => {
   }
 });
 
-router.patch("/orders/:id/status", async (req, res) => {
+router.patch("/orders/:id/status", requireDriverKey, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     if (isNaN(id)) return res.status(400).json({ error: "Invalid id" });
