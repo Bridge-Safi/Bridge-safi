@@ -325,7 +325,7 @@ function ForgotPasswordPage() {
         </button>
       </form>
       <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-        <button onClick={() => { setStep('email'); setError(''); setCode(''); }}
+        <button onClick={() => { setStep('identifier'); setError(''); setCode(''); }}
           style={{ background: 'none', border: 'none', color: '#9CA3AF', fontSize: '0.75rem', cursor: 'pointer' }}>
           ← Retour
         </button>
