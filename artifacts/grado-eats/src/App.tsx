@@ -383,6 +383,9 @@ const T = {
     qrModalTitle:'Scanner pour payer', qrModalSub:'Ouvrez votre appli bancaire et scannez le QR',
     qrAmountLabel:'Montant à régler', qrPaid:'J\'ai payé ✅', qrCancel:'Annuler',
     qrNote:'Le virement est instantané · Bridge Safi',
+    hubServices:'Services', hubServicesSub:'Eats · Taxi · Tabac · Fleurs · Pharmacie',
+    hubGame:'Jouer & Gagner', hubGameSub:'Récoltez des diamants 💎 → menus offerts',
+    hubWelcome:'Bienvenue',
   },
   en: {
     appName:'Bridge Safi', zone:'Safi, Morocco',
@@ -480,6 +483,9 @@ const T = {
     qrModalTitle:'Scan to pay', qrModalSub:'Open your banking app and scan the QR code',
     qrAmountLabel:'Amount to pay', qrPaid:'I have paid ✅', qrCancel:'Cancel',
     qrNote:'Instant transfer · Bridge Safi',
+    hubServices:'Services', hubServicesSub:'Eats · Taxi · Tabac · Flowers · Pharmacy',
+    hubGame:'Play & Win', hubGameSub:'Collect diamonds 💎 → free menus',
+    hubWelcome:'Welcome',
   },
   ar: {
     appName:'بريدج سافي', zone:'آسفي، المغرب',
@@ -578,6 +584,9 @@ const T = {
     qrModalTitle:'امسح للدفع', qrModalSub:'افتح تطبيق بنكك وامسح رمز QR',
     qrAmountLabel:'المبلغ المطلوب', qrPaid:'دفعت ✅', qrCancel:'إلغاء',
     qrNote:'التحويل فوري · Bridge Safi',
+    hubServices:'الخدمات', hubServicesSub:'إيتس · تاكسي · تاباك · زهور · صيدلية',
+    hubGame:'العب واربح', hubGameSub:'اجمع الماسات 💎 ← وجبات مجانية',
+    hubWelcome:'مرحباً',
   },
   amz: {
     appName:'ⴱⵔⵉⴷⵊ ⵉⵢⵜⵙ', zone:'ⵙⴰⴼⵉ, ⵍⵎⵖⵔⵉⴱ',
@@ -676,6 +685,9 @@ const T = {
     qrModalTitle:'ⵙⵃⵓ ⵉⵍⵍⵉ ⵜⵥⵖ', qrModalSub:'ⵙⵉⵡⵍ ⵉⴱⵔⵉⴷ ⵏ ⵓⴱⴰⵏⴽ ⵏⵏⴽ',
     qrAmountLabel:'ⴰⵣⵔⴼ ⵉⵍⴰⵎⵎⴰⵏ', qrPaid:'ⵥⵖⵖ ✅', qrCancel:'ⴽⵛⵎ',
     qrNote:'ⴰⵙⵎⴰⵡ ⵉⵙⵔⵓⵙ · Bridge Safi',
+    hubServices:'ⵉⵙⵙⵓⵜⵓⵔⵏ', hubServicesSub:'ⵉⵜⵙ · ⵜⴰⴽⵙⵉ · ⵜⴰⴱⴰⴽ · ⵉⵥⵓⵍⴰⵏ · ⵜⵉⵙⵙⵏⵜⵉⵜ',
+    hubGame:'ⴰⵎⵢⴰⴳⵓ · ⴳⵓⵍⵉ', hubGameSub:'ⵙⵎⵓⵏ ⵉⵎⴰⵙⵙⵏ 💎 → ⵉⵎⵏⵙⵉ ⴰⵎⵙⵜⵓ',
+    hubWelcome:'ⵎⵔⵓⵃⴱⴰ',
   },
 };
 
@@ -4651,6 +4663,178 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   );
 }
 
+// ─── HUB PAGE — écran principal (2 grands boutons) ───────────────────────────
+
+function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
+  onServices:()=>void; lang:Lang; cycleLang:()=>void;
+  profile:UserProfile; saveProfile:(p:UserProfile)=>void;
+}) {
+  const [,navigate]=useLocation();
+  const {user}=useUser();
+  const {dark}=useDark();
+  const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
+  const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
+  const avatarSrc=profile.avatar||user?.imageUrl||null;
+  const firstName=(profile.name||user?.firstName||'').split(' ')[0];
+  const initials=(profile.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  const [pressedServices,setPressedServices]=useState(false);
+  const [pressedGame,setPressedGame]=useState(false);
+  const [showProfileModal,setShowProfileModal]=useState(false);
+
+  return (
+    <div className={`fixed inset-0 overflow-y-auto flex flex-col ${isAR?'rtl':'ltr'}`}
+      style={{background: dark
+        ? 'linear-gradient(160deg,#020c07 0%,#030712 50%,#050a10 100%)'
+        : 'linear-gradient(160deg,#f0fdf4 0%,#fefce8 50%,#f0fdf4 100%)'}}>
+
+      <style>{`
+        @keyframes hubFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+        @keyframes hubGlow{0%,100%{box-shadow:0 0 40px rgba(6,95,70,0.5),0 0 80px rgba(6,95,70,0.15);}50%{box-shadow:0 0 70px rgba(6,95,70,0.8),0 0 140px rgba(6,95,70,0.25);}}
+        @keyframes hubStarPulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:1;transform:scale(1.5);}}
+        @keyframes hubGemSpin{0%{transform:rotate(-12deg);}50%{transform:rotate(12deg);}100%{transform:rotate(-12deg);}}
+        @keyframes hubFadeIn{0%{opacity:0;transform:translateY(18px);}100%{opacity:1;transform:translateY(0);}}
+        @keyframes hubShimmer{0%{background-position:200% center;}100%{background-position:-200% center;}}
+      `}</style>
+
+      {/* Ambient blobs */}
+      {dark&&<>
+        <div style={{position:'fixed',top:'8%',left:'5%',width:260,height:260,borderRadius:'50%',background:'radial-gradient(circle,rgba(6,95,70,0.16) 0%,transparent 70%)',filter:'blur(48px)',pointerEvents:'none'}}/>
+        <div style={{position:'fixed',bottom:'15%',right:'5%',width:220,height:220,borderRadius:'50%',background:'radial-gradient(circle,rgba(217,197,160,0.1) 0%,transparent 70%)',filter:'blur(55px)',pointerEvents:'none'}}/>
+        <div style={{position:'fixed',top:'50%',left:'50%',transform:'translate(-50%,-50%)',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle,rgba(74,222,128,0.04) 0%,transparent 70%)',filter:'blur(60px)',pointerEvents:'none'}}/>
+      </>}
+
+      {/* Star particles (dark only) */}
+      {dark&&[[7,'12%','15%',0],[4,'88%','22%',0.5],[5,'18%','78%',0.9],[4,'80%','75%',0.3],[6,'50%','8%',0.7]].map(([s,l,tp,d],i)=>(
+        <div key={i} style={{position:'fixed',left:l as string,top:tp as string,width:s as number,height:s as number,borderRadius:'50%',background:'rgba(255,255,255,0.65)',animation:`hubStarPulse ${1.5+Number(d)}s ease-in-out ${d}s infinite`,pointerEvents:'none'}}/>
+      ))}
+
+      {/* ── TOP BAR ── */}
+      <div className={`fixed top-4 z-50 ${isAR?'right-4':'left-4'}`}>
+        <button onClick={()=>setShowProfileModal(true)}
+          style={{width:42,height:42,borderRadius:'50%',overflow:'hidden',border:'2.5px solid #D9C5A0',background:'#F0EBE1',boxShadow:'0 4px 14px rgba(6,95,70,0.18)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',padding:0}}>
+          {avatarSrc
+            ?<img src={avatarSrc} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+            :<span style={{fontSize:14,fontWeight:900,color:'#065F46'}}>{initials}</span>
+          }
+        </button>
+      </div>
+      <div className={`fixed top-4 z-50 flex items-center gap-2 ${isAR?'left-4':'right-4'}`}>
+        <DarkToggle size={38}/>
+        <button onClick={cycleLang}
+          className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 px-3 ${lang==='amz'?'font-tifinagh':''}`}
+          style={{background:'var(--c-card)',border:'2.5px solid #D9C5A0',color:'#065F46',boxShadow:'0 4px 20px rgba(6,95,70,0.15)',height:'38px',fontSize:'13px'}}>
+          {LANG_LABELS[lang]}
+        </button>
+      </div>
+
+      {/* ── CENTER CONTENT ── */}
+      <div className="flex flex-col items-center w-full max-w-sm mx-auto pt-20 pb-10 px-5 flex-1 justify-center min-h-screen">
+
+        {/* Logo */}
+        <div style={{position:'relative',marginBottom:24,animation:'hubFloat 4s ease-in-out infinite, hubGlow 4s ease-in-out infinite',borderRadius:'50%',overflow:'hidden',width:96,height:96,border:'3px solid #D9C5A0'}}>
+          <img src="/logo_splash_new.png" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.18)'}}/>
+        </div>
+
+        {/* Welcome */}
+        {firstName&&(
+          <div style={{animation:'hubFadeIn 0.5s ease-out 0.1s both',marginBottom:6}}>
+            <p className={`text-xs font-black tracking-widest uppercase ${fClass}`} style={{color:'#B45309',textAlign:'center'}}>
+              {t.hubWelcome}, {firstName} 👋
+            </p>
+          </div>
+        )}
+
+        {/* BRIDGE title */}
+        <div style={{animation:'hubFadeIn 0.5s ease-out 0.2s both',marginBottom:6,textAlign:'center',position:'relative'}}>
+          <div style={{position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)',width:200,height:60,background:'radial-gradient(ellipse,rgba(5,150,105,0.25) 0%,transparent 70%)',filter:'blur(16px)',pointerEvents:'none'}}/>
+          <h1 style={{fontSize:'2.8rem',fontWeight:900,letterSpacing:'0.5em',background:'linear-gradient(160deg,#059669 0%,#065F46 55%,#044434 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text',margin:0,lineHeight:1,position:'relative'}}>BRIDGE</h1>
+        </div>
+
+        {/* Safi badge */}
+        <div style={{animation:'hubFadeIn 0.5s ease-out 0.3s both',display:'inline-flex',alignItems:'center',gap:6,background:'linear-gradient(135deg,rgba(6,95,70,0.1),rgba(180,83,9,0.07))',border:'1px solid rgba(217,197,160,0.6)',borderRadius:20,padding:'4px 16px',backdropFilter:'blur(10px)',marginBottom:28}}>
+          <span style={{fontSize:10,fontWeight:800,letterSpacing:'0.12em',color:'#065F46'}}>SAFI</span>
+          <span style={{color:'#D9C5A0',fontSize:10}}>·</span>
+          <span style={{fontSize:10,fontWeight:700,color:'#B45309'}}>آسفي</span>
+          <span style={{color:'#D9C5A0',fontSize:10}}>·</span>
+          <span style={{fontSize:10,fontWeight:700,color:'#065F46',fontFamily:'inherit'}}>ⵙⴰⴼⵉ</span>
+        </div>
+
+        {/* ── 2 BIG BUTTONS ── */}
+        <div style={{display:'flex',flexDirection:'column',gap:18,width:'100%',animation:'hubFadeIn 0.5s ease-out 0.4s both'}}>
+
+          {/* SERVICES BUTTON */}
+          <button
+            onClick={()=>{setPressedServices(true);setTimeout(onServices,280);}}
+            style={{
+              background:pressedServices
+                ?'linear-gradient(145deg,#044434,#065F46,#059669)'
+                :'linear-gradient(145deg,#064E3B 0%,#065F46 45%,#059669 100%)',
+              borderRadius:28,border:'1.5px solid rgba(52,211,153,0.45)',
+              boxShadow:pressedServices
+                ?'0 0 0 4px rgba(5,150,105,0.4),0 20px 50px rgba(5,150,105,0.6),inset 0 1px 0 rgba(255,255,255,0.25)'
+                :'0 10px 40px rgba(5,150,105,0.5),inset 0 1px 0 rgba(255,255,255,0.2)',
+              padding:'28px 24px',cursor:'pointer',
+              transform:pressedServices?'scale(0.96)':'scale(1)',
+              transition:'all 0.22s cubic-bezier(.34,1.56,.64,1)',
+              position:'relative',overflow:'hidden',textAlign:'center',
+            }}>
+            {/* Glass shine */}
+            <div style={{position:'absolute',top:0,left:0,right:0,height:'50%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'28px 28px 60% 60%',pointerEvents:'none'}}/>
+            {/* Icons row */}
+            <div style={{display:'flex',justifyContent:'center',gap:12,marginBottom:14}}>
+              {['🛵','🚖','🌹','🚬','💊'].map((ic,i)=>(
+                <span key={i} style={{fontSize:28,filter:'drop-shadow(0 4px 10px rgba(0,0,0,0.3))',display:'inline-block',animation:`hubFloat ${3+i*0.4}s ease-in-out ${i*0.2}s infinite`}}>{ic}</span>
+              ))}
+            </div>
+            <p style={{color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.1em',margin:'0 0 6px',textShadow:'0 2px 8px rgba(0,0,0,0.4)'}} className={fClass}>{t.hubServices}</p>
+            <p style={{color:'rgba(255,255,255,0.7)',fontSize:11,fontWeight:600,margin:0}} className={fClass}>{t.hubServicesSub}</p>
+          </button>
+
+          {/* GAME BUTTON */}
+          <button
+            onClick={()=>{setPressedGame(true);setTimeout(()=>navigate('/game'),280);}}
+            style={{
+              background:pressedGame
+                ?'linear-gradient(145deg,#0a1f12,#0f2d1c,#193d28)'
+                :'linear-gradient(145deg,#071A10 0%,#0D3020 50%,#142E1E 100%)',
+              borderRadius:28,border:'1.5px solid rgba(74,222,128,0.4)',
+              boxShadow:pressedGame
+                ?'0 0 0 4px rgba(74,222,128,0.3),0 20px 50px rgba(6,95,70,0.5),inset 0 1px 0 rgba(255,255,255,0.2)'
+                :'0 10px 40px rgba(6,95,70,0.4),inset 0 1px 0 rgba(255,255,255,0.12)',
+              padding:'28px 24px',cursor:'pointer',
+              transform:pressedGame?'scale(0.96)':'scale(1)',
+              transition:'all 0.22s cubic-bezier(.34,1.56,.64,1)',
+              position:'relative',overflow:'hidden',textAlign:'center',
+            }}>
+            {/* Glass shine */}
+            <div style={{position:'absolute',top:0,left:0,right:0,height:'50%',background:'linear-gradient(180deg,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0) 100%)',borderRadius:'28px 28px 60% 60%',pointerEvents:'none'}}/>
+            {/* Shark image + gem icon */}
+            <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:16,marginBottom:14}}>
+              <div style={{width:64,height:64,borderRadius:'50%',overflow:'hidden',border:'2px solid #D9C5A0',boxShadow:'0 0 20px rgba(74,222,128,0.5)',flexShrink:0}}>
+                <img src="/bridge-shark.png" alt="Game" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top'}}/>
+              </div>
+              <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:6}}>
+                <span style={{fontSize:32,animation:'hubGemSpin 3s ease-in-out infinite',display:'inline-block',filter:'drop-shadow(0 0 12px rgba(253,224,71,0.7))'}}>💎</span>
+                <div style={{background:'rgba(74,222,128,0.18)',border:'1px solid rgba(74,222,128,0.5)',borderRadius:6,padding:'2px 8px'}}>
+                  <span style={{color:'#4ADE80',fontSize:9,fontWeight:900,letterSpacing:'0.18em'}}>BRIDGE GAME</span>
+                </div>
+              </div>
+            </div>
+            <p style={{color:'#FDE047',fontSize:22,fontWeight:900,letterSpacing:'0.06em',margin:'0 0 6px',textShadow:'0 2px 12px rgba(253,224,71,0.4)'}} className={fClass}>{t.hubGame}</p>
+            <p style={{color:'rgba(255,255,255,0.6)',fontSize:11,fontWeight:600,margin:0}} className={fClass}>{t.hubGameSub}</p>
+          </button>
+        </div>
+
+        {/* Footer */}
+        <p style={{color:'#9CA3AF',fontSize:9,textAlign:'center',marginTop:24,letterSpacing:'0.15em'}}>© 2026 BRIDGE SAFI · safi-bridge.ma</p>
+      </div>
+
+      <WAButton/>
+      {showProfileModal&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfileModal(false)}/>}
+    </div>
+  );
+}
+
 function loadNav() {
   try {
     const raw=localStorage.getItem(NAV_KEY);
@@ -4681,6 +4865,7 @@ export default function App() {
   const [page,setPage]         = useState<Page>(saved?.page??'home');
   // splashDone becomes true after 3s; we also wait for Clerk to load
   const [splashDone,setSplashDone] = useState(false);
+  const [mode,setMode]             = useState<'hub'|'services'>('hub');
   const [service,setService]       = useState<'none'|'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'>(saved?.service??'none');
   const [cart,setCart]         = useState<CartItem[]>([]);
   const [showCart,setShowCart] = useState(false);
@@ -4780,11 +4965,14 @@ export default function App() {
     </DarkModeCtx.Provider>
   );
 
+  if(mode==='hub') return <DarkModeCtx.Provider value={dv}><HubPage onServices={()=>setMode('services')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
+
+  const backToHub=()=>{setMode('hub');setService('none');};
   if(service==='none') return <DarkModeCtx.Provider value={dv}><ServiceSelectPage onSelect={s=>setService(s)} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
   if(service==='taxi') return <DarkModeCtx.Provider value={dv}><TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
   if(service==='tabac') return <DarkModeCtx.Provider value={dv}><TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
   if(service==='fleurs') return <DarkModeCtx.Provider value={dv}><FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
-  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={()=>setService('none')} lang={lang}/></DarkModeCtx.Provider>;
+  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang}/></DarkModeCtx.Provider>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={
