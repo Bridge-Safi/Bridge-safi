@@ -28,7 +28,7 @@ router.post("/game/token", async (req, res) => {
       return;
     }
     const token = randomUUID();
-    gameTokens.set(token, { userId, phone, expiresAt: Date.now() + 10 * 60_000 });
+    gameTokens.set(token, { userId, phone, expiresAt: Date.now() + 30 * 60_000 });
     logger.info({ userId }, "Game token generated");
     res.json({ token, phone });
   } catch (err) {
@@ -49,6 +49,46 @@ router.get("/game/verify-token", (req, res) => {
     return;
   }
   res.json({ valid: true, userId: data.userId, phone: data.phone });
+});
+
+// POST /api/game/diamonds/by-token — appelé par le jeu externe (pas de session Clerk)
+// Auth via le token de jeu signé. CORS ouvert pour bridge-safi.replit.app
+router.options("/game/diamonds/by-token", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.sendStatus(204);
+});
+router.post("/game/diamonds/by-token", async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  const { token, diamonds } = req.body as { token?: string; diamonds?: number };
+  if (!token) { res.status(400).json({ error: "Token manquant" }); return; }
+  if (typeof diamonds !== "number" || diamonds < 0 || !Number.isInteger(diamonds)) {
+    res.status(400).json({ error: "diamonds doit être un entier positif" }); return;
+  }
+  const data = gameTokens.get(token);
+  if (!data || data.expiresAt < Date.now()) {
+    res.status(401).json({ error: "Token invalide ou expiré" }); return;
+  }
+  try {
+    const rows = await db
+      .insert(gameDiamondsTable)
+      .values({ userId: data.userId, diamonds, totalEarned: diamonds, updatedAt: new Date() })
+      .onConflictDoUpdate({
+        target: gameDiamondsTable.userId,
+        set: {
+          diamonds: sql`GREATEST(${gameDiamondsTable.diamonds}, ${diamonds})`,
+          totalEarned: sql`${gameDiamondsTable.totalEarned} + GREATEST(0, ${diamonds} - ${gameDiamondsTable.diamonds})`,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    logger.info({ userId: data.userId, diamonds }, "Game diamonds synced via token");
+    res.json({ diamonds: rows[0]?.diamonds ?? diamonds });
+  } catch (err) {
+    req.log.error({ err }, "Failed to save game diamonds by token");
+    res.status(500).json({ error: "Erreur serveur" });
+  }
 });
 
 // GET /api/game/diamonds — returns current diamond count for authenticated user

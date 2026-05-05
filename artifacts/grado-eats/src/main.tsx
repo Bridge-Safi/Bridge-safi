@@ -1298,6 +1298,33 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
       .catch(() => setState('error'));
   }, [userId]);
 
+  // postMessage listener — catches diamond scores sent by the game iframe
+  useEffect(() => {
+    const handler = (event: MessageEvent) => {
+      // Accept from game origin only
+      if (!event.origin.includes('bridge-safi')) return;
+      const msg = event.data;
+      if (!msg) return;
+      // Support multiple formats the game might send
+      const diamonds: number | undefined =
+        typeof msg.diamonds === 'number' ? msg.diamonds :
+        typeof msg.score === 'number' ? msg.score :
+        typeof msg.gems === 'number' ? msg.gems :
+        typeof msg.points === 'number' ? msg.points :
+        undefined;
+      if (typeof diamonds !== 'number' || diamonds < 0 || !Number.isInteger(diamonds)) return;
+      // Save via authenticated session (parent is logged in)
+      fetch('/api/game/diamonds', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ diamonds }),
+      }).catch(() => {});
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
   const noPhoneMsg = {
     fr: { title: 'NUMÉRO REQUIS', body: 'Pour jouer, tu dois d\'abord enregistrer ton numéro de téléphone dans ton profil Bridge. Ce numéro sera lié définitivement à ton compte.', btn: 'Aller à mon profil' },
     en: { title: 'PHONE REQUIRED', body: 'To play, you must first add your phone number to your Bridge profile. This number will be permanently linked to your account.', btn: 'Go to my profile' },
@@ -1343,7 +1370,8 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
 
   // Build secure game URL with token + verified phone
   const gameApiBase = window.location.origin;
-  const gameSrc = `${GAME_URL}?userId=${encodeURIComponent(userId)}&gameId=${encodeURIComponent(gameId)}&token=${encodeURIComponent(gameToken!)}&phone=${encodeURIComponent(phone!)}&verifyUrl=${encodeURIComponent(`${gameApiBase}/api/game/verify-token`)}`;
+  const saveUrl = `${gameApiBase}/api/game/diamonds/by-token`;
+  const gameSrc = `${GAME_URL}?userId=${encodeURIComponent(userId)}&gameId=${encodeURIComponent(gameId)}&token=${encodeURIComponent(gameToken!)}&phone=${encodeURIComponent(phone!)}&verifyUrl=${encodeURIComponent(`${gameApiBase}/api/game/verify-token`)}&saveUrl=${encodeURIComponent(saveUrl)}&diamondsUrl=${encodeURIComponent(saveUrl)}&apiUrl=${encodeURIComponent(saveUrl)}`;
 
   return (
     <div style={{position:'fixed',inset:0,zIndex:9999,background:'#000',display:'flex',flexDirection:'column'}}>
