@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "Grado Eats"
+title = "Bridge Eats"
 version = "1.0.0"
 id = "artifacts/grado-eats"
 router = "path"

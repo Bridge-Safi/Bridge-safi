@@ -131,7 +131,7 @@ async function forwardToRestaurant(order: typeof ordersTable.$inferSelect) {
   }
 }
 
-// ── Webhook entrant partenaire (ex: Grado Eats) ─────────────────────────────
+// ── Webhook entrant partenaire (ex: Bridge Eats) ────────────────────────────
 router.post("/orders/inbound", async (req, res) => {
   try {
     const secret = req.headers["x-bridge-secret"];

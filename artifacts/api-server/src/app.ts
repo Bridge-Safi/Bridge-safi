@@ -42,7 +42,7 @@ app.use("/api", router);
 
 // ── Production: serve built frontend static files ──────────────────────────
 // In production (Railway/Render/etc.), the Express server serves both the API
-// and the compiled React app. The frontend is built to artifacts/grado-eats/dist/public.
+// and the compiled React app. The frontend is built to artifacts/bridge-eats/dist/public.
 if (process.env.NODE_ENV === "production") {
   // __dirname in the bundle = artifacts/api-server/dist/
   const staticDir = path.resolve(__dirname, "../../grado-eats/dist/public");
