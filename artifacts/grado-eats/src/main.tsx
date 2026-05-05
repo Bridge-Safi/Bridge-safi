@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { Component, useEffect, useRef, useState } from 'react';
 import { createRoot } from "react-dom/client";
 import { ClerkProvider, useClerk, useUser } from '@clerk/react';
 import { Switch, Route, useLocation, Router as WouterRouter } from 'wouter';
@@ -2695,6 +2695,49 @@ function BridgeAssistantPage() {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─── Error Boundary — attrape les crashes React silencieux ──────────────────
+interface EBState { hasError: boolean; error: string }
+class ErrorBoundary extends Component<{ children: React.ReactNode }, EBState> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: '' };
+  }
+  static getDerivedStateFromError(err: Error): EBState {
+    return { hasError: true, error: err?.message || 'Erreur inconnue' };
+  }
+  componentDidCatch(err: Error, info: React.ErrorInfo) {
+    console.error('[Bridge] App crash:', err, info);
+  }
+  render() {
+    if (!this.state.hasError) return this.props.children;
+    return (
+      <div style={{
+        minHeight: '100dvh', display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center', padding: '32px 20px',
+        background: 'linear-gradient(160deg,#030712,#020c07)',
+        fontFamily: 'system-ui, sans-serif',
+      }}>
+        <div style={{ fontSize: 56, marginBottom: 16 }}>⚠️</div>
+        <p style={{ color: '#F87171', fontSize: 13, fontWeight: 900, letterSpacing: '0.12em', margin: '0 0 8px', textTransform: 'uppercase' }}>
+          Erreur de l'application
+        </p>
+        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, margin: '0 0 28px', textAlign: 'center', maxWidth: 320 }}>
+          {this.state.error}
+        </p>
+        <button
+          onClick={() => { this.setState({ hasError: false, error: '' }); window.location.reload(); }}
+          style={{
+            padding: '14px 32px', borderRadius: 16, border: 'none', cursor: 'pointer',
+            background: 'linear-gradient(135deg,#065F46,#4ADE80)', color: '#fff',
+            fontSize: 14, fontWeight: 900, letterSpacing: '0.06em',
+          }}>
+          🔄 Recharger l'application
+        </button>
+      </div>
+    );
+  }
+}
+
 function ClerkProviderWithRoutes() {
   const [, setLocation] = useLocation();
 
@@ -2725,7 +2768,9 @@ function ClerkProviderWithRoutes() {
 }
 
 createRoot(document.getElementById("root")!).render(
-  <WouterRouter base={basePath}>
-    <ClerkProviderWithRoutes />
-  </WouterRouter>
+  <ErrorBoundary>
+    <WouterRouter base={basePath}>
+      <ClerkProviderWithRoutes />
+    </WouterRouter>
+  </ErrorBoundary>
 );
