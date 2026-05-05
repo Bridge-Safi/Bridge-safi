@@ -4706,12 +4706,10 @@ export default function App() {
       try { localStorage.setItem('bridge_was_signed_in','1'); } catch {}
       return;
     }
-    // Give Clerk extra time to restore session before redirecting
-    const wasSignedIn = localStorage.getItem('bridge_was_signed_in') === '1';
-    const delay = wasSignedIn ? 7 * 60 * 1000 : 1500;
+    // Short grace period so Clerk can restore session from cookies (max 2.5s)
     const t = setTimeout(()=>{
       if(!isSignedIn) navigate('/sign-in');
-    }, delay);
+    }, 2500);
     return () => clearTimeout(t);
   },[isLoaded,isSignedIn]);
 
@@ -4766,12 +4764,9 @@ export default function App() {
   const dv = useMemo(() => ({ dark: isDark, toggle: toggleDark }), [isDark, toggleDark]);
   const handleOrderSuccess=(ref:string)=>{setLastOrderRef(ref);setService('none');setPage('tracking');};
 
-  // Show splash while timer running OR Clerk still loading
-  const showSplash = !splashDone || !isLoaded;
+  // Show splash while timer running OR Clerk still loading OR session not yet confirmed
+  const showSplash = !splashDone || !isLoaded || !isSignedIn;
   if(showSplash) return <SplashScreen/>;
-
-  // useEffect above handles navigate('/sign-in') — return null while redirecting
-  if(!isSignedIn) return null;
 
   // Profile onboarding after first sign-in
   if(!profile.onboardingComplete) return (
