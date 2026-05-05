@@ -247,26 +247,21 @@ function ForgotPasswordPage() {
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
-    if (!identifier.trim()) { setError('Entrez votre email ou numéro de téléphone.'); return; }
+    if (!identifier.trim()) { setError('Entrez votre adresse email.'); return; }
+    if (isPhone(identifier)) {
+      setError('La réinitialisation par SMS n\'est pas disponible. Entrez l\'adresse email associée à votre compte.');
+      return;
+    }
     setLoading(true); setError('');
 
-    const phone = isPhone(identifier);
-    const normalizedId = phone ? normalizePhone(identifier) : identifier.trim();
-    const strategy = phone ? 'reset_password_phone_code' : 'reset_password_email_code';
-
     try {
-      await clerk.client.signIn.create({ strategy, identifier: normalizedId });
-      setResetStrategy(strategy);
+      await clerk.client.signIn.create({ strategy: 'reset_password_email_code', identifier: identifier.trim() });
+      setResetStrategy('reset_password_email_code');
       setStep('reset');
     } catch (err: any) {
       const msg = (err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || '').toLowerCase();
       if (msg.includes('not found') || msg.includes('identifier') || msg.includes('no user')) {
-        setError(phone
-          ? `Aucun compte trouvé pour le numéro ${normalizedId}. Vérifiez le format (+212 6XX XXX XXX).`
-          : `Aucun compte trouvé pour ${identifier.trim()}. Vérifiez votre email.`
-        );
-      } else if (msg.includes('phone') || msg.includes('sms')) {
-        setError('La réinitialisation par SMS n\'est pas activée. Utilisez votre adresse email à la place.');
+        setError(`Aucun compte trouvé pour ${identifier.trim()}. Vérifiez votre adresse email.`);
       } else {
         setError('Erreur lors de l\'envoi du code. Réessayez dans quelques secondes.');
       }
@@ -342,11 +337,11 @@ function ForgotPasswordPage() {
     <AuthPageWrapper>
       <AuthCardHeader
         title="Mot de passe oublié"
-        sub="Entrez votre email ou téléphone pour recevoir un code"
+        sub="Entrez votre adresse email pour recevoir un code de réinitialisation"
       />
       <form onSubmit={handleSendCode} style={{ display: 'flex', flexDirection: 'column' }}>
-        <FocusInput label="Email ou numéro de téléphone" value={identifier} onChange={setIdentifier}
-          placeholder="+212 6XX XXX XXX ou email@..." autoComplete="username" />
+        <FocusInput label="Adresse email" value={identifier} onChange={setIdentifier}
+          placeholder="email@example.com" autoComplete="email" type="email" />
         {error && <div style={errStyle}>{error}</div>}
         <button type="submit" style={{...btn, opacity: loading ? 0.7 : 1}} disabled={loading}>
           {loading ? 'Envoi...' : 'Envoyer le code →'}
