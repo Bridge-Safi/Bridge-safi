@@ -6,7 +6,7 @@ import { eq, sql } from "drizzle-orm";
 import { logger } from "../lib/logger";
 
 // ── Tokens de jeu à usage unique (validité 10 min) ──────────────────────────
-interface GameToken { userId: string; phone: string; expiresAt: number; }
+interface GameToken { userId: string; phone: string; name: string; expiresAt: number; }
 const gameTokens = new Map<string, GameToken>();
 setInterval(() => {
   const now = Date.now();
@@ -23,14 +23,15 @@ router.post("/game/token", async (req, res) => {
   try {
     const rows = await db.select().from(userProfilesTable).where(eq(userProfilesTable.userId, userId)).limit(1);
     const phone = rows[0]?.phone ?? null;
+    const name = rows[0]?.name ?? '';
     if (!phone) {
       res.status(400).json({ error: "no_phone", message: "Aucun numéro enregistré sur ce compte" });
       return;
     }
     const token = randomUUID();
-    gameTokens.set(token, { userId, phone, expiresAt: Date.now() + 30 * 60_000 });
+    gameTokens.set(token, { userId, phone, name, expiresAt: Date.now() + 30 * 60_000 });
     logger.info({ userId }, "Game token generated");
-    res.json({ token, phone });
+    res.json({ token, phone, name });
   } catch (err) {
     req.log.error({ err }, "Failed to generate game token");
     res.status(500).json({ error: "Erreur serveur" });
