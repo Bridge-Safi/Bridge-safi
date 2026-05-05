@@ -874,7 +874,7 @@ function ClerkQueryClientCacheInvalidator() {
   return null;
 }
 
-// ── Session keep-alive: touches the Clerk session every 55s when
+// ── Session keep-alive: renews the Clerk JWT every 4 min when
 //    the user chose "Rester connecté", preventing inactivity sign-out ──────────
 function SessionKeepAlive() {
   const clerk = useClerk();
@@ -885,18 +885,21 @@ function SessionKeepAlive() {
     const stay = localStorage.getItem(STAY_KEY);
     if (stay === 'false') return;
 
-    const touch = () => {
-      try { clerk.session?.touch(); } catch { /* ignore */ }
+    const refresh = async () => {
+      try {
+        // Force a real JWT refresh (not just a touch)
+        await clerk.session?.getToken({ skipCache: true });
+      } catch { /* ignore */ }
     };
 
-    touch(); // immediate on mount
+    refresh(); // immediate on mount
 
-    // Refresh every 30s
-    const interval = setInterval(touch, 30_000);
+    // Refresh every 4 minutes (240s) — well within Clerk's 5-min inactivity window
+    const interval = setInterval(refresh, 4 * 60_000);
 
-    // Refresh when user returns to the tab or app
-    const onVisible = () => { if (document.visibilityState === 'visible') touch(); };
-    const onFocus = () => touch();
+    // Also refresh when user returns to the tab or app
+    const onVisible = async () => { if (document.visibilityState === 'visible') await refresh(); };
+    const onFocus = async () => refresh();
 
     document.addEventListener('visibilitychange', onVisible);
     window.addEventListener('focus', onFocus);
