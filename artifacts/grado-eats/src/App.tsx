@@ -1663,11 +1663,15 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
 
   // Diamond points from server (anti-cheat)
   const [gamePoints, setGamePoints] = useState(0);
+  const [gameTotalEarned, setGameTotalEarned] = useState(0);
   useEffect(() => {
     if (!user?.id) return;
     fetch('/api/game/diamonds', { credentials: 'include' })
       .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d && typeof d.diamonds === 'number') setGamePoints(d.diamonds); })
+      .then(d => {
+        if (d && typeof d.diamonds === 'number') setGamePoints(d.diamonds);
+        if (d && typeof d.totalEarned === 'number') setGameTotalEarned(d.totalEarned);
+      })
       .catch(() => {});
   }, [user?.id]);
 
@@ -1902,6 +1906,39 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
               </p>
             </>)}
           </div>
+          {/* ── Bridge Game Stats ───────────────────────────────── */}
+          <div className="rounded-2xl p-4 mb-5" style={{background:'linear-gradient(135deg,#052e16,#064e3b)',border:'1.5px solid #065F46',boxShadow:'0 4px 20px rgba(6,95,70,0.25)'}}>
+            <div className="flex items-center justify-between mb-3">
+              <p className={`text-[10px] font-black uppercase tracking-widest ${fClass}`} style={{color:'#4ADE80'}}>🦈 Bridge Game</p>
+              <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${fClass}`} style={{background:'rgba(74,222,128,0.15)',color:'#4ADE80',border:'1px solid rgba(74,222,128,0.3)'}}>{gameId}</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-xl p-3" style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)'}}>
+                <p className={`text-[9px] font-bold uppercase tracking-wide mb-1 ${fClass}`} style={{color:'rgba(255,255,255,0.5)'}}>
+                  {lang==='ar'?'الرصيد الحالي':lang==='en'?'Current balance':lang==='amz'?'ⵜⵉⵏⵓⴹⵉⵡⵉⵏ':'Solde actuel'}
+                </p>
+                <div className="flex items-center gap-1.5">
+                  <span style={{fontSize:18}}>💎</span>
+                  <span className={`text-lg font-black ${fClass}`} style={{color:'#FCD34D'}}>{gamePoints.toLocaleString()}</span>
+                </div>
+              </div>
+              <div className="rounded-xl p-3" style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)'}}>
+                <p className={`text-[9px] font-bold uppercase tracking-wide mb-1 ${fClass}`} style={{color:'rgba(255,255,255,0.5)'}}>
+                  {lang==='ar'?'المجموع الكلي':lang==='en'?'Total earned':lang==='amz'?'ⴰⵎⵎⴰⵙ':'Total cumulé'}
+                </p>
+                <div className="flex items-center gap-1.5">
+                  <span style={{fontSize:18}}>💎</span>
+                  <span className={`text-lg font-black ${fClass}`} style={{color:'#4ADE80'}}>{gameTotalEarned.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+            <button onClick={()=>{ onClose(); navigate('/game'); }}
+              className={`w-full mt-3 py-2.5 rounded-xl font-black text-sm transition-all active:scale-95 ${fClass}`}
+              style={{background:'linear-gradient(135deg,#4ADE80,#059669)',color:'#052e16',border:'none',cursor:'pointer',boxShadow:'0 4px 12px rgba(74,222,128,0.3)'}}>
+              🎮 {lang==='ar'?'العب الآن':lang==='en'?'Play now':lang==='amz'?'ⴰⴳⵏ ⴷⴷⴰⵡ':'Jouer maintenant'}
+            </button>
+          </div>
+
           {/* ── Change password accordion ───────────────────────── */}
           <div className="rounded-2xl mb-5 overflow-hidden" style={{border:'1px solid var(--c-border)'}}>
             <button onClick={()=>{setPwdOpen(o=>!o);setPwdErr('');}}
