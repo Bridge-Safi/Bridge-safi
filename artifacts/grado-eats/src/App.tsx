@@ -218,10 +218,12 @@ interface CartItem {
 interface UserProfile { name:string; address:string; phone:string; email:string; cardNumber:string; cardExpiry:string; cardName:string; paymentMethod?:'card'|'paypal'; paypalEmail?:string; onboardingComplete?:boolean; avatar?:string; }
 
 // ─── BRIDGE ID — identifiant universel partagé partout ────────────────────────
-// Déterministe : BR- + 7 derniers chars alphanumériques du Clerk userId (uppercase)
-export function getBridgeId(userId: string|undefined|null): string {
-  if (!userId) return 'BR-???????';
-  return 'BR-' + userId.replace(/[^a-z0-9]/gi,'').slice(-7).toUpperCase();
+// Formule : BR- + 6 premiers chiffres du téléphone + 1ère lettre du prénom
+export function getBridgeId(phone: string|undefined|null, name?: string|undefined|null): string {
+  const digits = (phone||'').replace(/\D/g,'').slice(0,6);
+  if (digits.length < 1) return 'BR-???????';
+  const letter = (name||'').trim().replace(/^(\S).*/,'$1').toUpperCase() || '?';
+  return `BR-${digits}${letter}`;
 }
 
 // ─── PROFILE STORAGE ──────────────────────────────────────────────────────────
@@ -1656,10 +1658,8 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
   const [phoneTaken,setPhoneTaken]=useState(false);
   const [payTab,setPayTab]=useState<'card'|'paypal'>(profile.paymentMethod==='paypal'?'paypal':'card');
 
-  // Generate deterministic game ID from Clerk userId
-  const gameId = user?.id
-    ? 'BR-' + user.id.replace(/[^a-z0-9]/gi,'').slice(-7).toUpperCase()
-    : 'BR-???????';
+  // Game ID basé sur le téléphone + première lettre du prénom
+  const gameId = getBridgeId(form.phone, form.name);
 
   // Diamond points from server (anti-cheat)
   const [gamePoints, setGamePoints] = useState(0);
@@ -1773,8 +1773,12 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
             className="flex flex-col items-center gap-0.5 flex-shrink-0 active:scale-95 transition-transform"
             style={{background:'none',border:'none',cursor:'pointer',padding:'2px 4px',borderRadius:12}}>
             <div className="relative">
-              <img src="/bridge-shark.png" alt="Bridge Shark"
-                style={{width:46,height:46,objectFit:'cover',objectPosition:'center top',borderRadius:'50%',border:'2.5px solid #065F46',boxShadow:'0 2px 12px rgba(6,95,70,0.4)',background:'#0A1A12'}}/>
+              <div style={{width:46,height:46,borderRadius:'50%',overflow:'hidden',border:'2.5px solid #065F46',boxShadow:'0 2px 12px rgba(6,95,70,0.4)',background:'#F0EBE1',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                {(form.avatar||user?.imageUrl)
+                  ?<img src={form.avatar||user!.imageUrl} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+                  :<span style={{fontSize:22}}>👤</span>
+                }
+              </div>
               <span style={{position:'absolute',bottom:-3,left:'50%',transform:'translateX(-50%)',background:'linear-gradient(90deg,#065F46,#047857)',color:'#fff',fontSize:7,fontWeight:900,padding:'1px 6px',borderRadius:8,whiteSpace:'nowrap',letterSpacing:0.5,boxShadow:'0 1px 4px rgba(0,0,0,0.2)'}}>
                 {t.gameTitle}
               </span>
@@ -2924,7 +2928,7 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
 
 // ─── BRIDGE PHARMACIE PAGE ────────────────────────────────────────────────────
 
-function PharmaciePage({onBack,lang}:{onBack:()=>void;lang:Lang}) {
+function PharmaciePage({onBack,lang,profile}:{onBack:()=>void;lang:Lang;profile:UserProfile}) {
   const fClass=fontClass(lang); const isAR=lang==='ar';
   const [,navigatePharm]=useLocation();
   const msgs:{fr:string;en:string;ar:string;amz:string}={
@@ -2955,7 +2959,7 @@ function PharmaciePage({onBack,lang}:{onBack:()=>void;lang:Lang}) {
       </button>
       {/* Shark diamond widget top-right */}
       <div style={{position:'absolute',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:10}}>
-        <SharkDiamondWidget onNavigate={()=>navigatePharm('/game')}/>
+        <SharkDiamondWidget onNavigate={()=>navigatePharm('/game')} profile={profile}/>
       </div>
       {/* Content */}
       <div style={{textAlign:'center',maxWidth:320,zIndex:1}}>
@@ -3024,7 +3028,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
         </button>
         <div style={{background:'rgba(6,95,70,0.12)',border:'1px solid rgba(6,95,70,0.3)',borderRadius:6,padding:'2px 5px'}}>
           <span style={{fontSize:7,fontWeight:900,color:'#065F46',letterSpacing:'0.06em'}}>
-            {getBridgeId(user?.id)}
+            {getBridgeId(profile.phone, profile.name)}
           </span>
         </div>
       </div>
@@ -3280,10 +3284,11 @@ function TaxiTrackingMap({driverPos,clientPos}:{driverPos:{lat:number;lng:number
 // ─── TAXI PAGE ────────────────────────────────────────────────────────────────
 
 // ─── SHARK DIAMOND WIDGET ────────────────────────────────────────────────────
-function SharkDiamondWidget({onNavigate}:{onNavigate:()=>void}) {
+function SharkDiamondWidget({onNavigate,profile}:{onNavigate:()=>void;profile:UserProfile}) {
   const {user}=useUser();
   const [gems,setGems]=useState(0);
-  const bridgeId=getBridgeId(user?.id);
+  const bridgeId=getBridgeId(profile.phone, profile.name);
+  const avatarSrc=profile.avatar||user?.imageUrl||null;
   useEffect(()=>{
     if(!user?.id) return;
     fetch('/api/game/diamonds',{credentials:'include'})
@@ -3294,8 +3299,12 @@ function SharkDiamondWidget({onNavigate}:{onNavigate:()=>void}) {
   return(
     <button onClick={onNavigate} title={`${bridgeId} — Bridge Game`}
       style={{background:'none',border:'none',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',gap:2,padding:'2px 4px',borderRadius:12}}>
-      <img src="/logo_splash_new.png" alt="Bridge Shark"
-        style={{width:32,height:32,objectFit:'cover',objectPosition:'center 20%',borderRadius:'50%',border:'2px solid #D9C5A0',boxShadow:'0 2px 10px rgba(6,95,70,0.35)',background:'#0A1A12'}}/>
+      <div style={{width:32,height:32,borderRadius:'50%',overflow:'hidden',border:'2px solid #D9C5A0',boxShadow:'0 2px 10px rgba(6,95,70,0.35)',background:'#F0EBE1',display:'flex',alignItems:'center',justifyContent:'center'}}>
+        {avatarSrc
+          ?<img src={avatarSrc} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+          :<span style={{fontSize:14}}>👤</span>
+        }
+      </div>
       <div style={{display:'flex',alignItems:'center',gap:2,background:'rgba(254,252,232,0.95)',border:'1px solid #FDE047',borderRadius:8,padding:'1px 5px'}}>
         <span style={{fontSize:9}}>💎</span>
         <span style={{fontSize:8,fontWeight:900,color:'#92400E'}}>{gems.toLocaleString()}</span>
@@ -3490,7 +3499,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
           style={{...pillStyle,fontSize:'13px'}}>
           {LANG_LABELS[lang]}
         </button>
-        <SharkDiamondWidget onNavigate={()=>navigateTaxi('/game')}/>
+        <SharkDiamondWidget onNavigate={()=>navigateTaxi('/game')} profile={profile}/>
         <DarkToggle/>
       </div>
 
@@ -4099,7 +4108,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           style={{...pillStyle,fontSize:'13px'}}>
           {LANG_LABELS[lang]}
         </button>
-        <SharkDiamondWidget onNavigate={()=>navigateFleur('/game')}/>
+        <SharkDiamondWidget onNavigate={()=>navigateFleur('/game')} profile={profile}/>
         <DarkToggle/>
       </div>
 
@@ -4529,7 +4538,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           }
           {profile.name&&<span className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{background:'#10B981'}}/>}
         </button>
-        <SharkDiamondWidget onNavigate={()=>navigateTabac('/game')}/>
+        <SharkDiamondWidget onNavigate={()=>navigateTabac('/game')} profile={profile}/>
         <DarkToggle/>
       </div>
 
@@ -4972,7 +4981,7 @@ export default function App() {
   if(service==='taxi') return <DarkModeCtx.Provider value={dv}><TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
   if(service==='tabac') return <DarkModeCtx.Provider value={dv}><TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
   if(service==='fleurs') return <DarkModeCtx.Provider value={dv}><FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
-  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang}/></DarkModeCtx.Provider>;
+  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang} profile={profile}/></DarkModeCtx.Provider>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={
