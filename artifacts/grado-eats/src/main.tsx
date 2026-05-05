@@ -919,7 +919,7 @@ function SessionKeepAlive() {
 const GAME_LANGS = ['fr','en','ar','amz'] as const;
 type GameLang = typeof GAME_LANGS[number];
 const GAME_LANG_LABELS: Record<GameLang,string> = {fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
-// GAME_URL removed — game is now built-in
+const GAME_URL = 'https://bridge-safi.replit.app';
 const GAME_TARGET = 60000;
 const GAME_T = {
   fr:{
@@ -1277,233 +1277,115 @@ function GamePage() {
     );
   }
 
-  // Signed in — show built-in Safi Runner (no phone required)
-  const gameId = 'BR-' + user.id.replace(/\D/g,'').slice(0,6).padEnd(6,'0') + (user.firstName?.[0]??'?').toUpperCase();
-  return <GameCanvas userId={user.id} lang={lang} isAR={isAR} gameId={gameId} />;
+  // Signed in — fetch game token then show Safi Runner
+  return <GameIframe userId={user.id} lang={lang} isAR={isAR} />;
 }
 
-// ── Types for game state ──────────────────────────────────────────────────────
-interface GS {
-  alive:boolean; frame:number; speed:number;
-  py:number; pvy:number; jumpsLeft:number;
-  obstacles:{x:number;w:number;h:number}[];
-  coins:{x:number;y:number;done:boolean}[];
-  score:number; nextObs:number; nextCoin:number; bgX:number;
-}
+/** Fetches a verified phone token then loads the game iframe */
+function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; isAR: boolean }) {
+  const [, navigate] = useLocation();
+  const [state, setState] = useState<'loading'|'ready'|'no_phone'|'error'>('loading');
+  const [gameToken, setGameToken] = useState<string | null>(null);
+  const [phone, setPhone] = useState<string | null>(null);
+  const [playerName, setPlayerName] = useState<string>('');
 
-/** Built-in Safi Runner — endless side-scrolling canvas game */
-function GameCanvas({ userId, lang, isAR, gameId }:{ userId:string; lang:GameLang; isAR:boolean; gameId:string }) {
-  const [,navigate] = useLocation();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const gsRef = useRef<GS|null>(null);
-  const rafRef = useRef<number>(0);
-  const [phase, setPhase] = useState<'start'|'playing'|'dead'>('start');
-  const [score, setScore] = useState(0);
-  const [best, setBest] = useState(()=>parseInt(localStorage.getItem('safi_best')||'0',10));
-  const [saving, setSaving] = useState(false);
+  const gameId = phone
+    ? 'BR-' + phone.replace(/\D/g,'').slice(0,6) + ((playerName||'').trim()[0]||'?').toUpperCase()
+    : 'BR-???????';
 
-  const PX=90, PW=50, PH=38, GRAV=0.60, JUMP=-15;
-  const gY=(h:number)=>h*0.80;
+  useEffect(() => {
+    fetch('/api/game/token', { method: 'POST', credentials: 'include' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.error === 'no_phone') { setState('no_phone'); return; }
+        if (data.token && data.phone) {
+          setGameToken(data.token);
+          setPhone(data.phone);
+          setPlayerName(data.name || '');
+          setState('ready');
+        } else setState('error');
+      })
+      .catch(() => setState('error'));
+  }, [userId]);
 
-  function initGS(h:number):GS {
-    return { alive:true, frame:0, speed:5, py:gY(h)-PH, pvy:0, jumpsLeft:2,
-      obstacles:[], coins:[], score:0, nextObs:100, nextCoin:60, bgX:0 };
-  }
+  useEffect(() => {
+    const handler = (event: MessageEvent) => {
+      if (!event.origin.includes('bridge-safi')) return;
+      const msg = event.data;
+      if (!msg) return;
+      const diamonds: number | undefined =
+        typeof msg.diamonds === 'number' ? msg.diamonds :
+        typeof msg.score === 'number' ? msg.score :
+        typeof msg.gems === 'number' ? msg.gems :
+        typeof msg.points === 'number' ? msg.points :
+        undefined;
+      if (typeof diamonds !== 'number' || diamonds < 0 || !Number.isInteger(diamonds)) return;
+      fetch('/api/game/diamonds', {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ diamonds }),
+      }).catch(() => {});
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, []);
 
-  function drawFrame(ctx:CanvasRenderingContext2D, gs:GS, bestScore:number) {
-    const {width:w,height:h}=ctx.canvas; const g=gY(h);
-    // Sky
-    const sky=ctx.createLinearGradient(0,0,0,h);
-    sky.addColorStop(0,'#010905'); sky.addColorStop(1,'#041a0c');
-    ctx.fillStyle=sky; ctx.fillRect(0,0,w,h);
-    // Stars
-    ctx.fillStyle='rgba(255,255,255,0.55)';
-    [[32,38],[85,14],[168,52],[238,22],[298,68],[358,28],[55,88],[138,98],[205,42],[318,78]].forEach(([sx,sy])=>{
-      ctx.beginPath(); ctx.arc(sx%w,sy,1.1,0,Math.PI*2); ctx.fill();
-    });
-    // Background buildings (scrolling)
-    const bW=50; const nb=Math.ceil(w/bW)+2;
-    ctx.fillStyle='rgba(6,95,70,0.11)';
-    for(let i=0;i<nb;i++){
-      const seed=i*19; const bh=48+(seed%5)*18; const bx=((i*bW+gs.bgX%bW-bW)%(w+bW)+w+bW)%(w+bW);
-      ctx.fillRect(bx,g-bh,bW-5,bh);
-    }
-    // Ground
-    ctx.fillStyle='#065F46'; ctx.fillRect(0,g,w,4);
-    const gg=ctx.createLinearGradient(0,g+4,0,h);
-    gg.addColorStop(0,'rgba(6,95,70,0.14)'); gg.addColorStop(1,'transparent');
-    ctx.fillStyle=gg; ctx.fillRect(0,g+4,w,h-g-4);
-    // Obstacles
-    for(const ob of gs.obstacles){
-      const og=ctx.createLinearGradient(ob.x,g-ob.h,ob.x+ob.w,g);
-      og.addColorStop(0,'#047857'); og.addColorStop(1,'#065F46');
-      ctx.fillStyle=og; ctx.beginPath();
-      if(ctx.roundRect) ctx.roundRect(ob.x,g-ob.h,ob.w,ob.h,[5,5,0,0]);
-      else ctx.rect(ob.x,g-ob.h,ob.w,ob.h);
-      ctx.fill();
-      ctx.fillStyle='rgba(255,255,255,0.07)'; ctx.fillRect(ob.x+3,g-ob.h+4,ob.w-6,5);
-    }
-    // Diamonds
-    ctx.font='20px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-    for(const c of gs.coins){
-      if(!c.done){
-        ctx.globalAlpha=0.85+0.15*Math.sin(gs.frame*0.08+c.x*0.01);
-        ctx.fillText('💎',c.x,c.y); ctx.globalAlpha=1;
-      }
-    }
-    // Player (shark)
-    ctx.save(); ctx.translate(PX,gs.py+PH/2); ctx.scale(-1,1);
-    ctx.font='46px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('🦈',0,0); ctx.restore();
-    // HUD
-    ctx.textAlign='right'; ctx.textBaseline='top';
-    ctx.font='bold 15px system-ui'; ctx.fillStyle='#FCD34D';
-    ctx.fillText(`💎 ${gs.score}`,w-14,14);
-    ctx.font='10px system-ui'; ctx.fillStyle='rgba(255,255,255,0.22)';
-    ctx.fillText(`BEST: ${Math.max(gs.score,bestScore)}`,w-14,34);
-    ctx.textAlign='left'; ctx.font='bold 9px system-ui';
-    ctx.fillStyle='rgba(74,222,128,0.38)'; ctx.fillText(gameId,14,14);
-  }
-
-  function tick(gs:GS, w:number, h:number) {
-    if(!gs.alive) return;
-    const g=gY(h);
-    gs.frame++; gs.speed=Math.min(13,5+gs.frame*0.002); gs.bgX-=gs.speed*0.28;
-    // Physics
-    gs.pvy+=GRAV; gs.py+=gs.pvy;
-    if(gs.py>=g-PH){gs.py=g-PH;gs.pvy=0;gs.jumpsLeft=2;}
-    // Obstacles
-    if(gs.frame>=gs.nextObs){
-      const oh=28+Math.random()*60; const ow=24+Math.random()*16;
-      gs.obstacles.push({x:w+10,w:ow,h:oh});
-      gs.nextObs=gs.frame+70+Math.floor(Math.random()*58);
-    }
-    for(const ob of gs.obstacles){
-      ob.x-=gs.speed;
-      const hx=PX-PW*0.28,hy=gs.py+PH*0.18,hw=PW*0.55,hh=PH*0.65;
-      if(ob.x<hx+hw&&ob.x+ob.w>hx&&g-ob.h<hy+hh&&g>hy) gs.alive=false;
-    }
-    gs.obstacles=gs.obstacles.filter(o=>o.x>-60);
-    // Coins
-    if(gs.frame>=gs.nextCoin){
-      const cy=g-PH*1.4-Math.random()*85;
-      gs.coins.push({x:w+10,y:cy,done:false});
-      gs.nextCoin=gs.frame+36+Math.floor(Math.random()*40);
-    }
-    for(const c of gs.coins){
-      c.x-=gs.speed;
-      if(!c.done&&Math.abs(c.x-PX)<28&&Math.abs(c.y-(gs.py+PH/2))<28){c.done=true;gs.score++;}
-    }
-    gs.coins=gs.coins.filter(c=>c.x>-30);
-  }
-
-  const doJump=()=>{const gs=gsRef.current;if(gs&&gs.alive&&gs.jumpsLeft>0){gs.pvy=JUMP;gs.jumpsLeft--;}};
-
-  // Game loop
-  useEffect(()=>{
-    if(phase!=='playing') return;
-    const canvas=canvasRef.current; if(!canvas) return;
-    const ctx=canvas.getContext('2d'); if(!ctx) return;
-    canvas.width=canvas.offsetWidth; canvas.height=canvas.offsetHeight;
-    gsRef.current=initGS(canvas.height);
-    let currentBest=parseInt(localStorage.getItem('safi_best')||'0',10);
-    function loop(){
-      const gs=gsRef.current; if(!gs||!ctx||!canvas) return;
-      tick(gs,canvas.width,canvas.height);
-      drawFrame(ctx,gs,currentBest);
-      if(gs.alive){ rafRef.current=requestAnimationFrame(loop); }
-      else{
-        setScore(gs.score); setPhase('dead');
-        const earned=gs.score;
-        if(earned>0){
-          setSaving(true);
-          fetch('/api/game/diamonds',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({diamonds:earned})})
-            .finally(()=>setSaving(false));
-        }
-        if(earned>currentBest){currentBest=earned;setBest(earned);localStorage.setItem('safi_best',String(earned));}
-      }
-    }
-    rafRef.current=requestAnimationFrame(loop);
-    return()=>cancelAnimationFrame(rafRef.current);
-  },[phase]);
-
-  // Keyboard
-  useEffect(()=>{
-    if(phase!=='playing') return;
-    const fn=(e:KeyboardEvent)=>{if(e.code==='Space'||e.code==='ArrowUp'){e.preventDefault();doJump();}};
-    window.addEventListener('keydown',fn); return()=>window.removeEventListener('keydown',fn);
-  },[phase]);
-
-  // Resize
-  useEffect(()=>{
-    const canvas=canvasRef.current; if(!canvas) return;
-    const resize=()=>{canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;};
-    resize(); window.addEventListener('resize',resize); return()=>window.removeEventListener('resize',resize);
-  },[]);
-
-  const L={
-    fr:{start:'APPUYER POUR JOUER',retry:'REJOUER',back:'← Retour',tip:'Touche / Espace pour sauter · Double saut',save:'Sauvegarde...'},
-    en:{start:'TAP TO PLAY',retry:'PLAY AGAIN',back:'← Back',tip:'Tap / Space to jump · Double jump',save:'Saving...'},
-    ar:{start:'اضغط للعب',retry:'العب مجدداً',back:'رجوع →',tip:'اضغط للقفز · قفزة مزدوجة',save:'حفظ...'},
-    amz:{start:'ⴽⴰⵔⵓ ⴰⴷ ⵜⵙⴱⴷⴷⵓ',retry:'ⴰⴳⵏ ⴷⴰⵖ',back:'← ⴰⵣⵣⵓⵍ',tip:'ⴽⴰⵔⵓ ⴰⴷ ⵜⵉⵔⵉⵔⵉⴷ',save:'...'},
+  const noPhoneMsg = {
+    fr: { title: 'NUMÉRO REQUIS', body: 'Pour jouer, tu dois d\'abord enregistrer ton numéro de téléphone dans ton profil Bridge.', btn: 'Aller à mon profil' },
+    en: { title: 'PHONE REQUIRED', body: 'To play, you must first add your phone number to your Bridge profile.', btn: 'Go to my profile' },
+    ar: { title: 'رقم الهاتف مطلوب', body: 'للعب، يجب عليك أولاً إضافة رقم هاتفك في ملفك الشخصي.', btn: 'الملف الشخصي' },
+    amz: { title: 'AṬILIFUN ILAQ', body: 'Ad tsɣeṛḍ, ɛemmreɣ aṭilifun inek.', btn: 'Aḥsab inek' },
   }[lang];
 
-  return(
-    <div style={{position:'fixed',inset:0,background:'#010905',userSelect:'none'}} dir={isAR?'rtl':'ltr'}>
-      <canvas ref={canvasRef} style={{width:'100%',height:'100%',display:'block',touchAction:'none'}}
-        onClick={phase==='playing'?doJump:undefined}
-        onTouchStart={e=>{e.preventDefault();if(phase==='playing')doJump();}} />
+  if (state === 'loading') return (
+    <div style={{minHeight:'100dvh',background:'#04110A',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:16}}>
+      <div style={{width:44,height:44,border:'3px solid rgba(74,222,128,0.3)',borderTop:'3px solid #4ADE80',borderRadius:'50%',animation:'spin 0.9s linear infinite'}}/>
+      <p style={{color:'rgba(255,255,255,0.4)',fontSize:12,fontWeight:700,letterSpacing:'0.1em'}}>{isAR?'تحميل...':lang==='en'?'Loading...':'Chargement...'}</p>
+      <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+    </div>
+  );
 
-      {/* Top bar — always visible */}
-      <div style={{position:'absolute',top:0,left:0,right:0,display:'flex',alignItems:'center',padding:'10px 16px',pointerEvents:'none'}}>
-        <button onClick={()=>navigate('/')} style={{pointerEvents:'all',background:'rgba(74,222,128,0.12)',border:'1px solid rgba(74,222,128,0.25)',borderRadius:12,padding:'8px 14px',color:'#4ADE80',fontSize:13,fontWeight:900,cursor:'pointer'}}>
-          {L.back}
+  if (state === 'no_phone') return (
+    <div dir={isAR?'rtl':'ltr'} style={{minHeight:'100dvh',background:'linear-gradient(180deg,#04110A,#071C11)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'32px 20px'}}>
+      <div style={{width:'100%',maxWidth:360,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(248,113,113,0.3)',borderRadius:28,padding:'36px 24px',display:'flex',flexDirection:'column',alignItems:'center',gap:14,backdropFilter:'blur(12px)'}}>
+        <div style={{fontSize:48}}>📵</div>
+        <p style={{color:'#F87171',fontSize:10,fontWeight:900,letterSpacing:'0.18em',margin:0,textAlign:'center',textTransform:'uppercase'}}>{noPhoneMsg.title}</p>
+        <p style={{color:'rgba(255,255,255,0.65)',fontSize:13,fontWeight:500,lineHeight:1.6,textAlign:'center',margin:0}}>{noPhoneMsg.body}</p>
+        <button onClick={()=>navigate('/')} style={{width:'100%',padding:'16px 0',borderRadius:16,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669,#4ADE80)',color:'#fff',fontSize:14,fontWeight:900,marginTop:4}}>
+          👤 {noPhoneMsg.btn}
         </button>
-        <span style={{marginLeft:12,color:'#4ADE80',fontSize:12,fontWeight:900,letterSpacing:'0.1em'}}>🦈 SAFI RUNNER</span>
-        <span style={{marginLeft:'auto',color:'rgba(255,255,255,0.35)',fontSize:10,fontWeight:700}}>{gameId}</span>
       </div>
+    </div>
+  );
 
-      {/* Start screen */}
-      {phase==='start'&&(
-        <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:18,padding:24}}>
-          <div style={{fontSize:82,lineHeight:1,filter:'drop-shadow(0 0 28px rgba(74,222,128,0.55))'}}>🦈</div>
-          <p style={{color:'#4ADE80',fontSize:10,fontWeight:900,letterSpacing:'0.22em',margin:0}}>SAFI RUNNER</p>
-          <p style={{color:'rgba(255,255,255,0.38)',fontSize:11,margin:0,textAlign:'center'}}>{L.tip}</p>
-          <button onClick={()=>setPhase('playing')} style={{padding:'18px 52px',borderRadius:20,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669,#4ADE80)',color:'#052e16',fontSize:16,fontWeight:900,letterSpacing:'0.05em',boxShadow:'0 0 36px rgba(74,222,128,0.45)',marginTop:6}}>
-            {L.start}
-          </button>
-          {best>0&&<p style={{color:'rgba(255,255,255,0.28)',fontSize:12,margin:0}}>BEST: {best} 💎</p>}
-          <p style={{color:'rgba(74,222,128,0.32)',fontSize:9,letterSpacing:'0.14em',margin:0}}>{gameId}</p>
-        </div>
-      )}
+  if (state === 'error') return (
+    <div style={{minHeight:'100dvh',background:'#04110A',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:12}}>
+      <p style={{color:'#F87171',fontSize:13,fontWeight:700}}>{isAR?'خطأ في التحميل':lang==='en'?'Failed to load game':'Erreur de chargement'}</p>
+      <button onClick={()=>navigate('/')} style={{padding:'12px 24px',borderRadius:14,border:'none',background:'rgba(74,222,128,0.15)',color:'#4ADE80',fontSize:13,fontWeight:900,cursor:'pointer'}}>
+        ← {isAR?'رجوع':lang==='en'?'Back':'Retour'}
+      </button>
+    </div>
+  );
 
-      {/* Game over screen */}
-      {phase==='dead'&&(
-        <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:14,padding:24,background:'rgba(1,9,5,0.78)',backdropFilter:'blur(8px)'}}>
-          <div style={{fontSize:54}}>💀</div>
-          <p style={{color:'#F87171',fontSize:11,fontWeight:900,letterSpacing:'0.22em',margin:0}}>GAME OVER</p>
-          <div style={{display:'flex',gap:28,margin:'4px 0',alignItems:'center'}}>
-            <div style={{textAlign:'center'}}>
-              <p style={{color:'rgba(255,255,255,0.38)',fontSize:9,fontWeight:700,letterSpacing:'0.12em',margin:'0 0 4px'}}>SCORE</p>
-              <p style={{color:'#FCD34D',fontSize:34,fontWeight:900,margin:0,lineHeight:1}}>{score} 💎</p>
-            </div>
-            {score>=best&&score>0&&(
-              <div style={{textAlign:'center'}}>
-                <p style={{color:'rgba(255,255,255,0.38)',fontSize:9,fontWeight:700,letterSpacing:'0.12em',margin:'0 0 4px'}}>RECORD</p>
-                <p style={{color:'#4ADE80',fontSize:34,fontWeight:900,margin:0,lineHeight:1}}>🏆</p>
-              </div>
-            )}
-          </div>
-          {saving&&<p style={{color:'rgba(255,255,255,0.38)',fontSize:11,margin:0}}>{L.save}</p>}
-          {!saving&&score>0&&<p style={{color:'rgba(74,222,128,0.6)',fontSize:11,margin:0}}>+{score} 💎 {lang==='ar'?'محفوظة':lang==='en'?'saved':'sauvegardés'}</p>}
-          <button onClick={()=>setPhase('playing')} style={{padding:'16px 48px',borderRadius:18,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669,#4ADE80)',color:'#052e16',fontSize:15,fontWeight:900,boxShadow:'0 0 28px rgba(74,222,128,0.4)',marginTop:4}}>
-            {L.retry}
-          </button>
-          <button onClick={()=>navigate('/')} style={{background:'none',border:'none',cursor:'pointer',color:'rgba(255,255,255,0.32)',fontSize:12,fontWeight:700,padding:'4px 0'}}>
-            {L.back}
-          </button>
-        </div>
-      )}
+  const gameApiBase = window.location.origin;
+  const saveUrl = `${gameApiBase}/api/game/diamonds/by-token`;
+  const gameSrc = `${GAME_URL}?userId=${encodeURIComponent(userId)}&gameId=${encodeURIComponent(gameId)}&token=${encodeURIComponent(gameToken!)}&phone=${encodeURIComponent(phone!)}&verifyUrl=${encodeURIComponent(`${gameApiBase}/api/game/verify-token`)}&saveUrl=${encodeURIComponent(saveUrl)}&diamondsUrl=${encodeURIComponent(saveUrl)}&apiUrl=${encodeURIComponent(saveUrl)}`;
+
+  return (
+    <div style={{position:'fixed',inset:0,zIndex:9999,background:'#000',display:'flex',flexDirection:'column'}}>
+      <div style={{display:'flex',alignItems:'center',gap:12,padding:'12px 16px',background:'#04110A',borderBottom:'1px solid rgba(74,222,128,0.2)',flexShrink:0}}>
+        <button onClick={()=>navigate('/')} style={{display:'flex',alignItems:'center',gap:6,background:'rgba(74,222,128,0.12)',border:'1px solid rgba(74,222,128,0.3)',borderRadius:12,padding:'8px 14px',color:'#4ADE80',fontSize:13,fontWeight:900,cursor:'pointer'}}>
+          ← {isAR?'رجوع':lang==='en'?'Back':lang==='amz'?'ⴰⵣⵣⵓⵍ':'Retour'}
+        </button>
+        <span style={{color:'#4ADE80',fontSize:12,fontWeight:900,letterSpacing:'0.1em'}}>🦈 SAFI RUNNER</span>
+        <span style={{marginLeft:'auto',color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700}}>{gameId}</span>
+      </div>
+      <iframe
+        src={gameSrc}
+        style={{flex:1,border:'none',width:'100%'}}
+        allow="accelerometer; gyroscope"
+        title="Safi Runner"
+      />
     </div>
   );
 }
