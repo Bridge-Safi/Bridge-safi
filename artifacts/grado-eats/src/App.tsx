@@ -3009,6 +3009,15 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
   // Avatar: custom upload > Clerk photo > initials
   const avatarSrc=profile.avatar||user?.imageUrl||null;
   const initials=(profile.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  // Diamonds fetch
+  const [diamonds,setDiamonds]=useState(0);
+  useEffect(()=>{
+    if(!user?.id) return;
+    fetch('/api/game/diamonds',{credentials:'include'})
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{if(d&&typeof d.diamonds==='number')setDiamonds(d.diamonds);})
+      .catch(()=>{});
+  },[user?.id]);
   return(
     <div className={`fixed inset-0 flex flex-col z-40 ${isAR?'rtl':'ltr'}`}
       style={{background:'var(--c-bg)',overflowY:'auto'}}>
@@ -3017,7 +3026,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
 
       {/* ── TOP BAR ── */}
 
-      {/* Profile button + Bridge ID — LEFT */}
+      {/* Profile button + Bridge ID + Diamonds — LEFT */}
       <div className={`absolute top-3 z-50 flex flex-col items-center gap-1 ${isAR?'right-3':'left-3'}`}>
         <button onClick={()=>setShowProfile(true)}
           style={{width:40,height:40,borderRadius:'50%',overflow:'hidden',border:'2.5px solid #D9C5A0',background:'#F0EBE1',boxShadow:'0 4px 14px rgba(6,95,70,0.15)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',padding:0}}>
@@ -3030,6 +3039,10 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
           <span style={{fontSize:7,fontWeight:900,color:'#065F46',letterSpacing:'0.06em'}}>
             {getBridgeId(profile.phone, profile.name)}
           </span>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:3,background:'#FEF9C3',border:'1px solid #FDE047',borderRadius:8,padding:'2px 6px',boxShadow:'0 1px 4px rgba(0,0,0,0.08)'}}>
+          <span style={{fontSize:10}}>💎</span>
+          <span style={{fontSize:8,fontWeight:900,color:'#92400E'}}>{diamonds.toLocaleString()}</span>
         </div>
       </div>
 
