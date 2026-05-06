@@ -228,8 +228,11 @@ export function getBridgeId(phone: string|undefined|null, name?: string|undefine
 
 // ─── PROFILE STORAGE ──────────────────────────────────────────────────────────
 
-const PROFILE_KEY = 'bridge_eats_profile';
+const PROFILE_KEY_PREFIX = 'bridge_eats_profile_';
+const PROFILE_KEY_LEGACY = 'bridge_eats_profile'; // old generic key — migrated once
 const emptyProfile = (): UserProfile => ({ name:'', address:'', phone:'', email:'', cardNumber:'', cardExpiry:'', cardName:'', paymentMethod:'card', paypalEmail:'', onboardingComplete:false });
+
+function profileKey(userId: string) { return `${PROFILE_KEY_PREFIX}${userId}`; }
 
 // ── Card type detection ────────────────────────────────────────────────────────
 type CardType = 'visa'|'mastercard'|'unknown';
@@ -274,14 +277,38 @@ const MastercardLogo=()=>(
   </svg>
 );
 
-function useProfile() {
+function useProfile(userId?: string) {
+  const key = userId ? profileKey(userId) : null;
+
   const [profile, setProfileState] = useState<UserProfile>(() => {
-    try { return { ...emptyProfile(), ...JSON.parse(localStorage.getItem(PROFILE_KEY)||'{}') }; }
-    catch { return emptyProfile(); }
+    if (!key) return emptyProfile();
+    try {
+      // Migrate legacy generic key once, then delete it
+      const legacy = localStorage.getItem(PROFILE_KEY_LEGACY);
+      const mine   = localStorage.getItem(key);
+      if (!mine && legacy) {
+        // Only migrate if userId matches saved profile (best-effort via phone/email)
+        // Safe: do NOT migrate — start fresh to avoid cross-user leaks
+        localStorage.removeItem(PROFILE_KEY_LEGACY);
+      }
+      return { ...emptyProfile(), ...JSON.parse(localStorage.getItem(key)||'{}') };
+    } catch { return emptyProfile(); }
   });
+
+  // When userId changes (different user logged in), reload their profile
+  useEffect(() => {
+    if (!key) { setProfileState(emptyProfile()); return; }
+    try {
+      setProfileState({ ...emptyProfile(), ...JSON.parse(localStorage.getItem(key)||'{}') });
+    } catch { setProfileState(emptyProfile()); }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+
   const saveProfile = useCallback((p: UserProfile) => {
-    setProfileState(p); localStorage.setItem(PROFILE_KEY, JSON.stringify(p));
-  }, []);
+    setProfileState(p);
+    if (key) localStorage.setItem(key, JSON.stringify(p));
+  }, [key]);
+
   return { profile, saveProfile };
 }
 
@@ -1744,7 +1771,16 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
     onSave({...form, paymentMethod:payTab});
     setSaved(true);setTimeout(()=>setSaved(false),2000);
   };
-  const handleSignOut=async()=>{ try{localStorage.removeItem('bridge_was_signed_in');}catch{}  await signOut(); navigate('/sign-in'); onClose(); };
+  const handleSignOut=async()=>{
+    try {
+      localStorage.removeItem('bridge_was_signed_in');
+      localStorage.removeItem(PROFILE_KEY_LEGACY);
+      // Ne pas effacer le profil personnel (bridge_eats_profile_userId) — il reste pour la prochaine connexion du même utilisateur
+    } catch {}
+    await signOut();
+    navigate('/sign-in');
+    onClose();
+  };
   const set=(k:keyof UserProfile)=>(v:string)=>setForm(f=>({...f,[k]:v}));
   const fmtCard=(v:string)=>v.replace(/\D/g,'').slice(0,16).replace(/(.{4})/g,'$1 ').trim();
   const fmtExp=(v:string)=>{const d=v.replace(/\D/g,'').slice(0,4);return d.length>2?`${d.slice(0,2)}/${d.slice(2)}`:d;};
@@ -4934,7 +4970,7 @@ export default function App() {
   const [selectedRestaurant,setSelectedRestaurant] = useState<Restaurant|null>(
     saved?.restaurantId ? (RESTAURANTS.find(r=>r.id===saved.restaurantId)??null) : null
   );
-  const {profile,saveProfile}  = useProfile();
+  const {profile,saveProfile}  = useProfile(user?.id);
 
   // Splash timer — 3 seconds
   useEffect(()=>{
