@@ -46,25 +46,6 @@ function DarkToggle({ size = 44 }: { size?: number }) {
   );
 }
 
-const ROUTE_POINTS: [number, number][] = [
-  [32.3010,-9.2420],[32.3005,-9.2400],[32.2998,-9.2385],
-  [32.2990,-9.2372],[32.2985,-9.2360],[32.2978,-9.2350],
-  [32.2972,-9.2355],[32.2968,-9.2368],[32.2975,-9.2380],[32.2982,-9.2390],
-];
-
-function MovingCourier({ step }: { step: number }) {
-  const map = useMap();
-  const markerRef = useRef<L.Marker | null>(null);
-  const pos = ROUTE_POINTS[step % ROUTE_POINTS.length];
-  useEffect(() => { if (markerRef.current) markerRef.current.setLatLng(pos); }, [pos]);
-  useEffect(() => {
-    const m = L.marker(pos, { icon: courierIcon }).addTo(map);
-    markerRef.current = m;
-    return () => { m.remove(); };
-  }, []);
-  return null;
-}
-
 // ─── DELIVERY ZONE ────────────────────────────────────────────────────────────
 
 const DELIVERY_ZONE: [number,number][] = [
@@ -374,7 +355,7 @@ const T = {
     stages:['Reçue','En préparation','En chemin','Livrée'],
     stagesSub:['Commande confirmée',"Le chef s'affaire",'Votre livreur arrive','Bon appétit !'],
     orderStatus:'Statut de votre commande', orderNum:'Commande #BE-2847',
-    eta:'Arrivée estimée', etaTime:'18 min', courierName:'Mohamed A.', courierRating:'4.9',
+    eta:'Arrivée estimée', courierName:'Livreur Bridge',
     contactTitle:"Besoin d'aide ?", contactSub:'Notre équipe est disponible 7j/7',
     whatsapp:'WhatsApp Business', phone:'Appeler', email:'Email', hours:'Horaires', hoursVal:'8h00 – 23h00',
     navHome:'Accueil', navTrack:'Suivi', navContact:'Contact', navCart:'Panier',
@@ -474,7 +455,7 @@ const T = {
     stages:['Received','Preparing','On the way','Delivered'],
     stagesSub:['Order confirmed','Chef is cooking','Courier en route','Enjoy your meal!'],
     orderStatus:'Your order status', orderNum:'Order #BE-2847',
-    eta:'Estimated arrival', etaTime:'18 min', courierName:'Mohamed A.', courierRating:'4.9',
+    eta:'Estimated arrival', courierName:'Bridge Driver',
     contactTitle:'Need help?', contactSub:'Our team is available 7 days a week',
     whatsapp:'WhatsApp Business', phone:'Call us', email:'Email', hours:'Hours', hoursVal:'8:00 AM – 11:00 PM',
     navHome:'Home', navTrack:'Track', navContact:'Contact', navCart:'Cart',
@@ -574,7 +555,7 @@ const T = {
     stages:['مستلمة','قيد التحضير','في الطريق','تم التوصيل'],
     stagesSub:['تم تأكيد الطلب','الطاهي يعمل','المندوب في الطريق','بالهناء والشفاء!'],
     orderStatus:'حالة طلبك', orderNum:'الطلب #BE-2847',
-    eta:'وقت الوصول المتوقع', etaTime:'18 دقيقة', courierName:'يوسف أ.', courierRating:'4.9',
+    eta:'وقت الوصول المتوقع', courierName:'سائق بريدج',
     contactTitle:'هل تحتاج مساعدة؟', contactSub:'فريقنا متاح 7 أيام في الأسبوع',
     whatsapp:'واتساب بيزنس', phone:'اتصل بنا', email:'البريد الإلكتروني',
     hours:'ساعات العمل', hoursVal:'8:00 ص – 11:00 م',
@@ -675,7 +656,7 @@ const T = {
     stages:['ⵜⵜⵓⵙⵔⵖⴰ','ⵜⴻⵜⵜⵓⵙⴽⴰⵔ','ⵖ ⵓⵣⵔⵉⵔⵉ','ⵜⵜⵓⵙⵍⵎⴷ'],
     stagesSub:['ⵜⵜⵓⵙⵛⴷⵃ ⵜⴰⵖⵓⵍⵜ','ⴰⵎⵓⵙⵙⵓ ⵉⵜⵜⵓⵙⴽⴰⵔ','ⴰⵎⵥⵍⵉ ⵉⵜⵜⴰⵡⵙ','ⵜⵙⴼⵓⵍⵍⵓ!'],
     orderStatus:'ⴰⵙⵉⵡⴷ ⵏ ⵜⴰⵖⵓⵍⵜ', orderNum:'ⵜⴰⵖⵓⵍⵜ #BE-2847',
-    eta:'ⴰⴽⵓⴷ ⵏ ⵓⵙⵍⵎⴷ', etaTime:'18 ⵜⵉⵎⵉⵏⵉⵜⵉⵏ', courierName:'ⵢⵓⵙⴼ ⴰ.', courierRating:'4.9',
+    eta:'ⴰⴽⵓⴷ ⵏ ⵓⵙⵍⵎⴷ', courierName:'ⴰⵎⵥⵍⵉ Bridge',
     contactTitle:'ⵜⵙⵔⴰ ⵜⵉⵡⵉⵙⵉ?', contactSub:'ⴰⴳⵔⴰⵡ ⴰⵏⵏ ⵉⵍⵍⴰ 7 ⵓⵙⵙⴰⵏ',
     whatsapp:'WA Business', phone:'ⵙⵓⵍ', email:'ⵉⵎⴰⵢⵍ',
     hours:'ⵜⴰⵙⵔⴰⵜ', hoursVal:'8:00 – 23:00',
@@ -2865,7 +2846,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
         <p className={`font-black text-sm ${fClass}`} style={{color:'#065F46'}}>{displayRef}</p>
         <div className="flex items-center gap-2 mt-2">
           <span className="text-base">⏱️</span>
-          <p className="text-sm font-bold" style={{color:'var(--c-text)'}}>{t.eta}: <span style={{color:'#065F46'}}>{t.etaTime}</span></p>
+          <p className="text-sm font-bold" style={{color:'var(--c-text)'}}>{t.eta}: <span style={{color:'#065F46'}}>{isLive?'📡 GPS en direct':'En attente du livreur'}</span></p>
         </div>
       </div>
 
@@ -2927,10 +2908,12 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-1 px-2 py-1 rounded-full" style={{background:isLive?'#F0FDF4':'var(--c-input)'}}>
-            <span className={`w-2 h-2 rounded-full ${isLive?'bg-emerald-500 animate-pulse':'bg-gray-300'}`}/>
-            <span className="text-[10px] font-black" style={{color:isLive?'#065F46':'#9CA3AF'}}>{t.etaTime}</span>
-          </div>
+          {isLive&&(
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full" style={{background:'#F0FDF4'}}>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"/>
+              <span className="text-[10px] font-black" style={{color:'#065F46'}}>EN DIRECT</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -4433,7 +4416,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
                     <p className="font-black text-sm" style={{color:'#9D174D'}}>
                       {lang==='ar'?'وقت التسليم المتوقع':lang==='en'?'Estimated delivery':'Livraison estimée'}
                     </p>
-                    <p className="text-[11px]" style={{color:'#DB2777'}}>30 – 45 min</p>
+                    <p className="text-[11px]" style={{color:'#DB2777'}}>{lang==='ar'?'جاري التتبع…':lang==='en'?'Tracking in progress…':'Suivi en cours…'}</p>
                   </div>
                 </div>
               </div>
