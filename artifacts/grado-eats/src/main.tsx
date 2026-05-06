@@ -2519,7 +2519,7 @@ function BridgeAssistantPage() {
   const [escalated, setEscalated] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const BRIDGE_WA_NUMBER = '+212600000000';
+  const BRIDGE_WA_NUMBER = '+212764794856';
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior:'smooth' });

@@ -6,4 +6,4 @@ export const VAPID_PRIVATE_KEY =
   process.env.VAPID_PRIVATE_KEY ||
   "kg4M4cC1GOG_v7yWgw1w0jCyr8GAZRyRmelHssUu9gw";
 
-export const VAPID_CONTACT = "mailto:contact@bridge-safi.com";
+export const VAPID_CONTACT = "mailto:contact@safi-bridge.ma";
