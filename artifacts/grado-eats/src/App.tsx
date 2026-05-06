@@ -2801,17 +2801,13 @@ function MapPanner({center}:{center:[number,number]}) {
 }
 
 function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string}) {
-  const [activeStage,setActiveStage]=useState(2);
-  const [courierStep,setCourierStep]=useState(0);
+  const [activeStage,setActiveStage]=useState(0);
   const [realPos,setRealPos]=useState<{lat:number;lng:number}|null>(null);
   const [lastSeen,setLastSeen]=useState<number|null>(null);
   const isAR=lang==='ar'; const fClass=fontClass(lang);
   const displayRef=orderRef||t.orderNum;
 
-  // Simulated fallback movement
-  useEffect(()=>{const iv=setInterval(()=>setCourierStep(s=>(s+1)%ROUTE_POINTS.length),2500);return()=>clearInterval(iv);},[]);
-
-  // Poll real GPS position every 3 seconds
+  // Poll real GPS position + status every 3 seconds
   useEffect(()=>{
     if(!orderRef) return;
     const poll=async()=>{
@@ -2819,8 +2815,13 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
         const res=await fetch(`/api/tracking/${orderRef}`,{cache:'no-store'});
         if(res.ok){
           const data=await res.json();
-          if(data.found){setRealPos({lat:data.lat,lng:data.lng});setLastSeen(data.updatedAt);}
-          else setRealPos(null);
+          if(data.found){
+            setRealPos({lat:data.lat,lng:data.lng});
+            setLastSeen(data.updatedAt);
+            // Map driver status to stage number
+            const stageMap:{[k:string]:number}={received:0,preparing:1,on_way:2,delivered:3};
+            if(data.status&&stageMap[data.status]!==undefined) setActiveStage(stageMap[data.status]);
+          } else setRealPos(null);
         }
       }catch(_){}
     };
@@ -2830,7 +2831,9 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
   },[orderRef]);
 
   const isLive=realPos&&lastSeen&&(Date.now()-lastSeen<15000); // stale after 15s
-  const courierPos:[number,number]=realPos?[realPos.lat,realPos.lng]:ROUTE_POINTS[courierStep];
+  // Static center of Safi when no real GPS yet
+  const SAFI_CENTER:[number,number]=[32.2994,-9.2372];
+  const courierPos:[number,number]=realPos?[realPos.lat,realPos.lng]:SAFI_CENTER;
   const mapCenter:[number,number]=courierPos;
 
   // Live courier icon (pulsing green dot)
@@ -2874,11 +2877,11 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
           <div className={`flex justify-between relative ${isAR?'flex-row-reverse':''}`}>
             {t.stages.map((stage,i)=>(
               <div key={i} className="flex flex-col items-center" style={{width:'25%'}}>
-                <button onClick={()=>setActiveStage(i)}
+                <div
                   className={`w-9 h-9 rounded-full flex items-center justify-center font-black text-sm transition-all ${i===activeStage?'pulse-active':''}`}
                   style={{background:i<=activeStage?'#065F46':'#E5E1D8',color:i<=activeStage?'white':'#9CA3AF',border:i===activeStage?'3px solid #D9C5A0':'3px solid transparent',boxShadow:i===activeStage?'0 4px 16px rgba(6,95,70,0.35)':'none',zIndex:1}}>
                   {i<activeStage?'✓':['📋','👨‍🍳','🛵','✅'][i]}
-                </button>
+                </div>
                 <p className={`text-[9px] font-black uppercase tracking-tight mt-2 text-center leading-tight ${fClass}`} style={{color:i<=activeStage?'#065F46':'#9CA3AF'}}>{stage}</p>
               </div>
             ))}
@@ -2890,12 +2893,6 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
             <p className={`text-sm font-black ${fClass}`} style={{color:'#065F46'}}>{t.stages[activeStage]}</p>
             <p className="text-xs mt-0.5" style={{color:'#6B7280'}}>{t.stagesSub[activeStage]}</p>
           </div>
-        </div>
-        <div className="flex gap-2 mt-3">
-          {[0,1,2,3].map(i=>(
-            <button key={i} onClick={()=>setActiveStage(i)} className="flex-1 py-1 rounded-lg text-[10px] font-bold transition-all"
-              style={{background:activeStage===i?'#065F46':'var(--c-input)',color:activeStage===i?'white':'#6B7280',border:'1px solid var(--c-border)'}}>{i+1}</button>
-          ))}
         </div>
       </div>
 
@@ -2912,12 +2909,10 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
           <MapContainer center={mapCenter} zoom={16} style={{height:'100%',width:'100%'}} zoomControl attributionControl={false}>
             <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"/>
             <Marker position={[32.3010,-9.2420]} icon={restaurantIcon}><Popup>🥘 Bridge Safi</Popup></Marker>
-            {realPos?(
+            {realPos&&(
               <Marker position={courierPos} icon={isLive?liveIcon:staleIcon}>
                 <Popup>🛵 Livreur — position réelle</Popup>
               </Marker>
-            ):(
-              <MovingCourier step={courierStep}/>
             )}
             <MapPanner center={mapCenter}/>
           </MapContainer>
@@ -4134,6 +4129,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   const [tab,setTab]=useState<'home'|'shop'|'track'>('home');
   const [lastRef,setLastRef]=useState<string>(()=>localStorage.getItem('bridge_fleurs_last_ref')||'');
   const [trackStage,setTrackStage]=useState(0);
+  const [fleursLastSeen,setFleursLastSeen]=useState<number|null>(null);
   const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
   const pillStyle:React.CSSProperties={
@@ -4161,6 +4157,27 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
     :lang==='en'
     ?['Order confirmed','Preparing your order','On the way','Delivered']
     :['Commande confirmée','Préparation en cours','En route','Livré 🌹'];
+
+  // Poll tracking status for Fleurs orders every 4 seconds
+  useEffect(()=>{
+    if(!lastRef) return;
+    const poll=async()=>{
+      try{
+        const res=await fetch(`/api/tracking/${lastRef}`,{cache:'no-store'});
+        if(res.ok){
+          const data=await res.json();
+          if(data.found){
+            setFleursLastSeen(data.updatedAt);
+            const stageMap:{[k:string]:number}={received:0,preparing:1,on_way:2,delivered:3};
+            if(data.status&&stageMap[data.status]!==undefined) setTrackStage(stageMap[data.status]);
+          }
+        }
+      }catch(_){}
+    };
+    poll();
+    const iv=setInterval(poll,4000);
+    return()=>clearInterval(iv);
+  },[lastRef]);
 
   const pinkGrad='linear-gradient(135deg,#9D174D,#DB2777)';
   const pinkGlow='0 4px 16px rgba(219,39,119,0.35)';
@@ -4407,16 +4424,6 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
                         {i===trackStage&&<p className="text-[9px]" style={{color:'#EC4899'}}>● En cours…</p>}
                       </div>
                     </div>
-                  ))}
-                </div>
-                {/* Simulate stages (dev) */}
-                <div className="flex gap-2 mb-4">
-                  {[0,1,2,3].map(i=>(
-                    <button key={i} onClick={()=>setTrackStage(i)}
-                      className="flex-1 py-1.5 rounded-xl text-[10px] font-bold transition-all"
-                      style={{background:trackStage===i?pinkGrad:'white',color:trackStage===i?'white':'#9D174D',border:'1px solid #FBCFE8'}}>
-                      {i+1}
-                    </button>
                   ))}
                 </div>
                 {/* ETA card */}

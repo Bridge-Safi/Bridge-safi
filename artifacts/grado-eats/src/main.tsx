@@ -1474,6 +1474,8 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
   };
 
   // ── Delivery mode ──
+  const [delivStatus, setDelivStatus] = useState<'received'|'preparing'|'on_way'|'delivered'>('received');
+
   const pushPosition = async (lat: number, lng: number) => {
     try {
       await fetch(`/api/tracking/${ref}`, {
@@ -1484,10 +1486,29 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
     } catch (_) {}
   };
 
+  const updateDelivStatus = async (newStatus: 'received'|'preparing'|'on_way'|'delivered') => {
+    setDelivStatus(newStatus);
+    try {
+      await fetch(`/api/tracking/${ref}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (newStatus === 'delivered') {
+        if (watchId.current !== null) navigator.geolocation.clearWatch(watchId.current);
+        await fetch(`/api/tracking/${ref}`, { method: 'DELETE' }).catch(() => {});
+      }
+    } catch (_) {}
+  };
+
   useEffect(() => {
     if (isTaxi) return;
     if (!ref) { setStatus('error'); return; }
     if (!navigator.geolocation) { setStatus('error'); return; }
+    // Set initial status to received when driver opens the page
+    fetch(`/api/tracking/${ref}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'received' }),
+    }).catch(() => {});
     watchId.current = navigator.geolocation.watchPosition(
       (pos) => {
         const { latitude: lat, longitude: lng } = pos.coords;
@@ -1500,7 +1521,6 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
     );
     return () => {
       if (watchId.current !== null) navigator.geolocation.clearWatch(watchId.current);
-      if (ref) fetch(`/api/tracking/${ref}`, { method: 'DELETE' }).catch(() => {});
     };
   }, [ref, isTaxi]);
 
@@ -1629,25 +1649,55 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
           </div>
         )}
 
-        {status === 'active' && (
+        {status === 'active' && delivStatus !== 'delivered' && (
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#D1FAE5', borderRadius: '12px', padding: '12px 16px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#D1FAE5', borderRadius: '12px', padding: '10px 16px', marginBottom: '16px' }}>
               <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#059669', display: 'inline-block', animation: 'pulse 1.5s infinite' }}/>
-              <span style={{ fontSize: '14px', fontWeight: '800', color: '#065F46' }}>GPS EN DIRECT</span>
+              <span style={{ fontSize: '13px', fontWeight: '800', color: '#065F46' }}>GPS EN DIRECT</span>
+              {secsAgo !== null && <span style={{ fontSize: '10px', color: '#6B7280', marginLeft: 'auto' }}>il y a {secsAgo}s</span>}
             </div>
-            <p style={{ fontSize: '12px', color: '#6B7280', marginBottom: '8px' }}>Votre position est partagée avec le client en temps réel</p>
+
+            {/* Status buttons */}
+            <p style={{ fontSize: '10px', fontWeight: '900', color: '#9CA3AF', letterSpacing: '0.08em', marginBottom: '10px', textTransform: 'uppercase' }}>Mettre à jour le statut</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+              {([
+                { key: 'received',  label: '📋 Commande reçue',      bg: '#F0FDF4', border: '#86EFAC', color: '#065F46' },
+                { key: 'preparing', label: '👨‍🍳 En préparation',       bg: '#FEF3C7', border: '#FDE68A', color: '#92400E' },
+                { key: 'on_way',    label: '🛵 En chemin vers le client', bg: '#EFF6FF', border: '#93C5FD', color: '#1D4ED8' },
+                { key: 'delivered', label: '✅ Livraison effectuée',  bg: '#065F46', border: '#065F46', color: '#fff'    },
+              ] as {key:'received'|'preparing'|'on_way'|'delivered';label:string;bg:string;border:string;color:string}[]).map(s=>(
+                <button key={s.key} onClick={()=>updateDelivStatus(s.key)}
+                  style={{
+                    width: '100%', padding: '11px 14px', borderRadius: '12px',
+                    background: delivStatus === s.key ? s.bg : '#F9FAFB',
+                    border: `2px solid ${delivStatus === s.key ? s.border : '#E5E7EB'}`,
+                    color: delivStatus === s.key ? s.color : '#9CA3AF',
+                    fontSize: '13px', fontWeight: delivStatus === s.key ? '800' : '600',
+                    cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s',
+                    boxShadow: delivStatus === s.key ? '0 2px 8px rgba(0,0,0,0.1)' : 'none',
+                  }}>
+                  {s.label}
+                </button>
+              ))}
+            </div>
+
             {coords && (
-              <p style={{ fontSize: '11px', fontFamily: 'monospace', color: '#9CA3AF', background: '#F9FAFB', borderRadius: '8px', padding: '8px' }}>
-                {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
+              <p style={{ fontSize: '10px', fontFamily: 'monospace', color: '#9CA3AF', background: '#F9FAFB', borderRadius: '8px', padding: '6px 8px', marginBottom: '8px' }}>
+                📍 {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}
               </p>
             )}
-            {secsAgo !== null && (
-              <p style={{ fontSize: '11px', color: '#10B981', marginTop: '8px' }}>✓ Dernière mise à jour il y a {secsAgo}s</p>
-            )}
-            <div style={{ marginTop: '20px', padding: '12px', background: '#FEF3C7', borderRadius: '12px' }}>
-              <p style={{ fontSize: '12px', color: '#92400E', fontWeight: '700' }}>⚠️ Ne fermez pas cette page</p>
-              <p style={{ fontSize: '11px', color: '#B45309', marginTop: '4px' }}>Laissez-la ouverte pendant toute la livraison</p>
+            <div style={{ padding: '10px 12px', background: '#FEF3C7', borderRadius: '10px' }}>
+              <p style={{ fontSize: '11px', color: '#92400E', fontWeight: '700' }}>⚠️ Ne fermez pas cette page</p>
+              <p style={{ fontSize: '10px', color: '#B45309', marginTop: '2px' }}>Laissez-la ouverte pendant toute la livraison</p>
             </div>
+          </div>
+        )}
+
+        {status === 'active' && delivStatus === 'delivered' && (
+          <div style={{ background: '#F0FDF4', borderRadius: '14px', padding: '20px' }}>
+            <p style={{ fontSize: '36px', marginBottom: '8px' }}>🎉</p>
+            <p style={{ fontSize: '16px', fontWeight: '900', color: '#065F46', marginBottom: '4px' }}>Livraison terminée !</p>
+            <p style={{ fontSize: '12px', color: '#6B7280' }}>Le client a été notifié. Merci !</p>
           </div>
         )}
 
