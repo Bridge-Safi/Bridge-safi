@@ -219,7 +219,7 @@ export function getBridgeId(phone: string|undefined|null, name?: string|undefine
 
 const PROFILE_KEY_PREFIX = 'bridge_eats_profile_';
 const PROFILE_KEY_LEGACY = 'bridge_eats_profile'; // old generic key — migrated once
-const emptyProfile = (): UserProfile => ({ name:'', address:'', phone:'', email:'', cardNumber:'', cardExpiry:'', cardName:'', paymentMethod:'card', paypalEmail:'', onboardingComplete:false });
+const emptyProfile = (): UserProfile => ({ name:'', address:'', phone:'', email:'', cardNumber:'', cardExpiry:'', cardName:'', paymentMethod:'card', paypalEmail:'', onboardingComplete:true });
 
 function profileKey(userId: string) { return `${PROFILE_KEY_PREFIX}${userId}`; }
 
@@ -295,6 +295,8 @@ function useProfile(userId?: string) {
       // No local data — try to restore from server (catches browser cache wipes)
       (async () => {
         try {
+          // Small delay to let Clerk fully establish the session token after login
+          await new Promise(r => setTimeout(r, 800));
           const token = await getToken();
           const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
           const r = await fetch('/api/profile', { credentials: 'include', headers });
@@ -3847,9 +3849,19 @@ function ProfileOnboardingScreen({lang,profile,saveProfile,onDone}:{
   const [address,setAddress]=useState(profile.address||'');
   const completedCount=[phone,address].filter(Boolean).length;
   const total=2;
+  const getAuthHeaders=useAuthHeaders();
 
-  const handleSave=()=>{
-    saveProfile({...profile,phone,address,onboardingComplete:true});
+  const handleSave=async()=>{
+    const updated={...profile,phone,address,onboardingComplete:true};
+    saveProfile(updated);
+    try{
+      const h=await getAuthHeaders();
+      await fetch('/api/profile/sync',{
+        method:'POST',credentials:'include',
+        headers:{...h,'Content-Type':'application/json'},
+        body:JSON.stringify({phone:phone.trim(),name:profile.name.trim(),address:address.trim()}),
+      });
+    }catch{}
     onDone();
   };
   const handleSkip=()=>{
