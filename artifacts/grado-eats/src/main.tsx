@@ -1,6 +1,6 @@
 import React, { Component, useEffect, useRef, useState } from 'react';
 import { createRoot } from "react-dom/client";
-import { ClerkProvider, useClerk, useUser } from '@clerk/react';
+import { ClerkProvider, useAuth, useClerk, useUser } from '@clerk/react';
 import { Switch, Route, useLocation, Router as WouterRouter } from 'wouter';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import App from "./App";
@@ -1284,14 +1284,14 @@ function GamePage() {
 /** Fetches a verified phone token then loads the game iframe */
 function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; isAR: boolean }) {
   const [, navigate] = useLocation();
-  const { session } = useClerk();
+  const { getToken, isLoaded, isSignedIn } = useAuth();
   const [state, setState] = useState<'loading'|'ready'|'no_phone'|'error'>('loading');
   const [gameToken, setGameToken] = useState<string | null>(null);
   const [phone, setPhone] = useState<string | null>(null);
   const [playerName, setPlayerName] = useState<string>('');
 
   const getAuthHeaders = async (): Promise<HeadersInit> => {
-    const token = await session?.getToken();
+    const token = await getToken();
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
@@ -1299,22 +1299,27 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
     ? 'BR-' + phone.replace(/\D/g,'').slice(0,6) + ((playerName||'').trim()[0]||'?').toUpperCase()
     : 'BR-???????';
 
+  // Wait until Clerk is loaded and user is signed in before fetching the game token
   useEffect(() => {
-    getAuthHeaders().then(h =>
-      fetch('/api/game/token', { method: 'POST', credentials: 'include', headers: h })
-        .then(r => r.json())
-        .then(data => {
-          if (data.error === 'no_phone') { setState('no_phone'); return; }
-          if (data.token && data.phone) {
-            setGameToken(data.token);
-            setPhone(data.phone);
-            setPlayerName(data.name || '');
-            setState('ready');
-          } else setState('error');
-        })
-        .catch(() => setState('error'))
-    );
-  }, [userId]);
+    if (!isLoaded || !isSignedIn) return;
+    setState('loading');
+    getToken().then(token => {
+      const h: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+      return fetch('/api/game/token', { method: 'POST', credentials: 'include', headers: h });
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.error === 'no_phone') { setState('no_phone'); return; }
+        if (data.token && data.phone) {
+          setGameToken(data.token);
+          setPhone(data.phone);
+          setPlayerName(data.name || '');
+          setState('ready');
+        } else setState('error');
+      })
+      .catch(() => setState('error'));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, isLoaded, isSignedIn]);
 
   useEffect(() => {
     const handler = (event: MessageEvent) => {
@@ -1328,14 +1333,18 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
         typeof msg.points === 'number' ? msg.points :
         undefined;
       if (typeof diamonds !== 'number' || diamonds < 0 || !Number.isInteger(diamonds)) return;
-      getAuthHeaders().then(h => fetch('/api/game/diamonds', {
-        method: 'POST', credentials: 'include',
-        headers: { ...h, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ diamonds }),
-      }).catch(() => {}));
+      getToken().then(token => {
+        const h: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+        return fetch('/api/game/diamonds', {
+          method: 'POST', credentials: 'include',
+          headers: { ...h, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ diamonds }),
+        });
+      }).catch(() => {});
     };
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const noPhoneMsg = {
