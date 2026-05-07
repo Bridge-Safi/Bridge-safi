@@ -219,9 +219,31 @@ export function getBridgeId(phone: string|undefined|null, name?: string|undefine
 
 const PROFILE_KEY_PREFIX = 'bridge_eats_profile_';
 const PROFILE_KEY_LEGACY = 'bridge_eats_profile'; // old generic key — migrated once
+const AVATAR_KEY_PREFIX  = 'bridge_eats_avatar_';  // separate key so large base64 never inflates profile JSON
 const emptyProfile = (): UserProfile => ({ name:'', address:'', phone:'', email:'', cardNumber:'', cardExpiry:'', cardName:'', paymentMethod:'card', paypalEmail:'', onboardingComplete:true });
 
 function profileKey(userId: string) { return `${PROFILE_KEY_PREFIX}${userId}`; }
+function avatarKey(userId: string)  { return `${AVATAR_KEY_PREFIX}${userId}`; }
+
+// Compress a base64 image to ≤200×200 JPEG — prevents localStorage quota errors
+function compressAvatarDataUrl(dataUrl: string, quality = 0.72, maxPx = 220): Promise<string> {
+  return new Promise(resolve => {
+    if (!dataUrl?.startsWith('data:')) { resolve(dataUrl); return; }
+    if (dataUrl.length < 80_000) { resolve(dataUrl); return; } // already small enough
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxPx / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d')!.drawImage(img, 0, 0, w, h);
+      resolve(c.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
 
 // ── Card type detection ────────────────────────────────────────────────────────
 type CardType = 'visa'|'mastercard'|'unknown';
@@ -266,27 +288,70 @@ const MastercardLogo=()=>(
   </svg>
 );
 
+// Read profile from localStorage without the avatar field (avatar lives in its own key)
+function readProfileFromStorage(key: string): UserProfile {
+  try {
+    const raw = JSON.parse(localStorage.getItem(key) || '{}');
+    const { avatar: _av, ...rest } = raw; // strip avatar — stored separately
+    return { ...emptyProfile(), ...rest };
+  } catch { return emptyProfile(); }
+}
+
+// Read avatar from its own key (avoids inflating profile JSON and hitting quota)
+function readAvatarFromStorage(aKey: string): string {
+  try { return localStorage.getItem(aKey) || ''; } catch { return ''; }
+}
+
+// Write profile without avatar to main key, avatar to its own key
+function writeProfileToStorage(key: string, aKey: string, p: UserProfile) {
+  try {
+    const { avatar, ...rest } = p;
+    localStorage.setItem(key, JSON.stringify(rest));
+    if (avatar) localStorage.setItem(aKey, avatar);
+  } catch (e: unknown) {
+    // If quota still hit (e.g. other data), remove avatar and retry
+    if (e instanceof DOMException && e.name === 'QuotaExceededError') {
+      try { localStorage.removeItem(aKey); } catch {}
+    }
+  }
+}
+
 function useProfile(userId?: string) {
-  const key = userId ? profileKey(userId) : null;
+  const key  = userId ? profileKey(userId) : null;
+  const aKey = userId ? avatarKey(userId)  : null;
   const { getToken } = useAuth();
 
   // Show localStorage data instantly while server loads (good UX)
   const [profile, setProfileState] = useState<UserProfile>(() => {
-    if (!key) return emptyProfile();
-    try { return { ...emptyProfile(), ...JSON.parse(localStorage.getItem(key)||'{}') }; }
-    catch { return emptyProfile(); }
+    if (!key || !aKey) return emptyProfile();
+    const p = readProfileFromStorage(key);
+    p.avatar = readAvatarFromStorage(aKey);
+    // Migration: if old profile has a large avatar embedded, move it to the avatar key
+    try {
+      const raw = JSON.parse(localStorage.getItem(key) || '{}');
+      if (raw.avatar && !localStorage.getItem(aKey)) {
+        compressAvatarDataUrl(raw.avatar).then(compressed => {
+          try {
+            localStorage.setItem(aKey, compressed);
+            const { avatar: _av, ...rest } = raw;
+            localStorage.setItem(key, JSON.stringify(rest));
+          } catch {}
+        });
+        p.avatar = raw.avatar; // use it in state immediately
+      }
+    } catch {}
+    return p;
   });
 
   // Always fetch from server when userId is available — server is source of truth.
-  // localStorage is only a display cache for instant load.
+  // Avatar is loaded from its own localStorage key (never from server).
   useEffect(() => {
-    if (!key) { setProfileState(emptyProfile()); return; }
+    if (!key || !aKey) { setProfileState(emptyProfile()); return; }
 
     // Show cached data immediately while server responds
-    try {
-      const cached = localStorage.getItem(key);
-      if (cached) setProfileState({ ...emptyProfile(), ...JSON.parse(cached) });
-    } catch {}
+    const cached = readProfileFromStorage(key);
+    cached.avatar = readAvatarFromStorage(aKey);
+    setProfileState(cached);
 
     let cancelled = false;
     const loadFromServer = async () => {
@@ -304,21 +369,19 @@ function useProfile(userId?: string) {
           const d = await r.json();
           if (cancelled) return;
           if (d && (d.name || d.phone || d.address)) {
-            // Merge server fields (name/phone/address) ON TOP of local cache.
-            // Never wipe local-only fields: email, avatar, card info, etc.
-            const localCached = (() => {
-              try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch { return {}; }
-            })();
+            // Merge server fields (name/phone/address) with local cache
+            const local = readProfileFromStorage(key);
             const merged: UserProfile = {
               ...emptyProfile(),
-              ...localCached,
-              name:    d.name    || localCached.name    || '',
-              phone:   d.phone   || localCached.phone   || '',
-              address: d.address || localCached.address || '',
-              onboardingComplete: !!(d.name || d.phone || localCached.name || localCached.phone),
+              ...local,
+              name:    d.name    || local.name    || '',
+              phone:   d.phone   || local.phone   || '',
+              address: d.address || local.address || '',
+              onboardingComplete: !!(d.name || d.phone || local.name || local.phone),
+              avatar: readAvatarFromStorage(aKey), // always from avatar key
             };
             setProfileState(merged);
-            localStorage.setItem(key, JSON.stringify(merged));
+            writeProfileToStorage(key, aKey, merged);
           }
           return;
         } catch { /* retry */ }
@@ -331,8 +394,8 @@ function useProfile(userId?: string) {
 
   const saveProfile = useCallback((p: UserProfile) => {
     setProfileState(p);
-    if (key) localStorage.setItem(key, JSON.stringify(p));
-  }, [key]);
+    if (key && aKey) writeProfileToStorage(key, aKey, p);
+  }, [key, aKey]);
 
   return { profile, saveProfile };
 }
@@ -1714,6 +1777,8 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
         canvas.getContext('2d')!.drawImage(img,0,0,w,h);
         const compressed=canvas.toDataURL('image/jpeg',0.72);
         setForm(f=>({...f,avatar:compressed}));
+        // Save immediately to the dedicated avatar key so it persists without saving the whole form
+        if(user?.id) { try { localStorage.setItem(avatarKey(user.id), compressed); } catch {} }
       };
       img.src=ev.target.result as string;
     };

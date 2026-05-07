@@ -1414,7 +1414,17 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
           ← {isAR?'رجوع':lang==='en'?'Back':lang==='amz'?'ⴰⵣⵣⵓⵍ':'Retour'}
         </button>
         <span style={{color:'#4ADE80',fontSize:12,fontWeight:900,letterSpacing:'0.1em'}}>🦈 SAFI RUNNER</span>
-        <span style={{marginLeft:'auto',color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700}}>{gameId}</span>
+        <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:8}}>
+          {playerName && <span style={{color:'rgba(255,255,255,0.55)',fontSize:11,fontWeight:700,maxWidth:90,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{playerName}</span>}
+          {(() => {
+            const av = (() => { try { return localStorage.getItem(`bridge_eats_avatar_${userId}`) || ''; } catch { return ''; } })();
+            const clerkImg = (window as any).__clerkUser?.imageUrl || '';
+            const src = av || clerkImg;
+            return src
+              ? <img src={src} alt="Profil" style={{width:32,height:32,borderRadius:'50%',objectFit:'cover',border:'2px solid rgba(74,222,128,0.5)',flexShrink:0}}/>
+              : <div style={{width:32,height:32,borderRadius:'50%',background:'rgba(74,222,128,0.18)',border:'2px solid rgba(74,222,128,0.4)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,flexShrink:0}}>👤</div>;
+          })()}
+        </div>
       </div>
       <iframe
         src={gameSrc}
