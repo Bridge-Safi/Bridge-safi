@@ -270,53 +270,56 @@ function useProfile(userId?: string) {
   const key = userId ? profileKey(userId) : null;
   const { getToken } = useAuth();
 
+  // Show localStorage data instantly while server loads (good UX)
   const [profile, setProfileState] = useState<UserProfile>(() => {
     if (!key) return emptyProfile();
-    try {
-      const legacy = localStorage.getItem(PROFILE_KEY_LEGACY);
-      const mine   = localStorage.getItem(key);
-      if (!mine && legacy) {
-        localStorage.removeItem(PROFILE_KEY_LEGACY);
-      }
-      return { ...emptyProfile(), ...JSON.parse(localStorage.getItem(key)||'{}') };
-    } catch { return emptyProfile(); }
+    try { return { ...emptyProfile(), ...JSON.parse(localStorage.getItem(key)||'{}') }; }
+    catch { return emptyProfile(); }
   });
 
-  // When userId changes (different user logged in), reload their profile from localStorage.
-  // If localStorage has no data for this user, fetch from server to restore after a cache wipe.
+  // Always fetch from server when userId is available — server is source of truth.
+  // localStorage is only a display cache for instant load.
   useEffect(() => {
     if (!key) { setProfileState(emptyProfile()); return; }
-    const stored = (() => {
-      try { return JSON.parse(localStorage.getItem(key)||'null'); } catch { return null; }
-    })();
-    if (stored) {
-      setProfileState({ ...emptyProfile(), ...stored });
-    } else {
-      // No local data — try to restore from server (catches browser cache wipes)
-      (async () => {
+
+    // Show cached data immediately while server responds
+    try {
+      const cached = localStorage.getItem(key);
+      if (cached) setProfileState({ ...emptyProfile(), ...JSON.parse(cached) });
+    } catch {}
+
+    let cancelled = false;
+    const loadFromServer = async () => {
+      for (let attempt = 0; attempt < 4; attempt++) {
+        if (cancelled) return;
+        if (attempt > 0) await new Promise(r => setTimeout(r, 1000 * attempt));
         try {
-          // Small delay to let Clerk fully establish the session token after login
-          await new Promise(r => setTimeout(r, 800));
           const token = await getToken();
-          const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
-          const r = await fetch('/api/profile', { credentials: 'include', headers });
-          if (r.ok) {
-            const d = await r.json();
-            if (d && (d.name || d.phone || d.address)) {
-              const restored: UserProfile = {
-                ...emptyProfile(),
-                name:    d.name    || '',
-                phone:   d.phone   || '',
-                address: d.address || '',
-                onboardingComplete: !!(d.name || d.phone),
-              };
-              setProfileState(restored);
-              localStorage.setItem(key, JSON.stringify(restored));
-            }
+          if (!token) continue;
+          const r = await fetch('/api/profile', {
+            credentials: 'include',
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!r.ok) continue;
+          const d = await r.json();
+          if (cancelled) return;
+          if (d && (d.name || d.phone || d.address)) {
+            const restored: UserProfile = {
+              ...emptyProfile(),
+              name:    d.name    || '',
+              phone:   d.phone   || '',
+              address: d.address || '',
+              onboardingComplete: !!(d.name || d.phone),
+            };
+            setProfileState(restored);
+            localStorage.setItem(key, JSON.stringify(restored));
           }
-        } catch { /* silent — fallback to empty */ }
-      })();
-    }
+          return;
+        } catch { /* retry */ }
+      }
+    };
+    loadFromServer();
+    return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
