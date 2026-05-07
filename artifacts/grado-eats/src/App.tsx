@@ -268,7 +268,7 @@ const MastercardLogo=()=>(
 
 function useProfile(userId?: string) {
   const key = userId ? profileKey(userId) : null;
-  const { session } = useClerk();
+  const { getToken } = useAuth();
 
   const [profile, setProfileState] = useState<UserProfile>(() => {
     if (!key) return emptyProfile();
@@ -295,7 +295,7 @@ function useProfile(userId?: string) {
       // No local data — try to restore from server (catches browser cache wipes)
       (async () => {
         try {
-          const token = await session?.getToken();
+          const token = await getToken();
           const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
           const r = await fetch('/api/profile', { credentials: 'include', headers });
           if (r.ok) {
