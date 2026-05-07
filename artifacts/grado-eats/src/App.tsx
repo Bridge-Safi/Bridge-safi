@@ -29,6 +29,14 @@ interface DarkCtxValue { dark: boolean; toggle: () => void }
 const DarkModeCtx = createContext<DarkCtxValue>({ dark: false, toggle: () => {} });
 export function useDark() { return useContext(DarkModeCtx); }
 
+function useAuthHeaders() {
+  const { session } = useClerk();
+  return useCallback(async (): Promise<HeadersInit> => {
+    const token = await session?.getToken();
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  }, [session]);
+}
+
 function DarkToggle({ size = 44 }: { size?: number }) {
   const { dark, toggle } = useDark();
   return (
@@ -1650,6 +1658,7 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
 
 function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfile;onSave:(p:UserProfile)=>void;onClose:()=>void}) {
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
+  const getAuthHeaders=useAuthHeaders();
   const [form,setForm]=useState<UserProfile>({...profile});
   const [saved,setSaved]=useState(false);
   const avatarInputRef=useRef<HTMLInputElement>(null);
@@ -1674,14 +1683,14 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
   const [gameTotalEarned, setGameTotalEarned] = useState(0);
   useEffect(() => {
     if (!user?.id) return;
-    fetch('/api/game/diamonds', { credentials: 'include' })
+    getAuthHeaders().then(h=>fetch('/api/game/diamonds', { credentials: 'include', headers: h })
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         if (d && typeof d.diamonds === 'number') setGamePoints(d.diamonds);
         if (d && typeof d.totalEarned === 'number') setGameTotalEarned(d.totalEarned);
       })
-      .catch(() => {});
-  }, [user?.id]);
+      .catch(() => {}));
+  }, [user?.id, getAuthHeaders]);
 
   // ── Validation helpers ──────────────────────────────────────────────────────
   const validateName=(v:string)=>v.trim().length>=3&&/\s/.test(v.trim());
@@ -1741,9 +1750,10 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
     if(Object.keys(e).length>0) return;
     if(form.phone.trim()){
       try{
+        const _ah=await getAuthHeaders();
         const r=await fetch('/api/profile/sync',{
           method:'POST',credentials:'include',
-          headers:{'Content-Type':'application/json'},
+          headers:{..._ah,'Content-Type':'application/json'},
           body:JSON.stringify({phone:form.phone.trim(),name:form.name.trim()}),
         });
         if(!r.ok){const d=await r.json().catch(()=>({error:''}));if(d.error==='phone_taken'){setPhoneTaken(true);setErrs({...e,phone:true});return;}}
@@ -2160,6 +2170,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
   serviceFeeThreshold?:number; serviceFeeAmount?:number;
 }) {
   const { isSignedIn, user } = useUser();
+  const getAuthHeaders=useAuthHeaders();
   const [, navigate] = useLocation();
   const t=T[lang]; const isAR=lang==='ar'; const fClass=fontClass(lang);
   const [delivMode,setDelivMode]=useState<'delivery'|'collect'>('delivery');
@@ -2185,11 +2196,11 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
   const [gamePts,setGamePts]=useState(0);
   useEffect(()=>{
     if(!user?.id) return;
-    fetch('/api/game/diamonds',{credentials:'include'})
+    getAuthHeaders().then(h=>fetch('/api/game/diamonds',{credentials:'include',headers:h})
       .then(r=>r.ok?r.json():null)
       .then(d=>{if(d&&typeof d.diamonds==='number')setGamePts(d.diamonds);})
-      .catch(()=>{});
-  },[user?.id]);
+      .catch(()=>{}));
+  },[user?.id,getAuthHeaders]);
   // 1 000 💎 = 5 MAD → 200 💎 = 1 MAD
   const maxPtsMAD=Math.floor(gamePts/200);
   const [ptsUsed,setPtsUsed]=useState(0);
@@ -2288,11 +2299,11 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
       // Deduct diamonds server-side if used
       if(ptsUsed>0){
         const diamondsToSpend=ptsUsed*200; // 200 💎 = 1 MAD (1 000 💎 = 5 MAD)
-        fetch('/api/game/diamonds/spend',{
+        getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{
           method:'POST',credentials:'include',
-          headers:{'Content-Type':'application/json'},
+          headers:{...h,'Content-Type':'application/json'},
           body:JSON.stringify({spend:diamondsToSpend}),
-        }).catch(()=>{});
+        }).catch(()=>{}));
       }
     }catch(_){/* silent */}
   };
@@ -3054,6 +3065,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
   const [showProfile,setShowProfile]=useState(false);
   const [,navigate]=useLocation();
   const { user } = useUser();
+  const getAuthHeaders=useAuthHeaders();
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
   const choose=(s:'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie')=>{setPressed(s);setTimeout(()=>onSelect(s),320);};
@@ -3064,11 +3076,11 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
   const [diamonds,setDiamonds]=useState(0);
   useEffect(()=>{
     if(!user?.id) return;
-    fetch('/api/game/diamonds',{credentials:'include'})
+    getAuthHeaders().then(h=>fetch('/api/game/diamonds',{credentials:'include',headers:h})
       .then(r=>r.ok?r.json():null)
       .then(d=>{if(d&&typeof d.diamonds==='number')setDiamonds(d.diamonds);})
-      .catch(()=>{});
-  },[user?.id]);
+      .catch(()=>{}));
+  },[user?.id,getAuthHeaders]);
   return(
     <div className={`fixed inset-0 flex flex-col z-40 ${isAR?'rtl':'ltr'}`}
       style={{background:'var(--c-bg)',overflowY:'auto'}}>
@@ -3350,16 +3362,17 @@ function TaxiTrackingMap({driverPos,clientPos}:{driverPos:{lat:number;lng:number
 // ─── SHARK DIAMOND WIDGET ────────────────────────────────────────────────────
 function SharkDiamondWidget({onNavigate,profile}:{onNavigate:()=>void;profile:UserProfile}) {
   const {user}=useUser();
+  const getAuthHeaders=useAuthHeaders();
   const [gems,setGems]=useState(0);
   const bridgeId=getBridgeId(profile.phone, profile.name);
   const avatarSrc=profile.avatar||user?.imageUrl||null;
   useEffect(()=>{
     if(!user?.id) return;
-    fetch('/api/game/diamonds',{credentials:'include'})
+    getAuthHeaders().then(h=>fetch('/api/game/diamonds',{credentials:'include',headers:h})
       .then(r=>r.ok?r.json():null)
       .then(d=>{if(d&&typeof d.diamonds==='number')setGems(d.diamonds);})
-      .catch(()=>{});
-  },[user?.id]);
+      .catch(()=>{}));
+  },[user?.id,getAuthHeaders]);
   return(
     <button onClick={onNavigate} title={`${bridgeId} — Bridge Game`}
       style={{background:'none',border:'none',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',gap:2,padding:'2px 4px',borderRadius:12}}>
@@ -3406,17 +3419,18 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   const [taxiPayMethod,setTaxiPayMethod]=useState<PayMethodType>(null);
   const [showTaxiQR,setShowTaxiQR]=useState(false);
   const {user:taxiUser}=useUser();
+  const getAuthHeaders=useAuthHeaders();
   const [,navigateTaxi]=useLocation();
   const [taxiGems,setTaxiGems]=useState(0);
   const [taxiGemMAD,setTaxiGemMAD]=useState(0);
   const maxTaxiGemMAD=Math.floor(taxiGems/200);
   useEffect(()=>{
     if(!taxiUser?.id) return;
-    fetch('/api/game/diamonds',{credentials:'include'})
+    getAuthHeaders().then(h=>fetch('/api/game/diamonds',{credentials:'include',headers:h})
       .then(r=>r.ok?r.json():null)
       .then(d=>{if(d&&typeof d.diamonds==='number')setTaxiGems(d.diamonds);})
-      .catch(()=>{});
-  },[taxiUser?.id]);
+      .catch(()=>{}));
+  },[taxiUser?.id,getAuthHeaders]);
 
   // ── Tracking state ──
   const [trackData,setTrackData]=useState<{found:boolean;lat?:number;lng?:number;status?:string;driverName?:string;eta?:number;clientLat?:number;clientLng?:number}|null>(null);
@@ -3483,7 +3497,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
         }),
       }).catch(()=>{});
     }finally{setSending(false);}
-    if(taxiGemMAD>0){fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({spend:taxiGemMAD*200})}).catch(()=>{});}
+    if(taxiGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:taxiGemMAD*200})}).catch(()=>{}));}
     localStorage.setItem('bridge_taxi_ref',ref);
     setBookingRef(ref);
     if(taxiPayMethod==='qr') setShowTaxiQR(true);
@@ -4499,17 +4513,18 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   const [tabacPayMethod,setTabacPayMethod]=useState<PayMethodType>(null);
   const [showTabacQR,setShowTabacQR]=useState(false);
   const {user:tabacUser}=useUser();
+  const getAuthHeadersTabac=useAuthHeaders();
   const [,navigateTabac]=useLocation();
   const [tabacGems,setTabacGems]=useState(0);
   const [tabacGemMAD,setTabacGemMAD]=useState(0);
   const maxTabacGemMAD=Math.floor(tabacGems/200);
   useEffect(()=>{
     if(!tabacUser?.id) return;
-    fetch('/api/game/diamonds',{credentials:'include'})
+    getAuthHeadersTabac().then(h=>fetch('/api/game/diamonds',{credentials:'include',headers:h})
       .then(r=>r.ok?r.json():null)
       .then(d=>{if(d&&typeof d.diamonds==='number')setTabacGems(d.diamonds);})
-      .catch(()=>{});
-  },[tabacUser?.id]);
+      .catch(()=>{}));
+  },[tabacUser?.id,getAuthHeadersTabac]);
 
   const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
   const t=T[lang];
@@ -4573,7 +4588,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
         }),
       }).catch(()=>{});
     } finally { setSending(false); }
-    if(tabacGemMAD>0){fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({spend:tabacGemMAD*200})}).catch(()=>{});}
+    if(tabacGemMAD>0){getAuthHeadersTabac().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:tabacGemMAD*200})}).catch(()=>{}));}
     localStorage.setItem('bridge_last_ref',orderRef);
     setSent(true);
     onOrderSuccess?.(orderRef);

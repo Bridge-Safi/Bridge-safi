@@ -1284,28 +1284,36 @@ function GamePage() {
 /** Fetches a verified phone token then loads the game iframe */
 function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; isAR: boolean }) {
   const [, navigate] = useLocation();
+  const { session } = useClerk();
   const [state, setState] = useState<'loading'|'ready'|'no_phone'|'error'>('loading');
   const [gameToken, setGameToken] = useState<string | null>(null);
   const [phone, setPhone] = useState<string | null>(null);
   const [playerName, setPlayerName] = useState<string>('');
+
+  const getAuthHeaders = async (): Promise<HeadersInit> => {
+    const token = await session?.getToken();
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
 
   const gameId = phone
     ? 'BR-' + phone.replace(/\D/g,'').slice(0,6) + ((playerName||'').trim()[0]||'?').toUpperCase()
     : 'BR-???????';
 
   useEffect(() => {
-    fetch('/api/game/token', { method: 'POST', credentials: 'include' })
-      .then(r => r.json())
-      .then(data => {
-        if (data.error === 'no_phone') { setState('no_phone'); return; }
-        if (data.token && data.phone) {
-          setGameToken(data.token);
-          setPhone(data.phone);
-          setPlayerName(data.name || '');
-          setState('ready');
-        } else setState('error');
-      })
-      .catch(() => setState('error'));
+    getAuthHeaders().then(h =>
+      fetch('/api/game/token', { method: 'POST', credentials: 'include', headers: h })
+        .then(r => r.json())
+        .then(data => {
+          if (data.error === 'no_phone') { setState('no_phone'); return; }
+          if (data.token && data.phone) {
+            setGameToken(data.token);
+            setPhone(data.phone);
+            setPlayerName(data.name || '');
+            setState('ready');
+          } else setState('error');
+        })
+        .catch(() => setState('error'))
+    );
   }, [userId]);
 
   useEffect(() => {
@@ -1320,11 +1328,11 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
         typeof msg.points === 'number' ? msg.points :
         undefined;
       if (typeof diamonds !== 'number' || diamonds < 0 || !Number.isInteger(diamonds)) return;
-      fetch('/api/game/diamonds', {
+      getAuthHeaders().then(h => fetch('/api/game/diamonds', {
         method: 'POST', credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...h, 'Content-Type': 'application/json' },
         body: JSON.stringify({ diamonds }),
-      }).catch(() => {});
+      }).catch(() => {}));
     };
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
