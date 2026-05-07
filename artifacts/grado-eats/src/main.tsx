@@ -1386,7 +1386,7 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
 
   const gameApiBase = window.location.origin;
   const saveUrl = `${gameApiBase}/api/game/diamonds/by-token`;
-  const gameSrc = `${GAME_URL}?userId=${encodeURIComponent(userId)}&gameId=${encodeURIComponent(gameId)}&token=${encodeURIComponent(gameToken!)}&phone=${encodeURIComponent(phone!)}&verifyUrl=${encodeURIComponent(`${gameApiBase}/api/game/verify-token`)}&saveUrl=${encodeURIComponent(saveUrl)}&diamondsUrl=${encodeURIComponent(saveUrl)}&apiUrl=${encodeURIComponent(saveUrl)}`;
+  const gameSrc = `${GAME_URL}/?phone=${encodeURIComponent(phone!)}&gameId=${encodeURIComponent(gameId)}&userId=${encodeURIComponent(userId)}&token=${encodeURIComponent(gameToken!)}&verifyUrl=${encodeURIComponent(`${gameApiBase}/api/game/verify-token`)}&saveUrl=${encodeURIComponent(saveUrl)}&diamondsUrl=${encodeURIComponent(saveUrl)}&apiUrl=${encodeURIComponent(saveUrl)}`;
 
   return (
     <div style={{position:'fixed',inset:0,zIndex:9999,background:'#000',display:'flex',flexDirection:'column'}}>
