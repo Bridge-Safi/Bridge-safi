@@ -25,14 +25,15 @@ router.get("/profile/check-phone", async (req, res) => {
   }
 });
 
-// POST /api/profile/sync — save name + phone, enforce phone uniqueness
+// POST /api/profile/sync — save name + phone + address, enforce phone uniqueness
 router.post("/profile/sync", async (req, res) => {
   const { userId } = getAuth(req);
   if (!userId) { res.status(401).json({ error: "Non authentifié" }); return; }
 
-  const { phone, name } = req.body as { phone?: string; name?: string };
-  const cleanPhone = String(phone || "").trim() || null;
-  const cleanName  = String(name  || "").trim() || null;
+  const { phone, name, address } = req.body as { phone?: string; name?: string; address?: string };
+  const cleanPhone   = String(phone   || "").trim() || null;
+  const cleanName    = String(name    || "").trim() || null;
+  const cleanAddress = String(address || "").trim() || null;
 
   if (cleanPhone) {
     const conflict = await db
@@ -50,10 +51,10 @@ router.post("/profile/sync", async (req, res) => {
   try {
     await db
       .insert(userProfilesTable)
-      .values({ userId, phone: cleanPhone, name: cleanName, updatedAt: new Date() })
+      .values({ userId, phone: cleanPhone, name: cleanName, address: cleanAddress, updatedAt: new Date() })
       .onConflictDoUpdate({
         target: userProfilesTable.userId,
-        set: { phone: cleanPhone, name: cleanName, updatedAt: new Date() },
+        set: { phone: cleanPhone, name: cleanName, address: cleanAddress, updatedAt: new Date() },
       });
     logger.info({ userId }, "Profile synced");
     res.json({ ok: true });

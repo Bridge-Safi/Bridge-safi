@@ -268,28 +268,53 @@ const MastercardLogo=()=>(
 
 function useProfile(userId?: string) {
   const key = userId ? profileKey(userId) : null;
+  const { session } = useClerk();
 
   const [profile, setProfileState] = useState<UserProfile>(() => {
     if (!key) return emptyProfile();
     try {
-      // Migrate legacy generic key once, then delete it
       const legacy = localStorage.getItem(PROFILE_KEY_LEGACY);
       const mine   = localStorage.getItem(key);
       if (!mine && legacy) {
-        // Only migrate if userId matches saved profile (best-effort via phone/email)
-        // Safe: do NOT migrate — start fresh to avoid cross-user leaks
         localStorage.removeItem(PROFILE_KEY_LEGACY);
       }
       return { ...emptyProfile(), ...JSON.parse(localStorage.getItem(key)||'{}') };
     } catch { return emptyProfile(); }
   });
 
-  // When userId changes (different user logged in), reload their profile
+  // When userId changes (different user logged in), reload their profile from localStorage.
+  // If localStorage has no data for this user, fetch from server to restore after a cache wipe.
   useEffect(() => {
     if (!key) { setProfileState(emptyProfile()); return; }
-    try {
-      setProfileState({ ...emptyProfile(), ...JSON.parse(localStorage.getItem(key)||'{}') });
-    } catch { setProfileState(emptyProfile()); }
+    const stored = (() => {
+      try { return JSON.parse(localStorage.getItem(key)||'null'); } catch { return null; }
+    })();
+    if (stored) {
+      setProfileState({ ...emptyProfile(), ...stored });
+    } else {
+      // No local data — try to restore from server (catches browser cache wipes)
+      (async () => {
+        try {
+          const token = await session?.getToken();
+          const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+          const r = await fetch('/api/profile', { credentials: 'include', headers });
+          if (r.ok) {
+            const d = await r.json();
+            if (d && (d.name || d.phone || d.address)) {
+              const restored: UserProfile = {
+                ...emptyProfile(),
+                name:    d.name    || '',
+                phone:   d.phone   || '',
+                address: d.address || '',
+                onboardingComplete: !!(d.name || d.phone),
+              };
+              setProfileState(restored);
+              localStorage.setItem(key, JSON.stringify(restored));
+            }
+          }
+        } catch { /* silent — fallback to empty */ }
+      })();
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
@@ -1754,7 +1779,7 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
         const r=await fetch('/api/profile/sync',{
           method:'POST',credentials:'include',
           headers:{..._ah,'Content-Type':'application/json'},
-          body:JSON.stringify({phone:form.phone.trim(),name:form.name.trim()}),
+          body:JSON.stringify({phone:form.phone.trim(),name:form.name.trim(),address:(form.address||'').trim()}),
         });
         if(!r.ok){const d=await r.json().catch(()=>({error:''}));if(d.error==='phone_taken'){setPhoneTaken(true);setErrs({...e,phone:true});return;}}
       }catch{}
