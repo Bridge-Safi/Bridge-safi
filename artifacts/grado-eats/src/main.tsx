@@ -532,7 +532,7 @@ function SignInPage() {
               <div style={{ ...errStyle, margin: 0 }}>{error}</div>
               <button
                 type="button"
-                onClick={() => navigate(basePath || '/')}
+                onClick={() => { window.location.href = basePath + '/'; }}
                 style={{
                   padding: '13px 0', borderRadius: 14, border: 'none', cursor: 'pointer',
                   background: 'linear-gradient(135deg,#059669 0%,#4ADE80 50%,#059669 100%)',
