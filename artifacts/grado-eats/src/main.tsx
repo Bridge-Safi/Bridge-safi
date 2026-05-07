@@ -526,7 +526,26 @@ function SignInPage() {
           placeholder="+212 6XX XXX XXX ou email@..." autoComplete="username" />
         <FocusInput label="Mot de passe" type="password" value={password} onChange={setPassword}
           placeholder="••••••••" autoComplete="current-password" />
-        {error && <div style={errStyle}>{error}</div>}
+        {error && (
+          error.toLowerCase().includes('already signed in') ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, margin: '6px 0' }}>
+              <div style={{ ...errStyle, margin: 0 }}>{error}</div>
+              <button
+                type="button"
+                onClick={() => navigate(basePath || '/')}
+                style={{
+                  padding: '13px 0', borderRadius: 14, border: 'none', cursor: 'pointer',
+                  background: 'linear-gradient(135deg,#059669 0%,#4ADE80 50%,#059669 100%)',
+                  color: '#fff', fontSize: 15, fontWeight: 800,
+                  boxShadow: '0 0 24px rgba(74,222,128,0.35)',
+                }}>
+                ← Retourner à l&apos;application
+              </button>
+            </div>
+          ) : (
+            <div style={errStyle}>{error}</div>
+          )
+        )}
 
         {/* Stay signed in checkbox */}
         <label style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer',margin:'10px 0 2px',userSelect:'none'}}>
