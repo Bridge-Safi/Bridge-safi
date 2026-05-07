@@ -3477,16 +3477,38 @@ function TaxiTrackingMap({driverPos,clientPos}:{driverPos:{lat:number;lng:number
 function SharkDiamondWidget({onNavigate,profile}:{onNavigate:()=>void;profile:UserProfile}) {
   const {user}=useUser();
   const getAuthHeaders=useAuthHeaders();
-  const [gems,setGems]=useState(0);
+  // Initialise from localStorage cache for instant display, then confirm with server
+  const [gems,setGems]=useState<number>(()=>{
+    try{return parseInt(localStorage.getItem('bridge_diamonds_cache')||'0',10)||0;}catch{return 0;}
+  });
   const bridgeId=getBridgeId(profile.phone, profile.name);
   const avatarSrc=profile.avatar||user?.imageUrl||null;
+
+  // Fetch authoritative count from server
   useEffect(()=>{
     if(!user?.id) return;
     getAuthHeaders().then(h=>fetch('/api/game/diamonds',{credentials:'include',headers:h})
       .then(r=>r.ok?r.json():null)
-      .then(d=>{if(d&&typeof d.diamonds==='number')setGems(d.diamonds);})
+      .then(d=>{
+        if(d&&typeof d.diamonds==='number'){
+          setGems(d.diamonds);
+          try{localStorage.setItem('bridge_diamonds_cache',String(d.diamonds));}catch{}
+        }
+      })
       .catch(()=>{}));
   },[user?.id,getAuthHeaders]);
+
+  // Listen for real-time updates from the game (via storage event dispatched in GameIframe)
+  useEffect(()=>{
+    const onStorage=(e:StorageEvent)=>{
+      if(e.key==='bridge_diamonds_cache'&&e.newValue){
+        const n=parseInt(e.newValue,10);
+        if(!isNaN(n)&&n>=0) setGems(n);
+      }
+    };
+    window.addEventListener('storage',onStorage);
+    return()=>window.removeEventListener('storage',onStorage);
+  },[]);
   return(
     <button onClick={onNavigate} title={`${bridgeId} — Bridge Game`}
       style={{background:'none',border:'none',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',gap:2,padding:'2px 4px',borderRadius:12}}>

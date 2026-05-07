@@ -1304,15 +1304,25 @@ function GamePage() {
 function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; isAR: boolean }) {
   const [, navigate] = useLocation();
   const { getToken, isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
   const [state, setState] = useState<'loading'|'ready'|'no_phone'|'error'>('loading');
   const [gameToken, setGameToken] = useState<string | null>(null);
   const [phone, setPhone] = useState<string | null>(null);
   const [playerName, setPlayerName] = useState<string>('');
+  const [liveDiamonds, setLiveDiamonds] = useState<number>(() => {
+    try { return parseInt(localStorage.getItem('bridge_diamonds_cache') || '0', 10) || 0; } catch { return 0; }
+  });
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const getAuthHeaders = async (): Promise<HeadersInit> => {
     const token = await getToken();
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
+
+  // Best available avatar: custom compressed photo first, then Clerk image
+  const avatarSrc = (() => {
+    try { return localStorage.getItem(`bridge_eats_avatar_${userId}`) || ''; } catch { return ''; }
+  })() || user?.imageUrl || '';
 
   const gameId = phone
     ? 'BR-' + phone.replace(/\D/g,'').slice(0,6) + ((playerName||'').trim()[0]||'?').toUpperCase()
@@ -1340,11 +1350,28 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, isLoaded, isSignedIn]);
 
+  // Send player profile (avatar + name + diamonds) to game after it loads
+  const sendProfileToGame = () => {
+    const iframe = iframeRef.current;
+    if (!iframe?.contentWindow) return;
+    const cached = (() => { try { return parseInt(localStorage.getItem('bridge_diamonds_cache') || '0', 10) || 0; } catch { return 0; } })();
+    iframe.contentWindow.postMessage({
+      type: 'bridge_player',
+      avatar: avatarSrc,
+      name: playerName,
+      diamonds: cached,
+    }, '*');
+  };
+
   useEffect(() => {
     const handler = (event: MessageEvent) => {
-      if (!event.origin.includes('bridge-safi')) return;
+      if (!event.origin.includes('bridge-safi') && !event.origin.includes('replit')) return;
       const msg = event.data;
       if (!msg) return;
+
+      // Game requests player info → send profile
+      if (msg.type === 'request_player_info') { sendProfileToGame(); return; }
+
       const diamonds: number | undefined =
         typeof msg.diamonds === 'number' ? msg.diamonds :
         typeof msg.score === 'number' ? msg.score :
@@ -1352,6 +1379,13 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
         typeof msg.points === 'number' ? msg.points :
         undefined;
       if (typeof diamonds !== 'number' || diamonds < 0 || !Number.isInteger(diamonds)) return;
+
+      // Cache instantly for real-time sync with SharkDiamondWidget
+      try { localStorage.setItem('bridge_diamonds_cache', String(diamonds)); } catch {}
+      setLiveDiamonds(diamonds);
+      // Notify other tabs/widgets via storage event
+      window.dispatchEvent(new StorageEvent('storage', { key: 'bridge_diamonds_cache', newValue: String(diamonds) }));
+
       getToken().then(token => {
         const h: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
         return fetch('/api/game/diamonds', {
@@ -1364,7 +1398,7 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [playerName, avatarSrc]);
 
   const noPhoneMsg = {
     fr: { title: 'NUMÉRO REQUIS', body: 'Pour jouer, tu dois d\'abord enregistrer ton numéro de téléphone dans ton profil Bridge.', btn: 'Aller à mon profil' },
@@ -1405,7 +1439,10 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
 
   const gameApiBase = window.location.origin;
   const saveUrl = `${gameApiBase}/api/game/diamonds/by-token`;
-  const gameSrc = `${GAME_URL}/?phone=${encodeURIComponent(phone!)}&gameId=${encodeURIComponent(gameId)}&userId=${encodeURIComponent(userId)}&token=${encodeURIComponent(gameToken!)}&verifyUrl=${encodeURIComponent(`${gameApiBase}/api/game/verify-token`)}&saveUrl=${encodeURIComponent(saveUrl)}&diamondsUrl=${encodeURIComponent(saveUrl)}&apiUrl=${encodeURIComponent(saveUrl)}`;
+  // Pass avatar only if it's a proper HTTPS URL (data: URLs are too long for query params)
+  const avatarParam = avatarSrc.startsWith('http') ? `&avatar=${encodeURIComponent(avatarSrc)}` : '';
+  const nameParam = playerName ? `&playerName=${encodeURIComponent(playerName)}` : '';
+  const gameSrc = `${GAME_URL}/?phone=${encodeURIComponent(phone!)}&gameId=${encodeURIComponent(gameId)}&userId=${encodeURIComponent(userId)}&token=${encodeURIComponent(gameToken!)}&verifyUrl=${encodeURIComponent(`${gameApiBase}/api/game/verify-token`)}&saveUrl=${encodeURIComponent(saveUrl)}&diamondsUrl=${encodeURIComponent(saveUrl)}&apiUrl=${encodeURIComponent(saveUrl)}${avatarParam}${nameParam}`;
 
   return (
     <div style={{position:'fixed',inset:0,zIndex:9999,background:'#000',display:'flex',flexDirection:'column'}}>
@@ -1415,22 +1452,26 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
         </button>
         <span style={{color:'#4ADE80',fontSize:12,fontWeight:900,letterSpacing:'0.1em'}}>🦈 SAFI RUNNER</span>
         <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:8}}>
+          {liveDiamonds > 0 && (
+            <div style={{display:'flex',alignItems:'center',gap:3,background:'rgba(254,252,232,0.12)',border:'1px solid rgba(253,224,71,0.4)',borderRadius:8,padding:'3px 7px'}}>
+              <span style={{fontSize:10}}>💎</span>
+              <span style={{fontSize:10,fontWeight:900,color:'#FDE047'}}>{liveDiamonds.toLocaleString()}</span>
+            </div>
+          )}
           {playerName && <span style={{color:'rgba(255,255,255,0.55)',fontSize:11,fontWeight:700,maxWidth:90,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{playerName}</span>}
-          {(() => {
-            const av = (() => { try { return localStorage.getItem(`bridge_eats_avatar_${userId}`) || ''; } catch { return ''; } })();
-            const clerkImg = (window as any).__clerkUser?.imageUrl || '';
-            const src = av || clerkImg;
-            return src
-              ? <img src={src} alt="Profil" style={{width:32,height:32,borderRadius:'50%',objectFit:'cover',border:'2px solid rgba(74,222,128,0.5)',flexShrink:0}}/>
-              : <div style={{width:32,height:32,borderRadius:'50%',background:'rgba(74,222,128,0.18)',border:'2px solid rgba(74,222,128,0.4)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,flexShrink:0}}>👤</div>;
-          })()}
+          {avatarSrc
+            ? <img src={avatarSrc} alt="Profil" style={{width:32,height:32,borderRadius:'50%',objectFit:'cover',border:'2px solid rgba(74,222,128,0.5)',flexShrink:0}}/>
+            : <div style={{width:32,height:32,borderRadius:'50%',background:'rgba(74,222,128,0.18)',border:'2px solid rgba(74,222,128,0.4)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,flexShrink:0}}>👤</div>
+          }
         </div>
       </div>
       <iframe
+        ref={iframeRef}
         src={gameSrc}
         style={{flex:1,border:'none',width:'100%'}}
         allow="accelerometer; gyroscope"
         title="Safi Runner"
+        onLoad={sendProfileToGame}
       />
     </div>
   );
