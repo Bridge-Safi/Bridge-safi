@@ -1873,6 +1873,19 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
       });
       if(!r.ok){const d=await r.json().catch(()=>({error:''}));if(d.error==='phone_taken'){setPhoneTaken(true);setErrs({...e,phone:true});return;}}
     }catch{ /* server indisponible — sauvegarde locale uniquement */ }
+
+    // Upload avatar to Clerk so the game gets a proper HTTPS URL (not a data: URL)
+    // This syncs the photo to the game's player circle automatically
+    if(form.avatar && form.avatar.startsWith('data:') && user) {
+      (async()=>{
+        try{
+          const blob = await fetch(form.avatar!).then(r=>r.blob());
+          const file = new File([blob],'profile.jpg',{type:'image/jpeg'});
+          await user.setProfileImage({file});
+        }catch{ /* best-effort — local avatar still works */ }
+      })();
+    }
+
     onSave({...form, paymentMethod:payTab});
     setSaved(true);setTimeout(()=>setSaved(false),2000);
   };
