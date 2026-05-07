@@ -1461,34 +1461,37 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
   const gameSrc = `${GAME_URL}/?phone=${encodeURIComponent(phone!)}&gameId=${encodeURIComponent(gameId)}&userId=${encodeURIComponent(userId)}&token=${encodeURIComponent(gameToken!)}&verifyUrl=${encodeURIComponent(`${gameApiBase}/api/game/verify-token`)}&saveUrl=${encodeURIComponent(saveUrl)}&diamondsUrl=${encodeURIComponent(saveUrl)}&apiUrl=${encodeURIComponent(saveUrl)}${avatarParam}${nameParam}`;
 
   return (
-    <div style={{position:'fixed',inset:0,zIndex:9999,background:'#000',display:'flex',flexDirection:'column'}}>
-      <div style={{display:'flex',alignItems:'center',gap:12,padding:'12px 16px',background:'#04110A',borderBottom:'1px solid rgba(74,222,128,0.2)',flexShrink:0}}>
-        <button onClick={()=>navigate('/')} style={{display:'flex',alignItems:'center',gap:6,background:'rgba(74,222,128,0.12)',border:'1px solid rgba(74,222,128,0.3)',borderRadius:12,padding:'8px 14px',color:'#4ADE80',fontSize:13,fontWeight:900,cursor:'pointer'}}>
-          ← {isAR?'رجوع':lang==='en'?'Back':lang==='amz'?'ⴰⵣⵣⵓⵍ':'Retour'}
-        </button>
-        <span style={{color:'#4ADE80',fontSize:12,fontWeight:900,letterSpacing:'0.1em'}}>🦈 SAFI RUNNER</span>
-        <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:8}}>
-          {liveDiamonds > 0 && (
-            <div style={{display:'flex',alignItems:'center',gap:3,background:'rgba(254,252,232,0.12)',border:'1px solid rgba(253,224,71,0.4)',borderRadius:8,padding:'3px 7px'}}>
-              <span style={{fontSize:10}}>💎</span>
-              <span style={{fontSize:10,fontWeight:900,color:'#FDE047'}}>{liveDiamonds.toLocaleString()}</span>
-            </div>
-          )}
-          {playerName && <span style={{color:'rgba(255,255,255,0.55)',fontSize:11,fontWeight:700,maxWidth:90,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{playerName}</span>}
-          {avatarSrc
-            ? <img src={avatarSrc} alt="Profil" style={{width:32,height:32,borderRadius:'50%',objectFit:'cover',border:'2px solid rgba(74,222,128,0.5)',flexShrink:0}}/>
-            : <div style={{width:32,height:32,borderRadius:'50%',background:'rgba(74,222,128,0.18)',border:'2px solid rgba(74,222,128,0.4)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,flexShrink:0}}>👤</div>
-          }
-        </div>
-      </div>
+    <div style={{position:'fixed',inset:0,zIndex:9999,background:'#000'}}>
+      {/* Fullscreen iframe — no space stolen */}
       <iframe
         ref={iframeRef}
         src={gameSrc}
-        style={{flex:1,border:'none',width:'100%'}}
+        style={{position:'absolute',inset:0,width:'100%',height:'100%',border:'none'}}
         allow="accelerometer; gyroscope"
         title="Safi Runner"
         onLoad={sendProfileToGame}
       />
+      {/* Compact floating pill — top-left, semi-transparent overlay */}
+      <div style={{position:'absolute',top:10,left:10,zIndex:10,display:'flex',alignItems:'center',gap:6,
+        background:'rgba(4,17,10,0.72)',backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',
+        border:'1px solid rgba(74,222,128,0.25)',borderRadius:50,padding:'4px 8px 4px 4px',pointerEvents:'auto'}}>
+        <button onClick={()=>navigate('/')}
+          style={{width:30,height:30,borderRadius:'50%',border:'none',background:'rgba(74,222,128,0.18)',
+            color:'#4ADE80',fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',
+            flexShrink:0,lineHeight:1}}>
+          ←
+        </button>
+        {liveDiamonds > 0 && (
+          <div style={{display:'flex',alignItems:'center',gap:2,padding:'0 4px'}}>
+            <span style={{fontSize:9}}>💎</span>
+            <span style={{fontSize:9,fontWeight:900,color:'#FDE047'}}>{liveDiamonds.toLocaleString()}</span>
+          </div>
+        )}
+        {avatarSrc
+          ? <img src={avatarSrc} alt="Profil" style={{width:30,height:30,borderRadius:'50%',objectFit:'cover',border:'1.5px solid rgba(74,222,128,0.5)',flexShrink:0}}/>
+          : <div style={{width:30,height:30,borderRadius:'50%',background:'rgba(74,222,128,0.18)',border:'1.5px solid rgba(74,222,128,0.4)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,flexShrink:0}}>👤</div>
+        }
+      </div>
     </div>
   );
 }
