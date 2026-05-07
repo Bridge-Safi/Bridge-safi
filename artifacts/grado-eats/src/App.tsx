@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo, createContext, useContext } from 'react';
-import { useUser, useClerk } from '@clerk/react';
+import { useUser, useClerk, useAuth } from '@clerk/react';
 import { useLocation } from 'wouter';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Polygon, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -30,11 +30,11 @@ const DarkModeCtx = createContext<DarkCtxValue>({ dark: false, toggle: () => {} 
 export function useDark() { return useContext(DarkModeCtx); }
 
 function useAuthHeaders() {
-  const { session } = useClerk();
+  const { getToken } = useAuth();
   return useCallback(async (): Promise<HeadersInit> => {
-    const token = await session?.getToken();
+    const token = await getToken();
     return token ? { Authorization: `Bearer ${token}` } : {};
-  }, [session]);
+  }, [getToken]);
 }
 
 function DarkToggle({ size = 44 }: { size?: number }) {

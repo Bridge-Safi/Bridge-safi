@@ -4,109 +4,107 @@ import { logger } from "./lib/logger";
 import { pool } from "@workspace/db";
 
 const rawPort = process.env["PORT"];
-if (!rawPort) throw new Error("PORT environment variable is required but was not provided.");
+if (!rawPort) throw new Error("PORT environment variable is required.");
 const port = Number(rawPort);
-if (Number.isNaN(port) || port <= 0) throw new Error(`Invalid PORT value: "${rawPort}"`);
+if (Number.isNaN(port) || port <= 0) throw new Error(`Invalid PORT: "${rawPort}"`);
 
 async function migrate() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS orders (
-      id SERIAL PRIMARY KEY,
-      ref TEXT NOT NULL UNIQUE,
-      service TEXT NOT NULL,
-      customer_name TEXT NOT NULL,
-      customer_phone TEXT NOT NULL,
-      customer_address TEXT NOT NULL,
-      items JSONB NOT NULL,
-      total INTEGER NOT NULL,
+      id SERIAL PRIMARY KEY, ref TEXT NOT NULL UNIQUE, service TEXT NOT NULL,
+      customer_name TEXT NOT NULL, customer_phone TEXT NOT NULL,
+      customer_address TEXT NOT NULL, items JSONB NOT NULL, total INTEGER NOT NULL,
       delivery_mode TEXT NOT NULL DEFAULT 'delivery',
-      payment_method TEXT NOT NULL DEFAULT 'cash',
-      restaurant_name TEXT,
-      status TEXT NOT NULL DEFAULT 'pending',
-      driver_name TEXT,
-      created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-      updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+      payment_method TEXT NOT NULL DEFAULT 'cash', restaurant_name TEXT,
+      status TEXT NOT NULL DEFAULT 'pending', driver_name TEXT,
+      created_at TIMESTAMP NOT NULL DEFAULT NOW(), updated_at TIMESTAMP NOT NULL DEFAULT NOW()
     );
     CREATE TABLE IF NOT EXISTS push_subscriptions (
-      id SERIAL PRIMARY KEY,
-      endpoint TEXT NOT NULL UNIQUE,
-      p256dh TEXT NOT NULL,
-      auth TEXT NOT NULL,
-      driver_name TEXT,
+      id SERIAL PRIMARY KEY, endpoint TEXT NOT NULL UNIQUE,
+      p256dh TEXT NOT NULL, auth TEXT NOT NULL, driver_name TEXT,
       created_at TIMESTAMP NOT NULL DEFAULT NOW()
     );
   `);
   logger.info("Database schema ready");
 }
 
-/** Kill all processes that hold the given port, using /proc (no external tools needed). */
-function freePort(p: number): void {
+function sleep(ms: number) { return new Promise<void>((r) => setTimeout(r, ms)); }
+
+function isPortInUse(p: number): boolean {
+  try {
+    const hex = p.toString(16).toUpperCase().padStart(4, "0");
+    const content = [
+      readFileSync("/proc/net/tcp6", "utf8"),
+      readFileSync("/proc/net/tcp",  "utf8"),
+    ].join("\n");
+    return content.split("\n").some((line) => {
+      const parts = line.trim().split(/\s+/);
+      return parts[1]?.toUpperCase().endsWith(`:${hex}`) && parts[3] === "0A";
+    });
+  } catch { return false; }
+}
+
+function killPortHolders(p: number): void {
   try {
     const hex = p.toString(16).toUpperCase().padStart(4, "0");
     const lines = [
       ...readFileSync("/proc/net/tcp6", "utf8").split("\n"),
-      ...readFileSync("/proc/net/tcp", "utf8").split("\n"),
+      ...readFileSync("/proc/net/tcp",  "utf8").split("\n"),
     ];
     const inodes = new Set<string>();
     for (const line of lines) {
       const parts = line.trim().split(/\s+/);
-      // parts[1]=local_addr  parts[3]=state(0A=LISTEN)  parts[9]=inode
       if (parts[1]?.toUpperCase().endsWith(`:${hex}`) && parts[3] === "0A") {
         if (parts[9] && parts[9] !== "0") inodes.add(parts[9]);
       }
     }
     if (inodes.size === 0) return;
-    const pids = readdirSync("/proc").filter((f) => /^\d+$/.test(f));
-    for (const pid of pids) {
+    for (const pid of readdirSync("/proc").filter((f) => /^\d+$/.test(f))) {
       try {
-        const fds = readdirSync(`/proc/${pid}/fd`);
-        for (const fd of fds) {
+        for (const fd of readdirSync(`/proc/${pid}/fd`)) {
           try {
             const link = readlinkSync(`/proc/${pid}/fd/${fd}`);
-            if (inodes.has(link.replace(/^socket:\[(\d+)\]$/, "$1"))) {
-              logger.warn({ pid, port: p }, "Killing process holding port");
+            const m = link.match(/^socket:\[(\d+)\]$/);
+            if (m && inodes.has(m[1]) && Number(pid) !== process.pid) {
+              logger.warn({ pid: Number(pid), port: p }, "Killing process holding port");
               process.kill(Number(pid), "SIGKILL");
             }
           } catch { /* fd may vanish */ }
         }
       } catch { /* process may vanish */ }
     }
-  } catch { /* /proc unavailable — ignore */ }
+  } catch { /* /proc unavailable */ }
 }
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((r) => setTimeout(r, ms));
+/** Kill any process holding the port, then wait until it's actually free. */
+async function ensurePortFree(p: number): Promise<void> {
+  if (!isPortInUse(p)) return;
+  logger.info({ port: p }, "Port in use — killing holder and waiting...");
+  killPortHolders(p);
+  for (let i = 0; i < 30; i++) {
+    await sleep(1000);
+    if (!isPortInUse(p)) {
+      logger.info({ port: p, waited: i + 1 }, "Port is now free");
+      return;
+    }
+    killPortHolders(p); // keep killing in case it restarted
+  }
+  logger.warn({ port: p }, "Port still in use after 30s — attempting to bind anyway");
 }
 
-async function startServer(attempt = 1): Promise<void> {
+async function startServer(): Promise<void> {
   return new Promise((resolve, reject) => {
     const server = app.listen(port, (err?: Error) => {
       if (err) { reject(err); return; }
       logger.info({ port }, "Server listening");
       resolve();
     });
-
-    server.on("error", async (err: NodeJS.ErrnoException) => {
-      if (err.code === "EADDRINUSE") {
-        if (attempt > 15) {
-          logger.error({ port, attempt }, "Port still in use after 15 retries — giving up");
-          reject(err);
-          return;
-        }
-        logger.warn({ port, attempt }, "Port in use — freeing and retrying in 3 s...");
-        try { server.close(); } catch { /* ignore */ }
-        freePort(port);
-        await sleep(3000);
-        try { resolve(await startServer(attempt + 1)); }
-        catch (e) { reject(e); }
-      } else {
-        reject(err);
-      }
-    });
+    server.once("error", reject);
   });
 }
 
 migrate()
+  .then(() => ensurePortFree(port))
   .then(() => startServer())
   .catch((err) => {
     logger.error({ err }, "Server failed to start");
