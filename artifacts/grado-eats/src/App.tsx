@@ -1701,7 +1701,22 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
   const handleAvatarChange=(e:React.ChangeEvent<HTMLInputElement>)=>{
     const file=e.target.files?.[0]; if(!file) return;
     const reader=new FileReader();
-    reader.onload=ev=>{ if(typeof ev.target?.result==='string') setForm(f=>({...f,avatar:ev.target!.result as string})); };
+    reader.onload=ev=>{
+      if(typeof ev.target?.result!=='string') return;
+      const img=new Image();
+      img.onload=()=>{
+        const MAX=220;
+        const scale=Math.min(1, MAX/Math.max(img.width,img.height));
+        const w=Math.round(img.width*scale);
+        const h=Math.round(img.height*scale);
+        const canvas=document.createElement('canvas');
+        canvas.width=w; canvas.height=h;
+        canvas.getContext('2d')!.drawImage(img,0,0,w,h);
+        const compressed=canvas.toDataURL('image/jpeg',0.72);
+        setForm(f=>({...f,avatar:compressed}));
+      };
+      img.src=ev.target.result as string;
+    };
     reader.readAsDataURL(file);
   };
   const { signOut } = useClerk();
