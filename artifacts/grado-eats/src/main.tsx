@@ -1470,25 +1470,24 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
         title="Safi Runner"
         onLoad={sendProfileToGame}
       />
-      {/* Compact floating pill — top-left, semi-transparent overlay */}
-      <div style={{position:'absolute',top:10,left:10,zIndex:10,display:'flex',alignItems:'center',gap:6,
-        background:'rgba(4,17,10,0.72)',backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',
-        border:'1px solid rgba(74,222,128,0.25)',borderRadius:50,padding:'4px 8px 4px 4px',pointerEvents:'auto'}}>
+      {/* Right-side controls — back arrow + avatar stacked, near the game's player circle */}
+      <div style={{position:'absolute',right:10,bottom:120,zIndex:10,display:'flex',flexDirection:'column',alignItems:'center',gap:8,pointerEvents:'auto'}}>
+        {/* Back button */}
         <button onClick={()=>navigate('/')}
-          style={{width:30,height:30,borderRadius:'50%',border:'none',background:'rgba(74,222,128,0.18)',
-            color:'#4ADE80',fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',
-            flexShrink:0,lineHeight:1}}>
+          style={{width:36,height:36,borderRadius:'50%',border:'1.5px solid rgba(74,222,128,0.4)',
+            background:'rgba(4,17,10,0.75)',backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',
+            color:'#4ADE80',fontSize:18,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',
+            boxShadow:'0 2px 12px rgba(0,0,0,0.5)',lineHeight:1}}>
           ←
         </button>
-        {liveDiamonds > 0 && (
-          <div style={{display:'flex',alignItems:'center',gap:2,padding:'0 4px'}}>
-            <span style={{fontSize:9}}>💎</span>
-            <span style={{fontSize:9,fontWeight:900,color:'#FDE047'}}>{liveDiamonds.toLocaleString()}</span>
-          </div>
-        )}
+        {/* Avatar */}
         {avatarSrc
-          ? <img src={avatarSrc} alt="Profil" style={{width:30,height:30,borderRadius:'50%',objectFit:'cover',border:'1.5px solid rgba(74,222,128,0.5)',flexShrink:0}}/>
-          : <div style={{width:30,height:30,borderRadius:'50%',background:'rgba(74,222,128,0.18)',border:'1.5px solid rgba(74,222,128,0.4)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,flexShrink:0}}>👤</div>
+          ? <img src={avatarSrc} alt="Profil" style={{width:36,height:36,borderRadius:'50%',objectFit:'cover',
+              border:'2px solid rgba(74,222,128,0.6)',boxShadow:'0 2px 12px rgba(0,0,0,0.5)',flexShrink:0}}/>
+          : <div style={{width:36,height:36,borderRadius:'50%',background:'rgba(4,17,10,0.75)',
+              backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',
+              border:'2px solid rgba(74,222,128,0.4)',display:'flex',alignItems:'center',justifyContent:'center',
+              fontSize:16,boxShadow:'0 2px 12px rgba(0,0,0,0.5)',flexShrink:0}}>👤</div>
         }
       </div>
     </div>
