@@ -1,21 +1,12 @@
-import { execSync } from "child_process";
+import { readdirSync, readFileSync, readlinkSync } from "fs";
 import app from "./app";
 import { logger } from "./lib/logger";
 import { pool } from "@workspace/db";
 
 const rawPort = process.env["PORT"];
-
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
-}
-
+if (!rawPort) throw new Error("PORT environment variable is required but was not provided.");
 const port = Number(rawPort);
-
-if (Number.isNaN(port) || port <= 0) {
-  throw new Error(`Invalid PORT value: "${rawPort}"`);
-}
+if (Number.isNaN(port) || port <= 0) throw new Error(`Invalid PORT value: "${rawPort}"`);
 
 async function migrate() {
   await pool.query(`
@@ -48,10 +39,39 @@ async function migrate() {
   logger.info("Database schema ready");
 }
 
+/** Kill all processes that hold the given port, using /proc (no external tools needed). */
 function freePort(p: number): void {
   try {
-    execSync(`fuser -k -KILL ${p}/tcp 2>/dev/null || true`, { stdio: "ignore" });
-  } catch { /* ignore */ }
+    const hex = p.toString(16).toUpperCase().padStart(4, "0");
+    const lines = [
+      ...readFileSync("/proc/net/tcp6", "utf8").split("\n"),
+      ...readFileSync("/proc/net/tcp", "utf8").split("\n"),
+    ];
+    const inodes = new Set<string>();
+    for (const line of lines) {
+      const parts = line.trim().split(/\s+/);
+      // parts[1]=local_addr  parts[3]=state(0A=LISTEN)  parts[9]=inode
+      if (parts[1]?.toUpperCase().endsWith(`:${hex}`) && parts[3] === "0A") {
+        if (parts[9] && parts[9] !== "0") inodes.add(parts[9]);
+      }
+    }
+    if (inodes.size === 0) return;
+    const pids = readdirSync("/proc").filter((f) => /^\d+$/.test(f));
+    for (const pid of pids) {
+      try {
+        const fds = readdirSync(`/proc/${pid}/fd`);
+        for (const fd of fds) {
+          try {
+            const link = readlinkSync(`/proc/${pid}/fd/${fd}`);
+            if (inodes.has(link.replace(/^socket:\[(\d+)\]$/, "$1"))) {
+              logger.warn({ pid, port: p }, "Killing process holding port");
+              process.kill(Number(pid), "SIGKILL");
+            }
+          } catch { /* fd may vanish */ }
+        }
+      } catch { /* process may vanish */ }
+    }
+  } catch { /* /proc unavailable — ignore */ }
 }
 
 function sleep(ms: number): Promise<void> {
@@ -68,12 +88,12 @@ async function startServer(attempt = 1): Promise<void> {
 
     server.on("error", async (err: NodeJS.ErrnoException) => {
       if (err.code === "EADDRINUSE") {
-        if (attempt > 10) {
-          logger.error({ port, attempt }, "Port still in use after 10 retries — giving up");
+        if (attempt > 15) {
+          logger.error({ port, attempt }, "Port still in use after 15 retries — giving up");
           reject(err);
           return;
         }
-        logger.warn({ port, attempt }, "Port in use — killing and retrying in 3 s...");
+        logger.warn({ port, attempt }, "Port in use — freeing and retrying in 3 s...");
         try { server.close(); } catch { /* ignore */ }
         freePort(port);
         await sleep(3000);
