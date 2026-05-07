@@ -1452,11 +1452,10 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
 
   const gameApiBase = window.location.origin;
   const saveUrl = `${gameApiBase}/api/game/diamonds/by-token`;
-  // Pass the Clerk HTTPS image URL to the game (data: URLs are too long for query params).
-  // user.imageUrl is updated automatically by Clerk after setProfileImage(), so after the user
-  // saves a custom photo it gets uploaded to Clerk and the game picks it up via this param.
-  const clerkUrl = user?.imageUrl || '';
-  const avatarParam = clerkUrl ? `&avatar=${encodeURIComponent(clerkUrl)}` : '';
+  // Use the server-side avatar endpoint — a stable HTTPS URL the game can always fetch.
+  // Falls back to Clerk imageUrl if the user hasn't saved a custom photo yet.
+  const serverAvatarUrl = `${window.location.origin}/api/profile/avatar/${encodeURIComponent(userId)}`;
+  const avatarParam = `&avatar=${encodeURIComponent(serverAvatarUrl)}`;
   const nameParam = playerName ? `&playerName=${encodeURIComponent(playerName)}` : '';
   const gameSrc = `${GAME_URL}/?phone=${encodeURIComponent(phone!)}&gameId=${encodeURIComponent(gameId)}&userId=${encodeURIComponent(userId)}&token=${encodeURIComponent(gameToken!)}&verifyUrl=${encodeURIComponent(`${gameApiBase}/api/game/verify-token`)}&saveUrl=${encodeURIComponent(saveUrl)}&diamondsUrl=${encodeURIComponent(saveUrl)}&apiUrl=${encodeURIComponent(saveUrl)}${avatarParam}${nameParam}`;
 

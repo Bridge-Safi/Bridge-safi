@@ -1874,15 +1874,28 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
       if(!r.ok){const d=await r.json().catch(()=>({error:''}));if(d.error==='phone_taken'){setPhoneTaken(true);setErrs({...e,phone:true});return;}}
     }catch{ /* server indisponible — sauvegarde locale uniquement */ }
 
-    // Upload avatar to Clerk so the game gets a proper HTTPS URL (not a data: URL)
-    // This syncs the photo to the game's player circle automatically
-    if(form.avatar && form.avatar.startsWith('data:') && user) {
+    // Also save avatar to server so the game can fetch it via a stable HTTPS URL
+    if(form.avatar && user) {
       (async()=>{
         try{
-          const blob = await fetch(form.avatar!).then(r=>r.blob());
-          const file = new File([blob],'profile.jpg',{type:'image/jpeg'});
-          await user.setProfileImage({file});
+          const _ah2=await getAuthHeaders();
+          await fetch('/api/profile/sync',{
+            method:'POST',credentials:'include',
+            headers:{..._ah2,'Content-Type':'application/json'},
+            body:JSON.stringify({
+              phone:form.phone.trim(),name:form.name.trim(),
+              address:(form.address||'').trim(),avatar:form.avatar
+            }),
+          });
         }catch{ /* best-effort — local avatar still works */ }
+        // Also upload to Clerk profile so user.imageUrl reflects the new photo
+        try{
+          if(form.avatar && form.avatar.startsWith('data:')){
+            const blob=await fetch(form.avatar).then(r=>r.blob());
+            const file=new File([blob],'profile.jpg',{type:'image/jpeg'});
+            await user.setProfileImage({file});
+          }
+        }catch{ /* best-effort */ }
       })();
     }
 
