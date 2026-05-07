@@ -304,15 +304,21 @@ function useProfile(userId?: string) {
           const d = await r.json();
           if (cancelled) return;
           if (d && (d.name || d.phone || d.address)) {
-            const restored: UserProfile = {
+            // Merge server fields (name/phone/address) ON TOP of local cache.
+            // Never wipe local-only fields: email, avatar, card info, etc.
+            const localCached = (() => {
+              try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch { return {}; }
+            })();
+            const merged: UserProfile = {
               ...emptyProfile(),
-              name:    d.name    || '',
-              phone:   d.phone   || '',
-              address: d.address || '',
-              onboardingComplete: !!(d.name || d.phone),
+              ...localCached,
+              name:    d.name    || localCached.name    || '',
+              phone:   d.phone   || localCached.phone   || '',
+              address: d.address || localCached.address || '',
+              onboardingComplete: !!(d.name || d.phone || localCached.name || localCached.phone),
             };
-            setProfileState(restored);
-            localStorage.setItem(key, JSON.stringify(restored));
+            setProfileState(merged);
+            localStorage.setItem(key, JSON.stringify(merged));
           }
           return;
         } catch { /* retry */ }
