@@ -1773,17 +1773,15 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
     }
     setErrs(e);
     if(Object.keys(e).length>0) return;
-    if(form.phone.trim()){
-      try{
-        const _ah=await getAuthHeaders();
-        const r=await fetch('/api/profile/sync',{
-          method:'POST',credentials:'include',
-          headers:{..._ah,'Content-Type':'application/json'},
-          body:JSON.stringify({phone:form.phone.trim(),name:form.name.trim(),address:(form.address||'').trim()}),
-        });
-        if(!r.ok){const d=await r.json().catch(()=>({error:''}));if(d.error==='phone_taken'){setPhoneTaken(true);setErrs({...e,phone:true});return;}}
-      }catch{}
-    }
+    try{
+      const _ah=await getAuthHeaders();
+      const r=await fetch('/api/profile/sync',{
+        method:'POST',credentials:'include',
+        headers:{..._ah,'Content-Type':'application/json'},
+        body:JSON.stringify({phone:form.phone.trim(),name:form.name.trim(),address:(form.address||'').trim()}),
+      });
+      if(!r.ok){const d=await r.json().catch(()=>({error:''}));if(d.error==='phone_taken'){setPhoneTaken(true);setErrs({...e,phone:true});return;}}
+    }catch{ /* server indisponible — sauvegarde locale uniquement */ }
     onSave({...form, paymentMethod:payTab});
     setSaved(true);setTimeout(()=>setSaved(false),2000);
   };
