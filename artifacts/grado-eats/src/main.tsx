@@ -1370,8 +1370,8 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
     const cached = (() => { try { return parseInt(localStorage.getItem('bridge_diamonds_cache') || '0', 10) || 0; } catch { return 0; } })();
     iframe.contentWindow.postMessage({
       type: 'bridge_player',
-      avatar: avatarSrc,
-      name: playerName,
+      avatarUrl: avatarSrc,
+      displayName: playerName,
       diamonds: cached,
     }, '*');
   };
@@ -1455,8 +1455,8 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
   // Use the server-side avatar endpoint — a stable HTTPS URL the game can always fetch.
   // Falls back to Clerk imageUrl if the user hasn't saved a custom photo yet.
   const serverAvatarUrl = `${window.location.origin}/api/profile/avatar/${encodeURIComponent(userId)}`;
-  const avatarParam = `&avatar=${encodeURIComponent(serverAvatarUrl)}`;
-  const nameParam = playerName ? `&playerName=${encodeURIComponent(playerName)}` : '';
+  const avatarParam = `&avatarUrl=${encodeURIComponent(serverAvatarUrl)}`;
+  const nameParam = playerName ? `&displayName=${encodeURIComponent(playerName)}` : '';
   const gameSrc = `${GAME_URL}/?phone=${encodeURIComponent(phone!)}&gameId=${encodeURIComponent(gameId)}&userId=${encodeURIComponent(userId)}&token=${encodeURIComponent(gameToken!)}&verifyUrl=${encodeURIComponent(`${gameApiBase}/api/game/verify-token`)}&saveUrl=${encodeURIComponent(saveUrl)}&diamondsUrl=${encodeURIComponent(saveUrl)}&apiUrl=${encodeURIComponent(saveUrl)}${avatarParam}${nameParam}`;
 
   return (
