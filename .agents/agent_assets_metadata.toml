@@ -78,3 +78,33 @@ id = "zgohazccejlmiBBi1Y49c"
 uri = "file://attached_assets/stickers/sticker_flowers.png"
 type = "image"
 title = "Sticker 4 — Livraison Flowers Bridge"
+
+[[outputs]]
+id = "G0IU4r3XbmQXtU-EzaxKi"
+uri = "file://screenshots/PLAY_STORE_FICHE.md"
+type = "text"
+title = "Fiche Google Play Store — Bridge Safi"
+
+[[outputs]]
+id = "G2znocArBHB_G8JTujGyh"
+uri = "file://screenshots/play_store_01_accueil.jpg"
+type = "image"
+title = "Capture 1 — Connexion"
+
+[[outputs]]
+id = "U8ItNsTzjB71T_oLrWZ-F"
+uri = "file://screenshots/play_store_02_inscription.jpg"
+type = "image"
+title = "Capture 2 — Inscription (4 langues)"
+
+[[outputs]]
+id = "n2z6oXcXV9c2It4jDeKAN"
+uri = "file://screenshots/play_store_03_assistant.jpg"
+type = "image"
+title = "Capture 3 — Assistant IA"
+
+[[outputs]]
+id = "LCy85g0qHFq9j2TfbmyDV"
+uri = "file://screenshots/play_store_04_restaurant.jpg"
+type = "image"
+title = "Capture 4 — Espace Restaurant"
