@@ -260,6 +260,10 @@ router.post("/orders", requireClerkAuth, async (req, res) => {
     if (!ref || !service || !customerName || !customerPhone || !customerAddress || !items || total === undefined) {
       return res.status(400).json({ error: "Missing required fields" });
     }
+    // QR payment → hold order until client confirms payment
+    const isQR = /qr/i.test(paymentMethod || "");
+    const initialStatus = isQR ? "pending_payment" : "pending";
+
     const [order] = await db.insert(ordersTable).values({
       ref,
       service,
@@ -271,10 +275,13 @@ router.post("/orders", requireClerkAuth, async (req, res) => {
       deliveryMode: deliveryMode || "delivery",
       paymentMethod: paymentMethod || "cash",
       restaurantName: restaurantName || null,
-      status: "pending",
+      status: initialStatus,
     }).returning();
 
     res.status(201).json({ order });
+
+    // If QR payment: wait for client confirmation — do NOT dispatch yet
+    if (isQR) return;
 
     // Instant push to all connected driver panels via SSE
     broadcastOrder({ type: "NEW_ORDER", orderId: order.id, ref: order.ref });
@@ -308,6 +315,44 @@ router.post("/orders", requireClerkAuth, async (req, res) => {
 
   } catch (err) {
     res.status(500).json({ error: "Failed to create order" });
+  }
+});
+
+// POST /api/orders/:ref/confirm-payment — client confirms QR payment
+// Changes status pending_payment → pending, then dispatches to drivers + restaurant
+router.post("/orders/:ref/confirm-payment", requireClerkAuth, async (req, res) => {
+  try {
+    const { ref } = req.params;
+    const [order] = await db
+      .update(ordersTable)
+      .set({ status: "pending", updatedAt: new Date() })
+      .where(eq(ordersTable.ref, ref))
+      .returning();
+    if (!order) return res.status(404).json({ error: "Commande introuvable" });
+    res.json({ ok: true, order });
+
+    // Now dispatch to drivers + restaurant
+    broadcastOrder({ type: "NEW_ORDER", orderId: order.id, ref: order.ref });
+    smartDispatch(order.restaurantName, {
+      type: "NEW_ORDER",
+      title: "🛵 Nouvelle commande (paiement confirmé) !",
+      body: `${order.customerName} · ${order.total} MAD${order.restaurantName ? ` · ${order.restaurantName}` : ""}`,
+      data: { orderId: order.id, ref: order.ref, url: "/" },
+    }).catch(() => {});
+    forwardToRestaurant(order).catch(() => {});
+    notifyRestaurant(order.restaurantName, {
+      ref: order.ref,
+      customerName: order.customerName,
+      customerPhone: order.customerPhone,
+      deliveryAddress: order.customerAddress,
+      items: order.items,
+      total: order.total,
+      deliveryMode: order.deliveryMode ?? "delivery",
+      paymentMethod: order.paymentMethod ?? "qr",
+    }).catch(() => {});
+  } catch (err) {
+    req.log.error({ err }, "confirm-payment failed");
+    res.status(500).json({ error: "Erreur serveur" });
   }
 });
 
@@ -347,12 +392,14 @@ router.get("/orders/by-restaurant", async (req, res) => {
     if (!name) return res.status(400).json({ error: "name required" });
     const correctPin = RESTAURANT_PINS[name];
     if (!correctPin || pin !== correctPin) return res.status(401).json({ error: "PIN incorrect" });
-    const orders = await db
+    const allOrders = await db
       .select()
       .from(ordersTable)
       .where(eq(ordersTable.restaurantName, name))
       .orderBy(desc(ordersTable.createdAt))
       .limit(50);
+    // Hide orders awaiting payment confirmation — not yet paid
+    const orders = allOrders.filter(o => o.status !== "pending_payment");
     res.json({ orders });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch orders" });

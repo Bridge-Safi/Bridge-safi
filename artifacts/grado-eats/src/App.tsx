@@ -2802,7 +2802,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                 onClick={()=>{
                   if(!payMethod)return;
                   if(payMethod==='cash'){sendOrderToAPI('cash');sendOrderToDriverApp('cash');handleSuccess();}
-                  else if(payMethod==='qr'){setShowQRModal(true);}
+                  else if(payMethod==='qr'){sendOrderToAPI('QR Code');setShowQRModal(true);}
                   else{setStep('card');}
                 }}
                 disabled={!payMethod}
@@ -2815,7 +2815,15 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                 {payMethod==='card'?`${t.cardFormTitle} →`:payMethod==='cash'?`✅ ${t.continueBtn}`:payMethod==='qr'?`📲 ${t.qrModalTitle}`:t.continueBtn}
               </button>
             </div>
-            {showQRModal&&<QRPayModal lang={lang} amount={total} onClose={()=>setShowQRModal(false)} onConfirm={()=>{setShowQRModal(false);sendOrderToAPI('QR Code');sendOrderToDriverApp('QR Code');handleSuccess();}}/>}
+            {showQRModal&&<QRPayModal lang={lang} amount={total} onClose={()=>setShowQRModal(false)} onConfirm={async()=>{
+              setShowQRModal(false);
+              try{
+                const h=await getAuthHeaders();
+                await fetch(`/api/orders/${orderRef}/confirm-payment`,{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'}});
+              }catch(_){}
+              sendOrderToDriverApp('QR Code');
+              handleSuccess();
+            }}/>}
           </>
         )}
 
