@@ -24,6 +24,15 @@ async function migrate() {
       p256dh TEXT NOT NULL, auth TEXT NOT NULL, driver_name TEXT,
       created_at TIMESTAMP NOT NULL DEFAULT NOW()
     );
+    CREATE TABLE IF NOT EXISTS restaurants (
+      name TEXT PRIMARY KEY,
+      phone TEXT,
+      address TEXT,
+      lat REAL,
+      lng REAL,
+      webhook_url TEXT,
+      updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    );
   `);
   logger.info("Database schema ready");
 }

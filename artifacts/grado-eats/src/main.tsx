@@ -2394,6 +2394,10 @@ function statusLabel(s: string) {
   return m[s] || {label:s, color:'#9CA3AF'};
 }
 
+type RestoProfile = {
+  phone: string; address: string; lat: string; lng: string; webhookUrl: string;
+};
+
 function RestaurantOwnerPage() {
   const [, navigate] = useLocation();
   const [restoName, setRestoName] = useState('');
@@ -2403,6 +2407,12 @@ function RestaurantOwnerPage() {
   const [orders, setOrders] = useState<RestoOrder[]>([]);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
+  const [activeTab, setActiveTab] = useState<'orders'|'settings'>('orders');
+  const [profile, setProfile] = useState<RestoProfile>({phone:'',address:'',lat:'',lng:'',webhookUrl:''});
+  const [bridgeSecret, setBridgeSecret] = useState('');
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileSaved, setProfileSaved] = useState(false);
+  const [copied, setCopied] = useState('');
   const seenRefs = useRef<Set<string>>(new Set());
   const pollRef = useRef<number|null>(null);
 
@@ -2420,7 +2430,6 @@ function RestaurantOwnerPage() {
       if (!r.ok) return;
       const data = await r.json();
       const newOrders: RestoOrder[] = data.orders || [];
-      // Alert for new pending orders
       const newPending = newOrders.filter(o => o.status === 'pending' && !seenRefs.current.has(o.ref));
       if (newPending.length > 0) { playAlert(); newPending.forEach(o => seenRefs.current.add(o.ref)); }
       newOrders.forEach(o => seenRefs.current.add(o.ref));
@@ -2428,9 +2437,56 @@ function RestaurantOwnerPage() {
     } catch {}
   };
 
+  const fetchProfile = async (name: string, p: string) => {
+    try {
+      const r = await fetch(`/api/restaurant/profile?name=${encodeURIComponent(name)}&pin=${encodeURIComponent(p)}`);
+      if (!r.ok) return;
+      const data = await r.json();
+      if (data.profile) {
+        setProfile({
+          phone:      data.profile.phone      ?? '',
+          address:    data.profile.address    ?? '',
+          lat:        data.profile.lat        != null ? String(data.profile.lat) : '',
+          lng:        data.profile.lng        != null ? String(data.profile.lng) : '',
+          webhookUrl: data.profile.webhookUrl ?? '',
+        });
+      }
+      if (data.bridgeSecret) setBridgeSecret(data.bridgeSecret);
+    } catch {}
+  };
+
+  const saveProfile = async () => {
+    setProfileLoading(true); setProfileSaved(false);
+    try {
+      await fetch('/api/restaurant/profile', {
+        method: 'PATCH',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          name: restoName, pin,
+          phone:      profile.phone      || null,
+          address:    profile.address    || null,
+          lat:        profile.lat        ? parseFloat(profile.lat)  : null,
+          lng:        profile.lng        ? parseFloat(profile.lng)  : null,
+          webhookUrl: profile.webhookUrl || null,
+        }),
+      });
+      setProfileSaved(true);
+      setTimeout(() => setProfileSaved(false), 3000);
+    } catch {}
+    setProfileLoading(false);
+  };
+
+  const copyToClipboard = (text: string, key: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(key);
+      setTimeout(() => setCopied(''), 2000);
+    });
+  };
+
   useEffect(() => {
     if (!loggedIn) return;
     fetchOrders(restoName, pin);
+    fetchProfile(restoName, pin);
     pollRef.current = window.setInterval(() => fetchOrders(restoName, pin), 12000);
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
   }, [loggedIn, restoName, pin]);
@@ -2591,65 +2647,180 @@ function RestaurantOwnerPage() {
         </button>
       </div>
 
-      {/* Stats bar */}
-      <div style={{display:'flex',gap:0,borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
-        {[
-          {label:'En attente', count:pending.length, color:'#F59E0B'},
-          {label:'En cours',   count:active.length,  color:'#3B82F6'},
-          {label:'Terminées',  count:done.length,     color:'#6B7280'},
-        ].map(s=>(
-          <div key={s.label} style={{flex:1,padding:'10px 0',textAlign:'center',borderRight:'1px solid rgba(255,255,255,0.06)'}}>
-            <p style={{color:s.color,fontSize:20,fontWeight:900,margin:0}}>{s.count}</p>
-            <p style={{color:'rgba(255,255,255,0.35)',fontSize:9,fontWeight:700,margin:0,textTransform:'uppercase'}}>{s.label}</p>
-          </div>
+      {/* Tab navigation */}
+      <div style={{display:'flex',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
+        {([['orders','📋 Commandes'],['settings','⚙️ Paramètres']] as const).map(([tab,label])=>(
+          <button key={tab} onClick={()=>setActiveTab(tab)}
+            style={{flex:1,padding:'12px 0',border:'none',cursor:'pointer',background:'transparent',
+              color: activeTab===tab?'#4ADE80':'rgba(255,255,255,0.35)',
+              fontSize:12,fontWeight:900,letterSpacing:'0.04em',
+              borderBottom: activeTab===tab?'2px solid #4ADE80':'2px solid transparent',
+              transition:'all 0.2s'}}>
+            {label}
+          </button>
         ))}
       </div>
 
-      <div style={{padding:'14px 14px 0'}}>
-        {/* Refresh button */}
-        <button onClick={()=>fetchOrders(restoName,pin)}
-          style={{width:'100%',padding:'10px 0',borderRadius:14,border:'1px solid rgba(255,255,255,0.1)',background:'rgba(255,255,255,0.04)',color:'rgba(255,255,255,0.5)',fontSize:12,fontWeight:700,cursor:'pointer',marginBottom:14}}>
-          🔄 Actualiser les commandes
-        </button>
-
-        {/* Pending */}
-        {pending.length>0 && (
-          <>
-            <p style={{color:'#F59E0B',fontSize:10,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'0 0 10px'}}>
-              🟡 EN ATTENTE ({pending.length})
-            </p>
-            {pending.map(o=><OrderCard key={o.ref} o={o}/>)}
-          </>
-        )}
-
-        {/* Active */}
-        {active.length>0 && (
-          <>
-            <p style={{color:'#60A5FA',fontSize:10,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'14px 0 10px'}}>
-              👨‍🍳 EN COURS ({active.length})
-            </p>
-            {active.map(o=><OrderCard key={o.ref} o={o}/>)}
-          </>
-        )}
-
-        {/* Done */}
-        {done.length>0 && (
-          <>
-            <p style={{color:'rgba(255,255,255,0.25)',fontSize:10,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'14px 0 10px'}}>
-              📦 TERMINÉES ({done.length})
-            </p>
-            {done.map(o=><OrderCard key={o.ref} o={o}/>)}
-          </>
-        )}
-
-        {orders.length===0 && (
-          <div style={{textAlign:'center',paddingTop:40}}>
-            <div style={{fontSize:48,marginBottom:12}}>🍽️</div>
-            <p style={{color:'rgba(255,255,255,0.3)',fontSize:14,fontWeight:700}}>Aucune commande pour l'instant</p>
-            <p style={{color:'rgba(255,255,255,0.2)',fontSize:12,fontWeight:600}}>Actualisation automatique toutes les 12 secondes</p>
+      {/* ── COMMANDES TAB ─────────────────────────────────────────── */}
+      {activeTab==='orders' && (
+        <div style={{padding:'14px 14px 0'}}>
+          {/* Stats */}
+          <div style={{display:'flex',gap:8,marginBottom:14}}>
+            {[
+              {label:'En attente', count:pending.length, color:'#F59E0B'},
+              {label:'En cours',   count:active.length,  color:'#3B82F6'},
+              {label:'Terminées',  count:done.length,     color:'#6B7280'},
+            ].map(s=>(
+              <div key={s.label} style={{flex:1,padding:'10px 0',textAlign:'center',background:'rgba(255,255,255,0.03)',borderRadius:12,border:'1px solid rgba(255,255,255,0.06)'}}>
+                <p style={{color:s.color,fontSize:20,fontWeight:900,margin:0}}>{s.count}</p>
+                <p style={{color:'rgba(255,255,255,0.35)',fontSize:9,fontWeight:700,margin:0,textTransform:'uppercase'}}>{s.label}</p>
+              </div>
+            ))}
           </div>
-        )}
-      </div>
+
+          <button onClick={()=>fetchOrders(restoName,pin)}
+            style={{width:'100%',padding:'10px 0',borderRadius:14,border:'1px solid rgba(255,255,255,0.1)',background:'rgba(255,255,255,0.04)',color:'rgba(255,255,255,0.5)',fontSize:12,fontWeight:700,cursor:'pointer',marginBottom:14}}>
+            🔄 Actualiser les commandes
+          </button>
+
+          {pending.length>0 && (
+            <>
+              <p style={{color:'#F59E0B',fontSize:10,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'0 0 10px'}}>
+                🟡 EN ATTENTE ({pending.length})
+              </p>
+              {pending.map(o=><OrderCard key={o.ref} o={o}/>)}
+            </>
+          )}
+          {active.length>0 && (
+            <>
+              <p style={{color:'#60A5FA',fontSize:10,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'14px 0 10px'}}>
+                👨‍🍳 EN COURS ({active.length})
+              </p>
+              {active.map(o=><OrderCard key={o.ref} o={o}/>)}
+            </>
+          )}
+          {done.length>0 && (
+            <>
+              <p style={{color:'rgba(255,255,255,0.25)',fontSize:10,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'14px 0 10px'}}>
+                📦 TERMINÉES ({done.length})
+              </p>
+              {done.map(o=><OrderCard key={o.ref} o={o}/>)}
+            </>
+          )}
+          {orders.length===0 && (
+            <div style={{textAlign:'center',paddingTop:40}}>
+              <div style={{fontSize:48,marginBottom:12}}>🍽️</div>
+              <p style={{color:'rgba(255,255,255,0.3)',fontSize:14,fontWeight:700}}>Aucune commande pour l'instant</p>
+              <p style={{color:'rgba(255,255,255,0.2)',fontSize:12,fontWeight:600}}>Actualisation automatique toutes les 12 secondes</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── PARAMÈTRES TAB ────────────────────────────────────────── */}
+      {activeTab==='settings' && (
+        <div style={{padding:'16px 14px 40px'}}>
+
+          {/* Restaurant info */}
+          <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:18,padding:'16px',marginBottom:16}}>
+            <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 14px'}}>📋 Informations</p>
+
+            <div style={{marginBottom:12}}>
+              <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.1em',textTransform:'uppercase',display:'block',marginBottom:6}}>Nom du restaurant</label>
+              <div style={{padding:'12px 14px',borderRadius:12,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',color:'rgba(255,255,255,0.5)',fontSize:13,fontWeight:700}}>{restoName}</div>
+            </div>
+
+            <div style={{marginBottom:12}}>
+              <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.1em',textTransform:'uppercase',display:'block',marginBottom:6}}>Téléphone WhatsApp</label>
+              <input type="tel" value={profile.phone} onChange={e=>setProfile(p=>({...p,phone:e.target.value}))}
+                placeholder="+212612345678"
+                style={{width:'100%',boxSizing:'border-box',padding:'12px 14px',borderRadius:12,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',color:'#fff',fontSize:13,fontWeight:600,outline:'none'}}/>
+            </div>
+
+            <div>
+              <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.1em',textTransform:'uppercase',display:'block',marginBottom:6}}>Adresse</label>
+              <input type="text" value={profile.address} onChange={e=>setProfile(p=>({...p,address:e.target.value}))}
+                placeholder="Ex: 12 Rue Hassan II, Safi"
+                style={{width:'100%',boxSizing:'border-box',padding:'12px 14px',borderRadius:12,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',color:'#fff',fontSize:13,fontWeight:600,outline:'none'}}/>
+            </div>
+          </div>
+
+          {/* GPS coordinates */}
+          <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:18,padding:'16px',marginBottom:16}}>
+            <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 14px'}}>📍 Coordonnées GPS</p>
+            <p style={{color:'rgba(255,255,255,0.3)',fontSize:11,fontWeight:600,margin:'0 0 12px'}}>Utilisées pour le dispatch intelligent des livreurs.</p>
+            <div style={{display:'flex',gap:10}}>
+              <div style={{flex:1}}>
+                <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.1em',textTransform:'uppercase',display:'block',marginBottom:6}}>Latitude</label>
+                <input type="number" step="any" value={profile.lat} onChange={e=>setProfile(p=>({...p,lat:e.target.value}))}
+                  placeholder="32.3012"
+                  style={{width:'100%',boxSizing:'border-box',padding:'12px 14px',borderRadius:12,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',color:'#fff',fontSize:13,fontWeight:600,outline:'none'}}/>
+              </div>
+              <div style={{flex:1}}>
+                <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.1em',textTransform:'uppercase',display:'block',marginBottom:6}}>Longitude</label>
+                <input type="number" step="any" value={profile.lng} onChange={e=>setProfile(p=>({...p,lng:e.target.value}))}
+                  placeholder="-9.2305"
+                  style={{width:'100%',boxSizing:'border-box',padding:'12px 14px',borderRadius:12,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',color:'#fff',fontSize:13,fontWeight:600,outline:'none'}}/>
+              </div>
+            </div>
+          </div>
+
+          {/* Integration / Webhook */}
+          <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:18,padding:'16px',marginBottom:16}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
+              <span style={{fontSize:16}}>🔗</span>
+              <p style={{color:'#fff',fontSize:13,fontWeight:900,margin:0}}>Pont d'intégration Eats</p>
+            </div>
+            <p style={{color:'rgba(255,255,255,0.35)',fontSize:11,fontWeight:600,margin:'0 0 14px'}}>Donnez ces informations à votre responsable Bridge Eats</p>
+            <div style={{background:'rgba(74,222,128,0.06)',border:'1px solid rgba(74,222,128,0.15)',borderRadius:12,padding:'10px 12px',marginBottom:14}}>
+              <p style={{color:'rgba(74,222,128,0.8)',fontSize:11,fontWeight:600,margin:0}}>Bridge Eats enverra automatiquement vos nouvelles commandes à cette URL en utilisant votre token secret. Dès qu'une commande arrive, l'alarme sonne et elle apparaît sur votre tableau de bord.</p>
+            </div>
+
+            <div style={{marginBottom:12}}>
+              <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.12em',textTransform:'uppercase',display:'block',marginBottom:6}}>URL DU WEBHOOK (votre système)</label>
+              <div style={{display:'flex',gap:8,alignItems:'center'}}>
+                <input type="url" value={profile.webhookUrl} onChange={e=>setProfile(p=>({...p,webhookUrl:e.target.value}))}
+                  placeholder="https://votre-systeme.com/api/commandes"
+                  style={{flex:1,padding:'11px 12px',borderRadius:12,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',color:'#fff',fontSize:11,fontWeight:600,outline:'none'}}/>
+                {profile.webhookUrl && (
+                  <button onClick={()=>copyToClipboard(profile.webhookUrl,'wh')}
+                    style={{padding:'11px 14px',borderRadius:12,border:'1px solid rgba(255,255,255,0.1)',background:'rgba(255,255,255,0.05)',color:'rgba(255,255,255,0.5)',fontSize:12,cursor:'pointer',flexShrink:0}}>
+                    {copied==='wh'?'✓':'⎘'}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div style={{marginBottom:12}}>
+              <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.12em',textTransform:'uppercase',display:'block',marginBottom:6}}>EN-TÊTE REQUIS</label>
+              <div style={{padding:'11px 12px',borderRadius:12,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',color:'rgba(255,255,255,0.6)',fontSize:12,fontWeight:700,fontFamily:'monospace'}}>X-Bridge-Token</div>
+            </div>
+
+            {bridgeSecret && (
+              <div>
+                <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.12em',textTransform:'uppercase',display:'block',marginBottom:6}}>SECRET DU JETON</label>
+                <div style={{display:'flex',gap:8,alignItems:'center'}}>
+                  <div style={{flex:1,padding:'11px 12px',borderRadius:12,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',color:'rgba(255,255,255,0.6)',fontSize:11,fontWeight:700,fontFamily:'monospace',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+                    {bridgeSecret}
+                  </div>
+                  <button onClick={()=>copyToClipboard(bridgeSecret,'secret')}
+                    style={{padding:'11px 14px',borderRadius:12,border:'1px solid rgba(255,255,255,0.1)',background:'rgba(255,255,255,0.05)',color:'rgba(255,255,255,0.5)',fontSize:12,cursor:'pointer',flexShrink:0}}>
+                    {copied==='secret'?'✓':'⎘'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Save button */}
+          <button onClick={saveProfile} disabled={profileLoading}
+            style={{width:'100%',padding:'15px 0',borderRadius:16,border:'none',cursor:profileLoading?'not-allowed':'pointer',
+              background: profileSaved?'linear-gradient(135deg,#059669,#4ADE80)':profileLoading?'rgba(255,255,255,0.1)':'linear-gradient(135deg,#065F46,#059669)',
+              color:'#fff',fontSize:15,fontWeight:900,letterSpacing:'0.05em',transition:'all 0.3s'}}>
+            {profileSaved?'✅ Enregistré !':profileLoading?'Enregistrement...':'💾 Enregistrer le profil'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

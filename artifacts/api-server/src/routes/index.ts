@@ -6,6 +6,7 @@ import trackingRouter from "./tracking";
 import assistantRouter from "./assistant";
 import gameRouter from "./game";
 import profilesRouter from "./profiles";
+import restaurantProfileRouter from "./restaurant-profile";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(trackingRouter);
 router.use(assistantRouter);
 router.use(gameRouter);
 router.use(profilesRouter);
+router.use(restaurantProfileRouter);
 
 export default router;
