@@ -371,6 +371,22 @@ function useProfile(userId?: string) {
           if (d && (d.name || d.phone || d.address)) {
             // Merge server fields (name/phone/address) with local cache
             const local = readProfileFromStorage(key);
+            let localAvatar = readAvatarFromStorage(aKey);
+            // If no avatar in localStorage, try fetching from server (handles new device / cache cleared)
+            if (!localAvatar && userId) {
+              try {
+                const ar = await fetch(`/api/profile/avatar/${userId}`, { credentials: 'include' });
+                if (ar.ok && ar.headers.get('content-type')?.startsWith('image/')) {
+                  const blob = await ar.blob();
+                  const reader = new FileReader();
+                  localAvatar = await new Promise<string>(res => {
+                    reader.onload = () => res(reader.result as string);
+                    reader.readAsDataURL(blob);
+                  });
+                  try { localStorage.setItem(aKey, localAvatar); } catch {}
+                }
+              } catch { /* best-effort */ }
+            }
             const merged: UserProfile = {
               ...emptyProfile(),
               ...local,
@@ -378,7 +394,7 @@ function useProfile(userId?: string) {
               phone:   d.phone   || local.phone   || '',
               address: d.address || local.address || '',
               onboardingComplete: !!(d.name || d.phone || local.name || local.phone),
-              avatar: readAvatarFromStorage(aKey), // always from avatar key
+              avatar: localAvatar,
             };
             setProfileState(merged);
             writeProfileToStorage(key, aKey, merged);
@@ -2443,6 +2459,11 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
           method:'POST',credentials:'include',
           headers:{...h,'Content-Type':'application/json'},
           body:JSON.stringify({spend:diamondsToSpend}),
+        }).then(r=>r.ok?r.json():null).then(d=>{
+          if(d&&typeof d.diamonds==='number'){
+            try{localStorage.setItem('bridge_diamonds_cache',String(d.diamonds));}catch{}
+            window.dispatchEvent(new StorageEvent('storage',{key:'bridge_diamonds_cache',newValue:String(d.diamonds)}));
+          }
         }).catch(()=>{}));
       }
     }catch(_){/* silent */}
@@ -3667,7 +3688,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
         }),
       }).catch(()=>{});
     }finally{setSending(false);}
-    if(taxiGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:taxiGemMAD*200})}).catch(()=>{}));}
+    if(taxiGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:taxiGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){try{localStorage.setItem('bridge_diamonds_cache',String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:'bridge_diamonds_cache',newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     localStorage.setItem('bridge_taxi_ref',ref);
     setBookingRef(ref);
     if(taxiPayMethod==='qr') setShowTaxiQR(true);
@@ -4768,7 +4789,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
         }),
       }).catch(()=>{});
     } finally { setSending(false); }
-    if(tabacGemMAD>0){getAuthHeadersTabac().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:tabacGemMAD*200})}).catch(()=>{}));}
+    if(tabacGemMAD>0){getAuthHeadersTabac().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:tabacGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){try{localStorage.setItem('bridge_diamonds_cache',String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:'bridge_diamonds_cache',newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     localStorage.setItem('bridge_last_ref',orderRef);
     setSent(true);
     onOrderSuccess?.(orderRef);
