@@ -16,7 +16,7 @@ router.post("/push/subscribe", async (req, res) => {
   try {
     const { endpoint, keys, driverName } = req.body;
     if (!endpoint || !keys?.p256dh || !keys?.auth) {
-      return res.status(400).json({ error: "Missing subscription fields" });
+      res.status(400).json({ error: "Missing subscription fields" }); return;
     }
     await db
       .insert(pushSubscriptionsTable)
@@ -34,7 +34,7 @@ router.post("/push/subscribe", async (req, res) => {
 router.delete("/push/subscribe", async (req, res) => {
   try {
     const { endpoint } = req.body;
-    if (!endpoint) return res.status(400).json({ error: "Missing endpoint" });
+    if (!endpoint) { res.status(400).json({ error: "Missing endpoint" }); return; }
     await db.delete(pushSubscriptionsTable).where(eq(pushSubscriptionsTable.endpoint, endpoint));
     res.json({ ok: true });
   } catch (err) {

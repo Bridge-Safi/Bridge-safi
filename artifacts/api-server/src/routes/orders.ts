@@ -136,7 +136,7 @@ router.post("/orders/inbound", async (req, res) => {
   try {
     const secret = req.headers["x-bridge-secret"];
     if (secret !== BRIDGE_INBOUND_SECRET) {
-      return res.status(401).json({ error: "Unauthorized — invalid secret" });
+      res.status(401).json({ error: "Unauthorized — invalid secret" }); return;
     }
 
     const {
@@ -151,7 +151,7 @@ router.post("/orders/inbound", async (req, res) => {
     } = req.body;
 
     if (!customerName || !customerPhone || !deliveryAddress || !items || total === undefined) {
-      return res.status(400).json({ error: "Missing required fields" });
+      res.status(400).json({ error: "Missing required fields" }); return;
     }
 
     const ref = `EXT-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -244,10 +244,10 @@ router.get("/orders/stream", requireDriverKey, (req, res) => {
 
 router.get("/orders/:id", requireDriverKey, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) return res.status(400).json({ error: "Invalid id" });
+    const id = parseInt(req.params.id as string);
+    if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
     const [order] = await db.select().from(ordersTable).where(eq(ordersTable.id, id));
-    if (!order) return res.status(404).json({ error: "Not found" });
+    if (!order) { res.status(404).json({ error: "Not found" }); return; }
     res.json({ order });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch order" });
@@ -258,7 +258,7 @@ router.post("/orders", requireClerkAuth, async (req, res) => {
   try {
     const { ref, service, customerName, customerPhone, customerAddress, items, total, deliveryMode, paymentMethod, restaurantName } = req.body;
     if (!ref || !service || !customerName || !customerPhone || !customerAddress || !items || total === undefined) {
-      return res.status(400).json({ error: "Missing required fields" });
+      res.status(400).json({ error: "Missing required fields" }); return;
     }
     // QR payment → hold order until client confirms payment
     const isQR = /qr/i.test(paymentMethod || "");
@@ -322,13 +322,13 @@ router.post("/orders", requireClerkAuth, async (req, res) => {
 // Changes status pending_payment → pending, then dispatches to drivers + restaurant
 router.post("/orders/:ref/confirm-payment", requireClerkAuth, async (req, res) => {
   try {
-    const { ref } = req.params;
+    const ref = String(req.params.ref);
     const [order] = await db
       .update(ordersTable)
       .set({ status: "pending", updatedAt: new Date() })
       .where(eq(ordersTable.ref, ref))
       .returning();
-    if (!order) return res.status(404).json({ error: "Commande introuvable" });
+    if (!order) { res.status(404).json({ error: "Commande introuvable" }); return; }
     res.json({ ok: true, order });
 
     // Now dispatch to drivers + restaurant
@@ -358,17 +358,17 @@ router.post("/orders/:ref/confirm-payment", requireClerkAuth, async (req, res) =
 
 router.patch("/orders/:id/status", requireDriverKey, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) return res.status(400).json({ error: "Invalid id" });
+    const id = parseInt(req.params.id as string);
+    if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
     const { status, driverName } = req.body;
     const allowed = ["pending", "preparing", "on_the_way", "delivered", "cancelled", "refused", "accepted", "ready"];
-    if (!allowed.includes(status)) return res.status(400).json({ error: "Invalid status" });
+    if (!allowed.includes(status)) { res.status(400).json({ error: "Invalid status" }); return; }
     const [order] = await db
       .update(ordersTable)
       .set({ status, ...(driverName ? { driverName } : {}), updatedAt: new Date() })
       .where(eq(ordersTable.id, id))
       .returning();
-    if (!order) return res.status(404).json({ error: "Not found" });
+    if (!order) { res.status(404).json({ error: "Not found" }); return; }
     res.json({ order });
   } catch (err) {
     res.status(500).json({ error: "Failed to update order" });
@@ -389,9 +389,9 @@ router.get("/orders/by-restaurant", async (req, res) => {
   try {
     const name = (req.query.name as string || "").trim();
     const pin  = (req.query.pin  as string || "").trim();
-    if (!name) return res.status(400).json({ error: "name required" });
+    if (!name) { res.status(400).json({ error: "name required" }); return; }
     const correctPin = RESTAURANT_PINS[name];
-    if (!correctPin || pin !== correctPin) return res.status(401).json({ error: "PIN incorrect" });
+    if (!correctPin || pin !== correctPin) { res.status(401).json({ error: "PIN incorrect" }); return; }
     const allOrders = await db
       .select()
       .from(ordersTable)
@@ -409,20 +409,20 @@ router.get("/orders/by-restaurant", async (req, res) => {
 // PATCH /api/orders/by-ref/:ref/status — update status by ref (for restaurant owner)
 router.patch("/orders/by-ref/:ref/status", async (req, res) => {
   try {
-    const { ref } = req.params;
+    const ref = String(req.params.ref);
     const { status, pin, restaurantName } = req.body;
     const allowed = ["accepted", "refused", "preparing", "ready", "delivered", "cancelled"];
-    if (!allowed.includes(status)) return res.status(400).json({ error: "Invalid status" });
+    if (!allowed.includes(status)) { res.status(400).json({ error: "Invalid status" }); return; }
     // Verify PIN
     const correctPin = restaurantName ? RESTAURANT_PINS[restaurantName] : undefined;
-    if (!correctPin || pin !== correctPin) return res.status(401).json({ error: "PIN incorrect" });
+    if (!correctPin || pin !== correctPin) { res.status(401).json({ error: "PIN incorrect" }); return; }
     const { eq: eqFn } = await import("drizzle-orm");
     const [order] = await db
       .update(ordersTable)
       .set({ status, updatedAt: new Date() })
       .where(eqFn(ordersTable.ref, ref))
       .returning();
-    if (!order) return res.status(404).json({ error: "Not found" });
+    if (!order) { res.status(404).json({ error: "Not found" }); return; }
     res.json({ order });
   } catch (err) {
     res.status(500).json({ error: "Failed to update" });

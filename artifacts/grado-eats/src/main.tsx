@@ -1312,6 +1312,8 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
   const [liveDiamonds, setLiveDiamonds] = useState<number>(() => {
     try { return parseInt(localStorage.getItem('bridge_diamonds_cache') || '0', 10) || 0; } catch { return 0; }
   });
+  // Track balance at session start so we can add session earnings to it
+  const sessionStartDiamonds = useRef<number>(0);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const getAuthHeaders = async (): Promise<HeadersInit> => {
@@ -1368,6 +1370,8 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
     const iframe = iframeRef.current;
     if (!iframe?.contentWindow) return;
     const cached = (() => { try { return parseInt(localStorage.getItem('bridge_diamonds_cache') || '0', 10) || 0; } catch { return 0; } })();
+    // Record the balance at session start so we can add session earnings correctly
+    sessionStartDiamonds.current = cached;
     iframe.contentWindow.postMessage({
       type: 'bridge_player',
       avatarUrl: avatarSrc,
@@ -1385,13 +1389,20 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
       // Game requests player info → send profile
       if (msg.type === 'request_player_info') { sendProfileToGame(); return; }
 
-      const diamonds: number | undefined =
+      const rawDiamonds: number | undefined =
         typeof msg.diamonds === 'number' ? msg.diamonds :
         typeof msg.score === 'number' ? msg.score :
         typeof msg.gems === 'number' ? msg.gems :
         typeof msg.points === 'number' ? msg.points :
         undefined;
-      if (typeof diamonds !== 'number' || diamonds < 0 || !Number.isInteger(diamonds)) return;
+      if (typeof rawDiamonds !== 'number' || rawDiamonds < 0 || !Number.isInteger(rawDiamonds)) return;
+
+      // If game sends less than the session start, it started from 0 → add to existing balance.
+      // If game sends more than session start, it incorporated our starting value → use directly.
+      const sessionStart = sessionStartDiamonds.current;
+      const diamonds = rawDiamonds < sessionStart
+        ? sessionStart + rawDiamonds   // game reset to 0, add earned to previous balance
+        : rawDiamonds;                 // game used our starting balance, value is already cumulative
 
       // Cache instantly for real-time sync with SharkDiamondWidget
       try { localStorage.setItem('bridge_diamonds_cache', String(diamonds)); } catch {}
