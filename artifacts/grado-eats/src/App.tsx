@@ -3480,6 +3480,138 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
 
 // ─── WHATSAPP SUPPORT BUTTON ──────────────────────────────────────────────────
 
+// ─── PWA INSTALL BANNER ───────────────────────────────────────────────────────
+const PWA_DISMISSED_KEY = 'bridge_pwa_banner_dismissed';
+
+const PWA_LABELS = {
+  fr: { title: 'Installer Bridge Safi', sub: 'Accès rapide depuis votre écran d\'accueil', btn: 'Installer', ios: 'Appuyez sur', iosThen: 'puis "Sur l\'écran d\'accueil"', later: 'Plus tard' },
+  en: { title: 'Install Bridge Safi', sub: 'Quick access from your home screen', btn: 'Install', ios: 'Tap', iosThen: 'then "Add to Home Screen"', later: 'Later' },
+  ar: { title: 'تثبيت Bridge Safi', sub: 'وصول سريع من شاشتك الرئيسية', btn: 'تثبيت', ios: 'اضغط على', iosThen: 'ثم "إضافة إلى الشاشة الرئيسية"', later: 'لاحقاً' },
+  amz: { title: 'Aẓẓl Bridge Safi', sub: 'Anefrar usrid seg umagrad', btn: 'Aẓẓl', ios: 'Smḍl', iosThen: 'akd "Qqen i tafyirt"', later: 'Zdat' },
+};
+
+function PWAInstallBanner({ lang }: { lang: Lang }) {
+  const [show, setShow] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [showIOSGuide, setShowIOSGuide] = useState(false);
+  const deferredPrompt = useRef<any>(null);
+  const l = PWA_LABELS[lang];
+
+  useEffect(() => {
+    // Already installed → don't show
+    if (window.matchMedia('(display-mode: standalone)').matches) return;
+    // Already dismissed → don't show
+    if (localStorage.getItem(PWA_DISMISSED_KEY)) return;
+
+    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) && !(window as any).MSStream;
+    setIsIOS(ios);
+
+    if (ios) {
+      // iOS: show after 4s (no beforeinstallprompt on Safari)
+      const t = setTimeout(() => setShow(true), 4000);
+      return () => clearTimeout(t);
+    }
+
+    const handler = (e: Event) => {
+      e.preventDefault();
+      deferredPrompt.current = e;
+      const t = setTimeout(() => setShow(true), 4000);
+      return () => clearTimeout(t);
+    };
+    window.addEventListener('beforeinstallprompt', handler as EventListener);
+    return () => window.removeEventListener('beforeinstallprompt', handler as EventListener);
+  }, []);
+
+  const dismiss = () => {
+    setShow(false);
+    try { localStorage.setItem(PWA_DISMISSED_KEY, '1'); } catch {}
+  };
+
+  const install = async () => {
+    if (isIOS) { setShowIOSGuide(true); return; }
+    if (!deferredPrompt.current) return;
+    deferredPrompt.current.prompt();
+    const { outcome } = await deferredPrompt.current.userChoice;
+    if (outcome === 'accepted') dismiss();
+    deferredPrompt.current = null;
+  };
+
+  if (!show) return null;
+  const isAR = lang === 'ar';
+
+  return (
+    <div className="modal-overlay fixed inset-0 z-[60] flex items-end justify-center pointer-events-none">
+      <div
+        className="modal-sheet pointer-events-auto w-full max-w-md mx-auto mb-0 rounded-t-3xl overflow-hidden"
+        style={{
+          background: 'linear-gradient(160deg,#064E3B 0%,#065F46 60%,#047857 100%)',
+          boxShadow: '0 -16px 60px rgba(6,95,70,0.55)',
+          border: '1.5px solid rgba(52,211,153,0.35)',
+          borderBottom: 'none',
+        }}
+      >
+        {/* Handle */}
+        <div className="flex justify-center pt-3 pb-1">
+          <div style={{ width: 36, height: 4, borderRadius: 9, background: 'rgba(255,255,255,0.25)' }} />
+        </div>
+
+        <div className={`px-5 pb-6 pt-2 ${isAR ? 'rtl' : 'ltr'}`}>
+          {!showIOSGuide ? (
+            <div className="flex items-center gap-4">
+              {/* Logo */}
+              <div style={{ width: 52, height: 52, borderRadius: 14, overflow: 'hidden', flexShrink: 0, border: '2px solid rgba(217,197,160,0.5)', boxShadow: '0 4px 16px rgba(0,0,0,0.3)' }}>
+                <img src="/logo_bridge_512.png" alt="Bridge" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+              {/* Text */}
+              <div className="flex-1 min-w-0">
+                <p className="font-black text-white text-sm leading-tight truncate">{l.title}</p>
+                <p className="text-white/70 text-xs mt-0.5 leading-tight">{l.sub}</p>
+              </div>
+              {/* Buttons */}
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button
+                  onClick={install}
+                  className="font-black text-xs px-4 py-2 rounded-2xl transition-all active:scale-95"
+                  style={{ background: '#D9C5A0', color: '#065F46', boxShadow: '0 4px 14px rgba(0,0,0,0.2)' }}
+                >
+                  {l.btn}
+                </button>
+                <button
+                  onClick={dismiss}
+                  className="font-black text-xs px-3 py-2 rounded-2xl transition-all active:scale-95"
+                  style={{ background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.7)' }}
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* iOS guide */
+            <div className="text-center py-2">
+              <p className="text-white font-black text-sm mb-3">{l.title}</p>
+              <div className="flex items-center justify-center gap-2 mb-4 flex-wrap">
+                <span className="text-white/80 text-xs">{l.ios}</span>
+                <span className="text-2xl">⎋</span>
+                <span className="text-white/80 text-xs">{l.iosThen}</span>
+              </div>
+              <div className="flex gap-2 justify-center">
+                <span className="text-3xl">➕</span>
+              </div>
+              <button
+                onClick={dismiss}
+                className="mt-4 font-bold text-xs px-6 py-2 rounded-2xl"
+                style={{ background: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.8)' }}
+              >
+                {l.later}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function WAButton() {
   const msg = encodeURIComponent('Bonjour Bridge Safi, j\'ai besoin d\'aide 🙏');
   return (
@@ -5268,10 +5400,10 @@ export default function App() {
     </DarkModeCtx.Provider>
   );
 
-  if(mode==='hub') return <DarkModeCtx.Provider value={dv}><HubPage onServices={()=>setMode('services')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
+  if(mode==='hub') return <DarkModeCtx.Provider value={dv}><HubPage onServices={()=>setMode('services')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/></DarkModeCtx.Provider>;
 
   const backToHub=()=>{setMode('hub');setService('none');};
-  if(service==='none') return <DarkModeCtx.Provider value={dv}><ServiceSelectPage onSelect={s=>setService(s)} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
+  if(service==='none') return <DarkModeCtx.Provider value={dv}><ServiceSelectPage onSelect={s=>setService(s)} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/></DarkModeCtx.Provider>;
   if(service==='taxi') return <DarkModeCtx.Provider value={dv}><TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
   if(service==='tabac') return <DarkModeCtx.Provider value={dv}><TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
   if(service==='fleurs') return <DarkModeCtx.Provider value={dv}><FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
@@ -5381,6 +5513,7 @@ export default function App() {
       </nav>
 
       <WAButton/>
+      <PWAInstallBanner lang={lang}/>
       {showCart&&<CheckoutDrawer cart={cart} lang={lang} onClose={()=>setShowCart(false)} onQty={adjustQty} profile={profile} onClearCart={clearCart} restaurantName={selectedRestaurant?.name} onOrderSuccess={ref=>{setLastOrderRef(ref);setPage('tracking');setShowCart(false);}}/>}
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
 
