@@ -657,8 +657,8 @@ function SignUpLoadingOverlay({ msgs, lang }: { msgs: string[]; lang: SignUpLang
   const [msgIdx, setMsgIdx] = useState(0);
   const [dotCount, setDotCount] = useState(1);
   useEffect(() => {
-    const t1 = setInterval(() => setMsgIdx(i => (i + 1) % msgs.length), 1400);
-    const t2 = setInterval(() => setDotCount(d => d === 3 ? 1 : d + 1), 500);
+    const t1 = setInterval(() => setMsgIdx(i => (i + 1) % msgs.length), 900);
+    const t2 = setInterval(() => setDotCount(d => d === 3 ? 1 : d + 1), 400);
     return () => { clearInterval(t1); clearInterval(t2); };
   }, [msgs]);
   const isRtl = lang === 'ar' || lang === 'amz';
@@ -721,7 +721,10 @@ function SignUpLoadingOverlay({ msgs, lang }: { msgs: string[]; lang: SignUpLang
         }}>
           {msgs[msgIdx]}
         </p>
-        <p style={{ color:'rgba(255,255,255,0.3)', fontSize:'0.65rem', marginTop:8, letterSpacing:'0.15em' }}>
+        <p style={{ color:'rgba(255,255,255,0.45)', fontSize:'0.62rem', marginTop:6, letterSpacing:'0.08em', fontWeight:600 }}>
+          {lang==='ar'?'قد يستغرق 5–15 ثانية…':lang==='en'?'May take 5–15 s on slow networks…':'Peut prendre 5–15 s selon le réseau…'}
+        </p>
+        <p style={{ color:'rgba(255,255,255,0.2)', fontSize:'0.58rem', marginTop:4, letterSpacing:'0.15em' }}>
           BRIDGE SAFI · آسفي · ⵙⴰⴼⵉ
         </p>
       </div>

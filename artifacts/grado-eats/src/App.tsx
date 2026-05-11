@@ -1933,7 +1933,7 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
   const fmtExp=(v:string)=>{const d=v.replace(/\D/g,'').slice(0,4);return d.length>2?`${d.slice(0,2)}/${d.slice(2)}`:d;};
 
   return (
-    <div className="fixed inset-0 z-50 modal-overlay" style={{background:'rgba(10,30,20,0.55)',backdropFilter:'blur(6px)'}} onClick={onClose}>
+    <div className="fixed inset-0 z-[70] modal-overlay" style={{background:'rgba(10,30,20,0.55)',backdropFilter:'blur(6px)'}} onClick={onClose}>
       <div className="absolute right-0 top-0 bottom-0 w-full max-w-sm h-full overflow-y-auto"
         style={{background:'var(--c-bg)',boxShadow:'-8px 0 40px rgba(0,0,0,0.15)',animation:'slideInRight 0.28s cubic-bezier(0.34,1,0.64,1)'}} onClick={e=>e.stopPropagation()}>
         <div className="sticky top-0 z-10 px-4 py-3 flex items-center gap-3" style={{background:'var(--c-nav)',backdropFilter:'blur(12px)',borderBottom:'1px solid var(--c-border)'}}>
@@ -1979,7 +1979,7 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
           {/* Right: close button */}
           <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center font-black flex-shrink-0" style={{background:'#F3F4F6',color:'#6B7280',fontSize:14}}>✕</button>
         </div>
-        <div className="px-5 py-5" style={{direction:isAR?'rtl':'ltr'}}>
+        <div className="px-5 py-5 pb-24" style={{direction:isAR?'rtl':'ltr'}}>
 
           <div className="rounded-2xl p-4 mb-5" style={{background:errs.name||errs.phone?'#FFF5F5':'#F0FDF4',border:`1px solid ${errs.name||errs.phone?'#FCA5A5':'#BBF7D0'}`,transition:'all 0.2s'}}>
             <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#065F46'}}>👤 {t.nameLabel}</p>
