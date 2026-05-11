@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://safi-bridge.ma/sitemap.xml
