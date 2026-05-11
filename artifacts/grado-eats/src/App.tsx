@@ -4029,6 +4029,10 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
       )}
 
       <WAButton/>
+      {/* ── Bottom-right profile+diamond widget ── */}
+      <div style={{position:'fixed',bottom:82,right:70,zIndex:60}} onClick={()=>setShowProfile(true)}>
+        <SharkDiamondWidget onNavigate={()=>navigateTaxi('/game')} profile={profile}/>
+      </div>
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
       {showTaxiQR&&<QRPayModal lang={lang} onClose={()=>setShowTaxiQR(false)} onConfirm={()=>setShowTaxiQR(false)}/>}
     </div>
