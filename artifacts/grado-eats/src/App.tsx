@@ -3641,20 +3641,21 @@ function WAButton() {
 
 // ─── TAXI TRACKING MAP ─────────────────────────────────────────────────────────
 
-function TaxiTrackingMap({driverPos,clientPos}:{driverPos:{lat:number;lng:number}|null;clientPos:{lat:number;lng:number}|null}) {
+function TaxiMap({driverPos,clientPos}:{driverPos:{lat:number;lng:number}|null;clientPos:{lat:number;lng:number}|null}) {
   const center = driverPos ?? clientPos ?? {lat:32.2994,lng:-9.2372};
-  const taxiIcon = L.divIcon({className:'',html:'<div style="font-size:30px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">🚖</div>',iconSize:[34,34],iconAnchor:[17,17]});
-  const clientIcon = L.divIcon({className:'',html:'<div style="font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">📍</div>',iconSize:[30,30],iconAnchor:[15,30]});
-  function Recenter({pos}:{pos:{lat:number;lng:number}}) {
+  const taxiIcon = L.divIcon({className:'',html:'<div style="font-size:34px;line-height:1;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.7))">🚖</div>',iconSize:[36,36],iconAnchor:[18,18]});
+  const pinIcon = L.divIcon({className:'',html:'<div style="display:flex;flex-direction:column;align-items:center"><div style="width:16px;height:16px;border-radius:50%;background:#10B981;border:2.5px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,0.5)"></div><div style="width:2px;height:10px;background:#10B981;border-radius:1px;margin-top:-1px"></div></div>',iconSize:[16,26],iconAnchor:[8,26]});
+  function Fly({pos}:{pos:{lat:number;lng:number}}) {
     const map=useMap();
-    useEffect(()=>{ map.setView([pos.lat,pos.lng],15); },[pos.lat,pos.lng]);
+    useEffect(()=>{ map.flyTo([pos.lat,pos.lng],15,{duration:1.2}); },[pos.lat,pos.lng]);
     return null;
   }
   return (
-    <MapContainer center={[center.lat,center.lng]} zoom={15} style={{width:'100%',height:'100%',borderRadius:0}} zoomControl={false} attributionControl={false}>
+    <MapContainer center={[center.lat,center.lng]} zoom={14} style={{width:'100%',height:'100%'}} zoomControl={false} attributionControl={false}>
       <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"/>
-      {driverPos&&<><Marker position={[driverPos.lat,driverPos.lng]} icon={taxiIcon}/><Recenter pos={driverPos}/></>}
-      {clientPos&&<Marker position={[clientPos.lat,clientPos.lng]} icon={clientIcon}/>}
+      {driverPos&&<><Marker position={[driverPos.lat,driverPos.lng]} icon={taxiIcon}/><Fly pos={driverPos}/></>}
+      {clientPos&&<Marker position={[clientPos.lat,clientPos.lng]} icon={pinIcon}/>}
+      {!driverPos&&clientPos&&<Fly pos={clientPos}/>}
     </MapContainer>
   );
 }
@@ -3829,9 +3830,9 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
     else setActiveTab(1);
   };
 
-  // Poll tracking when on suivi tab
+  // Poll tracking when booking is active
   useEffect(()=>{
-    if(activeTab!==1||!bookingRef) return;
+    if(!bookingRef) return;
     const poll=async()=>{
       try{
         const r=await fetch(`/api/tracking/${bookingRef}`);
@@ -3842,7 +3843,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
     poll();
     trackIntervalRef.current=window.setInterval(poll,3000);
     return()=>{if(trackIntervalRef.current)clearInterval(trackIntervalRef.current);};
-  },[activeTab,bookingRef]);
+  },[bookingRef]);
 
   const driverPos=(trackData?.found&&trackData.lat&&trackData.lng&&trackData.status==='accepted')?{lat:trackData.lat,lng:trackData.lng}:null;
   const mapClientPos=trackData?.clientLat&&trackData?.clientLng?{lat:trackData.clientLat,lng:trackData.clientLng}:clientPos;
@@ -3854,284 +3855,182 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
     arrived:{fr:'Votre chauffeur est arrivé ! 🎉',en:'Your driver has arrived! 🎉',ar:'وصل سائقك! 🎉',amz:'ⵢⵓⵙ ⵓⵙⵔⴰⵜⵏ ⵉⵏⴽ! 🎉'},
   }[trackData?.status||'']?.[lang]||'';
 
-  const navItems=[
-    {label:{fr:'Réserver',en:'Book',ar:'احجز',amz:'ⵙⵖⵏ'},icon:'🚖'},
-    {label:{fr:'Suivi',en:'Track',ar:'تتبع',amz:'ⴰⵙⴽⵍⵙ'},icon:'📍'},
-  ];
-
-
-
-  const inputStyle:React.CSSProperties={
-    width:'100%',borderRadius:12,border:'1.5px solid var(--c-border)',padding:'12px 14px',
-    fontSize:14,fontFamily:'system-ui,sans-serif',background:'var(--c-bg)',color:'var(--c-text)',
-    outline:'none',boxSizing:'border-box' as const,
-  };
-  const labelStyle:React.CSSProperties={fontSize:11,fontWeight:800,letterSpacing:'0.12em',color:'#78350F',textTransform:'uppercase',marginBottom:4,display:'block'};
-
   return(
-    <div className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{background:'var(--c-bg)',color:'var(--c-text)'}}>
-      <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
+    <div className={isAR?'rtl':'ltr'} style={{position:'fixed',inset:0,overflow:'hidden',background:'#0A0E12',zIndex:10}}>
 
-      {/* ── Top-left: back ── */}
-      <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
-        <button onClick={onBack}
-          className="flex items-center gap-0.5 px-1.5 rounded-full transition-all active:scale-90 hover:scale-110"
-          style={{...pillStyle,height:'24px',minWidth:'unset'}}>
-          <span style={{fontSize:'9px',lineHeight:1}}>🛵</span>
-          <span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
-          <span style={{fontSize:'9px',lineHeight:1}}>🚬</span>
-          <span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
-          <span style={{fontSize:'9px',lineHeight:1}}>🌹</span>
-          <span style={{fontSize:'8px',lineHeight:1,color:'#9CA3AF'}}>←</span>
-        </button>
+      {/* ── Full-screen map ── */}
+      <div style={{position:'absolute',inset:0}}>
+        <TaxiMap driverPos={bookingRef?driverPos:null} clientPos={bookingRef?mapClientPos:clientPos}/>
       </div>
 
-      {/* ── Top-right: profile + lang ── */}
-      <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
-        <button onClick={()=>setShowProfile(true)}
-          className="rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 relative"
-          style={{...pillStyle,width:'44px',padding:0,overflow:'hidden'}}>
-          {profile.avatar
-            ?<img src={profile.avatar} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'50%'}}/>
-            :<span style={{fontSize:'18px'}}>👤</span>
-          }
-          {profile.name&&<span className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{background:'#10B981'}}/>}
-        </button>
-        <button onClick={cycleLang}
-          className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 px-3 ${isAMZ?'font-tifinagh':''}`}
-          style={{...pillStyle,fontSize:'13px'}}>
-          {LANG_LABELS[lang]}
-        </button>
-        <SharkDiamondWidget onNavigate={()=>navigateTaxi('/game')} profile={profile}/>
-        <DarkToggle/>
-      </div>
-
-      {/* ── Main Content ── */}
-      <div className="relative flex flex-col pb-28 max-w-sm mx-auto w-full">
-
-        {/* ── Tab bar ── */}
-        <div className="flex border-b sticky top-0 z-30" style={{background:'var(--c-nav)',backdropFilter:'blur(12px)',borderColor:'#E5E1D8'}}>
-          {navItems.map((tab,i)=>(
-            <button key={i} onClick={()=>setActiveTab(i as 0|1)}
-              className={`flex-1 flex flex-col items-center gap-1 py-3 transition-all ${isAMZ?'font-tifinagh':''}`}
-              style={{borderBottom:activeTab===i?'2.5px solid #78350F':'2.5px solid transparent',color:activeTab===i?'#78350F':'#9CA3AF'}}>
-              <span className="text-lg">{tab.icon}</span>
-              <span style={{fontSize:10,fontWeight:900,letterSpacing:'0.1em',textTransform:'uppercase'}}>{tab.label[lang]}</span>
+      {/* ── Top gradient overlay ── */}
+      <div style={{position:'absolute',top:0,left:0,right:0,zIndex:40,background:'linear-gradient(180deg,rgba(10,14,18,0.94) 0%,rgba(10,14,18,0) 100%)',paddingBottom:28}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,padding:'14px 16px 0'}}>
+          <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.12)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:18,flexShrink:0}}>←</button>
+          <div style={{flex:1,textAlign:'center'}}>
+            <p style={{color:'#FDE68A',fontWeight:900,fontSize:14,letterSpacing:'0.12em',margin:0}}>🚖 BRIDGE TAXI</p>
+            <p style={{color:'rgba(253,230,138,0.5)',fontSize:9,letterSpacing:'0.18em',margin:0}}>CONFORT · SAFI · آسفي</p>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:7,flexShrink:0}}>
+            <button onClick={()=>setShowProfile(true)} style={{width:34,height:34,borderRadius:'50%',border:'2px solid rgba(217,197,160,0.35)',background:'rgba(255,255,255,0.1)',backdropFilter:'blur(8px)',overflow:'hidden',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>
+              {profile.avatar?<img src={profile.avatar} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/>:<span style={{fontSize:14,color:'white'}}>👤</span>}
             </button>
-          ))}
+            <button onClick={cycleLang} style={{height:26,padding:'0 7px',borderRadius:7,border:'1px solid rgba(217,197,160,0.3)',background:'rgba(255,255,255,0.1)',backdropFilter:'blur(8px)',color:'#FDE68A',fontSize:10,fontWeight:900,cursor:'pointer'}}>{LANG_LABELS[lang]}</button>
+            <SharkDiamondWidget onNavigate={()=>navigateTaxi('/game')} profile={profile}/>
+            <DarkToggle/>
+          </div>
         </div>
+      </div>
 
-        {/* ── TAB 0: Réserver ── */}
-        {activeTab===0&&(
-          <div className="px-5 pt-5 flex flex-col gap-4">
-            <div style={{background:'linear-gradient(135deg,#78350F,#92400E)',borderRadius:20,padding:'14px 18px',display:'flex',alignItems:'center',gap:12}}>
-              <span style={{fontSize:32}}>🚖</span>
-              <div>
-                <p style={{color:'#FDE68A',fontSize:13,fontWeight:900,letterSpacing:'0.1em'}}>BRIDGE TAXI LUXE</p>
-                <p style={{color:'rgba(253,230,138,0.7)',fontSize:11}}>Réservation instantanée · Safi</p>
-              </div>
-            </div>
+      {/* ── LIVE GPS badge (during tracking) ── */}
+      {bookingRef&&(
+        <div style={{position:'absolute',top:80,left:'50%',transform:'translateX(-50%)',zIndex:35,background:'rgba(13,17,23,0.88)',backdropFilter:'blur(12px)',borderRadius:20,padding:'5px 16px',border:'1px solid rgba(253,230,138,0.25)',display:'flex',alignItems:'center',gap:7,whiteSpace:'nowrap'}}>
+          <div style={{width:7,height:7,borderRadius:'50%',background:statusColor,animation:'pulse 1.2s infinite'}}/>
+          <span style={{color:'#FDE68A',fontSize:10,fontWeight:900,letterSpacing:'0.15em'}}>{bookingRef} · LIVE GPS</span>
+        </div>
+      )}
 
-            {/* Pickup GPS */}
+      {/* ── Bottom sheet: BOOKING ── */}
+      {!bookingRef&&(
+        <div style={{position:'absolute',bottom:0,left:0,right:0,zIndex:30,maxHeight:'76vh',display:'flex',flexDirection:'column',borderRadius:'26px 26px 0 0',background:'var(--c-card)',boxShadow:'0 -12px 50px rgba(0,0,0,0.65)',border:'1px solid rgba(120,53,15,0.15)',borderBottom:'none'}}>
+          <div style={{display:'flex',justifyContent:'center',padding:'12px 0 4px',flexShrink:0}}>
+            <div style={{width:36,height:4,borderRadius:2,background:'rgba(120,53,15,0.22)'}}/>
+          </div>
+          <div style={{padding:'4px 20px 12px',borderBottom:'1px solid var(--c-border)',flexShrink:0}}>
+            <p style={{fontWeight:900,fontSize:18,color:'var(--c-text)',margin:0}}>
+              {lang==='ar'?'📍 إلى أين؟':lang==='en'?'📍 Where to?':lang==='amz'?'📍 ⵖⴰⵜ ⵔⴰⴷ?':'📍 Où allez-vous ?'}
+            </p>
+            <p style={{fontSize:11,color:'#9CA3AF',margin:'2px 0 0'}}>Taxi Confort · Safi & tout le Maroc</p>
+          </div>
+          <div style={{overflowY:'auto',flex:1,padding:'16px 20px 36px',display:'flex',flexDirection:'column',gap:14}}>
+            {/* From */}
             <div>
-              <AddressAutocomplete
-                label={`📍 ${lang==='ar'?'نقطة الانطلاق':lang==='amz'?'ⴰⵙⵔⵓ':lang==='en'?'Pickup location':'Point de départ'}`}
-                value={clientAddress}
-                onChange={setClientAddress}
-                placeholder={lang==='ar'?'Rechercher une adresse à Safi':lang==='en'?'Search an address in Safi':'Rechercher une adresse à Safi'}
-                lang={lang}/>
-              <button onClick={getClientGPS}
-                className="w-full rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 mb-1"
-                style={{background:'#78350F',color:'white',border:'none',padding:'9px 14px',fontSize:12,fontWeight:900,cursor:'pointer',marginTop:-8}}>
+              <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:7}}>
+                <div style={{width:11,height:11,borderRadius:'50%',background:'#10B981',border:'2px solid white',boxShadow:'0 0 0 2px rgba(16,185,129,0.25)',flexShrink:0}}/>
+                <span style={{fontSize:10,fontWeight:800,color:'#065F46',letterSpacing:'0.1em',textTransform:'uppercase' as const}}>
+                  {lang==='ar'?'موقع الانطلاق':lang==='en'?'Pickup location':'Point de départ'}
+                </span>
+              </div>
+              <AddressAutocomplete label='' value={clientAddress} onChange={setClientAddress}
+                placeholder={lang==='ar'?'Adresse à Safi':lang==='en'?'Address in Safi':'Adresse à Safi'} lang={lang}/>
+              <button onClick={getClientGPS} style={{width:'100%',marginTop:6,padding:'9px 12px',borderRadius:10,border:clientPos?'1.5px solid rgba(16,185,129,0.35)':'none',background:clientPos?'rgba(16,185,129,0.1)':gettingGPS?'rgba(120,53,15,0.6)':'#78350F',color:clientPos?'#065F46':'white',fontWeight:900,fontSize:12,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
                 {gettingGPS
-                  ?<><span style={{fontSize:13,animation:'spin 1s linear infinite'}}>⟳</span>{lang==='ar'?'يتم التحديد…':lang==='en'?'Detecting…':'Détection GPS…'}</>
-                  :<><span style={{fontSize:16}}>🎯</span>{lang==='ar'?'تحديد موقعي':lang==='en'?'Detect my location':'Détecter ma position GPS'}</>
+                  ?<><span style={{animation:'spin 1s linear infinite',display:'inline-block'}}>⟳</span>{lang==='en'?'Detecting…':'Détection…'}</>
+                  :clientPos
+                    ?<>✓ GPS · {clientPos.lat.toFixed(4)}, {clientPos.lng.toFixed(4)}</>
+                    :<><span>🎯</span>{lang==='ar'?'تحديد موقعي':lang==='en'?'Use my location':'Ma position GPS'}</>
                 }
               </button>
-              {clientPos&&<p style={{fontSize:10,color:'#10B981',marginTop:2,fontWeight:700}}>✓ GPS · {clientPos.lat.toFixed(4)}, {clientPos.lng.toFixed(4)}</p>}
             </div>
-
-            {/* Destination */}
+            {/* To */}
             <div>
-              <AddressAutocomplete
-                label={`🏁 ${lang==='ar'?'الوجهة':lang==='amz'?'ⴰⵎⵎⴰⵙ':lang==='en'?'Destination':'Destination'}`}
-                value={destination}
-                onChange={setDestination}
+              <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:7}}>
+                <div style={{width:11,height:11,borderRadius:3,background:'#F59E0B',flexShrink:0}}/>
+                <span style={{fontSize:10,fontWeight:800,color:'#78350F',letterSpacing:'0.1em',textTransform:'uppercase' as const}}>
+                  {lang==='ar'?'الوجهة':lang==='en'?'Destination':'Destination'}
+                </span>
+              </div>
+              <AddressAutocomplete label='' value={destination} onChange={setDestination}
                 placeholder={lang==='ar'?'وجهتك (أي مكان بالمغرب)':lang==='en'?'Where to? (anywhere in Morocco)':'Destination (partout au Maroc)'}
-                lang={lang}
-                nationwide/>
+                lang={lang} nationwide/>
             </div>
-
-            {/* Name */}
-            <div>
-              <label style={labelStyle}>👤 {lang==='ar'?'الاسم':lang==='amz'?'ⵉⵙⵎ':lang==='en'?'Your name':'Votre nom'}</label>
-              <input value={name} onChange={e=>setName(e.target.value)}
-                placeholder={lang==='ar'?'اسمك':lang==='en'?'Full name':'Nom complet'}
-                style={inputStyle}/>
+            {/* Name + Phone */}
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+              <div>
+                <label style={{fontSize:10,fontWeight:800,color:'#78350F',letterSpacing:'0.08em',textTransform:'uppercase' as const,display:'block',marginBottom:4}}>
+                  👤 {lang==='ar'?'الاسم':lang==='en'?'Name':'Nom'}
+                </label>
+                <input value={name} onChange={e=>setName(e.target.value)} placeholder={lang==='en'?'Full name':'Nom complet'}
+                  style={{width:'100%',borderRadius:10,border:'1.5px solid var(--c-border)',padding:'10px 11px',fontSize:13,background:'var(--c-bg)',color:'var(--c-text)',outline:'none',boxSizing:'border-box' as const}}/>
+              </div>
+              <div>
+                <label style={{fontSize:10,fontWeight:800,color:'#78350F',letterSpacing:'0.08em',textTransform:'uppercase' as const,display:'block',marginBottom:4}}>
+                  📞 {lang==='ar'?'الهاتف':lang==='en'?'Phone':'Tél'}
+                </label>
+                <input value={phone} onChange={e=>setPhone(e.target.value)} type="tel" placeholder="+212 6..."
+                  style={{width:'100%',borderRadius:10,border:'1.5px solid var(--c-border)',padding:'10px 11px',fontSize:13,background:'var(--c-bg)',color:'var(--c-text)',outline:'none',boxSizing:'border-box' as const}}/>
+              </div>
             </div>
-
-            {/* Phone */}
-            <div>
-              <label style={labelStyle}>📞 {lang==='ar'?'الهاتف':lang==='amz'?'ⵜⵉⵍⵉⴼⵓⵏ':lang==='en'?'Phone':'Téléphone'}</label>
-              <input value={phone} onChange={e=>setPhone(e.target.value)} type="tel"
-                placeholder="+212 6XX XXX XXX"
-                style={inputStyle}/>
-            </div>
-
-            {formErr&&<p style={{color:'#DC2626',fontSize:12,fontWeight:700}}>
+            {formErr&&<p style={{color:'#DC2626',fontSize:12,fontWeight:700,margin:0}}>
               {lang==='ar'?'يرجى ملء جميع الحقول':lang==='en'?'Please fill all fields':'Veuillez remplir tous les champs'}
             </p>}
-
-            {/* 💎 Diamond reduction — Taxi */}
+            {/* 💎 Diamond discount */}
             {maxTaxiGemMAD>0&&(
-              <div className="rounded-2xl p-4" style={{background:'#FEFCE8',border:'1.5px solid #FDE047'}}>
-                <p className="text-[10px] font-black uppercase tracking-widest mb-2" style={{color:'#92400E'}}>
-                  💎 {lang==='ar'?'خصم بالماسات':lang==='en'?'Diamond discount':lang==='amz'?'ⵙⵙⵎⵔⵙ ⵉⵎⴰⵙⵙⵏ':'Réduction Diamants'}
+              <div style={{borderRadius:14,padding:'12px 14px',background:'#FEFCE8',border:'1.5px solid #FDE047'}}>
+                <p style={{fontSize:10,fontWeight:900,color:'#92400E',letterSpacing:'0.1em',textTransform:'uppercase' as const,margin:'0 0 5px'}}>
+                  💎 {lang==='ar'?'خصم بالماسات':lang==='en'?'Diamond discount':'Réduction Diamants'}
                 </p>
-                <p className="text-xs mb-2" style={{color:'#78350F',fontWeight:600}}>
+                <p style={{fontSize:11,color:'#78350F',fontWeight:600,margin:'0 0 7px'}}>
                   {taxiGems.toLocaleString()} 💎 = {maxTaxiGemMAD} MAD {lang==='ar'?'متاح':lang==='en'?'available':'disponible'}
                 </p>
-                <div className="flex items-center gap-3">
+                <div style={{display:'flex',alignItems:'center',gap:10}}>
                   <input type="range" min={0} max={maxTaxiGemMAD} value={taxiGemMAD}
-                    onChange={e=>setTaxiGemMAD(Number(e.target.value))}
-                    className="flex-1" style={{accentColor:'#F59E0B'}}/>
-                  <span className="font-black text-sm" style={{color:'#065F46',minWidth:52}}>-{taxiGemMAD} MAD</span>
+                    onChange={e=>setTaxiGemMAD(Number(e.target.value))} style={{flex:1,accentColor:'#F59E0B'}}/>
+                  <span style={{fontWeight:900,fontSize:13,color:'#065F46',minWidth:52}}>-{taxiGemMAD} MAD</span>
                 </div>
               </div>
             )}
-            {/* ── Mode de paiement ── */}
-            <div className="rounded-2xl p-4" style={{background:'var(--c-card)',border:'1.5px solid var(--c-border)'}}>
-              <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${lang==='amz'?'font-tifinagh':''}`} style={{color:'#78350F'}}>
-                💳 {lang==='ar'?'طريقة الدفع':lang==='en'?'Payment method':lang==='amz'?'ⴰⵣⵔⴼ':'Mode de paiement'}
+            {/* Payment */}
+            <div style={{borderRadius:16,padding:'14px',background:'var(--c-bg)',border:'1.5px solid var(--c-border)'}}>
+              <p style={{fontSize:10,fontWeight:900,color:'#78350F',letterSpacing:'0.1em',textTransform:'uppercase' as const,margin:'0 0 11px'}}>
+                💳 {lang==='ar'?'طريقة الدفع':lang==='en'?'Payment method':'Mode de paiement'}
               </p>
-              <SharedPaymentOptions
-                lang={lang} selected={taxiPayMethod}
-                onSelect={setTaxiPayMethod} showCash showCard={false}
-                onWalletPay={handleTaxiWalletPay}
-              />
+              <SharedPaymentOptions lang={lang} selected={taxiPayMethod} onSelect={setTaxiPayMethod} showCash showCard={false} onWalletPay={handleTaxiWalletPay}/>
             </div>
-
-            <button onClick={()=>{
-                if(!taxiPayMethod){setFormErr('*pay');return;}
-                if(taxiPayMethod==='qr'){handleBook();}
-                else handleBook();
-              }} disabled={sending}
-              className="w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 active:scale-95 transition-all"
-              style={{background:sending?'#9CA3AF':'linear-gradient(135deg,#78350F,#F59E0B)',boxShadow:sending?'none':'0 6px 20px rgba(120,53,15,0.4)',cursor:sending?'wait':'pointer',border:'none',fontSize:15}}>
-              {sending?'⏳ Envoi…':'🚖 '+(lang==='ar'?'احجز الآن':lang==='amz'?'ⵙⵖⵏ':lang==='en'?'Book Now':'Réserver maintenant')}
+            {/* Book CTA */}
+            <button onClick={()=>{if(!taxiPayMethod){setFormErr('*pay');return;}handleBook();}} disabled={sending}
+              style={{width:'100%',padding:'16px',borderRadius:18,border:'none',background:sending?'#9CA3AF':'linear-gradient(135deg,#78350F 0%,#F59E0B 100%)',color:'white',fontWeight:900,fontSize:15,boxShadow:sending?'none':'0 8px 28px rgba(120,53,15,0.45)',cursor:sending?'wait':'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
+              {sending
+                ?<>⏳ {lang==='ar'?'جاري الإرسال…':lang==='en'?'Sending…':'Envoi en cours…'}</>
+                :<>🚖 {lang==='ar'?'احجز الآن':lang==='amz'?'ⵙⵖⵏ':lang==='en'?'Book Now':'Réserver maintenant'}</>
+              }
             </button>
-            {showTaxiQR&&<QRPayModal lang={lang} onClose={()=>{setShowTaxiQR(false);setActiveTab(1);}} onConfirm={()=>{setShowTaxiQR(false);setActiveTab(1);}}/>}
-
-            {bookingRef&&(
-              <div style={{background:'#D1FAE5',borderRadius:14,padding:'12px 16px',display:'flex',alignItems:'center',gap:10}}>
-                <span style={{fontSize:20}}>✅</span>
-                <div>
-                  <p style={{fontSize:12,fontWeight:900,color:'#065F46'}}>Course #{bookingRef}</p>
-                  <p style={{fontSize:11,color:'#059669'}}>
-                    {lang==='ar'?'انتقل إلى تتبع مباشر':lang==='en'?'Switch to Live Track':'Suivez votre chauffeur →'}
-                  </p>
-                </div>
-                <button onClick={()=>setActiveTab(1)} style={{marginLeft:'auto',background:'#059669',color:'white',border:'none',borderRadius:10,padding:'6px 12px',fontSize:12,fontWeight:900,cursor:'pointer'}}>📍</button>
-              </div>
-            )}
           </div>
-        )}
-
-        {/* ── TAB 1: Suivi ── */}
-        {activeTab===1&&(
-          <div className="flex flex-col">
-            {!bookingRef?(
-              <div style={{padding:'40px 20px',textAlign:'center'}}>
-                <p style={{fontSize:40,marginBottom:12}}>🚖</p>
-                <p style={{fontWeight:900,color:'#78350F',marginBottom:6}}>
-                  {lang==='ar'?'لا يوجد حجز':lang==='en'?'No booking yet':'Aucune réservation'}
-                </p>
-                <p style={{fontSize:12,color:'#9CA3AF',marginBottom:20}}>
-                  {lang==='ar'?'احجز أولاً لتتبع سيارتك':lang==='en'?'Book first to track your taxi':'Réservez d\'abord pour suivre votre taxi'}
-                </p>
-                <button onClick={()=>setActiveTab(0)} style={{background:'#78350F',color:'white',border:'none',borderRadius:12,padding:'10px 24px',fontWeight:900,cursor:'pointer'}}>
-                  🚖 {lang==='ar'?'احجز الآن':lang==='en'?'Book Now':'Réserver'}
-                </button>
-              </div>
-            ):(
-              <>
-                {/* Status card */}
-                <div style={{margin:'16px 20px 0',background:'var(--c-card)',borderRadius:16,padding:'14px 16px',boxShadow:'0 2px 16px rgba(0,0,0,0.08)',border:`2px solid ${statusColor}20`}}>
-                  <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:6}}>
-                    <div style={{width:10,height:10,borderRadius:'50%',background:statusColor,flexShrink:0,animation:'pulse 1.5s infinite'}}/>
-                    <p style={{fontWeight:900,color:statusColor,fontSize:13}}>
-                      {statusLabel||{fr:'En attente…',en:'Waiting…',ar:'في الانتظار…',amz:'ⵔⴰⴷ…'}[lang]}
-                    </p>
-                  </div>
-                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                    <p style={{fontSize:11,color:'#9CA3AF'}}>Réf: <strong style={{color:'var(--c-text)'}}>{bookingRef}</strong></p>
-                    {trackData?.driverName&&<p style={{fontSize:11,color:'#065F46',fontWeight:700}}>🚗 {trackData.driverName}</p>}
-                    {trackData?.eta&&<p style={{fontSize:11,color:'#78350F',fontWeight:900}}>⏱ {trackData.eta} min</p>}
-                  </div>
-                  {trackData?.status==='arrived'&&(
-                    <div style={{marginTop:10,background:'#EFF6FF',borderRadius:10,padding:'8px 12px',textAlign:'center'}}>
-                      <p style={{fontWeight:900,color:'#1D4ED8',fontSize:13}}>🎉 {lang==='ar'?'وصل سائقك!':lang==='en'?'Driver arrived!':'Votre chauffeur est là !'}</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Live map */}
-                <div style={{margin:'12px 20px',borderRadius:20,overflow:'hidden',height:420,boxShadow:'0 4px 24px rgba(0,0,0,0.12)',position:'relative'}}>
-                  <TaxiTrackingMap driverPos={driverPos} clientPos={mapClientPos}/>
-                  {/* Overlay badge */}
-                  <div style={{position:'absolute',top:10,left:10,background:'rgba(13,17,23,0.85)',backdropFilter:'blur(8px)',borderRadius:12,padding:'4px 10px',display:'flex',alignItems:'center',gap:6}}>
-                    <div style={{width:6,height:6,borderRadius:'50%',background:statusColor,animation:'pulse 1.2s infinite'}}/>
-                    <span style={{color:'#FDE68A',fontSize:9,fontWeight:900,letterSpacing:'0.12em'}}>🚖 LIVE GPS</span>
-                  </div>
-                  {!driverPos&&trackData?.status!=='accepted'&&(
-                    <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(13,17,23,0.5)',backdropFilter:'blur(4px)'}}>
-                      <div style={{textAlign:'center',padding:20}}>
-                        <p style={{fontSize:36,marginBottom:8}}>🔍</p>
-                        <p style={{color:'#FDE68A',fontWeight:900,fontSize:13}}>
-                          {lang==='ar'?'نبحث عن سائق':lang==='en'?'Finding your driver…':'Recherche d\'un chauffeur…'}
-                        </p>
-                        <p style={{color:'rgba(255,255,255,0.5)',fontSize:11,marginTop:4}}>Mise à jour toutes les 3s</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Cancel / refresh */}
-                <div style={{display:'flex',gap:10,padding:'0 20px 8px'}}>
-                  <button onClick={()=>{setBookingRef('');localStorage.removeItem('bridge_taxi_ref');setActiveTab(0);}}
-                    style={{flex:1,background:'#FEE2E2',color:'#DC2626',border:'none',borderRadius:12,padding:'10px 0',fontWeight:900,fontSize:12,cursor:'pointer'}}>
-                    ✕ {lang==='ar'?'إلغاء':lang==='en'?'Cancel':'Annuler'}
-                  </button>
-                  <button onClick={()=>{if(trackIntervalRef.current)clearInterval(trackIntervalRef.current);setActiveTab(1);}}
-                    style={{flex:1,background:'#D1FAE5',color:'#065F46',border:'none',borderRadius:12,padding:'10px 0',fontWeight:900,fontSize:12,cursor:'pointer'}}>
-                    ↺ {lang==='ar'?'تحديث':lang==='en'?'Refresh':'Actualiser'}
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        )}
-
-      </div>
-
-      {/* ── Bottom nav (hidden on TV/large screens) ── */}
-      <nav className="tv-hide-on-tv fixed bottom-0 inset-x-0 z-40"
-        style={{background:'var(--c-nav)',backdropFilter:'blur(20px)',borderTop:'1px solid var(--c-border)'}}>
-        <div className="max-w-md mx-auto flex">
-          {navItems.map((tab,i)=>(
-            <button key={i} onClick={()=>setActiveTab(i as 0|1)}
-              className={`flex-1 flex flex-col items-center gap-1 py-3 transition-all active:scale-90 ${isAMZ?'font-tifinagh':''}`}
-              style={{color:activeTab===i?'#78350F':'#9CA3AF'}}>
-              <span className="text-xl">{tab.icon}</span>
-              <span style={{fontSize:10,fontWeight:900,letterSpacing:'0.1em',textTransform:'uppercase'}}>{tab.label[lang]}</span>
-            </button>
-          ))}
         </div>
-        <p className="text-center text-[9px] pb-2" style={{color:'#C9BFB2'}}>© 2026 Bridge Safi · safi-bridge.ma</p>
-      </nav>
+      )}
+
+      {/* ── Bottom card: TRACKING ── */}
+      {bookingRef&&(
+        <div style={{position:'absolute',bottom:0,left:0,right:0,zIndex:30,borderRadius:'26px 26px 0 0',background:'var(--c-card)',boxShadow:'0 -12px 50px rgba(0,0,0,0.65)',border:'1px solid rgba(120,53,15,0.15)',borderBottom:'none',padding:'14px 20px 40px'}}>
+          <div style={{display:'flex',justifyContent:'center',marginBottom:12}}>
+            <div style={{width:36,height:4,borderRadius:2,background:'rgba(120,53,15,0.22)'}}/>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:12}}>
+            <div style={{width:11,height:11,borderRadius:'50%',background:statusColor,flexShrink:0,animation:'pulse 1.5s infinite'}}/>
+            <p style={{fontWeight:900,fontSize:15,color:statusColor,flex:1,margin:0}}>
+              {statusLabel||{fr:'Recherche d\'un chauffeur…',en:'Finding a driver…',ar:'البحث عن سائق…',amz:'ⵔⴰⴷ ⵉⴼⴼⵖⵏ ⵓⵙⵔⴰⵜⵏ…'}[lang]}
+            </p>
+            {trackData?.eta&&<span style={{fontSize:13,fontWeight:900,color:'#F59E0B',flexShrink:0}}>⏱ {trackData.eta} min</span>}
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:10,padding:'10px 14px',borderRadius:14,background:'var(--c-bg)',border:'1px solid var(--c-border)',marginBottom:12}}>
+            <span style={{fontSize:24}}>🚖</span>
+            <div style={{flex:1}}>
+              <p style={{fontSize:13,fontWeight:700,color:'var(--c-text)',margin:'0 0 1px'}}>{trackData?.driverName||'Bridge Taxi Confort'}</p>
+              <p style={{fontSize:10,color:'#9CA3AF',margin:0}}>Réf: <strong style={{color:'var(--c-text)'}}>{bookingRef}</strong></p>
+            </div>
+            {trackData?.status==='arrived'&&<span style={{fontSize:20}}>🎉</span>}
+          </div>
+          {trackData?.status==='arrived'&&(
+            <div style={{borderRadius:12,padding:'10px 14px',background:'#EFF6FF',border:'1px solid #BFDBFE',textAlign:'center' as const,marginBottom:12}}>
+              <p style={{fontWeight:900,color:'#1D4ED8',fontSize:13,margin:0}}>🎉 {lang==='ar'?'وصل سائقك!':lang==='en'?'Driver has arrived!':'Votre chauffeur est là !'}</p>
+            </div>
+          )}
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+            <button onClick={()=>{setBookingRef('');localStorage.removeItem('bridge_taxi_ref');setTrackData(null);}}
+              style={{padding:'11px',borderRadius:14,border:'none',background:'#FEE2E2',color:'#DC2626',fontWeight:900,fontSize:13,cursor:'pointer'}}>
+              ✕ {lang==='ar'?'إلغاء':lang==='en'?'Cancel':'Annuler'}
+            </button>
+            <button onClick={()=>{if(trackIntervalRef.current){clearInterval(trackIntervalRef.current);trackIntervalRef.current=null;}const r=window.setInterval(async()=>{try{const res=await fetch(`/api/tracking/${bookingRef}`);if(res.ok)setTrackData(await res.json());}catch{}},3000);trackIntervalRef.current=r;}}
+              style={{padding:'11px',borderRadius:14,border:'none',background:'#D1FAE5',color:'#065F46',fontWeight:900,fontSize:13,cursor:'pointer'}}>
+              ↺ {lang==='ar'?'تحديث':lang==='en'?'Refresh':'Actualiser'}
+            </button>
+          </div>
+        </div>
+      )}
 
       <WAButton/>
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
+      {showTaxiQR&&<QRPayModal lang={lang} onClose={()=>setShowTaxiQR(false)} onConfirm={()=>setShowTaxiQR(false)}/>}
     </div>
   );
 }
