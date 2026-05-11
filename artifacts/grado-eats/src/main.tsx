@@ -3147,21 +3147,40 @@ function AdminAuthPage() {
   const [link, setLink] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const handleGenerate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true); setError(''); setLink('');
+  const callApi = async (path: string) => {
+    setLoading(true); setError(''); setLink(''); setSuccess('');
     try {
-      const r = await fetch('/api/admin/sign-in-link', {
+      const r = await fetch(path, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), adminKey: adminKey.trim() }),
       });
       const data = await r.json();
-      if (!r.ok) { setError(data.error || 'Erreur.'); return; }
-      setLink(data.url);
-    } catch { setError('Erreur réseau.'); }
+      if (!r.ok) { setError(data.error || 'Erreur.'); return null; }
+      return data;
+    } catch { setError('Erreur réseau.'); return null; }
     finally { setLoading(false); }
+  };
+
+  const handleGenerate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const data = await callApi('/api/admin/sign-in-link');
+    if (data?.url) setLink(data.url);
+  };
+
+  const handleBan = async () => {
+    if (!email.trim() || !adminKey.trim()) { setError('Email et clé admin requis.'); return; }
+    if (!window.confirm(`Bannir définitivement ${email} ? Il ne pourra plus se connecter ni se réinscrire.`)) return;
+    const data = await callApi('/api/admin/ban-user');
+    if (data?.ok) setSuccess(data.message || 'Utilisateur banni.');
+  };
+
+  const handleUnban = async () => {
+    if (!email.trim() || !adminKey.trim()) { setError('Email et clé admin requis.'); return; }
+    const data = await callApi('/api/admin/unban-user');
+    if (data?.ok) setSuccess(data.message || 'Utilisateur débanni.');
   };
 
   return (
@@ -3176,9 +3195,28 @@ function AdminAuthPage() {
         <FocusInput label="Clé admin (code chauffeur)" value={adminKey} onChange={setAdminKey}
           placeholder="BRIDGE-DRIVER-2025" type="password" autoComplete="off" />
         {error && <div style={errStyle}>{error}</div>}
+        {success && (
+          <div style={{ padding: '10px 12px', borderRadius: 10, background: '#F0FDF4',
+            border: '1px solid #BBF7D0', color: '#065F46', fontSize: 13, fontWeight: 700 }}>
+            ✅ {success}
+          </div>
+        )}
         <button type="submit" style={{ ...btn, opacity: loading ? 0.7 : 1 }} disabled={loading}>
-          {loading ? 'Génération...' : 'Générer le lien →'}
+          {loading ? 'Patientez...' : '🔗 Générer un lien de connexion'}
         </button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button type="button" onClick={handleBan} disabled={loading}
+            style={{ ...btn, flex: 1, background: '#DC2626', opacity: loading ? 0.7 : 1 }}>
+            🚫 Bannir
+          </button>
+          <button type="button" onClick={handleUnban} disabled={loading}
+            style={{ ...btn, flex: 1, background: '#6B7280', opacity: loading ? 0.7 : 1 }}>
+            ↩️ Débannir
+          </button>
+        </div>
+        <p style={{ fontSize: 11, color: '#9CA3AF', textAlign: 'center', marginTop: 4, lineHeight: 1.5 }}>
+          Bannir = le client ne peut plus se connecter ni revenir avec le même email.
+        </p>
       </form>
       {link && (
         <div style={{ marginTop: 20, padding: 16, background: '#F0FDF4', borderRadius: 12, border: '1px solid #BBF7D0' }}>

@@ -65,4 +65,100 @@ router.post("/admin/sign-in-link", async (req, res) => {
   }
 });
 
+/** POST /api/admin/ban-user
+ *  Body: { email: string, adminKey: string }
+ *  Bans the user — they can no longer sign in or re-register with this email.
+ */
+router.post("/admin/ban-user", async (req, res) => {
+  const { email, adminKey } = req.body ?? {};
+
+  if (adminKey !== DRIVER_KEY) {
+    res.status(401).json({ error: "Clé admin invalide." });
+    return;
+  }
+  if (!email || typeof email !== "string") {
+    res.status(400).json({ error: "Email requis." });
+    return;
+  }
+
+  try {
+    const searchRes = await fetch(
+      `https://api.clerk.com/v1/users?email_address=${encodeURIComponent(email.trim())}`,
+      { headers: { Authorization: `Bearer ${CLERK_SECRET}` } }
+    );
+    const users = (await searchRes.json()) as any[];
+
+    if (!Array.isArray(users) || users.length === 0) {
+      res.status(404).json({ error: `Aucun compte trouvé pour ${email}.` });
+      return;
+    }
+
+    const userId = users[0].id;
+
+    const banRes = await fetch(`https://api.clerk.com/v1/users/${userId}/ban`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${CLERK_SECRET}` },
+    });
+
+    if (!banRes.ok) {
+      const errData = await banRes.text();
+      req.log.error({ errData, userId }, "Clerk ban failed");
+      res.status(500).json({ error: "Bannissement échoué." });
+      return;
+    }
+
+    req.log.info({ userId, email }, "User banned by admin");
+    res.json({ ok: true, message: `${email} a été banni définitivement.` });
+  } catch (err) {
+    logger.error({ err }, "Admin ban error");
+    res.status(500).json({ error: "Erreur serveur." });
+  }
+});
+
+/** POST /api/admin/unban-user
+ *  Body: { email: string, adminKey: string }
+ */
+router.post("/admin/unban-user", async (req, res) => {
+  const { email, adminKey } = req.body ?? {};
+
+  if (adminKey !== DRIVER_KEY) {
+    res.status(401).json({ error: "Clé admin invalide." });
+    return;
+  }
+  if (!email || typeof email !== "string") {
+    res.status(400).json({ error: "Email requis." });
+    return;
+  }
+
+  try {
+    const searchRes = await fetch(
+      `https://api.clerk.com/v1/users?email_address=${encodeURIComponent(email.trim())}`,
+      { headers: { Authorization: `Bearer ${CLERK_SECRET}` } }
+    );
+    const users = (await searchRes.json()) as any[];
+
+    if (!Array.isArray(users) || users.length === 0) {
+      res.status(404).json({ error: `Aucun compte trouvé pour ${email}.` });
+      return;
+    }
+
+    const userId = users[0].id;
+    const r = await fetch(`https://api.clerk.com/v1/users/${userId}/unban`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${CLERK_SECRET}` },
+    });
+
+    if (!r.ok) {
+      res.status(500).json({ error: "Débannissement échoué." });
+      return;
+    }
+
+    req.log.info({ userId, email }, "User unbanned by admin");
+    res.json({ ok: true, message: `${email} a été débanni.` });
+  } catch (err) {
+    logger.error({ err }, "Admin unban error");
+    res.status(500).json({ error: "Erreur serveur." });
+  }
+});
+
 export default router;
