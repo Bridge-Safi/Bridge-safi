@@ -3186,6 +3186,13 @@ function AdminAuthPage() {
     if (data?.ok) setSuccess(data.message || 'Utilisateur débanni.');
   };
 
+  const handleDelete = async () => {
+    if (!email.trim() || !adminKey.trim()) { setError('Email et clé admin requis.'); return; }
+    if (!window.confirm(`Supprimer le compte de ${email} ? Il pourra se réinscrire avec le même email.`)) return;
+    const data = await callApi('/api/admin/delete-user');
+    if (data?.ok) setSuccess(data.message || 'Compte supprimé.');
+  };
+
   return (
     <AuthPageWrapper>
       <AuthCardHeader
@@ -3217,8 +3224,13 @@ function AdminAuthPage() {
             ↩️ Débannir
           </button>
         </div>
+        <button type="button" onClick={handleDelete} disabled={loading}
+          style={{ ...btn, background: '#7C2D12', opacity: loading ? 0.7 : 1 }}>
+          🗑️ Supprimer le compte (peut se réinscrire)
+        </button>
         <p style={{ fontSize: 11, color: '#9CA3AF', textAlign: 'center', marginTop: 4, lineHeight: 1.5 }}>
-          Bannir = le client ne peut plus se connecter ni revenir avec le même email.
+          <b>Bannir</b> = bloqué pour toujours.<br/>
+          <b>Supprimer</b> = effacé, peut se réinscrire.
         </p>
       </form>
       {link && (
