@@ -1366,19 +1366,45 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, isLoaded, isSignedIn]);
 
-  // Send player profile (avatar + name + diamonds) to game after it loads
+  // Send player profile (avatar + name + diamonds) to game after it loads.
+  // Fetches real balance from server first so sessionStart is always accurate,
+  // even on a fresh device where localStorage cache is empty.
   const sendProfileToGame = () => {
     const iframe = iframeRef.current;
     if (!iframe?.contentWindow) return;
-    const cached = (() => { try { return parseInt(localStorage.getItem(diamondsCacheKey) || '0', 10) || 0; } catch { return 0; } })();
-    // Record the balance at session start so we can add session earnings correctly
-    sessionStartDiamonds.current = cached;
-    iframe.contentWindow.postMessage({
-      type: 'bridge_player',
-      avatarUrl: avatarSrc,
-      displayName: playerName,
-      diamonds: cached,
-    }, '*');
+
+    const dispatch = (serverDiamonds: number) => {
+      // Update cache with authoritative server value
+      try { localStorage.setItem(diamondsCacheKey, String(serverDiamonds)); } catch {}
+      setLiveDiamonds(serverDiamonds);
+      // Record the balance at session start so we can add session earnings correctly
+      sessionStartDiamonds.current = serverDiamonds;
+      iframe.contentWindow!.postMessage({
+        type: 'bridge_player',
+        avatarUrl: avatarSrc,
+        displayName: playerName,
+        diamonds: serverDiamonds,
+      }, '*');
+    };
+
+    // Try to get authoritative balance from server; fall back to cache if offline
+    getToken().then(token => {
+      const h: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+      return fetch('/api/game/diamonds', { credentials: 'include', headers: h });
+    }).then(r => r.ok ? r.json() : null).then(data => {
+      const serverVal = typeof data?.diamonds === 'number' ? data.diamonds : null;
+      if (serverVal !== null) {
+        dispatch(serverVal);
+      } else {
+        // Offline fallback: use cache
+        const cached = (() => { try { return parseInt(localStorage.getItem(diamondsCacheKey) || '0', 10) || 0; } catch { return 0; } })();
+        dispatch(cached);
+      }
+    }).catch(() => {
+      // Offline fallback: use cache
+      const cached = (() => { try { return parseInt(localStorage.getItem(diamondsCacheKey) || '0', 10) || 0; } catch { return 0; } })();
+      dispatch(cached);
+    });
   };
 
   useEffect(() => {

@@ -143,9 +143,10 @@ router.post("/game/diamonds", async (req, res) => {
       .onConflictDoUpdate({
         target: gameDiamondsTable.userId,
         set: {
-          // Client has already computed the correct cumulative total (session start + earned).
-          // Use the value directly — no GREATEST needed here.
-          diamonds,
+          // ALWAYS use GREATEST — the balance can only go UP via this endpoint.
+          // Only /spend can decrease diamonds. This prevents fresh-device or
+          // race-condition scenarios from overwriting a higher server balance.
+          diamonds: sql`GREATEST(${gameDiamondsTable.diamonds}, ${diamonds})`,
           totalEarned: sql`GREATEST(${gameDiamondsTable.totalEarned}, ${diamonds})`,
           updatedAt: new Date(),
         },
