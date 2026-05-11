@@ -2461,8 +2461,9 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
           body:JSON.stringify({spend:diamondsToSpend}),
         }).then(r=>r.ok?r.json():null).then(d=>{
           if(d&&typeof d.diamonds==='number'){
-            try{localStorage.setItem('bridge_diamonds_cache',String(d.diamonds));}catch{}
-            window.dispatchEvent(new StorageEvent('storage',{key:'bridge_diamonds_cache',newValue:String(d.diamonds)}));
+            const ck=`bridge_diamonds_cache_${user?.id||'anon'}`;
+            try{localStorage.setItem(ck,String(d.diamonds));}catch{}
+            window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));
           }
         }).catch(()=>{}));
       }
@@ -3532,14 +3533,15 @@ function TaxiTrackingMap({driverPos,clientPos}:{driverPos:{lat:number;lng:number
 function SharkDiamondWidget({onNavigate,profile}:{onNavigate:()=>void;profile:UserProfile}) {
   const {user}=useUser();
   const getAuthHeaders=useAuthHeaders();
-  // Initialise from localStorage cache for instant display, then confirm with server
+  const cacheKey=`bridge_diamonds_cache_${user?.id||'anon'}`;
+  // Initialise from user-specific localStorage cache for instant display, then confirm with server
   const [gems,setGems]=useState<number>(()=>{
-    try{return parseInt(localStorage.getItem('bridge_diamonds_cache')||'0',10)||0;}catch{return 0;}
+    try{return parseInt(localStorage.getItem(`bridge_diamonds_cache_${user?.id||'anon'}`)||'0',10)||0;}catch{return 0;}
   });
   const bridgeId=getBridgeId(profile.phone, profile.name);
   const avatarSrc=profile.avatar||user?.imageUrl||null;
 
-  // Fetch authoritative count from server
+  // Fetch authoritative count from server — always override local cache for this user
   useEffect(()=>{
     if(!user?.id) return;
     getAuthHeaders().then(h=>fetch('/api/game/diamonds',{credentials:'include',headers:h})
@@ -3547,23 +3549,23 @@ function SharkDiamondWidget({onNavigate,profile}:{onNavigate:()=>void;profile:Us
       .then(d=>{
         if(d&&typeof d.diamonds==='number'){
           setGems(d.diamonds);
-          try{localStorage.setItem('bridge_diamonds_cache',String(d.diamonds));}catch{}
+          try{localStorage.setItem(cacheKey,String(d.diamonds));}catch{}
         }
       })
       .catch(()=>{}));
-  },[user?.id,getAuthHeaders]);
+  },[user?.id,getAuthHeaders,cacheKey]);
 
   // Listen for real-time updates from the game (via storage event dispatched in GameIframe)
   useEffect(()=>{
     const onStorage=(e:StorageEvent)=>{
-      if(e.key==='bridge_diamonds_cache'&&e.newValue){
+      if(e.key===cacheKey&&e.newValue){
         const n=parseInt(e.newValue,10);
         if(!isNaN(n)&&n>=0) setGems(n);
       }
     };
     window.addEventListener('storage',onStorage);
     return()=>window.removeEventListener('storage',onStorage);
-  },[]);
+  },[cacheKey]);
   return(
     <button onClick={onNavigate} title={`${bridgeId} — Bridge Game`}
       style={{background:'none',border:'none',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',gap:2,padding:'2px 4px',borderRadius:12}}>
@@ -3688,7 +3690,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
         }),
       }).catch(()=>{});
     }finally{setSending(false);}
-    if(taxiGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:taxiGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){try{localStorage.setItem('bridge_diamonds_cache',String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:'bridge_diamonds_cache',newValue:String(d.diamonds)}));}}).catch(()=>{}));}
+    if(taxiGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:taxiGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${taxiUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     localStorage.setItem('bridge_taxi_ref',ref);
     setBookingRef(ref);
     if(taxiPayMethod==='qr') setShowTaxiQR(true);
@@ -4789,7 +4791,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
         }),
       }).catch(()=>{});
     } finally { setSending(false); }
-    if(tabacGemMAD>0){getAuthHeadersTabac().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:tabacGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){try{localStorage.setItem('bridge_diamonds_cache',String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:'bridge_diamonds_cache',newValue:String(d.diamonds)}));}}).catch(()=>{}));}
+    if(tabacGemMAD>0){getAuthHeadersTabac().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:tabacGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${tabacUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     localStorage.setItem('bridge_last_ref',orderRef);
     setSent(true);
     onOrderSuccess?.(orderRef);

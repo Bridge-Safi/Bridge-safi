@@ -1309,8 +1309,9 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
   const [gameToken, setGameToken] = useState<string | null>(null);
   const [phone, setPhone] = useState<string | null>(null);
   const [playerName, setPlayerName] = useState<string>('');
+  const diamondsCacheKey = `bridge_diamonds_cache_${userId}`;
   const [liveDiamonds, setLiveDiamonds] = useState<number>(() => {
-    try { return parseInt(localStorage.getItem('bridge_diamonds_cache') || '0', 10) || 0; } catch { return 0; }
+    try { return parseInt(localStorage.getItem(`bridge_diamonds_cache_${userId}`) || '0', 10) || 0; } catch { return 0; }
   });
   // Track balance at session start so we can add session earnings to it
   const sessionStartDiamonds = useRef<number>(0);
@@ -1369,7 +1370,7 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
   const sendProfileToGame = () => {
     const iframe = iframeRef.current;
     if (!iframe?.contentWindow) return;
-    const cached = (() => { try { return parseInt(localStorage.getItem('bridge_diamonds_cache') || '0', 10) || 0; } catch { return 0; } })();
+    const cached = (() => { try { return parseInt(localStorage.getItem(diamondsCacheKey) || '0', 10) || 0; } catch { return 0; } })();
     // Record the balance at session start so we can add session earnings correctly
     sessionStartDiamonds.current = cached;
     iframe.contentWindow.postMessage({
@@ -1404,11 +1405,11 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
         ? sessionStart + rawDiamonds   // game reset to 0, add earned to previous balance
         : rawDiamonds;                 // game used our starting balance, value is already cumulative
 
-      // Cache instantly for real-time sync with SharkDiamondWidget
-      try { localStorage.setItem('bridge_diamonds_cache', String(diamonds)); } catch {}
+      // Cache instantly for real-time sync with SharkDiamondWidget (user-specific key)
+      try { localStorage.setItem(diamondsCacheKey, String(diamonds)); } catch {}
       setLiveDiamonds(diamonds);
       // Notify other tabs/widgets via storage event
-      window.dispatchEvent(new StorageEvent('storage', { key: 'bridge_diamonds_cache', newValue: String(diamonds) }));
+      window.dispatchEvent(new StorageEvent('storage', { key: diamondsCacheKey, newValue: String(diamonds) }));
 
       getToken().then(token => {
         const h: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
