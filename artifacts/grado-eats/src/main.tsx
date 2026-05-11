@@ -259,11 +259,25 @@ function ForgotPasswordPage() {
       setResetStrategy('reset_password_email_code');
       setStep('reset');
     } catch (err: any) {
-      const msg = (err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || '').toLowerCase();
-      if (msg.includes('not found') || msg.includes('identifier') || msg.includes('no user')) {
+      const clerkErr = err?.errors?.[0];
+      const code = (clerkErr?.code || '').toLowerCase();
+      const msg = (clerkErr?.longMessage || clerkErr?.message || '').toLowerCase();
+      if (
+        msg.includes('not found') || msg.includes('no user') || msg.includes('couldn\'t find') ||
+        code.includes('form_identifier_not_found') || code.includes('not_found')
+      ) {
         setError(`Aucun compte trouvé pour ${identifier.trim()}. Vérifiez votre adresse email.`);
+      } else if (
+        code.includes('strategy_for_user_invalid') || code.includes('not_allowed') ||
+        msg.includes('strategy') || msg.includes('social') || msg.includes('oauth') ||
+        msg.includes('google') || msg.includes('external') || msg.includes('password is not set')
+      ) {
+        setError('Ce compte utilise Google (ou un autre réseau social) pour se connecter — il n\'a pas de mot de passe à réinitialiser. Connectez-vous directement avec "Continuer avec Google".');
+      } else if (code.includes('too_many') || msg.includes('too many') || msg.includes('rate limit')) {
+        setError('Trop de tentatives. Attendez quelques minutes avant de réessayer.');
       } else {
-        setError('Erreur lors de l\'envoi du code. Réessayez dans quelques secondes.');
+        // Afficher le message Clerk réel pour faciliter le diagnostic
+        setError(clerkErr?.longMessage || clerkErr?.message || 'Erreur lors de l\'envoi du code. Réessayez dans quelques secondes.');
       }
     }
     setLoading(false);
