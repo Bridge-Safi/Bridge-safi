@@ -951,7 +951,7 @@ const GAME_T = {
     sec2Title:'💎 DIAMANTS À RÉCOLTER',
     sec2:'Objectif : 60 000 💎 en 3 jours · Rythme : 6 000 💎/heure (3h × 3j = 54 000 💎) · +2 000 💎/jour bonus (1h en plus) = 60 000 💎 = livraison gratuite',
     sec3Title:'🐝 DIAMANTS MANQUANTS',
-    sec3:'Objectif atteint → tout est offert 🎉 · Manque 200 💎 → vous payez 1 MAD · Calcul : diamants manquants ÷ 200 = MAD à payer',
+    sec3:'Objectif atteint → tout est offert 🎉 · Manque 10 000 💎 → vous payez 5 DH · Calcul : diamants manquants ÷ 10 000 × 5 DH',
     bonusTitle:'🎁 BONUS — LIVRAISON GRATUITE',
     bonusDesc:'Jouez 4h/jour (1h bonus) → +2 000 💎/jour → 60 000 💎 = livraison 100% GRATUITE 🎁 · Sinon le jeu s\'arrête net à 3h, revenez le lendemain',
   },
@@ -965,7 +965,7 @@ const GAME_T = {
     sec2Title:'💎 DIAMONDS TO COLLECT',
     sec2:'Goal: 60,000 💎 in 3 days · Rate: 6,000 💎/hour (3h × 3j = 54,000 💎) · +2,000 💎/day bonus (1 extra hour) = 60,000 💎 = free delivery',
     sec3Title:'🐝 MISSING DIAMONDS',
-    sec3:'Goal reached → everything is free 🎉 · Missing 200 💎 → you pay 1 MAD · Formula: missing ÷ 200 = MAD to pay',
+    sec3:'Goal reached → everything is free 🎉 · Missing 10,000 💎 → you pay 5 DH · Formula: missing ÷ 10,000 × 5 DH',
     bonusTitle:'🎁 BONUS — FREE DELIVERY',
     bonusDesc:'Play 4h/day (1 bonus hour) → +2,000 💎/day → 60,000 💎 = 100% FREE delivery 🎁 · Otherwise the game stops at 3h, come back tomorrow',
   },
@@ -979,7 +979,7 @@ const GAME_T = {
     sec2Title:'💎 الماسات المطلوبة',
     sec2:'الهدف: 60 000 💎 في 3 أيام · 6 000 💎/ساعة (3س × 3أ = 54 000 💎) · +2 000 💎/يوم مكافأة (ساعة إضافية) = 60 000 💎 = توصيل مجاني',
     sec3Title:'🐝 الماسات الناقصة',
-    sec3:'وصلت للهدف → كل شيء مجاني 🎉 · نقص 200 💎 → تدفع 1 درهم · الحساب: الناقص ÷ 200 = دراهم تُدفع',
+    sec3:'وصلت للهدف → كل شيء مجاني 🎉 · نقص 10 000 💎 → تدفع 5 دراهم · الحساب: الناقص ÷ 10 000 × 5 = دراهم',
     bonusTitle:'🎁 مكافأة — توصيل مجاني',
     bonusDesc:'العب 4 ساعات/يوم (ساعة إضافية) → +2 000 💎/يوم → 60 000 💎 = توصيل مجاني 100% 🎁 · وإلا توقف اللعبة عند 3 ساعات، عد غداً',
   },
@@ -993,7 +993,7 @@ const GAME_T = {
     sec2Title:'💎 ⵉⴷⵢⴰⵎⴰⵏ ⴰⴷ ⵜⴽⵛⵎⴷ',
     sec2:'ⴰⵎⵓⵟⵟⵓ: 60 000 💎 · 6 000 💎/ⵜⵉⵙⵙⵓⵜ · +2 000 💎/ⴰⵙⵙ ⴱⵓⵏⵓⵙ = ⴰⵣⵏⵏⵣ ⵉⵥⵍⵉ',
     sec3Title:'🐝 ⵉⴷⵢⴰⵎⴰⵏ ⵉⵔⵓⵔⵏ',
-    sec3:'ⵡⴰⵅⵅⴰ ⴰⵎⵓⵟⵟⵓ → ⴽⵓⵍⵍⵓ ⵉⵥⵍⵉ 🎉 · 200 💎 ⵉⵔⵓⵔ → 1 ⴷⵔⵀⵎ · ⵓⵔ: ⵉⵔⵓⵔⵏ ÷ 200 = ⴷⵔⵀⵎ',
+    sec3:'ⵡⴰⵅⵅⴰ ⴰⵎⵓⵟⵟⵓ → ⴽⵓⵍⵍⵓ ⵉⵥⵍⵉ 🎉 · 10 000 💎 ⵉⵔⵓⵔ → 5 ⴷⵔⵀⵎ · ⵓⵔ: ⵉⵔⵓⵔⵏ ÷ 10 000 × 5 = ⴷⵔⵀⵎ',
     bonusTitle:'🎁 ⴱⵓⵏⵓⵙ — ⴰⵣⵏⵏⵣ ⵉⵥⵍⵉ',
     bonusDesc:'ⵣⵔ 4 ⵜⵉⵙⵙⵓⵜⵉⵏ/ⴰⵙⵙ → +2 000 💎 → 60 000 💎 = ⴰⵣⵏⵏⵣ ⵉⵥⵍⵉ 100% 🎁',
   },
@@ -1028,9 +1028,9 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           icon: '💸', title: 'Diamants manquants',
           points: [
             'Si vous atteignez 60 000 💎 → tout est offert ! 🎉',
-            'S\'il manque 200 💎 → vous payez 1 MAD',
-            'S\'il manque 1 000 💎 → vous payez 5 MAD',
-            'Calcul : diamants manquants ÷ 200 = MAD à payer',
+            'S\'il manque 10 000 💎 → vous payez 5 DH',
+            'S\'il manque 30 000 💎 → vous payez 15 DH',
+            'Calcul : diamants manquants ÷ 10 000 × 5 DH',
           ]
         },
         {
@@ -1050,7 +1050,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           ]
         },
       ],
-      example: '💡 Exemple : vous avez 58 000 💎 au lieu de 60 000 → il manque 2 000 💎 → vous payez seulement 10 MAD.',
+      example: '💡 Exemple : vous avez 50 000 💎 au lieu de 60 000 → il manque 10 000 💎 → vous payez seulement 5 DH.',
       close: 'J\'ai compris ! 🦈',
     },
     en: {
@@ -1077,9 +1077,9 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           icon: '💸', title: 'Missing diamonds',
           points: [
             'Reach 60,000 💎 → everything is free! 🎉',
-            'Missing 200 💎 → you pay 1 MAD',
-            'Missing 1,000 💎 → you pay 5 MAD',
-            'Formula: missing diamonds ÷ 200 = MAD to pay',
+            'Missing 10,000 💎 → you pay 5 DH',
+            'Missing 30,000 💎 → you pay 15 DH',
+            'Formula: missing diamonds ÷ 10,000 × 5 DH',
           ]
         },
         {
@@ -1099,7 +1099,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           ]
         },
       ],
-      example: '💡 Example: you have 58,000 💎 instead of 60,000 → missing 2,000 💎 → you pay only 10 MAD.',
+      example: '💡 Example: you have 50,000 💎 instead of 60,000 → missing 10,000 💎 → you pay only 5 DH.',
       close: 'Got it! 🦈',
     },
     ar: {
@@ -1126,9 +1126,9 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           icon: '💸', title: 'الماسات الناقصة',
           points: [
             'حققت 60 000 💎 → كل شيء مجاني! 🎉',
-            'ناقص 200 💎 → تدفع 1 درهم',
-            'ناقص 1 000 💎 → تدفع 5 دراهم',
-            'الحساب : الماسات الناقصة ÷ 200 = دراهم تُدفع',
+            'ناقص 10 000 💎 → تدفع 5 دراهم',
+            'ناقص 30 000 💎 → تدفع 15 درهم',
+            'الحساب : الناقص ÷ 10 000 × 5 = دراهم',
           ]
         },
         {
@@ -1148,7 +1148,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           ]
         },
       ],
-      example: '💡 مثال : لديك 58 000 💎 بدلاً من 60 000 → ناقص 2 000 💎 → تدفع 10 دراهم فقط.',
+      example: '💡 مثال : لديك 50 000 💎 بدلاً من 60 000 → ناقص 10 000 💎 → تدفع 5 دراهم فقط.',
       close: 'فهمت! 🦈',
     },
     amz: {
@@ -1175,9 +1175,9 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           icon: '💸', title: 'ⵉⴷⵢⴰⵎⴰⵏ ⵉⵍⵍⴰⵏ',
           points: [
             '60 000 💎 → ⴽⵓⵍⵍⵓ ⵢⵉⵍⵉ ⵖⵔⴰⵜⴽ! 🎉',
-            'ⵢⵍⵍⴰ 200 💎 → 1 ⴷⵔⵀⵎ',
-            'ⵢⵍⵍⴰ 1 000 💎 → 5 ⴷⵔⵀⵎ',
-            'ⵓⵔ: ⵉⵔⵓⵔⵏ ÷ 200 = ⴷⵔⵀⵎ',
+            'ⵢⵍⵍⴰ 10 000 💎 → 5 ⴷⵔⵀⵎ',
+            'ⵢⵍⵍⴰ 30 000 💎 → 15 ⴷⵔⵀⵎ',
+            'ⵓⵔ: ⵉⵔⵓⵔⵏ ÷ 10 000 × 5 = ⴷⵔⵀⵎ',
           ]
         },
         {
@@ -1196,7 +1196,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
           ]
         },
       ],
-      example: '💡 58 000 💎 ⴷⴳ 60 000 → ⵢⵍⵍⴰ 2 000 → 10 ⴷⵔⵀⵎ.',
+      example: '💡 50 000 💎 ⴷⴳ 60 000 → ⵢⵍⵍⴰ 10 000 → 5 ⴷⵔⵀⵎ.',
       close: 'ⵙⵙⵉⵏⵖ! 🦈',
     },
   };

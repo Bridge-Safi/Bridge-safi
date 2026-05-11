@@ -52,6 +52,7 @@ To update the bank QR: change `BRIDGE_QR_PAY_URL` near line 198 in `artifacts/gr
 ## Diamond System (Bridge Game sync)
 
 - Conversion: **200 💎 = 1 MAD** (60,000 💎 = 300 MAD)
+- Missing diamond penalty: **10 000 💎 manquants = 5 DH** (÷ 10 000 × 5 DH)
 - `SharkDiamondWidget` component: shows shark logo + live diamond balance; visible in all service page headers (Taxi, Tabac, Fleurs, Pharmacie). Tapping navigates to `/game`.
 - Diamond payment slider: visible in Taxi & Tabac checkout when user has ≥ 200 💎. Deducts via `POST /api/game/diamonds/spend`.
 - Fleurs uses `CheckoutDrawer` which already has diamond payment built in.

@@ -113,8 +113,8 @@ h1{font-weight:900;font-size:2rem;letter-spacing:.5em;text-align:center;
     <div class="gem-sub">Gagne des diamants · Échange contre des MAD</div>
   </div>
   <div class="stats">
-    <div class="stat"><div class="stat-icon">⏱️</div><div class="stat-val">6h</div><div class="stat-lbl">par semaine</div></div>
-    <div class="stat"><div class="stat-icon">💎</div><div class="stat-val">1 000</div><div class="stat-lbl">💎 / heure</div></div>
+    <div class="stat"><div class="stat-icon">⏱️</div><div class="stat-val">9h</div><div class="stat-lbl">3 jours · 3h/j</div></div>
+    <div class="stat"><div class="stat-icon">💎</div><div class="stat-val">6 000</div><div class="stat-lbl">💎 / heure</div></div>
     <div class="stat"><div class="stat-icon">🛵</div><div class="stat-val">300 MAD</div><div class="stat-lbl">bonus livraison</div></div>
   </div>
   <a class="play" href="${GAME_EXTERNAL_URL}" target="_blank" rel="noopener noreferrer">🎮 JOUER MAINTENANT</a>
