@@ -3279,7 +3279,8 @@ function ClerkProviderWithRoutes() {
           <Route path="/driver/:ref" component={DriverTrackerPage} />
           <Route path="/resto" component={RestaurantOwnerPage} />
           <Route path="/admin-auth" component={AdminAuthPage} />
-          <Route component={App} />
+          <Route path="/manager" component={AdminAuthPage} />
+          <Route component={typeof window !== 'undefined' && window.location.hostname.startsWith('manager.') ? AdminAuthPage : App} />
         </Switch>
       </QueryClientProvider>
     </ClerkProvider>
