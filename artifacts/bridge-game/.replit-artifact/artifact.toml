@@ -12,10 +12,10 @@ version = "1.0.0"
 [[services]]
 name = "web"
 paths = [ "/bridge-game/", "/bridge-game" ]
-localPort = 8080
+localPort = 19407
 
 [services.development]
-run = "pnpm --filter @workspace/api-server run dev"
+run = "pnpm --filter @workspace/bridge-game run dev"
 
 [services.production]
 build = [ "pnpm", "--filter", "@workspace/bridge-game", "run", "build" ]
@@ -27,5 +27,5 @@ from = "/*"
 to = "/index.html"
 
 [services.env]
-PORT = "8080"
+PORT = "19407"
 BASE_PATH = "/bridge-game/"
