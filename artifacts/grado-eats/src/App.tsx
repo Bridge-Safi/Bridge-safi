@@ -1752,7 +1752,7 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
           </div>
         )
         : (
-          <div className="px-4 grid grid-cols-2 gap-3 mb-6">
+          <div className="tv-grid px-4 grid grid-cols-2 gap-3 mb-6">
             {filtered.map(r=>{
               const isFeatured=r.id==='mcdonalds-safi' && activeFilter==='all';
               return(
@@ -3982,8 +3982,8 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
 
       </div>
 
-      {/* ── Bottom nav ── */}
-      <nav className="fixed bottom-0 inset-x-0 z-40"
+      {/* ── Bottom nav (hidden on TV/large screens) ── */}
+      <nav className="tv-hide-on-tv fixed bottom-0 inset-x-0 z-40"
         style={{background:'var(--c-nav)',backdropFilter:'blur(20px)',borderTop:'1px solid var(--c-border)'}}>
         <div className="max-w-md mx-auto flex">
           {navItems.map((tab,i)=>(
@@ -5347,8 +5347,8 @@ export default function App() {
         {page==='contact'&&<ContactPage lang={lang} t={t}/>}
       </main>
 
-      {/* ── Bottom nav ── */}
-      <nav className="fixed bottom-0 inset-x-0 z-40"
+      {/* ── Bottom nav (hidden on TV/large screens) ── */}
+      <nav className="tv-hide-on-tv fixed bottom-0 inset-x-0 z-40"
         style={{background:'var(--c-nav)',backdropFilter:'blur(20px)',borderTop:'1px solid var(--c-border)'}}>
         <div className="max-w-md mx-auto flex">
           {([
