@@ -7,6 +7,7 @@ import assistantRouter from "./assistant";
 import gameRouter from "./game";
 import profilesRouter from "./profiles";
 import restaurantProfileRouter from "./restaurant-profile";
+import adminRouter from "./admin";
 
 const router: IRouter = Router();
 
@@ -18,5 +19,6 @@ router.use(assistantRouter);
 router.use(gameRouter);
 router.use(profilesRouter);
 router.use(restaurantProfileRouter);
+router.use(adminRouter);
 
 export default router;

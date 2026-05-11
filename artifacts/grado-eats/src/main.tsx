@@ -396,6 +396,31 @@ function SignInPage() {
   useEffect(() => {
     if (isLoaded && isSignedIn) navigate(basePath || '/');
   }, [isLoaded, isSignedIn, navigate]);
+
+  // Auto sign-in via __clerk_ticket (lien admin direct)
+  useEffect(() => {
+    if (!isLoaded || isSignedIn) return;
+    const params = new URLSearchParams(window.location.search);
+    const ticket = params.get('__clerk_ticket');
+    if (!ticket) return;
+    setLoading(true);
+    clerk.client.signIn.create({ strategy: 'ticket' as any, ticket })
+      .then(async (result: any) => {
+        if (result.status === 'complete') {
+          localStorage.setItem('bridge_was_signed_in', '1');
+          await clerk.setActive({ session: result.createdSessionId });
+          navigate(basePath || '/');
+        } else {
+          setError('Lien de connexion invalide ou expiré. Demandez un nouveau lien.');
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        setError('Lien de connexion invalide ou expiré. Demandez un nouveau lien.');
+        setLoading(false);
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoaded]);
   // What factor/strategy Clerk is waiting for
   const [factorKind, setFactorKind] = useState<FactorKind>('second');
   const [factorStrategy, setFactorStrategy] = useState<FactorStrategy>('email_code');
@@ -3116,6 +3141,68 @@ class ErrorBoundary extends Component<{ children: React.ReactNode }, EBState> {
   }
 }
 
+function AdminAuthPage() {
+  const [email, setEmail] = useState('');
+  const [adminKey, setAdminKey] = useState('');
+  const [link, setLink] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleGenerate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true); setError(''); setLink('');
+    try {
+      const r = await fetch('/api/admin/sign-in-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), adminKey: adminKey.trim() }),
+      });
+      const data = await r.json();
+      if (!r.ok) { setError(data.error || 'Erreur.'); return; }
+      setLink(data.url);
+    } catch { setError('Erreur réseau.'); }
+    finally { setLoading(false); }
+  };
+
+  return (
+    <AuthPageWrapper>
+      <AuthCardHeader
+        title="🔑 Accès Admin"
+        sub="Générez un lien de connexion direct pour un utilisateur"
+      />
+      <form onSubmit={handleGenerate} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <FocusInput label="Email de l'utilisateur" value={email} onChange={setEmail}
+          placeholder="user@exemple.com" type="email" autoComplete="off" />
+        <FocusInput label="Clé admin (code chauffeur)" value={adminKey} onChange={setAdminKey}
+          placeholder="BRIDGE-DRIVER-2025" type="password" autoComplete="off" />
+        {error && <div style={errStyle}>{error}</div>}
+        <button type="submit" style={{ ...btn, opacity: loading ? 0.7 : 1 }} disabled={loading}>
+          {loading ? 'Génération...' : 'Générer le lien →'}
+        </button>
+      </form>
+      {link && (
+        <div style={{ marginTop: 20, padding: 16, background: '#F0FDF4', borderRadius: 12, border: '1px solid #BBF7D0' }}>
+          <p style={{ fontSize: 11, fontWeight: 800, color: '#065F46', marginBottom: 8, letterSpacing: '0.08em' }}>
+            ✅ LIEN VALABLE 1 HEURE
+          </p>
+          <p style={{ fontSize: 11, color: '#374151', wordBreak: 'break-all', marginBottom: 12, lineHeight: 1.5 }}>
+            {link}
+          </p>
+          <button
+            onClick={() => { navigator.clipboard.writeText(link); }}
+            style={{ width: '100%', padding: '10px 0', borderRadius: 10, border: 'none', cursor: 'pointer',
+              background: '#065F46', color: '#fff', fontSize: 13, fontWeight: 800 }}>
+            📋 Copier le lien
+          </button>
+          <p style={{ fontSize: 10, color: '#9CA3AF', marginTop: 8, textAlign: 'center' }}>
+            Envoyez ce lien à l'utilisateur via WhatsApp — il se connectera automatiquement
+          </p>
+        </div>
+      )}
+    </AuthPageWrapper>
+  );
+}
+
 function ClerkProviderWithRoutes() {
   const [, setLocation] = useLocation();
 
@@ -3138,6 +3225,7 @@ function ClerkProviderWithRoutes() {
           <Route path="/dispatch" component={DispatchPage} />
           <Route path="/driver/:ref" component={DriverTrackerPage} />
           <Route path="/resto" component={RestaurantOwnerPage} />
+          <Route path="/admin-auth" component={AdminAuthPage} />
           <Route component={App} />
         </Switch>
       </QueryClientProvider>
