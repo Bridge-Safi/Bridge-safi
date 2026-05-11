@@ -403,6 +403,9 @@ function SignInPage() {
     const params = new URLSearchParams(window.location.search);
     const ticket = params.get('__clerk_ticket');
     if (!ticket) return;
+    // Strip the ticket from the URL immediately so failures don't get stuck
+    const cleanUrl = window.location.pathname + window.location.hash;
+    window.history.replaceState({}, '', cleanUrl);
     setLoading(true);
     clerk.client.signIn.create({ strategy: 'ticket' as any, ticket })
       .then(async (result: any) => {
