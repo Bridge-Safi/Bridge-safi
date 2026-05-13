@@ -204,7 +204,7 @@ interface CartItem {
   extraPrice: number; totalPerUnit: number;
 }
 
-interface UserProfile { name:string; address:string; phone:string; email:string; cardNumber:string; cardExpiry:string; cardName:string; paymentMethod?:'card'|'paypal'; paypalEmail?:string; onboardingComplete?:boolean; avatar?:string; }
+interface UserProfile { name:string; address:string; phone:string; email:string; cardNumber:string; cardExpiry:string; cardName:string; paymentMethod?:'card'|'paypal'; paypalEmail?:string; onboardingComplete?:boolean; avatar?:string; coupon?:string; }
 
 // ─── BRIDGE ID — identifiant universel partagé partout ────────────────────────
 // Formule : BR- + 6 premiers chiffres du téléphone + 1ère lettre du prénom
@@ -220,7 +220,7 @@ export function getBridgeId(phone: string|undefined|null, name?: string|undefine
 const PROFILE_KEY_PREFIX = 'bridge_eats_profile_';
 const PROFILE_KEY_LEGACY = 'bridge_eats_profile'; // old generic key — migrated once
 const AVATAR_KEY_PREFIX  = 'bridge_eats_avatar_';  // separate key so large base64 never inflates profile JSON
-const emptyProfile = (): UserProfile => ({ name:'', address:'', phone:'', email:'', cardNumber:'', cardExpiry:'', cardName:'', paymentMethod:'card', paypalEmail:'', onboardingComplete:true });
+const emptyProfile = (): UserProfile => ({ name:'', address:'', phone:'', email:'', cardNumber:'', cardExpiry:'', cardName:'', paymentMethod:'card', paypalEmail:'', onboardingComplete:true, coupon:'' });
 
 function profileKey(userId: string) { return `${PROFILE_KEY_PREFIX}${userId}`; }
 function avatarKey(userId: string)  { return `${AVATAR_KEY_PREFIX}${userId}`; }
@@ -1987,6 +1987,25 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
             <Field label={t.addrLabel} value={form.address} onChange={set('address')} placeholder={t.addrPh} lang={lang}/>
             <Field label={t.phoneLabel} value={form.phone} onChange={v=>{set('phone')(v);if(errs.phone&&validatePhone(v)){setErrs(e=>({...e,phone:false}));setPhoneTaken(false);}}} placeholder={t.phonePh} type="tel" lang={lang} required error={errs.phone} errorMsg={phoneTaken?(lang==='ar'?'هذا الرقم مستخدم بحساب آخر':lang==='en'?'Number already linked to another account':'Numéro déjà utilisé par un autre compte'):t.errPhone}/>
             <Field label={t.emailLabel} value={form.email||''} onChange={set('email')} placeholder={t.emailPh} type="email" lang={lang}/>
+          </div>
+          {/* ── Code promo / Coupon ───────────────────────────────── */}
+          <div className="rounded-2xl p-4 mb-5" style={{background:'#FFFBEB',border:'1px solid #FDE68A',transition:'all 0.2s'}}>
+            <div className="flex items-center justify-between mb-3">
+              <p className={`text-[10px] font-black uppercase tracking-widest ${fClass}`} style={{color:'#92400E'}}>🎟️ {lang==='ar'?'كود الخصم':lang==='en'?'Promo code':lang==='amz'?'ⴽⵓⴷ ⵏ ⵓⵎⴽⴻⵙⵙⵎ':'Code promo'}</p>
+              <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${fClass}`} style={{background:'#FEF3C7',color:'#92400E',border:'1px solid #FDE68A'}}>
+                {lang==='ar'?'اختياري':lang==='en'?'Optional':lang==='amz'?'ⵉⵅⵜⵉⵢⴰⵔⵉ':'Facultatif'}
+              </span>
+            </div>
+            <p className={`text-[10px] mb-3 ${fClass}`} style={{color:'#A16207'}}>
+              {lang==='ar'?'أدخل كود الخصم الخاص بك للاستفادة من العروض':lang==='en'?'Enter your promo code to enjoy special offers':lang==='amz'?'Sker kud ⵏ ⵎⴽⴻⵙⵙⵎ':'Entrez votre code promo pour bénéficier des offres'}
+            </p>
+            <Field
+              label={lang==='ar'?'كود الخصم':lang==='en'?'Promo code':lang==='amz'?'ⴽⵓⴷ':'Code promo'}
+              value={form.coupon||''}
+              onChange={v=>set('coupon')(v.toUpperCase().trim())}
+              placeholder={lang==='ar'?'مثال: BRIDGE10':lang==='en'?'e.g. BRIDGE10':'ex: BRIDGE10'}
+              lang={lang}
+            />
           </div>
           {/* ── Payment section (optional) ───────────────────────── */}
           <div className="rounded-2xl p-4 mb-5" style={{
