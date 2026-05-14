@@ -9,6 +9,7 @@ import profilesRouter from "./profiles";
 import restaurantProfileRouter from "./restaurant-profile";
 import adminRouter from "./admin";
 import couponsRouter from "./coupons";
+import visitsRouter from "./visits";
 
 const router: IRouter = Router();
 
@@ -22,5 +23,6 @@ router.use(profilesRouter);
 router.use(restaurantProfileRouter);
 router.use(adminRouter);
 router.use(couponsRouter);
+router.use(visitsRouter);
 
 export default router;

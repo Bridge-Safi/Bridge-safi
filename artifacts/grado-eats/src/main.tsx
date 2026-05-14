@@ -3163,6 +3163,76 @@ class ErrorBoundary extends Component<{ children: React.ReactNode }, EBState> {
 type Coupon = { code: string; discountType: 'percent'|'fixed'; discountValue: number;
   maxUses: number|null; usedCount: number; expiresAt: string|null; active: boolean; note: string|null; };
 
+function AdminStatsPanel({ adminKey }: { adminKey: string }) {
+  const [stats, setStats] = useState<any>(null);
+  const [err, setErr] = useState('');
+
+  const refresh = async () => {
+    if (!adminKey.trim()) { setStats(null); return; }
+    try {
+      const r = await fetch(`/api/admin/stats?adminKey=${encodeURIComponent(adminKey.trim())}`);
+      if (!r.ok) { setErr('Clé admin invalide.'); setStats(null); return; }
+      setStats(await r.json()); setErr('');
+    } catch { setErr('Erreur réseau.'); }
+  };
+  useEffect(() => { refresh(); /* eslint-disable-next-line */ }, [adminKey]);
+
+  if (err) return <div style={{ marginTop: 24, padding: 12, background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 12, color: '#991B1B', fontSize: 12 }}>{err}</div>;
+  if (!stats) return null;
+
+  const Card = ({ label, value, sub }: { label: string; value: number|string; sub?: string }) => (
+    <div style={{ flex: 1, minWidth: 0, padding: 12, background: '#fff', borderRadius: 10, border: '1px solid #E5E7EB' }}>
+      <div style={{ fontSize: 10, fontWeight: 800, color: '#6B7280', letterSpacing: '0.05em' }}>{label}</div>
+      <div style={{ fontSize: 22, fontWeight: 900, color: '#065F46', lineHeight: 1.2, marginTop: 2 }}>{value}</div>
+      {sub && <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{sub}</div>}
+    </div>
+  );
+
+  const maxViews = Math.max(1, ...stats.daily.map((d: any) => d.views));
+
+  return (
+    <div style={{ marginTop: 24, padding: 16, background: '#ECFDF5', borderRadius: 14, border: '1px solid #A7F3D0' }}>
+      <h3 style={{ fontSize: 14, fontWeight: 900, color: '#065F46', marginBottom: 12 }}>📊 Visiteurs Bridge</h3>
+
+      <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+        <Card label="AUJOURD'HUI" value={stats.today.uniques} sub={`${stats.today.views} vues`} />
+        <Card label="7 JOURS" value={stats.week.uniques} sub={`${stats.week.views} vues`} />
+      </div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+        <Card label="30 JOURS" value={stats.month.uniques} sub={`${stats.month.views} vues`} />
+        <Card label="TOTAL" value={stats.total.uniqueVisitors} sub={`${stats.total.totalViews} vues`} />
+      </div>
+
+      <div style={{ fontSize: 10, fontWeight: 800, color: '#065F46', letterSpacing: '0.05em', marginBottom: 6 }}>7 DERNIERS JOURS</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {stats.daily.length === 0 && (
+          <div style={{ fontSize: 11, color: '#9CA3AF', textAlign: 'center', padding: 8 }}>Aucune visite encore.</div>
+        )}
+        {stats.daily.map((d: any) => {
+          const pct = (d.views / maxViews) * 100;
+          const date = new Date(d.day).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+          return (
+            <div key={d.day} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 70, fontSize: 10, color: '#374151', fontWeight: 700 }}>{date}</div>
+              <div style={{ flex: 1, height: 14, background: '#fff', borderRadius: 6, overflow: 'hidden', border: '1px solid #D1FAE5' }}>
+                <div style={{ width: `${pct}%`, height: '100%', background: 'linear-gradient(90deg, #10B981, #4ADE80)' }} />
+              </div>
+              <div style={{ minWidth: 90, textAlign: 'right', fontSize: 10, color: '#065F46', fontWeight: 800 }}>
+                {d.uniques} pers · {d.views} vues
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <button onClick={refresh}
+        style={{ marginTop: 12, width: '100%', padding: '8px 0', background: '#065F46', color: '#fff', border: 'none', borderRadius: 8, fontSize: 11, fontWeight: 800, cursor: 'pointer' }}>
+        🔄 Rafraîchir
+      </button>
+    </div>
+  );
+}
+
 function AdminCouponsPanel({ adminKey }: { adminKey: string }) {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [code, setCode] = useState('');
@@ -3433,6 +3503,7 @@ function AdminAuthPage() {
           </p>
         </div>
       )}
+      <AdminStatsPanel adminKey={adminKey} />
       <AdminCouponsPanel adminKey={adminKey} />
     </AuthPageWrapper>
   );
@@ -3468,6 +3539,29 @@ function ClerkProviderWithRoutes() {
     </ClerkProvider>
   );
 }
+
+// ─── Visit tracker (fire once per session) ────────────────────────────────
+(() => {
+  try {
+    let sid = localStorage.getItem('bridge_sid');
+    if (!sid) {
+      sid = (crypto.randomUUID?.() || `s_${Date.now()}_${Math.random().toString(36).slice(2)}`);
+      localStorage.setItem('bridge_sid', sid);
+    }
+    const lastPing = Number(sessionStorage.getItem('bridge_visit_pinged') || 0);
+    if (Date.now() - lastPing < 30 * 60 * 1000) return;
+    sessionStorage.setItem('bridge_visit_pinged', String(Date.now()));
+    fetch('/api/visits/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId: sid,
+        path: window.location.pathname,
+        referrer: document.referrer || null,
+      }),
+    }).catch(() => {});
+  } catch {}
+})();
 
 createRoot(document.getElementById("root")!).render(
   <ErrorBoundary>
