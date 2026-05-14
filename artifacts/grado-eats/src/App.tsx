@@ -5248,6 +5248,8 @@ export default function App() {
       try { localStorage.setItem('bridge_was_signed_in','1'); } catch {}
       return;
     }
+    // Guest mode — user explicitly chose to browse without an account
+    try { if (localStorage.getItem('bridge_guest_mode') === '1') return; } catch {}
     // Short grace period so Clerk can restore session from cookies (max 2.5s)
     const t = setTimeout(()=>{
       if(!isSignedIn) navigate('/sign-in');
