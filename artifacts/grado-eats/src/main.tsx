@@ -623,7 +623,7 @@ function SignInPage() {
       </div>
       <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px dashed #E5E1D8', textAlign: 'center' }}>
         <button
-          onClick={() => { localStorage.setItem('bridge_guest_mode', '1'); navigate(basePath || '/'); }}
+          onClick={() => { localStorage.setItem('bridge_guest_mode', '1'); window.location.href = (basePath || '') + '/'; }}
           style={{
             width: '100%', padding: '12px 0', borderRadius: 12, border: '1px solid #065F46',
             background: 'transparent', color: '#065F46', fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer',
