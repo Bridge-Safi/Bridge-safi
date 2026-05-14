@@ -3144,6 +3144,171 @@ class ErrorBoundary extends Component<{ children: React.ReactNode }, EBState> {
   }
 }
 
+type Coupon = { code: string; discountType: 'percent'|'fixed'; discountValue: number;
+  maxUses: number|null; usedCount: number; expiresAt: string|null; active: boolean; note: string|null; };
+
+function AdminCouponsPanel({ adminKey }: { adminKey: string }) {
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [code, setCode] = useState('');
+  const [discountType, setDiscountType] = useState<'percent'|'fixed'>('percent');
+  const [discountValue, setDiscountValue] = useState('');
+  const [maxUses, setMaxUses] = useState('');
+  const [expiresAt, setExpiresAt] = useState('');
+  const [note, setNote] = useState('');
+  const [msg, setMsg] = useState('');
+  const [err, setErr] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  const refresh = async () => {
+    if (!adminKey.trim()) return;
+    try {
+      const r = await fetch(`/api/admin/coupons?adminKey=${encodeURIComponent(adminKey.trim())}`);
+      if (!r.ok) { setErr('Clé admin invalide pour les coupons.'); setCoupons([]); return; }
+      const d = await r.json();
+      setCoupons(d.coupons || []); setErr('');
+    } catch { setErr('Erreur réseau.'); }
+  };
+
+  useEffect(() => { refresh(); /* eslint-disable-next-line */ }, [adminKey]);
+
+  const handleCreate = async () => {
+    setMsg(''); setErr('');
+    if (!code.trim() || !discountValue.trim()) { setErr('Code et valeur requis.'); return; }
+    setBusy(true);
+    try {
+      const r = await fetch('/api/admin/coupons', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          adminKey: adminKey.trim(), code: code.trim(), discountType,
+          discountValue: Number(discountValue),
+          maxUses: maxUses.trim() ? Number(maxUses) : undefined,
+          expiresAt: expiresAt || undefined,
+          note: note.trim() || undefined,
+        }),
+      });
+      const d = await r.json();
+      if (!r.ok) { setErr(d.error || 'Erreur.'); return; }
+      setMsg(d.message || 'Code créé.');
+      setCode(''); setDiscountValue(''); setMaxUses(''); setExpiresAt(''); setNote('');
+      await refresh();
+    } catch { setErr('Erreur réseau.'); }
+    finally { setBusy(false); }
+  };
+
+  const handleDelete = async (c: string) => {
+    if (!window.confirm(`Supprimer le code ${c} ?`)) return;
+    await fetch(`/api/admin/coupons/${encodeURIComponent(c)}?adminKey=${encodeURIComponent(adminKey.trim())}`, { method: 'DELETE' });
+    await refresh();
+  };
+
+  const handleToggle = async (c: string) => {
+    await fetch(`/api/admin/coupons/${encodeURIComponent(c)}/toggle`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ adminKey: adminKey.trim() }),
+    });
+    await refresh();
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid #E5E7EB',
+    fontSize: 14, outline: 'none', background: '#fff',
+  };
+  const labelStyle: React.CSSProperties = { fontSize: 11, fontWeight: 800, color: '#374151', marginBottom: 4, display: 'block' };
+
+  return (
+    <div style={{ marginTop: 24, padding: 16, background: '#FFFBEB', borderRadius: 14, border: '1px solid #FDE68A' }}>
+      <h3 style={{ fontSize: 14, fontWeight: 900, color: '#92400E', marginBottom: 4 }}>🎟️ Codes promo</h3>
+      <p style={{ fontSize: 11, color: '#A16207', marginBottom: 14 }}>
+        Créez vos codes — vous décidez à qui les envoyer.
+      </p>
+
+      <div style={{ display: 'grid', gap: 8, marginBottom: 12 }}>
+        <div>
+          <label style={labelStyle}>Code (ex: BRIDGE1000)</label>
+          <input style={inputStyle} value={code} onChange={e => setCode(e.target.value.toUpperCase())} placeholder="BRIDGE1000" />
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ flex: 1 }}>
+            <label style={labelStyle}>Type</label>
+            <select style={inputStyle} value={discountType} onChange={e => setDiscountType(e.target.value as any)}>
+              <option value="percent">% Pourcentage</option>
+              <option value="fixed">DH Fixe</option>
+            </select>
+          </div>
+          <div style={{ flex: 1 }}>
+            <label style={labelStyle}>Valeur ({discountType === 'percent' ? '%' : 'DH'})</label>
+            <input style={inputStyle} type="number" value={discountValue} onChange={e => setDiscountValue(e.target.value)} placeholder={discountType === 'percent' ? '10' : '20'} />
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ flex: 1 }}>
+            <label style={labelStyle}>Max utilisations (vide = illimité)</label>
+            <input style={inputStyle} type="number" value={maxUses} onChange={e => setMaxUses(e.target.value)} placeholder="ex: 50" />
+          </div>
+          <div style={{ flex: 1 }}>
+            <label style={labelStyle}>Expire le (vide = jamais)</label>
+            <input style={inputStyle} type="date" value={expiresAt} onChange={e => setExpiresAt(e.target.value)} />
+          </div>
+        </div>
+        <div>
+          <label style={labelStyle}>Note (privée)</label>
+          <input style={inputStyle} value={note} onChange={e => setNote(e.target.value)} placeholder="ex: Pour Khalid - lancement" />
+        </div>
+        {err && <div style={errStyle}>{err}</div>}
+        {msg && <div style={{ padding: '8px 12px', borderRadius: 10, background: '#F0FDF4', border: '1px solid #BBF7D0', color: '#065F46', fontSize: 12, fontWeight: 700 }}>✅ {msg}</div>}
+        <button onClick={handleCreate} disabled={busy}
+          style={{ ...btn, background: '#92400E', opacity: busy ? 0.7 : 1, marginTop: 4 }}>
+          {busy ? 'Création...' : '➕ Créer le code'}
+        </button>
+      </div>
+
+      <h4 style={{ fontSize: 12, fontWeight: 900, color: '#92400E', marginTop: 18, marginBottom: 8, letterSpacing: '0.05em' }}>
+        CODES EXISTANTS ({coupons.length})
+      </h4>
+      {coupons.length === 0 ? (
+        <p style={{ fontSize: 12, color: '#9CA3AF', textAlign: 'center', padding: 12 }}>Aucun code pour l'instant.</p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {coupons.map(c => (
+            <div key={c.code} style={{ padding: 10, background: c.active ? '#fff' : '#F3F4F6', borderRadius: 10, border: '1px solid #E5E7EB' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 13, fontWeight: 900, color: c.active ? '#065F46' : '#9CA3AF' }}>{c.code}</span>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: '#92400E', background: '#FEF3C7', padding: '2px 6px', borderRadius: 6 }}>
+                      {c.discountType === 'percent' ? `-${c.discountValue}%` : `-${c.discountValue} DH`}
+                    </span>
+                    {!c.active && <span style={{ fontSize: 10, color: '#DC2626', fontWeight: 700 }}>DÉSACTIVÉ</span>}
+                  </div>
+                  <div style={{ fontSize: 10, color: '#6B7280', marginTop: 4 }}>
+                    Utilisé {c.usedCount}{c.maxUses ? `/${c.maxUses}` : ''} fois
+                    {c.expiresAt ? ` · expire ${new Date(c.expiresAt).toLocaleDateString('fr-FR')}` : ''}
+                  </div>
+                  {c.note && <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2, fontStyle: 'italic' }}>{c.note}</div>}
+                </div>
+                <div style={{ display: 'flex', gap: 4 }}>
+                  <button onClick={() => { navigator.clipboard.writeText(c.code); setMsg(`${c.code} copié !`); setTimeout(()=>setMsg(''), 2000); }}
+                    style={{ padding: '6px 8px', background: '#1F2937', color: '#fff', border: 'none', borderRadius: 8, fontSize: 11, cursor: 'pointer' }}>
+                    📋
+                  </button>
+                  <button onClick={() => handleToggle(c.code)}
+                    style={{ padding: '6px 8px', background: c.active ? '#6B7280' : '#10B981', color: '#fff', border: 'none', borderRadius: 8, fontSize: 11, cursor: 'pointer' }}>
+                    {c.active ? '⏸' : '▶'}
+                  </button>
+                  <button onClick={() => handleDelete(c.code)}
+                    style={{ padding: '6px 8px', background: '#DC2626', color: '#fff', border: 'none', borderRadius: 8, fontSize: 11, cursor: 'pointer' }}>
+                    🗑
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AdminAuthPage() {
   const [email, setEmail] = useState('');
   const [adminKey, setAdminKey] = useState('');
@@ -3252,6 +3417,7 @@ function AdminAuthPage() {
           </p>
         </div>
       )}
+      <AdminCouponsPanel adminKey={adminKey} />
     </AuthPageWrapper>
   );
 }

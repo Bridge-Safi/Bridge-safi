@@ -22,3 +22,4 @@ export * from "./push_subscriptions";
 export * from "./game";
 export * from "./profiles";
 export * from "./restaurants";
+export * from "./coupons";
