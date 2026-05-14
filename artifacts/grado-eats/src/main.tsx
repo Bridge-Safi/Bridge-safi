@@ -621,6 +621,19 @@ function SignInPage() {
           Créer un compte
         </button>
       </div>
+      <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px dashed #E5E1D8', textAlign: 'center' }}>
+        <button
+          onClick={() => { localStorage.setItem('bridge_guest_mode', '1'); navigate(basePath || '/'); }}
+          style={{
+            width: '100%', padding: '12px 0', borderRadius: 12, border: '1px solid #065F46',
+            background: 'transparent', color: '#065F46', fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer',
+          }}>
+          🛒 Commander sans compte
+        </button>
+        <p style={{ fontSize: '0.65rem', color: '#9CA3AF', marginTop: 6, lineHeight: 1.4 }}>
+          Vous pourrez créer un compte plus tard pour gagner des 💎
+        </p>
+      </div>
     </AuthPageWrapper>
   );
 }
