@@ -563,6 +563,22 @@ function SignInPage() {
   return (
     <AuthPageWrapper>
       <AuthCardHeader title="Connexion · Sign in" sub="Email · Téléphone · Mot de passe" />
+      <div style={{ marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px dashed #E5E1D8', textAlign: 'center' }}>
+        <button
+          type="button"
+          onClick={() => { localStorage.setItem('bridge_guest_mode', '1'); window.location.href = (basePath || '') + '/'; }}
+          style={{
+            width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', cursor: 'pointer',
+            background: 'linear-gradient(135deg,#059669 0%,#4ADE80 50%,#059669 100%)',
+            color: '#fff', fontSize: '0.95rem', fontWeight: 900,
+            boxShadow: '0 0 24px rgba(74,222,128,0.35)',
+          }}>
+          🛒 Commander sans compte
+        </button>
+        <p style={{ fontSize: '0.65rem', color: '#9CA3AF', marginTop: 8, lineHeight: 1.4 }}>
+          Direct vers le menu — pas d'inscription requise
+        </p>
+      </div>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
         <FocusInput label="Email ou numéro de téléphone" value={identifier} onChange={setIdentifier}
           placeholder="+212 6XX XXX XXX ou email@..." autoComplete="username" />
@@ -620,19 +636,6 @@ function SignInPage() {
           style={{ background: 'none', border: 'none', color: '#065F46', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}>
           Créer un compte
         </button>
-      </div>
-      <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px dashed #E5E1D8', textAlign: 'center' }}>
-        <button
-          onClick={() => { localStorage.setItem('bridge_guest_mode', '1'); window.location.href = (basePath || '') + '/'; }}
-          style={{
-            width: '100%', padding: '12px 0', borderRadius: 12, border: '1px solid #065F46',
-            background: 'transparent', color: '#065F46', fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer',
-          }}>
-          🛒 Commander sans compte
-        </button>
-        <p style={{ fontSize: '0.65rem', color: '#9CA3AF', marginTop: 6, lineHeight: 1.4 }}>
-          Vous pourrez créer un compte plus tard pour gagner des 💎
-        </p>
       </div>
     </AuthPageWrapper>
   );
