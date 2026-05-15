@@ -4,6 +4,36 @@ import {
   PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area,
 } from "recharts";
 
+/* ─────────────────────────────────────── Logo ── */
+function BridgeTechLogo({ size = 48 }: { size?: number }) {
+  return (
+    <svg width={size * 2.8} height={size} viewBox="0 0 168 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Bridge arch */}
+      <g>
+        {/* Left pillar */}
+        <rect x="6" y="28" width="8" height="26" rx="2" fill="#10b981"/>
+        {/* Right pillar */}
+        <rect x="50" y="28" width="8" height="26" rx="2" fill="#10b981"/>
+        {/* Arch */}
+        <path d="M14 36 Q32 6 50 36" stroke="#10b981" strokeWidth="4" fill="none" strokeLinecap="round"/>
+        {/* Road / deck */}
+        <rect x="2" y="52" width="68" height="4" rx="2" fill="#34d399"/>
+        {/* Suspension cables */}
+        <line x1="32" y1="11" x2="14" y2="52" stroke="#6ee7b7" strokeWidth="1.5" strokeDasharray="2 2"/>
+        <line x1="32" y1="11" x2="50" y2="52" stroke="#6ee7b7" strokeWidth="1.5" strokeDasharray="2 2"/>
+        <line x1="22" y1="22" x2="22" y2="52" stroke="#6ee7b7" strokeWidth="1" strokeDasharray="2 2"/>
+        <line x1="42" y1="22" x2="42" y2="52" stroke="#6ee7b7" strokeWidth="1" strokeDasharray="2 2"/>
+      </g>
+      {/* BRIDGE text */}
+      <text x="80" y="32" fontFamily="'Inter','Segoe UI',Arial,sans-serif" fontWeight="900" fontSize="20" fill="#f1f5f9" letterSpacing="2">BRIDGE</text>
+      {/* TECH text */}
+      <text x="80" y="52" fontFamily="'Inter','Segoe UI',Arial,sans-serif" fontWeight="700" fontSize="14" fill="#10b981" letterSpacing="4">TECH</text>
+      {/* Dot accent */}
+      <circle cx="160" cy="46" r="3" fill="#10b981"/>
+    </svg>
+  );
+}
+
 /* ─────────────────────────────────────── helpers ── */
 const fmt = (n: number) =>
   new Intl.NumberFormat("fr-MA", { maximumFractionDigits: 0 }).format(n) + " DH";
@@ -1271,13 +1301,14 @@ export default function App() {
         padding: "16px 32px", display: "flex", alignItems: "center", gap: 16,
         boxShadow: "0 2px 16px rgb(0 0 0 / .3)",
       }}>
-        <span style={{ fontSize: 28 }}>🚀</span>
+        <BridgeTechLogo size={52} />
+        <div style={{ width: 1, height: 40, background: "rgba(255,255,255,.1)", margin: "0 4px" }} />
         <div>
-          <div style={{ fontWeight: 900, fontSize: 20, color: "#f1f5f9", letterSpacing: ".04em" }}>
-            BRIDGE TECH — Tableau Comptable
+          <div style={{ fontWeight: 700, fontSize: 14, color: "#f1f5f9", letterSpacing: ".06em", textTransform: "uppercase" }}>
+            Tableau Comptable
           </div>
-          <div style={{ fontSize: 12, color: "#64748b" }}>
-            Simulateur financier · Prévisionnel Intelaka · TVA · IS · Contrats · Paie
+          <div style={{ fontSize: 11, color: "#475569", marginTop: 2 }}>
+            Intelaka · Charges · TVA · IS · Contrats · Paie
           </div>
         </div>
         <div style={{ marginLeft: "auto", fontSize: 12, color: "#475569" }}>
