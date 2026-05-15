@@ -1,0 +1,86 @@
+import streamlit as st
+import pandas as pd
+import datetime
+
+# --- CONFIGURATION DE LA PAGE ---
+st.set_page_config(page_title="BRIDGE TECH - Board de Gestion", page_icon="🚀", layout="wide")
+
+st.title("🚀 BRIDGE TECH — Tableau de Bord & Préparation Intelaka")
+st.markdown("---")
+
+# --- BARRE LATÉRALE : SUIVI COMPTABLE & ALERTES ---
+st.sidebar.header("📋 Suivi Administratif")
+st.sidebar.info("**Statut Actuel :** En attente du Certificat Négatif (CRI Safi)")
+
+st.sidebar.subheader("⏳ Alertes & Échéances")
+prochain_paiement = datetime.date(2026, 6, 5) # Exemple pour le mois prochain
+st.sidebar.warning(f"Forfait Comptable (400 DH) : Prévu le {prochain_paiement.strftime('%d/%m/%Y')}")
+
+# --- ONGLET PRINCIPAL ---
+tab1, tab2, tab3 = st.tabs(["💰 Simulateur Intelaka (Prévisions)", "📉 Suivi des Charges Tech", "📊 Calculateur de TVA"])
+
+# --- ONGLET 1 : SIMULATEUR INTELAKA ---
+with tab1:
+    st.header("📈 Prévisions de Chiffre d'Affaires (Utile pour le Business Plan)")
+    st.write("Simulez vos ventes pour nourrir le prévisionnel de votre comptable.")
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        prix_site = st.number_input("Prix moyen d'un Site Web (DH)", value=8000, step=500)
+        qte_site = st.slider("Nombre de sites web / an", 0, 20, 5)
+    with col2:
+        prix_app = st.number_input("Prix moyen d'une App Mobile (DH)", value=25000, step=1000)
+        qte_app = st.slider("Nombre d'apps mobiles / an", 0, 10, 2)
+    with col3:
+        abonnement_mensuel = st.number_input("Revenus Plateformes / mois (DH)", value=1500, step=100)
+        
+    ca_sites = prix_site * qte_site
+    ca_apps = prix_app * qte_app
+    ca_abonnements = abonnement_mensuel * 12
+    ca_total = ca_sites + ca_apps + ca_abonnements
+    
+    st.subheader(f"Chiffre d'Affaires Annuel Estimé : {ca_total:,} DH")
+    
+    # Petit graphique pour le Business Plan
+    data_ca = pd.DataFrame({
+        "Services": ["Sites Web", "Apps Mobiles", "Abonnements / SaaS"],
+        "Revenus (DH)": [ca_sites, ca_apps, ca_abonnements]
+    })
+    st.bar_chart(data=data_ca, x="Services", y="Revenus (DH)")
+
+# --- ONGLET 2 : SUIVI DES CHARGES TECH ---
+with tab2:
+    st.header("🛠️ Coûts de l'Infrastructure & Fonctionnement")
+    st.write("Listez vos charges tech réelles pour calculer votre rentabilité.")
+    
+    # Simulation d'une base de données de dépenses
+    charges_data = {
+        "Désignation": ["Serveurs AWS / Firebase", "Abonnement Replit Pro", "Domiciliation Safi (Forfait annuel)", "Forfait Comptable Mensuel"],
+        "Fréquence": ["Mensuel", "Mensuel", "Annuel", "Mensuel"],
+        "Montant (DH)": [800, 150, 1800, 400]
+    }
+    df_charges = pd.DataFrame(charges_data)
+    st.dataframe(df_charges, use_container_width=True)
+    
+    # Calcul du total des charges annuelles
+    total_charges_an = (800*12) + (150*12) + 1800 + (400*12)
+    st.error(f"Total des charges estimées à l'année : {total_charges_an:,} DH")
+    
+    benefice_estime = ca_total - total_charges_an
+    if benefice_estime > 0:
+        st.success(f"📈 Bénéfice Net estimé avant impôts (IS) : {benefice_estime:,} DH")
+    else:
+        st.danger(f"📉 Déficit estimé : {benefice_estime:,} DH - Ajustez vos prix !")
+
+# --- ONGLET 3 : CALCULATEUR DE TVA ---
+with tab3:
+    st.header("🇲🇦 Simulateur de TVA (20% - Secteur Tech)")
+    st.write("Générez les données à exporter pour votre déclaration trimestrielle.")
+    
+    ca_facture = st.number_input("Entrez le montant total de vos factures clients encaissées (DH TTC)", value=12000)
+    
+    # Calcul de la TVA au Maroc (Montant / 1.2 * 0.2)
+    tva_collectee = (ca_facture / 1.2) * 0.2
+    
+    st.metric(label="TVA à reverser à l'État (Facturée aux clients)", value=f"{tva_collectee:,.2f} DH")
+    st.markdown("> **Note pour votre comptable :** Pensez à lui fournir les factures d'achats tech (ex: AWS) pour déduire la TVA que vous avez vous-même payée ! Suspense de TVA possible pour l'export.")
