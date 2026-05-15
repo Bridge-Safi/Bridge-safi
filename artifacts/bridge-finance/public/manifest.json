@@ -1,0 +1,25 @@
+{
+  "name": "Bridge Tech — Finance",
+  "short_name": "BT Finance",
+  "description": "Tableau de bord comptable Bridge Tech Safi",
+  "start_url": "/bridge-finance/",
+  "scope": "/bridge-finance/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/bridge-finance/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/bridge-finance/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
