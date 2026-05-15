@@ -1,0 +1,31 @@
+kind = "data-app"
+previewPath = "/bridge-finance/"
+title = "Bridge Tech — Finance"
+version = "1.0.0"
+id = "artifacts/bridge-finance"
+router = "path"
+
+[[integratedSkills]]
+name = "data-visualization"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/bridge-finance/", "/bridge-finance" ]
+localPort = 19408
+
+[services.development]
+run = "pnpm --filter @workspace/bridge-finance run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/bridge-finance", "run", "build" ]
+publicDir = "artifacts/bridge-finance/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19408"
+BASE_PATH = "/bridge-finance/"
