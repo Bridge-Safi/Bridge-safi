@@ -5308,8 +5308,10 @@ export default function App() {
   const dv = useMemo(() => ({ dark: isDark, toggle: toggleDark }), [isDark, toggleDark]);
   const handleOrderSuccess=(ref:string)=>{setLastOrderRef(ref);setService('none');setPage('tracking');};
 
-  // Show splash while timer running OR Clerk still loading OR session not yet confirmed
-  const showSplash = !splashDone || !isLoaded || !isSignedIn;
+  // Guest mode check — user explicitly chose to browse without an account
+  const isGuest = (() => { try { return localStorage.getItem('bridge_guest_mode') === '1'; } catch { return false; } })();
+  // Show splash while: timer not done, OR Clerk not loaded, OR not signed in AND not guest
+  const showSplash = !splashDone || !isLoaded || (!isSignedIn && !isGuest);
   if(showSplash) return <SplashScreen/>;
 
   // Profile onboarding after first sign-in
