@@ -2603,12 +2603,10 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                   <span className={`font-black text-sm ${fClass}`} style={{color:'#6B7280'}}>{t.total}</span>
                   <span className="font-black text-xl" style={{color:'#065F46'}}>{total} MAD</span>
                 </div>
-                <button onClick={()=>{
-                  if(!isSignedIn){onClose();navigate('/sign-in');}
-                  else setStep('form');
-                }} className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
+                <button onClick={()=>setStep('form')}
+                  className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
                   style={{background:'linear-gradient(135deg,#065F46,#047857)',boxShadow:'0 6px 20px rgba(6,95,70,0.3)'}}>
-                  {isSignedIn ? `${t.checkout} →` : `🔒 Se connecter pour commander`}
+                  {t.checkout} →
                 </button>
               </div>
             )}
