@@ -317,13 +317,13 @@ function writeProfileToStorage(key: string, aKey: string, p: UserProfile) {
 }
 
 function useProfile(userId?: string) {
-  const key  = userId ? profileKey(userId) : null;
-  const aKey = userId ? avatarKey(userId)  : null;
+  // Guests get a dedicated localStorage key so their info persists across visits
+  const key  = profileKey(userId ?? 'guest');
+  const aKey = avatarKey(userId ?? 'guest');
   const { getToken } = useAuth();
 
   // Show localStorage data instantly while server loads (good UX)
   const [profile, setProfileState] = useState<UserProfile>(() => {
-    if (!key || !aKey) return emptyProfile();
     const p = readProfileFromStorage(key);
     p.avatar = readAvatarFromStorage(aKey);
     // Migration: if old profile has a large avatar embedded, move it to the avatar key
@@ -346,8 +346,13 @@ function useProfile(userId?: string) {
   // Always fetch from server when userId is available — server is source of truth.
   // Avatar is loaded from its own localStorage key (never from server).
   useEffect(() => {
-    if (!key || !aKey) { setProfileState(emptyProfile()); return; }
-
+    if (!userId) {
+      // Guest: localStorage only — no server fetch needed
+      const p = readProfileFromStorage(key);
+      p.avatar = readAvatarFromStorage(aKey);
+      setProfileState(p);
+      return;
+    }
     // Show cached data immediately while server responds
     const cached = readProfileFromStorage(key);
     cached.avatar = readAvatarFromStorage(aKey);
@@ -410,7 +415,7 @@ function useProfile(userId?: string) {
 
   const saveProfile = useCallback((p: UserProfile) => {
     setProfileState(p);
-    if (key && aKey) writeProfileToStorage(key, aKey, p);
+    writeProfileToStorage(key, aKey, p);
   }, [key, aKey]);
 
   return { profile, saveProfile };
@@ -2337,9 +2342,10 @@ function SharedPaymentOptions({lang,amount,selected,onSelect,showCash=true,showC
 
 type CheckoutStep='cart'|'form'|'payment'|'card'|'success';
 
-function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantName,onOrderSuccess,serviceFeeThreshold=70,serviceFeeAmount=SERVICE_FEE}:{
+function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantName,onOrderSuccess,saveProfile,serviceFeeThreshold=70,serviceFeeAmount=SERVICE_FEE}:{
   cart:CartItem[]; lang:Lang; onClose:()=>void;
   onQty:(cartId:string,delta:number)=>void;
+  saveProfile?:(p:UserProfile)=>void;
   profile:UserProfile; onClearCart:()=>void; restaurantName?:string;
   onOrderSuccess?:(ref:string)=>void;
   serviceFeeThreshold?:number; serviceFeeAmount?:number;
@@ -2695,7 +2701,10 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
               <button onClick={()=>{
                 const needAddr=delivMode==='delivery';
                 if(!name.trim()||(needAddr&&!addr.trim())||!phone.trim()){setErr(t.fillAll);return;}
-                setErr('');setStep('payment');
+                setErr('');
+                // Save coordinates so they're pre-filled next time (works for guests too)
+                saveProfile?.({...profile, name:name.trim(), address:addr.trim(), phone:phone.trim()});
+                setStep('payment');
               }}
                 className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
                 style={{background:'linear-gradient(135deg,#065F46,#047857)',boxShadow:'0 6px 20px rgba(6,95,70,0.3)'}}>
@@ -4735,6 +4744,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           onClose={()=>setShowCheckout(false)}
           onQty={handleQty}
           profile={profile}
+          saveProfile={saveProfile}
           onClearCart={()=>{setCart([]);setShowCheckout(false);}}
           restaurantName="Rayhana Fleurs"
           serviceFeeThreshold={40} serviceFeeAmount={6}
@@ -5440,7 +5450,7 @@ export default function App() {
 
       <WAButton/>
       <PWAInstallBanner lang={lang}/>
-      {showCart&&<CheckoutDrawer cart={cart} lang={lang} onClose={()=>setShowCart(false)} onQty={adjustQty} profile={profile} onClearCart={clearCart} restaurantName={selectedRestaurant?.name} onOrderSuccess={ref=>{setLastOrderRef(ref);setPage('tracking');setShowCart(false);}}/>}
+      {showCart&&<CheckoutDrawer cart={cart} lang={lang} onClose={()=>setShowCart(false)} onQty={adjustQty} profile={profile} saveProfile={saveProfile} onClearCart={clearCart} restaurantName={selectedRestaurant?.name} onOrderSuccess={ref=>{setLastOrderRef(ref);setPage('tracking');setShowCart(false);}}/>}
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
 
       {showDriver&&(
