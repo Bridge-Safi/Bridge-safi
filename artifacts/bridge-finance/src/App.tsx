@@ -4,33 +4,146 @@ import {
   PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area,
 } from "recharts";
 
-/* ─────────────────────────────────────── Logo ── */
-function BridgeTechLogo({ size = 48 }: { size?: number }) {
+/* ═══════════════════════════════════════════════════════
+   BRIDGE BRAND SVG SYSTEM
+   Inspiré du logo Bridge Eats — Kasbah de Safi + le B
+═══════════════════════════════════════════════════════ */
+const BB = { dark: "#0f172a", red: "#7b1d1d" };
+
+/* Kasbah de Safi */
+function Kasbah({ x=0, y=0, w=42, color=BB.red }: { x?:number;y?:number;w?:number;color?:string }) {
+  const h  = Math.round(w * 0.72);
+  const tw = Math.round(w * 0.26);
+  const th = Math.round(h * 0.72);
+  const wh = Math.round(h * 0.46);
+  const cw = Math.round(w * 0.08);
+  const ch = Math.round(h * 0.28);
+  const wallX = x + tw + Math.round(w * 0.05);
+  const wallW = w - 2 * tw - Math.round(w * 0.1);
+  const baseY = y + h;
   return (
-    <svg width={size * 2.8} height={size} viewBox="0 0 168 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Bridge arch */}
-      <g>
-        {/* Left pillar */}
-        <rect x="6" y="28" width="8" height="26" rx="2" fill="#10b981"/>
-        {/* Right pillar */}
-        <rect x="50" y="28" width="8" height="26" rx="2" fill="#10b981"/>
-        {/* Arch */}
-        <path d="M14 36 Q32 6 50 36" stroke="#10b981" strokeWidth="4" fill="none" strokeLinecap="round"/>
-        {/* Road / deck */}
-        <rect x="2" y="52" width="68" height="4" rx="2" fill="#34d399"/>
-        {/* Suspension cables */}
-        <line x1="32" y1="11" x2="14" y2="52" stroke="#6ee7b7" strokeWidth="1.5" strokeDasharray="2 2"/>
-        <line x1="32" y1="11" x2="50" y2="52" stroke="#6ee7b7" strokeWidth="1.5" strokeDasharray="2 2"/>
-        <line x1="22" y1="22" x2="22" y2="52" stroke="#6ee7b7" strokeWidth="1" strokeDasharray="2 2"/>
-        <line x1="42" y1="22" x2="42" y2="52" stroke="#6ee7b7" strokeWidth="1" strokeDasharray="2 2"/>
-      </g>
-      {/* BRIDGE text */}
-      <text x="80" y="32" fontFamily="'Inter','Segoe UI',Arial,sans-serif" fontWeight="900" fontSize="20" fill="#f1f5f9" letterSpacing="2">BRIDGE</text>
-      {/* TECH text */}
-      <text x="80" y="52" fontFamily="'Inter','Segoe UI',Arial,sans-serif" fontWeight="700" fontSize="14" fill="#10b981" letterSpacing="4">TECH</text>
-      {/* Dot accent */}
-      <circle cx="160" cy="46" r="3" fill="#10b981"/>
+    <g>
+      <rect x={x} y={baseY-th} width={tw} height={th} rx="1" fill={color}/>
+      {[0,1,2].map(i=><rect key={i} x={x+i*(cw+2)} y={baseY-th-ch} width={cw} height={ch} rx="1" fill={color}/>)}
+      <rect x={x+w-tw} y={baseY-th} width={tw} height={th} rx="1" fill={color}/>
+      {[0,1,2].map(i=><rect key={i} x={x+w-tw+i*(cw+2)} y={baseY-th-ch} width={cw} height={ch} rx="1" fill={color}/>)}
+      <rect x={wallX} y={baseY-wh} width={wallW} height={wh} rx="1" fill={color}/>
+      <path d={`M${wallX+wallW*0.25} ${baseY} Q${wallX+wallW*0.5} ${baseY-wh*0.55} ${wallX+wallW*0.75} ${baseY}`} fill="rgba(255,255,255,0.9)"/>
+    </g>
+  );
+}
+
+/* The Bridge B letterform — viewBox 0 0 90 100 */
+function BridgeBLetter({ color=BB.dark }: { color?:string }) {
+  return (
+    <g>
+      {/* B outer filled shape */}
+      <path d="M12 8 L12 92 L45 92 C68 92 80 82 80 68 C80 57 73 51 61 49 C73 47 77 38 77 27 C77 12 65 8 44 8 Z" fill={color}/>
+      {/* Top bump cutout (white — where role icon sits) */}
+      <path d="M24 18 L42 18 C58 18 65 25 65 34 C65 43 57 47 42 47 L24 47 Z" fill="white"/>
+      {/* Bottom bump cutout (white — where Kasbah sits) */}
+      <path d="M24 53 L44 53 C61 53 68 59 68 68 C68 80 58 82 43 82 L24 82 Z" fill="white"/>
+    </g>
+  );
+}
+
+/* Role icons — each fits in a ~42×28 box at (0,0) */
+function ScooterIcon({ color=BB.red }: { color?:string }) {
+  return (
+    <g>
+      <path d="M5 19 L17 10 L29 10 L33 17 L20 19 Z" fill={color}/>
+      <rect x="26" y="7" width="10" height="3" rx="1.5" fill={color}/>
+      <rect x="10" y="8" width="12" height="3.5" rx="1.5" fill={color}/>
+      <circle cx="9" cy="23" r="6" stroke={color} strokeWidth="2.5" fill="none"/>
+      <circle cx="9" cy="23" r="2" fill={color}/>
+      <circle cx="34" cy="23" r="6" stroke={color} strokeWidth="2.5" fill="none"/>
+      <circle cx="34" cy="23" r="2" fill={color}/>
+    </g>
+  );
+}
+function CarIcon({ color=BB.red }: { color?:string }) {
+  return (
+    <g>
+      <path d="M2 18 L7 12 L35 12 L40 18 L40 24 L2 24 Z" fill={color}/>
+      <path d="M9 12 L13 5 L29 5 L33 12 Z" fill={color}/>
+      <path d="M11 12 L14 6.5 L28 6.5 L31 12 Z" fill="rgba(255,255,255,0.2)"/>
+      <circle cx="11" cy="26" r="5" fill={color}/>
+      <circle cx="11" cy="26" r="2.5" fill="rgba(255,255,255,0.7)"/>
+      <circle cx="31" cy="26" r="5" fill={color}/>
+      <circle cx="31" cy="26" r="2.5" fill="rgba(255,255,255,0.7)"/>
+    </g>
+  );
+}
+function ClocheIcon({ color=BB.red }: { color?:string }) {
+  return (
+    <g>
+      <rect x="3" y="23" width="36" height="4" rx="2" fill={color}/>
+      <path d="M5 23 C5 6 37 6 37 23 Z" fill={color}/>
+      <circle cx="21" cy="6" r="3.5" fill={color}/>
+    </g>
+  );
+}
+function BriefcaseIcon({ color=BB.red }: { color?:string }) {
+  return (
+    <g>
+      <rect x="3" y="12" width="36" height="20" rx="3" fill={color}/>
+      <path d="M14 12 L14 8 C14 5.5 16 4 21 4 C26 4 28 5.5 28 8 L28 12" stroke={color} strokeWidth="3" fill="none" strokeLinecap="round"/>
+      <rect x="16" y="20" width="10" height="4" rx="2" fill="rgba(255,255,255,0.7)"/>
+      <line x1="3" y1="19" x2="39" y2="19" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
+    </g>
+  );
+}
+function ChartBarsIcon({ color=BB.red }: { color?:string }) {
+  return (
+    <g>
+      <rect x="4" y="17" width="8" height="11" rx="2" fill={color}/>
+      <rect x="17" y="9" width="8" height="19" rx="2" fill={color}/>
+      <rect x="30" y="2" width="8" height="26" rx="2" fill={color}/>
+      <rect x="2" y="28" width="38" height="2.5" rx="1" fill={color}/>
+    </g>
+  );
+}
+
+function getRoleIcon(role: string) {
+  switch(role) {
+    case "Livreur":      return <ScooterIcon/>;
+    case "Chauffeur":    return <CarIcon/>;
+    case "Restaurateur": return <ClocheIcon/>;
+    case "Manager":      return <BriefcaseIcon/>;
+    default:             return <ChartBarsIcon/>;
+  }
+}
+
+/* Complete role badge — B + Kasbah + role icon */
+function BridgeRoleBadge({ role, size=56, light=false }: { role:string; size?:number; light?:boolean }) {
+  const bColor = light ? "rgba(255,255,255,0.92)" : BB.dark;
+  const kColor = light ? "#ef4444" : BB.red;
+  const iColor = light ? "#10b981" : BB.red;
+  return (
+    <svg viewBox="0 0 90 100" width={size} height={Math.round(size*100/90)} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <BridgeBLetter color={bColor}/>
+      <Kasbah x={26} y={53} w={40} color={kColor}/>
+      <g transform="translate(24,18)">{getRoleIcon(role) && <g>{
+        role === "Livreur"      ? <ScooterIcon color={iColor}/> :
+        role === "Chauffeur"    ? <CarIcon color={iColor}/> :
+        role === "Restaurateur" ? <ClocheIcon color={iColor}/> :
+        role === "Manager"      ? <BriefcaseIcon color={iColor}/> :
+                                  <ChartBarsIcon color={iColor}/>
+      }</g>}</g>
     </svg>
+  );
+}
+
+/* Finance app header logo */
+function BridgeFinanceHeaderLogo() {
+  return (
+    <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+      <BridgeRoleBadge role="Finance" size={54} light/>
+      <div>
+        <div style={{ fontWeight:900, fontSize:18, color:"#f1f5f9", letterSpacing:".1em", lineHeight:1 }}>BRIDGE</div>
+        <div style={{ fontWeight:700, fontSize:10, color:"#10b981", letterSpacing:".25em", marginTop:3 }}>FINANCE</div>
+      </div>
+    </div>
   );
 }
 
@@ -552,7 +665,7 @@ function IsTab({ caTotal, chargesTotal }: { caTotal: number; chargesTotal: numbe
    CONTRATS & FICHES DE PAIE
 ═══════════════════════════════════════════════════════ */
 
-type Role = "Livreur" | "Chauffeur" | "Restaurateur";
+type Role = "Livreur" | "Chauffeur" | "Restaurateur" | "Manager";
 type TypeContrat = "CDI" | "CDD";
 
 interface Employe {
@@ -570,10 +683,11 @@ interface Employe {
   actif: boolean;
 }
 
-const ROLE_META: Record<Role, { emoji: string; color: string; bg: string }> = {
-  Livreur:      { emoji: "🛵", color: "#065f46", bg: "#ecfdf5" },
-  Chauffeur:    { emoji: "🚗", color: "#1e40af", bg: "#eff6ff" },
-  Restaurateur: { emoji: "🍽️", color: "#92400e", bg: "#fef3c7" },
+const ROLE_META: Record<Role, { color: string; bg: string }> = {
+  Livreur:      { color: "#065f46", bg: "#ecfdf5" },
+  Chauffeur:    { color: "#1e40af", bg: "#eff6ff" },
+  Restaurateur: { color: "#92400e", bg: "#fef3c7" },
+  Manager:      { color: "#7c3aed", bg: "#f5f3ff" },
 };
 
 /* ── IR Maroc mensuel ── */
@@ -792,6 +906,7 @@ const EMPLOYES_DEMO: Employe[] = [
   { id: 1, nom: "Benali", prenom: "Youssef", cin: "BJ123456", tel: "0612345678", role: "Livreur", type: "CDI", salaire: 3200, dateDebut: "2025-01-15", duree: "", cnss: "1234567", actif: true },
   { id: 2, nom: "Tazi", prenom: "Fatima", cin: "BK987654", tel: "0698765432", role: "Chauffeur", type: "CDD", salaire: 4500, dateDebut: "2025-06-01", duree: "6 mois", cnss: "7654321", actif: true },
   { id: 3, nom: "El Amrani", prenom: "Hassan", cin: "BE456789", tel: "0661234567", role: "Restaurateur", type: "CDI", salaire: 5000, dateDebut: "2024-09-01", duree: "", cnss: "", actif: true },
+  { id: 4, nom: "Idrissi", prenom: "Salma", cin: "BH321654", tel: "0677654321", role: "Manager", type: "CDI", salaire: 7500, dateDebut: "2024-01-01", duree: "", cnss: "9876543", actif: true },
 ];
 
 const EMPTY_EMP: Omit<Employe, "id"> = {
@@ -864,7 +979,7 @@ function ContratTab({ employes, setEmployes, onFiche }: {
             <Field label="N° CNSS"><input style={inp} value={form.cnss} onChange={e => setForm(f => ({...f, cnss: e.target.value}))} placeholder="Optionnel" /></Field>
             <Field label="Rôle">
               <select style={inp} value={form.role} onChange={e => setForm(f => ({...f, role: e.target.value as Role}))}>
-                <option>Livreur</option><option>Chauffeur</option><option>Restaurateur</option>
+                <option>Livreur</option><option>Chauffeur</option><option>Restaurateur</option><option>Manager</option>
               </select>
             </Field>
             <Field label="Type contrat">
@@ -906,11 +1021,9 @@ function ContratTab({ employes, setEmployes, onFiche }: {
               {/* Top row */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                  <div style={{
-                    width: 48, height: 48, borderRadius: 14, fontSize: 22,
-                    background: meta.bg, display: "flex", alignItems: "center", justifyContent: "center",
-                    flexShrink: 0,
-                  }}>{meta.emoji}</div>
+                  <div style={{ flexShrink: 0 }}>
+                    <BridgeRoleBadge role={e.role} size={52}/>
+                  </div>
                   <div>
                     <div style={{ fontWeight: 900, fontSize: 15, color: "#1e293b" }}>{e.prenom} {e.nom}</div>
                     <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>{e.cin && `CIN: ${e.cin}`}</div>
@@ -1046,7 +1159,7 @@ function FichePayeTab({ employes }: { employes: Employe[] }) {
                     borderRadius: 10, background: selected ? "#ecfdf5" : "#f8fafc",
                     cursor: "pointer", textAlign: "left",
                   }}>
-                    <span style={{ fontSize: 20 }}>{meta.emoji}</span>
+                    <BridgeRoleBadge role={e.role} size={38}/>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 800, fontSize: 13, color: selected ? "#065f46" : "#1e293b" }}>
                         {e.prenom} {e.nom}
@@ -1301,7 +1414,7 @@ export default function App() {
         padding: "16px 32px", display: "flex", alignItems: "center", gap: 16,
         boxShadow: "0 2px 16px rgb(0 0 0 / .3)",
       }}>
-        <BridgeTechLogo size={52} />
+        <BridgeFinanceHeaderLogo />
         <div style={{ width: 1, height: 40, background: "rgba(255,255,255,.1)", margin: "0 4px" }} />
         <div>
           <div style={{ fontWeight: 700, fontSize: 14, color: "#f1f5f9", letterSpacing: ".06em", textTransform: "uppercase" }}>
