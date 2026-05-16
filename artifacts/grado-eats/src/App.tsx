@@ -5320,8 +5320,9 @@ export default function App() {
 
   // Guest mode check — user explicitly chose to browse without an account
   const isGuest = (() => { try { return localStorage.getItem('bridge_guest_mode') === '1'; } catch { return false; } })();
-  // Show splash while: timer not done, OR Clerk not loaded, OR not signed in AND not guest
-  const showSplash = !splashDone || !isLoaded || (!isSignedIn && !isGuest);
+  // Returning guests skip the splash entirely — no Clerk loading wait, no timer
+  // First-time visitors (no guest flag, no session) see the splash/sign-in page
+  const showSplash = isGuest ? false : (!splashDone || !isLoaded || !isSignedIn);
   if(showSplash) return <SplashScreen/>;
 
   // Profile onboarding after first sign-in
