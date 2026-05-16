@@ -2937,7 +2937,18 @@ function BridgeAssistantPage() {
   const t = ASSISTANT_T[lang];
   const isAR = lang==='ar';
 
-  const [messages, setMessages] = useState<AssistMsg[]>([{ role:'assistant', content: ASSISTANT_T[lang].greeting }]);
+  const ASSIST_CHAT_KEY = 'bridge_assistant_chat';
+
+  const [messages, setMessages] = useState<AssistMsg[]>(() => {
+    try {
+      const saved = localStorage.getItem(ASSIST_CHAT_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as AssistMsg[];
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return [{ role:'assistant', content: ASSISTANT_T[lang].greeting }];
+  });
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [escalated, setEscalated] = useState(false);
@@ -2945,11 +2956,23 @@ function BridgeAssistantPage() {
 
   const BRIDGE_WA_NUMBER = '+212764794856';
 
+  // Persist conversation to localStorage on every change
+  useEffect(() => {
+    try { localStorage.setItem(ASSIST_CHAT_KEY, JSON.stringify(messages)); } catch {}
+  }, [messages]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior:'smooth' });
   }, [messages, loading]);
 
-  // Re-set greeting when language changes
+  const clearConversation = () => {
+    const fresh = [{ role:'assistant' as const, content: ASSISTANT_T[lang].greeting }];
+    setMessages(fresh);
+    setEscalated(false);
+    try { localStorage.setItem(ASSIST_CHAT_KEY, JSON.stringify(fresh)); } catch {}
+  };
+
+  // Re-set greeting when language changes (only if still on the opening message)
   useEffect(() => {
     setMessages(prev => {
       if (prev.length === 1 && prev[0].role === 'assistant') {
@@ -3003,10 +3026,19 @@ function BridgeAssistantPage() {
             </div>
             <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,margin:0}}>{t.subtitle}</p>
           </div>
-          <button onClick={()=>setLang(l=>{const i=ASSIST_LANGS.indexOf(l);return ASSIST_LANGS[(i+1)%ASSIST_LANGS.length];})}
-            style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',color:'#94a3b8',borderRadius:12,padding:'8px 14px',fontSize:12,fontWeight:700,cursor:'pointer'}}>
-            {ASSIST_LANG_LABELS[lang]}
-          </button>
+          <div style={{display:'flex',gap:6}}>
+            {messages.length > 1 && (
+              <button onClick={clearConversation}
+                title="Effacer la conversation"
+                style={{background:'rgba(239,68,68,0.1)',border:'1px solid rgba(239,68,68,0.3)',color:'#f87171',borderRadius:12,padding:'8px 10px',fontSize:14,cursor:'pointer',lineHeight:1}}>
+                🗑️
+              </button>
+            )}
+            <button onClick={()=>setLang(l=>{const i=ASSIST_LANGS.indexOf(l);return ASSIST_LANGS[(i+1)%ASSIST_LANGS.length];})}
+              style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',color:'#94a3b8',borderRadius:12,padding:'8px 14px',fontSize:12,fontWeight:700,cursor:'pointer'}}>
+              {ASSIST_LANG_LABELS[lang]}
+            </button>
+          </div>
         </div>
       </div>
 
