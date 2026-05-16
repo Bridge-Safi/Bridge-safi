@@ -2448,6 +2448,7 @@ const ASSISTANT_T = {
 
 type AssistLang = 'fr'|'en'|'ar'|'amz';
 const ASSIST_LANGS: AssistLang[] = ['fr','en','ar','amz'];
+const ASSIST_CHAT_KEY = 'bridge_assistant_chat';
 // ─── RESTAURANT OWNER PAGE ────────────────────────────────────────────────────
 
 const RESTO_RESTAURANTS = [
