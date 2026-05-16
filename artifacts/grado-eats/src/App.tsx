@@ -5250,21 +5250,12 @@ export default function App() {
     return()=>clearTimeout(t);
   },[]);
 
-  // Redirect to sign-in only after Clerk fully loaded + splash done + grace delay
-  // Avoids false redirects while session is restoring from cookies/localStorage
+  // Track signed-in state for profile features; no forced redirect — app is open to all
   useEffect(()=>{
     if(!isLoaded) return;
     if(isSignedIn){
       try { localStorage.setItem('bridge_was_signed_in','1'); } catch {}
-      return;
     }
-    // Guest mode — user explicitly chose to browse without an account
-    try { if (localStorage.getItem('bridge_guest_mode') === '1') return; } catch {}
-    // Short grace period so Clerk can restore session from cookies (max 2.5s)
-    const t = setTimeout(()=>{
-      if(!isSignedIn) navigate('/sign-in');
-    }, 2500);
-    return () => clearTimeout(t);
   },[isLoaded,isSignedIn]);
 
   // Persist nav state on every relevant change
@@ -5318,11 +5309,10 @@ export default function App() {
   const dv = useMemo(() => ({ dark: isDark, toggle: toggleDark }), [isDark, toggleDark]);
   const handleOrderSuccess=(ref:string)=>{setLastOrderRef(ref);setService('none');setPage('tracking');};
 
-  // Guest mode check — user explicitly chose to browse without an account
-  const isGuest = (() => { try { return localStorage.getItem('bridge_guest_mode') === '1'; } catch { return false; } })();
-  // Returning guests skip the splash entirely — no Clerk loading wait, no timer
-  // First-time visitors (no guest flag, no session) see the splash/sign-in page
-  const showSplash = isGuest ? false : (!splashDone || !isLoaded || !isSignedIn);
+  // App is open to all — only block during initial animated splash (1.5s)
+  // No sign-in wall: guests and signed-in users both access the app freely
+  const isGuest = !isSignedIn;
+  const showSplash = !splashDone;
   if(showSplash) return <SplashScreen/>;
 
   // Profile onboarding after first sign-in
