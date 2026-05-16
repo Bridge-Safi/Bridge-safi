@@ -2938,8 +2938,6 @@ function BridgeAssistantPage() {
   const t = ASSISTANT_T[lang];
   const isAR = lang==='ar';
 
-  const ASSIST_CHAT_KEY = 'bridge_assistant_chat';
-
   const [messages, setMessages] = useState<AssistMsg[]>(() => {
     try {
       const saved = localStorage.getItem(ASSIST_CHAT_KEY);
@@ -3542,6 +3540,249 @@ function AdminAuthPage() {
   );
 }
 
+// ─── FLOATING AI ASSISTANT WIDGET ─────────────────────────────────────────────
+
+function FloatingAssistantWidget() {
+  const [location] = useLocation();
+  const [open, setOpen] = useState(false);
+  const [unread, setUnread] = useState(0);
+  const [lang, setLang] = useState<AssistLang>(() => {
+    try { const r = localStorage.getItem('bridge_nav_state'); if(r){const p=JSON.parse(r);if(ASSIST_LANGS.includes(p.lang)) return p.lang as AssistLang;} } catch{}
+    return 'fr';
+  });
+  const t = ASSISTANT_T[lang];
+  const isAR = lang === 'ar';
+
+  const [messages, setMessages] = useState<AssistMsg[]>(() => {
+    try {
+      const saved = localStorage.getItem(ASSIST_CHAT_KEY);
+      if (saved) { const parsed = JSON.parse(saved) as AssistMsg[]; if (Array.isArray(parsed) && parsed.length > 0) return parsed; }
+    } catch {}
+    return [{ role: 'assistant', content: ASSISTANT_T['fr'].greeting }];
+  });
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [escalated, setEscalated] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const BRIDGE_WA_NUMBER = '+212764794856';
+
+  useEffect(() => {
+    try { localStorage.setItem(ASSIST_CHAT_KEY, JSON.stringify(messages)); } catch {}
+  }, [messages]);
+
+  useEffect(() => {
+    if (open) {
+      setUnread(0);
+      setTimeout(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); inputRef.current?.focus(); }, 80);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (open) bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, loading]);
+
+  const clearConversation = () => {
+    const fresh = [{ role: 'assistant' as const, content: ASSISTANT_T[lang].greeting }];
+    setMessages(fresh);
+    setEscalated(false);
+    try { localStorage.setItem(ASSIST_CHAT_KEY, JSON.stringify(fresh)); } catch {}
+  };
+
+  const sendMessage = async (text: string) => {
+    if (!text.trim() || loading) return;
+    const userMsg: AssistMsg = { role: 'user', content: text.trim() };
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
+    setInput('');
+    setLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.BASE_URL}api/assistant/chat`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: newMessages, lang }),
+      });
+      const data = await res.json() as { reply: string; isEscalation: boolean };
+      setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+      if (data.isEscalation) setEscalated(true);
+      if (!open) setUnread(u => u + 1);
+    } catch {
+      setMessages(prev => [...prev, { role: 'assistant', content: '⚠️ Service temporairement indisponible.' }]);
+    } finally { setLoading(false); }
+  };
+
+  // Hide on the full assistant page to avoid duplication
+  if (location === '/assistant') return null;
+
+  const hasMessages = messages.length > 1;
+
+  return (
+    <>
+      <style>{`
+        @keyframes slideUpWidget{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+        @keyframes wDot{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+        .w-bubble:hover{transform:scale(1.1)!important}
+      `}</style>
+
+      {/* Floating bubble — sits above WhatsApp button */}
+      <button className="w-bubble" onClick={() => setOpen(o => !o)}
+        style={{position:'fixed',bottom:144,right:16,zIndex:61,width:46,height:46,borderRadius:'50%',
+          background:'linear-gradient(135deg,#4f46e5,#7c3aed)',
+          boxShadow:`0 4px 18px rgba(79,70,229,${open?0.25:0.55})`,
+          border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',
+          transition:'transform 0.15s,box-shadow 0.15s',}}>
+        {open
+          ? <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          : <svg width="21" height="21" viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>}
+        {unread > 0 && !open && (
+          <span style={{position:'absolute',top:-4,right:-4,background:'#ef4444',color:'#fff',
+            borderRadius:'50%',width:18,height:18,fontSize:10,fontWeight:900,
+            display:'flex',alignItems:'center',justifyContent:'center',border:'2px solid #fff'}}>
+            {unread}
+          </span>
+        )}
+      </button>
+
+      {/* Chat panel */}
+      {open && (
+        <div dir={isAR?'rtl':'ltr'} style={{
+          position:'fixed',bottom:0,left:0,right:0,zIndex:60,height:'72dvh',
+          background:'linear-gradient(160deg,#030712 0%,#0f172a 55%,#1e1b4b 100%)',
+          borderTopLeftRadius:24,borderTopRightRadius:24,
+          boxShadow:'0 -8px 48px rgba(0,0,0,0.65)',
+          display:'flex',flexDirection:'column',
+          animation:'slideUpWidget 0.28s cubic-bezier(0.34,1.2,0.64,1)',
+        }}>
+
+          {/* Header */}
+          <div style={{padding:'13px 14px 11px',borderBottom:'1px solid rgba(99,102,241,0.2)',
+            display:'flex',alignItems:'center',justifyContent:'space-between',flexShrink:0}}>
+            <div style={{display:'flex',alignItems:'center',gap:10}}>
+              <div style={{width:34,height:34,borderRadius:'50%',
+                background:'linear-gradient(135deg,#4f46e5,#7c3aed)',
+                display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+              </div>
+              <div>
+                <p style={{color:'#fff',fontSize:13,fontWeight:900,margin:0}}>{t.title}</p>
+                <div style={{display:'flex',alignItems:'center',gap:5}}>
+                  <div style={{width:6,height:6,borderRadius:'50%',background:'#4ADE80',boxShadow:'0 0 6px #4ADE80'}}/>
+                  <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,margin:0}}>{t.subtitle}</p>
+                </div>
+              </div>
+            </div>
+            <div style={{display:'flex',gap:6}}>
+              {hasMessages && (
+                <button onClick={clearConversation}
+                  style={{background:'rgba(239,68,68,0.1)',border:'1px solid rgba(239,68,68,0.3)',
+                    color:'#f87171',borderRadius:10,padding:'5px 8px',fontSize:13,cursor:'pointer'}}>
+                  🗑️
+                </button>
+              )}
+              <button onClick={()=>setLang(l=>{const i=ASSIST_LANGS.indexOf(l);return ASSIST_LANGS[(i+1)%ASSIST_LANGS.length];})}
+                style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',
+                  color:'#94a3b8',borderRadius:10,padding:'5px 9px',fontSize:11,fontWeight:700,cursor:'pointer'}}>
+                {ASSIST_LANG_LABELS[lang]}
+              </button>
+              <button onClick={()=>setOpen(false)}
+                style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',
+                  color:'#94a3b8',borderRadius:10,padding:'5px 9px',fontSize:11,fontWeight:700,cursor:'pointer'}}>
+                ✕
+              </button>
+            </div>
+          </div>
+
+          {/* Messages */}
+          <div style={{flex:1,overflowY:'auto',padding:'12px 14px'}}>
+            {messages.length <= 1 && (
+              <div style={{marginBottom:12}}>
+                <p style={{color:'rgba(255,255,255,0.35)',fontSize:10,fontWeight:700,letterSpacing:2,
+                  textTransform:'uppercase',textAlign:'center',marginBottom:8}}>{t.quickTitle}</p>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6}}>
+                  {[t.q1,t.q2,t.q3,t.q4].map((q,i)=>(
+                    <button key={i} onClick={()=>sendMessage(q)}
+                      style={{background:'rgba(99,102,241,0.12)',border:'1px solid rgba(99,102,241,0.3)',
+                        color:'rgba(255,255,255,0.8)',borderRadius:12,padding:'10px 8px',
+                        fontSize:11,fontWeight:600,cursor:'pointer',textAlign:'center',lineHeight:1.3}}>
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {messages.map((msg,idx)=>(
+              <div key={idx} style={{display:'flex',justifyContent:msg.role==='user'?'flex-end':'flex-start',marginBottom:9}}>
+                {msg.role==='assistant'&&(
+                  <div style={{width:24,height:24,borderRadius:'50%',
+                    background:'linear-gradient(135deg,#4f46e5,#7c3aed)',
+                    display:'flex',alignItems:'center',justifyContent:'center',
+                    flexShrink:0,marginRight:7,marginTop:3,fontSize:11}}>✦</div>
+                )}
+                <div style={{maxWidth:'78%',padding:'8px 12px',
+                  borderRadius:msg.role==='user'?'16px 16px 3px 16px':'3px 16px 16px 16px',
+                  background:msg.role==='user'
+                    ?'linear-gradient(135deg,#4f46e5,#6d28d9)'
+                    :'rgba(255,255,255,0.07)',
+                  border:msg.role==='assistant'?'1px solid rgba(255,255,255,0.08)':'none',
+                  color:'#f1f5f9',fontSize:13,lineHeight:1.5,whiteSpace:'pre-wrap'}}>
+                  {msg.content}
+                </div>
+              </div>
+            ))}
+
+            {loading&&(
+              <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:9}}>
+                <div style={{width:24,height:24,borderRadius:'50%',background:'linear-gradient(135deg,#4f46e5,#7c3aed)',
+                  display:'flex',alignItems:'center',justifyContent:'center',fontSize:11}}>✦</div>
+                <div style={{background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.08)',
+                  borderRadius:'3px 16px 16px 16px',padding:'9px 14px',display:'flex',gap:4}}>
+                  {[0,1,2].map(i=>(
+                    <div key={i} style={{width:6,height:6,borderRadius:'50%',background:'#6366f1',
+                      animation:`wDot 1.2s ${i*0.2}s infinite`}}/>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {escalated&&(
+              <div style={{background:'rgba(99,102,241,0.1)',border:'1px solid rgba(99,102,241,0.3)',
+                borderRadius:14,padding:'10px 14px',marginBottom:10,textAlign:'center'}}>
+                <p style={{color:'#a5b4fc',fontSize:12,fontWeight:700,margin:'0 0 8px'}}>{t.escalated}</p>
+                <a href={`https://wa.me/${BRIDGE_WA_NUMBER.replace('+','')}`}
+                  target="_blank" rel="noopener noreferrer"
+                  style={{display:'inline-block',background:'#25D366',color:'#fff',
+                    borderRadius:10,padding:'7px 14px',fontSize:12,fontWeight:700,textDecoration:'none'}}>
+                  {t.wa}
+                </a>
+              </div>
+            )}
+
+            <div ref={bottomRef}/>
+          </div>
+
+          {/* Input */}
+          <div style={{padding:'10px 14px 22px',borderTop:'1px solid rgba(255,255,255,0.07)',
+            flexShrink:0,display:'flex',gap:8}}>
+            <input ref={inputRef} value={input} onChange={e=>setInput(e.target.value)}
+              onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage(input);}}}
+              placeholder={t.placeholder} disabled={loading} dir={isAR?'rtl':'ltr'}
+              style={{flex:1,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(99,102,241,0.3)',
+                borderRadius:14,padding:'10px 14px',color:'#f1f5f9',fontSize:13,
+                outline:'none',fontFamily:'inherit'}}/>
+            <button onClick={()=>sendMessage(input)} disabled={loading||!input.trim()}
+              style={{background:'linear-gradient(135deg,#4f46e5,#7c3aed)',color:'#fff',border:'none',
+                borderRadius:14,padding:'10px 14px',fontSize:13,fontWeight:700,
+                cursor:loading||!input.trim()?'not-allowed':'pointer',
+                opacity:loading||!input.trim()?0.5:1}}>
+              {t.send}
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 function ClerkProviderWithRoutes() {
   const [, setLocation] = useLocation();
 
@@ -3568,6 +3809,7 @@ function ClerkProviderWithRoutes() {
           <Route path="/manager" component={AdminAuthPage} />
           <Route component={typeof window !== 'undefined' && window.location.hostname.startsWith('manager.') ? AdminAuthPage : App} />
         </Switch>
+        <FloatingAssistantWidget />
       </QueryClientProvider>
     </ClerkProvider>
   );
