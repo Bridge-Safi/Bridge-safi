@@ -3438,9 +3438,91 @@ interface MissionData {
 }
 interface MissionCompl { id: number; missionId: number; diamondsAwarded: number; }
 
+type MLang = 'fr'|'en'|'ar'|'amz';
+const MISSION_T = {
+  fr: {
+    title:'💎 Gagner des diamants', sub:'Regarde des pubs, fais des missions',
+    today:"AUJOURD'HUI", dailyCap:'Plafond journalier', of:'sur',
+    capReached:'🎉 Plafond atteint ! Revenez demain.',
+    authNudge:'🔒 Connecte-toi pour encaisser tes récompenses →',
+    cats:{ video:'🎬 Publicités vidéo', offerwall:'📱 Jeux & Offres', social:'📣 Réseaux sociaux', survey:'📊 Sondages', fortune:'🎡 Roue de la fortune' },
+    topBadge:'⭐ TOP', timesToday:(c:number,m:number)=>`${c}/${m} fois aujourd'hui`,
+    adTitle:'PUBLICITÉ SPONSORISÉE', adWatching:'Visionnage de la publicité en cours…',
+    fortuneRunning:'Roue de la fortune en cours…', waitSec:(s:number)=>`Patiente encore ${s}s…`,
+    claim:(d:number)=>`🎁 Réclamer ${d.toLocaleString()} 💎`, cancel:'Annuler',
+    socialOpened:"La page s'est ouverte dans un nouvel onglet. Effectue l'action puis confirme.",
+    socialWait:'⏳ Attends quelques secondes…',
+    socialClaim:(d:number)=>`✅ C'est fait — Réclamer ${d.toLocaleString()} 💎`,
+    done:'✓ Fait', offerwallTip:'💡 Intégration Lootably / Offertoro : renseigne',
+    offerwallTip2:'dans main.tsx pour afficher l\'offerwall ici.',
+    errLogin:'Connecte-toi pour gagner des 💎 !', errLimit:'Limite journalière atteinte',
+    errDone:'Déjà effectué !', errNet:'Erreur réseau', credited:(d:number,h:string)=>`+${d.toLocaleString()} 💎 crédités ! (${h})`,
+  },
+  en: {
+    title:'💎 Earn Diamonds', sub:'Watch ads, complete missions',
+    today:'TODAY', dailyCap:'Daily cap', of:'/',
+    capReached:'🎉 Daily cap reached! Come back tomorrow.',
+    authNudge:'🔒 Sign in to claim your rewards →',
+    cats:{ video:'🎬 Video Ads', offerwall:'📱 Games & Offers', social:'📣 Social Media', survey:'📊 Surveys', fortune:'🎡 Wheel of Fortune' },
+    topBadge:'⭐ TOP', timesToday:(c:number,m:number)=>`${c}/${m} today`,
+    adTitle:'SPONSORED AD', adWatching:'Watching the ad…',
+    fortuneRunning:'Spinning the wheel…', waitSec:(s:number)=>`Wait ${s}s more…`,
+    claim:(d:number)=>`🎁 Claim ${d.toLocaleString()} 💎`, cancel:'Cancel',
+    socialOpened:'The page opened in a new tab. Complete the action then confirm.',
+    socialWait:'⏳ Wait a few seconds…',
+    socialClaim:(d:number)=>`✅ Done — Claim ${d.toLocaleString()} 💎`,
+    done:'✓ Done', offerwallTip:'💡 Lootably / Offertoro integration: set',
+    offerwallTip2:'in main.tsx to show the offerwall here.',
+    errLogin:'Sign in to earn 💎!', errLimit:'Daily limit reached',
+    errDone:'Already done!', errNet:'Network error', credited:(d:number,h:string)=>`+${d.toLocaleString()} 💎 credited! (${h})`,
+  },
+  ar: {
+    title:'💎 اكسب الماسات', sub:'شاهد الإعلانات، أنجز المهام',
+    today:'اليوم', dailyCap:'الحد اليومي', of:'من',
+    capReached:'🎉 وصلت للحد اليومي! عد غداً.',
+    authNudge:'🔒 سجّل الدخول للحصول على مكافآتك ←',
+    cats:{ video:'🎬 إعلانات فيديو', offerwall:'📱 ألعاب وعروض', social:'📣 شبكات التواصل', survey:'📊 استطلاعات', fortune:'🎡 عجلة الحظ' },
+    topBadge:'⭐ الأفضل', timesToday:(c:number,m:number)=>`${c}/${m} مرة اليوم`,
+    adTitle:'إعلان مموّل', adWatching:'جاري مشاهدة الإعلان…',
+    fortuneRunning:'جاري الدوران…', waitSec:(s:number)=>`انتظر ${s}ث…`,
+    claim:(d:number)=>`🎁 احصل على ${d.toLocaleString()} 💎`, cancel:'إلغاء',
+    socialOpened:'فُتحت الصفحة في تبويب جديد. أنجز الإجراء ثم أكّد.',
+    socialWait:'⏳ انتظر ثواني…',
+    socialClaim:(d:number)=>`✅ تم — احصل على ${d.toLocaleString()} 💎`,
+    done:'✓ تم', offerwallTip:'💡 تكامل Lootably: اضبط',
+    offerwallTip2:'في main.tsx لعرض العروض هنا.',
+    errLogin:'سجّل الدخول لكسب 💎!', errLimit:'وصلت للحد اليومي',
+    errDone:'تم إنجازه بالفعل!', errNet:'خطأ في الشبكة', credited:(d:number,h:string)=>`+${d.toLocaleString()} 💎 مُضافة! (${h})`,
+  },
+  amz: {
+    title:'💎 ⴰⴽⵙⵓⴷ ⵉⵎⴰⵙⵙⵏ', sub:'ⵥⵔ ⵉⵏⴰⴳⵔⴰⵡⵏ · ⵙⵙⵓⴼⵖ ⵜⵉⵎⵉⵙⵙⵉⵡⵉⵏ',
+    today:'ⴰⵙⵙ ⴰ', dailyCap:'ⴰⵎⵓⵟⵟⵓ ⵏ ⵡⴰⵙⵙ', of:'/',
+    capReached:'🎉 ⵡⴰⵅⵅⴰ ⴰⵎⵓⵟⵟⵓ! ⴰⵙⵙ ⵉⴹⵍⵍⵉ.',
+    authNudge:'🔒 ⴽⵛⵎ ⵓⵍⴰⴷ ⵜⴰⴽⴽⴰ ⵜⵉⵙⵙⴰⵍⵜⵉⵏ →',
+    cats:{ video:'🎬 ⵉⵏⴰⴳⵔⴰⵡⵏ ⵏ ⵓⵡⵉⴷⵢⵓ', offerwall:'📱 ⵉⵖⴰⵡⵙⵉⵡⵏ', social:'📣 ⵉⵙⵓⵙⵙⵏ ⵉⵏⵎⵔⴰⵡⵏ', survey:'📊 ⵉⵙⵇⵙⵉⵜⵏ', fortune:'🎡 ⵜⴰⵔⵓⴼⴼⴰ' },
+    topBadge:'⭐ ⴰⵎⵇⵔⴰⵏ', timesToday:(c:number,m:number)=>`${c}/${m} ⴰⵙⵙ ⴰ`,
+    adTitle:'ⴰⵙⵎⵓⵙⵙⵓ', adWatching:'ⵉⵜⵜⵓⵥⵔ ⵓⵙⵎⵓⵙⵙⵓ…',
+    fortuneRunning:'ⵜⴰⵔⵓⴼⴼⴰ ⴳ ⵓⵙⵙⵉⵡⴹ…', waitSec:(s:number)=>`ⵃⴹⵓ ${s}ⵙ…`,
+    claim:(d:number)=>`🎁 ⴰⵡⵉ ${d.toLocaleString()} 💎`, cancel:'ⴽⴽⵙ',
+    socialOpened:'ⵜⵙⵔⵉⵔ ⵜⵙⵓⴷⴰ ⴳ ⵜⴱⵔⵉⴷⵜ ⵢⴰⴹⵏⵉⵏ. ⴽⵎⵎⵍ ⵜⵉⵔⵎⵜ ⵔⵏⵓ ⵙⵙⵉⵜⵎ.',
+    socialWait:'⏳ ⵃⴹⵓ ⵉⵎⵉⴽⴽ…',
+    socialClaim:(d:number)=>`✅ ⵉⵍⵓⵍ — ⴰⵡⵉ ${d.toLocaleString()} 💎`,
+    done:'✓ ⵉⵍⵓⵍ', offerwallTip:'💡 Lootably: ⵙⵏⴼⵍ',
+    offerwallTip2:'ⴳ main.tsx ⵓⵍⴰⴷ ⵜⵏⵏⴰⵔⵣ ⵜⵉⵙⴽⵓⵜⵉⵡⵉⵏ ⴷⵉⵔ.',
+    errLogin:'ⴽⵛⵎ ⵓⵍⴰⴷ ⵜⴰⴽⴽⴰ 💎!', errLimit:'ⵡⴰⵅⵅⴰ ⴰⵎⵓⵟⵟⵓ ⵏ ⵡⴰⵙⵙ',
+    errDone:'ⵉⵍⵓⵍ ⴷⴰⵜ!', errNet:'ⵜⴰⵖⵓⵍⵜ ⵏ ⵓⵙⴽⵏⵢⵓ', credited:(d:number,h:string)=>`+${d.toLocaleString()} 💎 ⴷⴷⴰⵏⵜ! (${h})`,
+  },
+};
+
 function MissionsPage() {
   const [, navigate] = useLocation();
   const { getToken, isSignedIn } = useAuth();
+  const lang: MLang = (() => {
+    try { const r=localStorage.getItem('bridge_nav_state'); if(r){const p=JSON.parse(r); if(['fr','en','ar','amz'].includes(p.lang)) return p.lang as MLang;} } catch {}
+    return 'fr';
+  })();
+  const t = MISSION_T[lang];
+  const isAR = lang === 'ar';
   const [missions, setMissions] = useState<MissionData[]>([]);
   const [completions, setCompletions] = useState<MissionCompl[]>([]);
   const [todayDiamonds, setTodayDiamonds] = useState(0);
@@ -3490,7 +3572,7 @@ function MissionsPage() {
     completions.filter(c => c.missionId === missionId).length;
 
   const complete = async (mission: MissionData) => {
-    if (!isSignedIn) { showToast('Connecte-toi pour gagner des 💎 !', false); return; }
+    if (!isSignedIn) { showToast(t.errLogin, false); return; }
     try {
       const h = await authHeaders();
       const r = await fetch(`/api/missions/${mission.id}/complete`, { method: 'POST', headers: h });
@@ -3498,25 +3580,22 @@ function MissionsPage() {
       if (!r.ok) { showToast(d.error || 'Erreur', false); return; }
       setTodayDiamonds(d.todayDiamonds);
       setCompletions(prev => [...prev, { id: Date.now(), missionId: mission.id, diamondsAwarded: d.awarded }]);
-      showToast(`+${d.awarded.toLocaleString()} 💎 crédités ! (${(d.awarded / 200).toFixed(1)} DH)`, true);
-    } catch { showToast('Erreur réseau', false); }
+      const dhVal = mission.type === 'offerwall' ? '~15 DH' : `${(d.awarded / 200).toFixed(1)} DH`;
+      showToast(t.credited(d.awarded, dhVal), true);
+    } catch { showToast(t.errNet, false); }
   };
 
   // ── Video / Fortune mission flow ──
   const startAd = (mission: MissionData) => {
-    if (!isSignedIn) { showToast('Connecte-toi pour gagner des 💎 !', false); return; }
+    if (!isSignedIn) { showToast(t.errLogin, false); return; }
     const cnt = todayCount(mission.id);
-    if (mission.dailyLimit !== -1 && cnt >= mission.dailyLimit) { showToast('Limite journalière atteinte', false); return; }
+    if (mission.dailyLimit !== -1 && cnt >= mission.dailyLimit) { showToast(t.errLimit, false); return; }
     const dur = mission.durationSeconds ?? 30;
     setAdMission(mission); setAdCountdown(dur); setAdDone(false);
     if (adTimerRef.current) clearInterval(adTimerRef.current);
     adTimerRef.current = setInterval(() => {
       setAdCountdown(prev => {
-        if (prev <= 1) {
-          clearInterval(adTimerRef.current!);
-          setAdDone(true);
-          return 0;
-        }
+        if (prev <= 1) { clearInterval(adTimerRef.current!); setAdDone(true); return 0; }
         return prev - 1;
       });
     }, 1000);
@@ -3524,16 +3603,15 @@ function MissionsPage() {
 
   const claimAd = async () => {
     if (!adMission) return;
-    const m = adMission;
-    setAdMission(null); setAdDone(false);
+    const m = adMission; setAdMission(null); setAdDone(false);
     await complete(m);
   };
 
   // ── Social mission flow ──
   const startSocial = (mission: MissionData) => {
-    if (!isSignedIn) { showToast('Connecte-toi pour gagner des 💎 !', false); return; }
+    if (!isSignedIn) { showToast(t.errLogin, false); return; }
     const cnt = todayCount(mission.id);
-    if (mission.dailyLimit !== -1 && cnt >= mission.dailyLimit) { showToast('Déjà effectué !', false); return; }
+    if (mission.dailyLimit !== -1 && cnt >= mission.dailyLimit) { showToast(t.errDone, false); return; }
     if (mission.externalUrl) window.open(mission.externalUrl, '_blank');
     setSocialMission(mission); setSocialReady(false);
     if (socialTimerRef.current) clearTimeout(socialTimerRef.current);
@@ -3542,34 +3620,24 @@ function MissionsPage() {
 
   const claimSocial = async () => {
     if (!socialMission) return;
-    const m = socialMission;
-    setSocialMission(null);
+    const m = socialMission; setSocialMission(null);
     await complete(m);
   };
 
-  const dh = (d: number, type?: string) => {
-    // Offerwall: show real ad payout value (AdGate pays ~15 DH per install)
-    if (type === 'offerwall') return '~15 DH';
-    return `${(d / 200).toFixed(2).replace(/\.?0+$/, '')} DH`;
-  };
+  const dhLabel = (d: number, type: string) => type === 'offerwall' ? '~15 DH' : `${(d / 200).toFixed(2).replace(/\.?0+$/, '')} DH`;
   const pct = Math.min(100, Math.round((todayDiamonds / DAILY_CAP) * 100));
+  const isTop = (m: MissionData) => m.rewardDiamonds >= 1000;
 
-  const grouped: Record<string, MissionData[]> = { video: [], social: [], offerwall: [], survey: [], fortune: [] };
-  for (const m of missions) { if (grouped[m.type]) grouped[m.type].push(m); }
-
-  const catLabel: Record<string, string> = {
-    video: '🎬 Publicités vidéo',
-    offerwall: '📱 Jeux & Offres',
-    social: '📣 Réseaux sociaux',
-    survey: '📊 Sondages',
-    fortune: '🎡 Roue de la fortune',
-  };
+  // Sort missions: highest reward first, then group visually
+  const sortedMissions = [...missions].sort((a, b) => b.rewardDiamonds - a.rewardDiamonds);
+  const grouped: Record<string, MissionData[]> = { offerwall: [], survey: [], video: [], social: [], fortune: [] };
+  for (const m of sortedMissions) { if (grouped[m.type] !== undefined) grouped[m.type].push(m); }
 
   const S = {
-    page: { minHeight: '100dvh', background: '#0f172a', color: '#fff', fontFamily: 'inherit', paddingBottom: 80 } as React.CSSProperties,
+    page: { minHeight: '100dvh', background: '#0f172a', color: '#fff', fontFamily: 'inherit', paddingBottom: 80, direction: isAR ? 'rtl' : 'ltr' } as React.CSSProperties,
     header: { display: 'flex', alignItems: 'center', gap: 12, padding: '16px 16px 12px', borderBottom: '1px solid rgba(255,255,255,0.07)' } as React.CSSProperties,
     back: { background: 'rgba(255,255,255,0.07)', border: 'none', color: '#94a3b8', borderRadius: 12, width: 38, height: 38, fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 } as React.CSSProperties,
-    card: { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, marginBottom: 10, cursor: 'pointer', transition: 'background 0.15s' } as React.CSSProperties,
+    card: (top: boolean) => ({ background: top ? 'rgba(245,158,11,0.06)' : 'rgba(255,255,255,0.04)', border: `1px solid ${top ? 'rgba(245,158,11,0.25)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, marginBottom: 10, cursor: 'pointer', transition: 'background 0.15s', position: 'relative' as const, overflow: 'hidden' as const }),
     pill: (done: boolean) => ({ background: done ? 'rgba(16,185,129,0.15)' : 'rgba(59,130,246,0.15)', color: done ? '#10b981' : '#60a5fa', borderRadius: 20, padding: '4px 10px', fontSize: 11, fontWeight: 800, whiteSpace: 'nowrap' as const }),
   };
 
@@ -3577,86 +3645,79 @@ function MissionsPage() {
     <div style={S.page}>
       {/* Header */}
       <div style={S.header}>
-        <button style={S.back} onClick={() => navigate('/')}>←</button>
+        <button style={S.back} onClick={() => navigate('/')}>{isAR ? '→' : '←'}</button>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 17, fontWeight: 900, letterSpacing: '0.02em' }}>💎 Gagner des diamants</div>
-          <div style={{ fontSize: 11, color: '#64748b', marginTop: 1 }}>Regarde des pubs, fais des missions</div>
+          <div style={{ fontSize: 17, fontWeight: 900, letterSpacing: '0.02em' }}>{t.title}</div>
+          <div style={{ fontSize: 11, color: '#64748b', marginTop: 1 }}>{t.sub}</div>
         </div>
         <div style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 12, padding: '6px 12px', textAlign: 'center' }}>
           <div style={{ fontSize: 13, fontWeight: 900, color: '#10b981' }}>{todayDiamonds.toLocaleString()} 💎</div>
-          <div style={{ fontSize: 9, color: '#64748b', letterSpacing: '0.06em' }}>AUJOURD'HUI</div>
+          <div style={{ fontSize: 9, color: '#64748b', letterSpacing: '0.06em' }}>{t.today}</div>
         </div>
       </div>
 
       {/* Daily progress */}
       <div style={{ padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 11, color: '#94a3b8' }}>
-          <span>Plafond journalier</span>
+          <span>{t.dailyCap}</span>
           <span style={{ fontWeight: 800, color: pct >= 100 ? '#10b981' : '#f59e0b' }}>
-            {todayDiamonds.toLocaleString()} / {DAILY_CAP.toLocaleString()} 💎 ({dh(todayDiamonds)} / 15 DH)
+            {todayDiamonds.toLocaleString()} {t.of} {DAILY_CAP.toLocaleString()} 💎
           </span>
         </div>
         <div style={{ height: 8, background: 'rgba(255,255,255,0.08)', borderRadius: 99 }}>
           <div style={{ height: '100%', borderRadius: 99, width: `${pct}%`, background: pct >= 100 ? '#10b981' : 'linear-gradient(90deg,#3b82f6,#8b5cf6)', transition: 'width 0.5s' }} />
         </div>
-        {pct >= 100 && <div style={{ fontSize: 11, color: '#10b981', fontWeight: 800, marginTop: 6, textAlign: 'center' }}>🎉 Plafond atteint ! Revenez demain.</div>}
+        {pct >= 100 && <div style={{ fontSize: 11, color: '#10b981', fontWeight: 800, marginTop: 6, textAlign: 'center' }}>{t.capReached}</div>}
       </div>
 
       {/* Auth nudge */}
       {!isSignedIn && (
         <div onClick={() => navigate('/sign-in')} style={{ margin: '12px 16px 0', padding: '12px 14px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 14, fontSize: 12, color: '#fbbf24', fontWeight: 700, cursor: 'pointer', textAlign: 'center' }}>
-          🔒 Connecte-toi pour encaisser tes récompenses →
+          {t.authNudge}
         </div>
       )}
 
       <div style={{ padding: '16px 16px 0' }}>
-        {(['video','offerwall','social','survey','fortune'] as const).map(cat => {
+        {(['offerwall','survey','video','social','fortune'] as const).map(cat => {
           const items = grouped[cat] ?? [];
-          if (!items.length) return null;
+          if (!items.length && cat !== 'offerwall') return null;
           return (
             <div key={cat} style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 13, fontWeight: 900, color: '#94a3b8', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>{catLabel[cat]}</div>
+              <div style={{ fontSize: 12, fontWeight: 900, color: '#64748b', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>{t.cats[cat]}</div>
 
-              {/* AdGate offerwall embed for offerwall category */}
+              {/* Offerwall iframe embed */}
               {cat === 'offerwall' && ADGATE_OFFERWALL_URL && (
                 <div style={{ marginBottom: 12, borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <iframe src={ADGATE_OFFERWALL_URL} style={{ width: '100%', height: 500, border: 'none', display: 'block' }} title="Offres partenaires" />
+                  <iframe src={ADGATE_OFFERWALL_URL} style={{ width: '100%', height: 520, border: 'none', display: 'block' }} title="Offres partenaires" />
                 </div>
               )}
               {cat === 'offerwall' && !ADGATE_OFFERWALL_URL && (
-                <div style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 14, padding: '12px 14px', marginBottom: 12, fontSize: 11, color: '#a78bfa', lineHeight: 1.6 }}>
-                  💡 <b>Intégration AdGate / Lootably</b> : renseigne la constante <code style={{ background: 'rgba(255,255,255,0.1)', padding: '1px 5px', borderRadius: 4 }}>ADGATE_OFFERWALL_URL</code> dans <code>main.tsx</code> pour afficher l'offerwall ici.
+                <div style={{ background: 'rgba(139,92,246,0.08)', border: '1px dashed rgba(139,92,246,0.3)', borderRadius: 14, padding: '12px 14px', marginBottom: 12, fontSize: 11, color: '#a78bfa', lineHeight: 1.7 }}>
+                  {t.offerwallTip} <code style={{ background: 'rgba(255,255,255,0.1)', padding: '1px 5px', borderRadius: 4 }}>ADGATE_OFFERWALL_URL</code> {t.offerwallTip2}
                 </div>
               )}
 
               {items.map(mission => {
                 const cnt = todayCount(mission.id);
                 const maxed = mission.dailyLimit !== -1 && cnt >= mission.dailyLimit;
+                const top = isTop(mission) && !maxed;
                 const isVideo = mission.type === 'video' || mission.type === 'fortune';
                 const isSocial = mission.type === 'social' || mission.type === 'survey';
                 return (
-                  <div
-                    key={mission.id}
-                    style={{ ...S.card, opacity: maxed ? 0.5 : 1 }}
-                    onClick={() => {
-                      if (maxed) return;
-                      if (isVideo) startAd(mission);
-                      else if (isSocial) startSocial(mission);
-                      else complete(mission);
-                    }}
-                  >
-                    <div style={{ flex: 1 }}>
+                  <div key={mission.id} style={{ ...S.card(top), opacity: maxed ? 0.45 : 1 }}
+                    onClick={() => { if (maxed) return; if (isVideo) startAd(mission); else if (isSocial) startSocial(mission); else complete(mission); }}>
+                    {/* TOP badge stripe */}
+                    {top && <div style={{ position: 'absolute', top: 0, left: isAR ? undefined : 0, right: isAR ? 0 : undefined, background: 'linear-gradient(135deg,#f59e0b,#fbbf24)', color: '#78350f', fontSize: 8, fontWeight: 900, padding: '2px 8px', borderRadius: isAR ? '0 14px 0 8px' : '14px 0 8px 0', letterSpacing: '0.1em' }}>{t.topBadge}</div>}
+                    <div style={{ flex: 1, paddingTop: top ? 6 : 0 }}>
                       <div style={{ fontSize: 14, fontWeight: 800, marginBottom: 3 }}>{mission.title}</div>
                       <div style={{ fontSize: 11, color: '#64748b', lineHeight: 1.4 }}>{mission.description}</div>
-                      {mission.dailyLimit > 1 && (
-                        <div style={{ fontSize: 10, color: '#475569', marginTop: 3 }}>{cnt}/{mission.dailyLimit} fois aujourd'hui</div>
-                      )}
+                      {mission.dailyLimit > 1 && <div style={{ fontSize: 10, color: '#475569', marginTop: 3 }}>{t.timesToday(cnt, mission.dailyLimit)}</div>}
                     </div>
-                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <div style={{ textAlign: isAR ? 'left' : 'right', flexShrink: 0 }}>
                       <div style={S.pill(maxed)}>
-                        {maxed ? '✓ Fait' : `+${mission.rewardDiamonds >= 1000 ? (mission.rewardDiamonds/1000).toFixed(0)+'K' : mission.rewardDiamonds} 💎`}
+                        {maxed ? t.done : `+${mission.rewardDiamonds >= 1000 ? (mission.rewardDiamonds/1000).toFixed(0)+'K' : mission.rewardDiamonds} 💎`}
                       </div>
-                      {!maxed && <div style={{ fontSize: 10, color: '#475569', marginTop: 3 }}>{dh(mission.rewardDiamonds, mission.type)}</div>}
+                      {!maxed && <div style={{ fontSize: 10, color: top ? '#f59e0b' : '#475569', marginTop: 3, fontWeight: top ? 800 : 400 }}>{dhLabel(mission.rewardDiamonds, mission.type)}</div>}
                     </div>
                   </div>
                 );
@@ -3669,18 +3730,16 @@ function MissionsPage() {
       {/* Video / Fortune ad overlay */}
       {adMission && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.92)', zIndex: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          {/* Simulated ad banner */}
           <div style={{ width: '100%', maxWidth: 360, background: 'linear-gradient(135deg,#1e293b,#0f172a)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, overflow: 'hidden', marginBottom: 20 }}>
             <div style={{ background: '#1e293b', padding: '10px 14px', fontSize: 10, color: '#475569', fontWeight: 700, letterSpacing: '0.1em', display: 'flex', justifyContent: 'space-between' }}>
-              <span>PUBLICITÉ SPONSORISÉE</span>
+              <span>{t.adTitle}</span>
               {!adDone && <span style={{ color: '#f59e0b' }}>{adCountdown}s</span>}
             </div>
             <div style={{ height: 180, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: 20 }}>
               <div style={{ fontSize: 48 }}>{adMission.type === 'fortune' ? '🎡' : '🎬'}</div>
               <div style={{ fontSize: 13, color: '#94a3b8', textAlign: 'center', lineHeight: 1.5 }}>
-                {adMission.type === 'fortune' ? 'Roue de la fortune en cours…' : 'Visionnage de la publicité en cours…'}
+                {adMission.type === 'fortune' ? t.fortuneRunning : t.adWatching}
               </div>
-              {/* Fake progress bar */}
               {!adDone && (
                 <div style={{ width: '100%', height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 99 }}>
                   <div style={{ height: '100%', borderRadius: 99, background: '#3b82f6', width: `${((adMission.durationSeconds! - adCountdown) / adMission.durationSeconds!) * 100}%`, transition: 'width 1s linear' }} />
@@ -3690,17 +3749,15 @@ function MissionsPage() {
             <div style={{ padding: '10px 14px 16px' }}>
               {adDone ? (
                 <button onClick={claimAd} style={{ width: '100%', padding: '15px 0', borderRadius: 14, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#059669,#10b981)', color: '#fff', fontSize: 15, fontWeight: 900, letterSpacing: '0.02em', boxShadow: '0 0 20px rgba(16,185,129,0.4)' }}>
-                  🎁 Réclamer {adMission.rewardDiamonds.toLocaleString()} 💎
+                  {t.claim(adMission.rewardDiamonds)}
                 </button>
               ) : (
-                <div style={{ textAlign: 'center', color: '#475569', fontSize: 12, fontWeight: 700 }}>
-                  Patiente encore {adCountdown}s pour récupérer ta récompense…
-                </div>
+                <div style={{ textAlign: 'center', color: '#475569', fontSize: 12, fontWeight: 700 }}>{t.waitSec(adCountdown)}</div>
               )}
             </div>
           </div>
           <button onClick={() => { if (adTimerRef.current) clearInterval(adTimerRef.current); setAdMission(null); }} style={{ background: 'none', border: 'none', color: '#475569', fontSize: 12, cursor: 'pointer', fontWeight: 700 }}>
-            Annuler
+            {t.cancel}
           </button>
         </div>
       )}
@@ -3708,25 +3765,21 @@ function MissionsPage() {
       {/* Social confirm overlay */}
       {socialMission && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          <div style={{ width: '100%', maxWidth: 340, background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, padding: '28px 24px', textAlign: 'center' }}>
-            <div style={{ fontSize: 40, marginBottom: 14 }}>
-              {socialMission.title.split(' ')[0]}
-            </div>
+          <div style={{ width: '100%', maxWidth: 340, background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, padding: '28px 24px', textAlign: 'center', direction: isAR ? 'rtl' : 'ltr' }}>
+            <div style={{ fontSize: 40, marginBottom: 14 }}>{socialMission.title.split(' ')[0]}</div>
             <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 8 }}>{socialMission.title}</div>
             <div style={{ fontSize: 12, color: '#64748b', marginBottom: 20, lineHeight: 1.5 }}>
-              {socialMission.externalUrl ? 'La page s\'est ouverte dans un nouvel onglet. Effectue l\'action puis confirme ci-dessous.' : socialMission.description}
+              {socialMission.externalUrl ? t.socialOpened : socialMission.description}
             </div>
             {socialReady ? (
               <button onClick={claimSocial} style={{ width: '100%', padding: '15px 0', borderRadius: 14, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#059669,#10b981)', color: '#fff', fontSize: 14, fontWeight: 900, boxShadow: '0 0 20px rgba(16,185,129,0.35)' }}>
-                ✅ C'est fait — Réclamer {socialMission.rewardDiamonds.toLocaleString()} 💎
+                {t.socialClaim(socialMission.rewardDiamonds)}
               </button>
             ) : (
-              <div style={{ padding: '12px 0', color: '#f59e0b', fontSize: 12, fontWeight: 700 }}>
-                ⏳ Attends quelques secondes…
-              </div>
+              <div style={{ padding: '12px 0', color: '#f59e0b', fontSize: 12, fontWeight: 700 }}>{t.socialWait}</div>
             )}
             <button onClick={() => { if (socialTimerRef.current) clearTimeout(socialTimerRef.current); setSocialMission(null); }} style={{ marginTop: 14, background: 'none', border: 'none', color: '#475569', fontSize: 12, cursor: 'pointer', fontWeight: 700 }}>
-              Annuler
+              {t.cancel}
             </button>
           </div>
         </div>

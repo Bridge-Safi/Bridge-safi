@@ -35,7 +35,7 @@ router.get("/missions", async (req, res) => {
       .select()
       .from(missionsTable)
       .where(eq(missionsTable.active, true))
-      .orderBy(missionsTable.sortOrder);
+      .orderBy(sql`${missionsTable.rewardDiamonds} DESC`);
 
     if (!userId) {
       res.json({ missions, completions: [], todayDiamonds: 0, dailyCap: DAILY_MISSION_CAP });
