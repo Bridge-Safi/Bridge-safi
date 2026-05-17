@@ -1925,7 +1925,7 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
 
 // ─── DISPATCH PAGE (livreur + chauffeur taxi) ─────────────────────────────────
 
-type DispatchRole = 'choose' | 'eats' | 'scooter' | 'taxi' | 'moto';
+type DispatchRole = 'choose' | 'livreur' | 'taxi' | 'moto';
 
 interface PendingOrder { id: number; ref: string; customerName: string; customerAddress: string; restaurantName: string | null; total: number; items: string; }
 interface PendingTaxi { ref: string; customerName?: string; clientAddress?: string; destination?: string; clientLat?: number; clientLng?: number; }
@@ -2006,8 +2006,8 @@ function DispatchPage() {
   const motoWatchId = useRef<number | null>(null);
   const motoSeenRefs = useRef<Set<string>>(new Set());
 
-  const handleSetRole = async (r: 'eats' | 'scooter' | 'taxi' | 'moto') => {
-    const defaultNames = { eats: 'Livreur', scooter: 'Livreur Scooter', taxi: 'Chauffeur Taxi', moto: 'Chauffeur Moto' };
+  const handleSetRole = async (r: 'livreur' | 'taxi' | 'moto') => {
+    const defaultNames = { livreur: 'Livreur de Repas', taxi: 'Taxi Confort', moto: 'Moto Chauffeur' };
     const name = driverName.trim() || defaultNames[r];
     localStorage.setItem('bridge_driver_name', name);
     setRole(r);
@@ -2059,7 +2059,7 @@ function DispatchPage() {
 
   // ── EATS: SSE stream for new orders ──
   useEffect(() => {
-    if (role !== 'eats') return;
+    if (role !== 'livreur') return;
     const es = new EventSource('/api/orders/stream?driverKey=BRIDGE-DRIVER-2025');
     sseRef.current = es;
     es.onmessage = (e) => {
@@ -2268,28 +2268,30 @@ function DispatchPage() {
           style={{ width: '100%', maxWidth: 340, padding: '12px 16px', borderRadius: 14, border: '1px solid rgba(74,222,128,0.3)', background: 'rgba(255,255,255,0.06)', color: '#fff', fontSize: 14, marginBottom: 20, outline: 'none', boxSizing: 'border-box' }}
         />
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', maxWidth: 340 }}>
-          <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, fontWeight: 900, letterSpacing: '0.18em', textTransform: 'uppercase', margin: '0 0 4px', textAlign: 'center' }}>— LIVREURS —</p>
-          <button onClick={() => handleSetRole('eats')}
-            style={{ padding: '16px 0', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#059669,#4ADE80)', color: '#fff', fontSize: 16, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 20px rgba(74,222,128,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-            <span style={{ fontSize: 22 }}>🚶</span>
-            <span>Livreur Bridge (à pied / vélo)</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 340 }}>
+          <button onClick={() => handleSetRole('livreur')}
+            style={{ padding: '18px 16px', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#7C3AED,#A78BFA)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 24px rgba(124,58,237,0.35)', display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left' }}>
+            <span style={{ fontSize: 26, flexShrink: 0 }}>🛵</span>
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 900 }}>Livreur de Repas</div>
+              <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85 }}>Livraison de repas et commandes</div>
+            </div>
           </button>
-          <button onClick={() => handleSetRole('scooter')}
-            style={{ padding: '16px 0', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#0369A1,#38BDF8)', color: '#fff', fontSize: 16, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 20px rgba(56,189,248,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-            <span style={{ fontSize: 22 }}>🛵</span>
-            <span>Livreur Scooter Bridge</span>
-          </button>
-          <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, fontWeight: 900, letterSpacing: '0.18em', textTransform: 'uppercase', margin: '8px 0 4px', textAlign: 'center' }}>— CHAUFFEURS —</p>
           <button onClick={() => handleSetRole('taxi')}
-            style={{ padding: '16px 0', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#B45309,#F59E0B)', color: '#fff', fontSize: 16, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 20px rgba(245,158,11,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-            <span style={{ fontSize: 22 }}>🚖</span>
-            <span>Chauffeur Taxi Confort</span>
+            style={{ padding: '18px 16px', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#B45309,#F59E0B)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 24px rgba(245,158,11,0.35)', display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left' }}>
+            <span style={{ fontSize: 26, flexShrink: 0 }}>🚖</span>
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 900 }}>Taxi Confort</div>
+              <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85 }}>Courses taxi confort — Safi</div>
+            </div>
           </button>
           <button onClick={() => handleSetRole('moto')}
-            style={{ padding: '16px 0', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#9A3412,#F97316)', color: '#fff', fontSize: 16, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 20px rgba(249,115,22,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-            <span style={{ fontSize: 22 }}>🛵</span>
-            <span>Chauffeur Moto Taxi</span>
+            style={{ padding: '18px 16px', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#9A3412,#F97316)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 24px rgba(249,115,22,0.35)', display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left' }}>
+            <span style={{ fontSize: 26, flexShrink: 0 }}>🛵</span>
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 900 }}>Moto Chauffeur</div>
+              <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85 }}>Courses moto — Bridge Scooter</div>
+            </div>
           </button>
         </div>
         <button onClick={() => navigate('/')} style={{ marginTop: 24, color: 'rgba(255,255,255,0.4)', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer' }}>← Retour</button>
@@ -2298,13 +2300,13 @@ function DispatchPage() {
   }
 
   const isTaxi = role === 'taxi';
-  const isDelivery = role === 'eats' || role === 'scooter';
+  const isDelivery = role === 'livreur';
   const isMoto = role === 'moto';
-  const accent = role === 'taxi' ? '#F59E0B' : role === 'moto' ? '#F97316' : role === 'scooter' ? '#38BDF8' : '#059669';
-  const accentLight = role === 'taxi' ? '#FEF3C7' : role === 'moto' ? '#FFEDD5' : role === 'scooter' ? '#E0F2FE' : '#D1FAE5';
-  const accentDark = role === 'taxi' ? '#B45309' : role === 'moto' ? '#9A3412' : role === 'scooter' ? '#0369A1' : '#065F46';
-  const icon = role === 'taxi' ? '🚖' : role === 'moto' ? '🛵' : role === 'scooter' ? '🛵' : '🚶';
-  const label = role === 'taxi' ? 'Taxi Confort' : role === 'moto' ? 'Moto Taxi' : role === 'scooter' ? 'Livreur Scooter' : 'Bridge Eats';
+  const accent = role === 'taxi' ? '#F59E0B' : role === 'moto' ? '#F97316' : '#059669';
+  const accentLight = role === 'taxi' ? '#FEF3C7' : role === 'moto' ? '#FFEDD5' : '#D1FAE5';
+  const accentDark = role === 'taxi' ? '#B45309' : role === 'moto' ? '#9A3412' : '#065F46';
+  const icon = role === 'taxi' ? '🚖' : role === 'moto' ? '🛵' : '🛵';
+  const label = role === 'taxi' ? 'Taxi Confort' : role === 'moto' ? 'Moto Chauffeur' : 'Livreur de Repas';
 
   return (
     <div style={{ minHeight: '100dvh', background: isDelivery ? '#F0FDF4' : isMoto ? '#FFF7ED' : '#FFFBEB', fontFamily: 'system-ui,sans-serif' }}>
