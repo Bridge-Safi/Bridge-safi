@@ -5111,28 +5111,10 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
           <img src="/logo_splash_new.png" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.18)'}}/>
         </div>
 
-        {/* Welcome */}
-        {firstName&&(
-          <div style={{animation:'hubFadeIn 0.5s ease-out 0.1s both',marginBottom:6}}>
-            <p className={`text-xs font-black tracking-widest uppercase ${fClass}`} style={{color:'#B45309',textAlign:'center'}}>
-              {t.hubWelcome}, {firstName} 👋
-            </p>
-          </div>
-        )}
-
         {/* BRIDGE title */}
-        <div style={{animation:'hubFadeIn 0.5s ease-out 0.2s both',marginBottom:6,textAlign:'center',position:'relative'}}>
+        <div style={{animation:'hubFadeIn 0.5s ease-out 0.2s both',marginBottom:28,textAlign:'center',position:'relative'}}>
           <div style={{position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)',width:200,height:60,background:'radial-gradient(ellipse,rgba(5,150,105,0.25) 0%,transparent 70%)',filter:'blur(16px)',pointerEvents:'none'}}/>
           <h1 style={{fontSize:'2.8rem',fontWeight:900,letterSpacing:'0.5em',background:'linear-gradient(160deg,#059669 0%,#065F46 55%,#044434 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text',margin:0,lineHeight:1,position:'relative'}}>BRIDGE</h1>
-        </div>
-
-        {/* Safi badge */}
-        <div style={{animation:'hubFadeIn 0.5s ease-out 0.3s both',display:'inline-flex',alignItems:'center',gap:6,background:'linear-gradient(135deg,rgba(6,95,70,0.1),rgba(180,83,9,0.07))',border:'1px solid rgba(217,197,160,0.6)',borderRadius:20,padding:'4px 16px',backdropFilter:'blur(10px)',marginBottom:28}}>
-          <span style={{fontSize:10,fontWeight:800,letterSpacing:'0.12em',color:'#065F46'}}>SAFI</span>
-          <span style={{color:'#D9C5A0',fontSize:10}}>·</span>
-          <span style={{fontSize:10,fontWeight:700,color:'#B45309'}}>آسفي</span>
-          <span style={{color:'#D9C5A0',fontSize:10}}>·</span>
-          <span style={{fontSize:10,fontWeight:700,color:'#065F46',fontFamily:'inherit'}}>ⵙⴰⴼⵉ</span>
         </div>
 
         {/* ── 2 BIG BUTTONS ── */}
