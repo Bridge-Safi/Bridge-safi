@@ -3920,14 +3920,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
             <p style={{color:'#FDE68A',fontWeight:900,fontSize:14,letterSpacing:'0.12em',margin:0}}>🚖 BRIDGE TAXI</p>
             <p style={{color:'rgba(253,230,138,0.5)',fontSize:9,letterSpacing:'0.18em',margin:0}}>CONFORT · SAFI · آسفي</p>
           </div>
-          <div style={{display:'flex',alignItems:'center',gap:7,flexShrink:0}}>
-            <button onClick={()=>setShowProfile(true)} style={{width:34,height:34,borderRadius:'50%',border:'2px solid rgba(217,197,160,0.35)',background:'rgba(255,255,255,0.1)',backdropFilter:'blur(8px)',overflow:'hidden',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>
-              {profile.avatar?<img src={profile.avatar} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/>:<span style={{fontSize:14,color:'white'}}>👤</span>}
-            </button>
-            <button onClick={cycleLang} style={{height:26,padding:'0 7px',borderRadius:7,border:'1px solid rgba(217,197,160,0.3)',background:'rgba(255,255,255,0.1)',backdropFilter:'blur(8px)',color:'#FDE68A',fontSize:10,fontWeight:900,cursor:'pointer'}}>{LANG_LABELS[lang]}</button>
-            <SharkDiamondWidget onNavigate={()=>navigateTaxi('/game')} profile={profile}/>
-            <DarkToggle/>
-          </div>
+          <div style={{width:38}}/>
         </div>
       </div>
 
@@ -4077,11 +4070,6 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
         </div>
       )}
 
-      <WAButton/>
-      {/* ── Bottom-right profile+diamond widget ── */}
-      <div style={{position:'fixed',bottom:82,right:70,zIndex:60}} onClick={()=>setShowProfile(true)}>
-        <SharkDiamondWidget onNavigate={()=>navigateTaxi('/game')} profile={profile}/>
-      </div>
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
       {showTaxiQR&&<QRPayModal lang={lang} onClose={()=>setShowTaxiQR(false)} onConfirm={()=>setShowTaxiQR(false)}/>}
     </div>
