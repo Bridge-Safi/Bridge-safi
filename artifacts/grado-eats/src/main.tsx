@@ -1925,7 +1925,7 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
 
 // ─── DISPATCH PAGE (livreur + chauffeur taxi) ─────────────────────────────────
 
-type DispatchRole = 'choose' | 'eats' | 'taxi';
+type DispatchRole = 'choose' | 'eats' | 'scooter' | 'taxi' | 'moto';
 
 interface PendingOrder { id: number; ref: string; customerName: string; customerAddress: string; restaurantName: string | null; total: number; items: string; }
 interface PendingTaxi { ref: string; customerName?: string; clientAddress?: string; destination?: string; clientLat?: number; clientLng?: number; }
@@ -1999,8 +1999,16 @@ function DispatchPage() {
   const taxiWatchId = useRef<number | null>(null);
   const taxiSeenRefs = useRef<Set<string>>(new Set());
 
-  const handleSetRole = async (r: 'eats' | 'taxi') => {
-    const name = driverName.trim() || (r === 'taxi' ? 'Chauffeur' : 'Livreur');
+  // Moto-taxi state
+  const [motoBookings, setMotoBookings] = useState<PendingTaxi[]>([]);
+  const [activeMoto, setActiveMoto] = useState<PendingTaxi | null>(null);
+  const [motoGPS, setMotoGPS] = useState<'idle' | 'active' | 'denied'>('idle');
+  const motoWatchId = useRef<number | null>(null);
+  const motoSeenRefs = useRef<Set<string>>(new Set());
+
+  const handleSetRole = async (r: 'eats' | 'scooter' | 'taxi' | 'moto') => {
+    const defaultNames = { eats: 'Livreur', scooter: 'Livreur Scooter', taxi: 'Chauffeur Taxi', moto: 'Chauffeur Moto' };
+    const name = driverName.trim() || defaultNames[r];
     localStorage.setItem('bridge_driver_name', name);
     setRole(r);
     setPushLoading(true);
@@ -2132,7 +2140,7 @@ function DispatchPage() {
     if (role !== 'taxi') return;
     const poll = async () => {
       try {
-        const res = await fetch('/api/tracking-pending', { cache: 'no-store' });
+        const res = await fetch('/api/tracking-pending?type=taxi', { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
         const bookings: PendingTaxi[] = data.bookings || [];
@@ -2147,6 +2155,28 @@ function DispatchPage() {
     poll();
     const iv = setInterval(poll, 5000);
     return () => { clearInterval(iv); if (taxiWatchId.current != null) navigator.geolocation.clearWatch(taxiWatchId.current); };
+  }, [role]);
+
+  // ── MOTO: poll for pending moto-taxi bookings ──
+  useEffect(() => {
+    if (role !== 'moto') return;
+    const poll = async () => {
+      try {
+        const res = await fetch('/api/tracking-pending?type=moto', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        const bookings: PendingTaxi[] = data.bookings || [];
+        setMotoBookings(bookings);
+        const newOnes = bookings.filter(b => !motoSeenRefs.current.has(b.ref));
+        if (newOnes.length > 0) {
+          newOnes.forEach(b => motoSeenRefs.current.add(b.ref));
+          playAlarm();
+        }
+      } catch {}
+    };
+    poll();
+    const iv = setInterval(poll, 5000);
+    return () => { clearInterval(iv); if (motoWatchId.current != null) navigator.geolocation.clearWatch(motoWatchId.current); };
   }, [role]);
 
   const acceptTaxi = async (booking: PendingTaxi) => {
@@ -2184,6 +2214,40 @@ function DispatchPage() {
     setTaxiGPS('idle');
   };
 
+  const acceptMoto = async (booking: PendingTaxi) => {
+    setActiveMoto(booking);
+    setMotoBookings(prev => prev.filter(b => b.ref !== booking.ref));
+    await fetch(`/api/tracking/${booking.ref}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'accepted', driverName: driverName || 'Chauffeur Moto' }),
+    }).catch(() => {});
+    if (!navigator.geolocation) { setMotoGPS('denied'); return; }
+    motoWatchId.current = navigator.geolocation.watchPosition(
+      pos => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        setMotoGPS('active');
+        fetch(`/api/tracking/${booking.ref}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lat, lng, status: 'accepted', driverName: driverName || 'Chauffeur Moto' }),
+        }).catch(() => {});
+      },
+      () => setMotoGPS('denied'),
+      { enableHighAccuracy: true, maximumAge: 3000 }
+    );
+  };
+
+  const finishMoto = async () => {
+    if (motoWatchId.current != null) navigator.geolocation.clearWatch(motoWatchId.current);
+    if (activeMoto) await fetch(`/api/tracking/${activeMoto.ref}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'arrived' }),
+    }).catch(() => {});
+    setActiveMoto(null);
+    setMotoGPS('idle');
+  };
+
   // ── UI ──
   const cardStyle: React.CSSProperties = { background: '#fff', borderRadius: 20, padding: '18px 16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', marginBottom: 12, border: '1.5px solid #E5E7EB' };
 
@@ -2204,14 +2268,28 @@ function DispatchPage() {
           style={{ width: '100%', maxWidth: 340, padding: '12px 16px', borderRadius: 14, border: '1px solid rgba(74,222,128,0.3)', background: 'rgba(255,255,255,0.06)', color: '#fff', fontSize: 14, marginBottom: 20, outline: 'none', boxSizing: 'border-box' }}
         />
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 340 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', maxWidth: 340 }}>
+          <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, fontWeight: 900, letterSpacing: '0.18em', textTransform: 'uppercase', margin: '0 0 4px', textAlign: 'center' }}>— LIVREURS —</p>
           <button onClick={() => handleSetRole('eats')}
-            style={{ padding: '18px 0', borderRadius: 18, border: 'none', background: 'linear-gradient(135deg,#059669,#4ADE80)', color: '#fff', fontSize: 18, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 24px rgba(74,222,128,0.35)' }}>
-            🛵 Je suis Livreur Bridge Eats
+            style={{ padding: '16px 0', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#059669,#4ADE80)', color: '#fff', fontSize: 16, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 20px rgba(74,222,128,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+            <span style={{ fontSize: 22 }}>🚶</span>
+            <span>Livreur Bridge (à pied / vélo)</span>
           </button>
+          <button onClick={() => handleSetRole('scooter')}
+            style={{ padding: '16px 0', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#0369A1,#38BDF8)', color: '#fff', fontSize: 16, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 20px rgba(56,189,248,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+            <span style={{ fontSize: 22 }}>🛵</span>
+            <span>Livreur Scooter Bridge</span>
+          </button>
+          <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, fontWeight: 900, letterSpacing: '0.18em', textTransform: 'uppercase', margin: '8px 0 4px', textAlign: 'center' }}>— CHAUFFEURS —</p>
           <button onClick={() => handleSetRole('taxi')}
-            style={{ padding: '18px 0', borderRadius: 18, border: 'none', background: 'linear-gradient(135deg,#B45309,#F59E0B)', color: '#fff', fontSize: 18, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 24px rgba(245,158,11,0.35)' }}>
-            🚖 Je suis Chauffeur Taxi
+            style={{ padding: '16px 0', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#B45309,#F59E0B)', color: '#fff', fontSize: 16, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 20px rgba(245,158,11,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+            <span style={{ fontSize: 22 }}>🚖</span>
+            <span>Chauffeur Taxi Confort</span>
+          </button>
+          <button onClick={() => handleSetRole('moto')}
+            style={{ padding: '16px 0', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#9A3412,#F97316)', color: '#fff', fontSize: 16, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 20px rgba(249,115,22,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+            <span style={{ fontSize: 22 }}>🛵</span>
+            <span>Chauffeur Moto Taxi</span>
           </button>
         </div>
         <button onClick={() => navigate('/')} style={{ marginTop: 24, color: 'rgba(255,255,255,0.4)', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer' }}>← Retour</button>
@@ -2220,14 +2298,16 @@ function DispatchPage() {
   }
 
   const isTaxi = role === 'taxi';
-  const accent = isTaxi ? '#F59E0B' : '#059669';
-  const accentLight = isTaxi ? '#FEF3C7' : '#D1FAE5';
-  const accentDark = isTaxi ? '#B45309' : '#065F46';
-  const icon = isTaxi ? '🚖' : '🛵';
-  const label = isTaxi ? 'Taxi Confort' : 'Bridge Eats';
+  const isDelivery = role === 'eats' || role === 'scooter';
+  const isMoto = role === 'moto';
+  const accent = role === 'taxi' ? '#F59E0B' : role === 'moto' ? '#F97316' : role === 'scooter' ? '#38BDF8' : '#059669';
+  const accentLight = role === 'taxi' ? '#FEF3C7' : role === 'moto' ? '#FFEDD5' : role === 'scooter' ? '#E0F2FE' : '#D1FAE5';
+  const accentDark = role === 'taxi' ? '#B45309' : role === 'moto' ? '#9A3412' : role === 'scooter' ? '#0369A1' : '#065F46';
+  const icon = role === 'taxi' ? '🚖' : role === 'moto' ? '🛵' : role === 'scooter' ? '🛵' : '🚶';
+  const label = role === 'taxi' ? 'Taxi Confort' : role === 'moto' ? 'Moto Taxi' : role === 'scooter' ? 'Livreur Scooter' : 'Bridge Eats';
 
   return (
-    <div style={{ minHeight: '100dvh', background: '#F0FDF4', fontFamily: 'system-ui,sans-serif' }}>
+    <div style={{ minHeight: '100dvh', background: isDelivery ? '#F0FDF4' : isMoto ? '#FFF7ED' : '#FFFBEB', fontFamily: 'system-ui,sans-serif' }}>
       {/* Header */}
       <div style={{ background: accentDark, padding: '52px 20px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
@@ -2237,15 +2317,15 @@ function DispatchPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {pushLoading && <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>⏳</span>}
           {pushOk && <span style={{ background: 'rgba(74,222,128,0.2)', border: '1px solid rgba(74,222,128,0.4)', borderRadius: 20, padding: '3px 10px', color: '#4ADE80', fontSize: 10, fontWeight: 900 }}>🔔 Notifs ON</span>}
-          <button onClick={() => { setRole('choose'); setActiveEatsOrder(null); setActiveTaxi(null); }}
+          <button onClick={() => { setRole('choose'); setActiveEatsOrder(null); setActiveTaxi(null); setActiveMoto(null); }}
             style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', borderRadius: 10, padding: '6px 12px', fontSize: 12, cursor: 'pointer' }}>⟵</button>
         </div>
       </div>
 
       <div style={{ padding: '20px 16px', maxWidth: 480, margin: '0 auto' }}>
 
-        {/* ── EATS MODE ── */}
-        {role === 'eats' && !activeEatsOrder && (
+        {/* ── EATS / SCOOTER MODE ── */}
+        {isDelivery && !activeEatsOrder && (
           <>
             <p style={{ fontSize: 11, fontWeight: 800, color: '#9CA3AF', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 12 }}>COMMANDES EN ATTENTE ({eatsOrders.length})</p>
             {eatsOrders.length === 0 ? (
@@ -2275,7 +2355,7 @@ function DispatchPage() {
           </>
         )}
 
-        {role === 'eats' && activeEatsOrder && (
+        {isDelivery && activeEatsOrder && (
           <>
             <div style={{ ...cardStyle, borderColor: '#BBF7D0', borderWidth: 2 }}>
               <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 8px' }}>COMMANDE ACCEPTÉE</p>
@@ -2363,6 +2443,64 @@ function DispatchPage() {
             )}
 
             <button onClick={finishTaxi}
+              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#1D4ED8,#3B82F6)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer' }}>
+              🏁 Course terminée — Arrivé !
+            </button>
+            <style>{`@keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:1;transform:scale(1.3);}}`}</style>
+          </div>
+        )}
+
+        {/* ── MOTO TAXI MODE ── */}
+        {isMoto && !activeMoto && (
+          <>
+            <p style={{ fontSize: 11, fontWeight: 800, color: '#9CA3AF', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 12 }}>COURSES MOTO EN ATTENTE ({motoBookings.length})</p>
+            {motoBookings.length === 0 ? (
+              <div style={{ ...cardStyle, textAlign: 'center', padding: '40px 20px' }}>
+                <p style={{ fontSize: 32, margin: '0 0 10px' }}>⏳</p>
+                <p style={{ color: '#6B7280', fontSize: 14, fontWeight: 700, margin: 0 }}>En attente de courses moto…</p>
+                <p style={{ color: '#9CA3AF', fontSize: 11, margin: '4px 0 0' }}>La sonnette retentira automatiquement</p>
+              </div>
+            ) : motoBookings.map(booking => (
+              <div key={booking.ref} style={{ ...cardStyle, borderColor: '#FED7AA', borderWidth: 2 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+                  <div>
+                    <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, margin: '0 0 2px', letterSpacing: '0.1em' }}>COURSE MOTO</p>
+                    <p style={{ fontSize: 16, fontWeight: 900, color: '#9A3412', margin: 0 }}>{booking.ref}</p>
+                  </div>
+                  <span style={{ background: '#FFEDD5', color: '#9A3412', fontSize: 11, fontWeight: 900, borderRadius: 20, padding: '4px 10px' }}>NOUVEAU</span>
+                </div>
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>👤 {booking.customerName || 'Client'}</p>
+                {booking.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>📍 Départ : {booking.clientAddress}</p>}
+                {booking.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 12px' }}>🏁 Destination : {booking.destination}</p>}
+                <button onClick={() => acceptMoto(booking)}
+                  style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#9A3412,#F97316)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}>
+                  ✅ Accepter la course moto
+                </button>
+              </div>
+            ))}
+          </>
+        )}
+
+        {isMoto && activeMoto && (
+          <div style={{ ...cardStyle, borderColor: '#FED7AA', borderWidth: 2 }}>
+            <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 8px' }}>COURSE MOTO ACCEPTÉE</p>
+            <p style={{ fontSize: 18, fontWeight: 900, color: '#9A3412', margin: '0 0 6px' }}>{activeMoto.ref}</p>
+            <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>👤 {activeMoto.customerName || 'Client'}</p>
+            {activeMoto.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>📍 Départ : {activeMoto.clientAddress}</p>}
+            {activeMoto.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 14px' }}>🏁 Destination : {activeMoto.destination}</p>}
+
+            {motoGPS === 'active' ? (
+              <div style={{ background: '#FFEDD5', borderRadius: 12, padding: '12px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#F97316', display: 'inline-block', animation: 'pulse 1.5s infinite' }}/>
+                <p style={{ fontSize: 12, fontWeight: 900, color: '#9A3412', margin: 0 }}>GPS EN DIRECT — Client vous suit sur la carte</p>
+              </div>
+            ) : motoGPS === 'denied' ? (
+              <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 12 }}>❌ GPS refusé — activez la localisation</p>
+            ) : (
+              <p style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 12 }}>⏳ Démarrage GPS…</p>
+            )}
+
+            <button onClick={finishMoto}
               style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#1D4ED8,#3B82F6)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer' }}>
               🏁 Course terminée — Arrivé !
             </button>

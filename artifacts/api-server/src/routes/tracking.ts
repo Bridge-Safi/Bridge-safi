@@ -71,11 +71,14 @@ router.post("/tracking/driver-location", (req, res) => {
   res.json({ ok: true });
 });
 
-// List all pending taxi bookings (for driver dispatch panel)
-router.get("/tracking-pending", (_req, res) => {
+// List pending bookings for driver dispatch panel
+// ?type=taxi (default) → TC- refs  |  ?type=moto → MT- refs
+router.get("/tracking-pending", (req, res) => {
+  const type = (req.query.type as string) === 'moto' ? 'moto' : 'taxi';
+  const prefix = type === 'moto' ? 'MT-' : 'TC-';
   const pending: Array<{ ref: string } & TrackPos> = [];
   for (const [ref, pos] of positions) {
-    if (ref.startsWith('TC-') && pos.status === 'waiting') {
+    if (ref.startsWith(prefix) && pos.status === 'waiting') {
       pending.push({ ref, ...pos });
     }
   }
