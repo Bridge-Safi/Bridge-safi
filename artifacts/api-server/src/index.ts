@@ -33,6 +33,48 @@ async function migrate() {
       webhook_url TEXT,
       updated_at TIMESTAMP NOT NULL DEFAULT NOW()
     );
+    CREATE TABLE IF NOT EXISTS game_diamonds (
+      user_id TEXT PRIMARY KEY,
+      diamonds INTEGER NOT NULL DEFAULT 0,
+      total_earned INTEGER NOT NULL DEFAULT 0,
+      updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS game_tokens (
+      token TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      name TEXT NOT NULL DEFAULT '',
+      expires_at TIMESTAMP NOT NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS user_profiles (
+      user_id TEXT PRIMARY KEY,
+      phone TEXT UNIQUE,
+      name TEXT,
+      address TEXT,
+      avatar_data TEXT,
+      updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS missions (
+      id SERIAL PRIMARY KEY,
+      type TEXT NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT NOT NULL,
+      reward_diamonds INTEGER NOT NULL,
+      daily_limit INTEGER NOT NULL DEFAULT 1,
+      duration_seconds INTEGER,
+      external_url TEXT,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      active BOOLEAN NOT NULL DEFAULT TRUE,
+      created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS mission_completions (
+      id SERIAL PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      mission_id INTEGER NOT NULL,
+      diamonds_awarded INTEGER NOT NULL,
+      completed_at TIMESTAMP NOT NULL DEFAULT NOW()
+    );
   `);
   logger.info("Database schema ready");
 }

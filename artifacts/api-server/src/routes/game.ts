@@ -3,20 +3,38 @@ import { randomUUID } from "crypto";
 import { getAuth } from "@clerk/express";
 import { db, gameDiamondsTable, userProfilesTable } from "@workspace/db";
 import { eq, sql } from "drizzle-orm";
+import { pool } from "@workspace/db";
 import { logger } from "../lib/logger";
-
-// ── Tokens de jeu à usage unique (validité 10 min) ──────────────────────────
-interface GameToken { userId: string; phone: string; name: string; expiresAt: number; }
-const gameTokens = new Map<string, GameToken>();
-setInterval(() => {
-  const now = Date.now();
-  for (const [k, v] of gameTokens) if (v.expiresAt < now) gameTokens.delete(k);
-}, 60_000);
 
 const router = Router();
 
+// ── Token helpers (DB-backed, survives restarts) ─────────────────────────────
+
+async function createToken(userId: string, phone: string, name: string): Promise<string> {
+  const token = randomUUID();
+  const expiresAt = new Date(Date.now() + 30 * 60_000); // 30 min
+  await pool.query(
+    `INSERT INTO game_tokens (token, user_id, phone, name, expires_at)
+     VALUES ($1, $2, $3, $4, $5)
+     ON CONFLICT (token) DO NOTHING`,
+    [token, userId, phone, name, expiresAt]
+  );
+  // Clean up expired tokens occasionally
+  pool.query(`DELETE FROM game_tokens WHERE expires_at < NOW()`).catch(() => {});
+  return token;
+}
+
+async function lookupToken(token: string): Promise<{ userId: string; phone: string; name: string } | null> {
+  const res = await pool.query(
+    `SELECT user_id, phone, name FROM game_tokens
+     WHERE token = $1 AND expires_at > NOW()`,
+    [token]
+  );
+  if (res.rows.length === 0) return null;
+  return { userId: res.rows[0].user_id, phone: res.rows[0].phone, name: res.rows[0].name };
+}
+
 // POST /api/game/token — génère un token sécurisé avec le vrai numéro du compte
-// Le jeu externe appelle /api/game/verify-token pour valider le numéro
 router.post("/game/token", async (req, res) => {
   const { userId } = getAuth(req);
   if (!userId) { res.status(401).json({ error: "Non authentifié" }); return; }
@@ -28,8 +46,7 @@ router.post("/game/token", async (req, res) => {
       res.status(400).json({ error: "no_phone", message: "Aucun numéro enregistré sur ce compte" });
       return;
     }
-    const token = randomUUID();
-    gameTokens.set(token, { userId, phone, name, expiresAt: Date.now() + 30 * 60_000 });
+    const token = await createToken(userId, phone, name);
     logger.info({ userId }, "Game token generated");
     res.json({ token, phone, name });
   } catch (err) {
@@ -38,22 +55,25 @@ router.post("/game/token", async (req, res) => {
   }
 });
 
-// GET /api/game/verify-token?token=XXX — appelé par le jeu externe pour vérifier le numéro
-// Retourne le userId + phone si le token est valide (CORS ouvert pour le domaine du jeu)
-router.get("/game/verify-token", (req, res) => {
+// GET /api/game/verify-token?token=XXX — appelé par le jeu externe
+router.get("/game/verify-token", async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   const token = String(req.query.token ?? "").trim();
   if (!token) { res.status(400).json({ error: "Token manquant" }); return; }
-  const data = gameTokens.get(token);
-  if (!data || data.expiresAt < Date.now()) {
-    res.status(401).json({ error: "Token invalide ou expiré" });
-    return;
+  try {
+    const data = await lookupToken(token);
+    if (!data) {
+      res.status(401).json({ error: "Token invalide ou expiré" });
+      return;
+    }
+    res.json({ valid: true, userId: data.userId, phone: data.phone });
+  } catch (err) {
+    req.log.error({ err }, "Failed to verify game token");
+    res.status(500).json({ error: "Erreur serveur" });
   }
-  res.json({ valid: true, userId: data.userId, phone: data.phone });
 });
 
 // POST /api/game/diamonds/by-token — appelé par le jeu externe (pas de session Clerk)
-// Auth via le token de jeu signé. CORS ouvert pour bridge-safi.replit.app
 router.options("/game/diamonds/by-token", (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -67,11 +87,11 @@ router.post("/game/diamonds/by-token", async (req, res) => {
   if (typeof diamonds !== "number" || diamonds < 0 || !Number.isInteger(diamonds)) {
     res.status(400).json({ error: "diamonds doit être un entier positif" }); return;
   }
-  const data = gameTokens.get(token);
-  if (!data || data.expiresAt < Date.now()) {
-    res.status(401).json({ error: "Token invalide ou expiré" }); return;
-  }
   try {
+    const data = await lookupToken(token);
+    if (!data) {
+      res.status(401).json({ error: "Token invalide ou expiré" }); return;
+    }
     const rows = await db
       .insert(gameDiamondsTable)
       .values({ userId: data.userId, diamonds, totalEarned: diamonds, updatedAt: new Date() })
@@ -143,9 +163,6 @@ router.post("/game/diamonds", async (req, res) => {
       .onConflictDoUpdate({
         target: gameDiamondsTable.userId,
         set: {
-          // ALWAYS use GREATEST — the balance can only go UP via this endpoint.
-          // Only /spend can decrease diamonds. This prevents fresh-device or
-          // race-condition scenarios from overwriting a higher server balance.
           diamonds: sql`GREATEST(${gameDiamondsTable.diamonds}, ${diamonds})`,
           totalEarned: sql`GREATEST(${gameDiamondsTable.totalEarned}, ${diamonds})`,
           updatedAt: new Date(),
