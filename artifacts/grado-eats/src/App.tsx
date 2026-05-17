@@ -3273,7 +3273,7 @@ function MedItem({med,qty,isNight,nightSurcharge,effectivePrice,onAdd,onRem}:{me
   );
 }
 
-function PharmaciePage({onBack,lang,profile,saveProfile}:{onBack:()=>void;lang:Lang;profile:UserProfile;saveProfile:(p:UserProfile)=>void}) {
+function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile}:{onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void}) {
   const fClass=fontClass(lang); const isAR=lang==='ar';
   const [,navigatePharm]=useLocation();
 
@@ -3389,7 +3389,8 @@ function PharmaciePage({onBack,lang,profile,saveProfile}:{onBack:()=>void;lang:L
       <div style={{position:'fixed',top:16,left:isAR?'auto':16,right:isAR?16:'auto',zIndex:50}}>
         <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(165,180,252,0.12)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:18}}>←</button>
       </div>
-      <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50}}>
+      <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
+        <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(165,180,252,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#A5B4FC',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
         <SharkDiamondWidget onNavigate={()=>navigatePharm('/game')} profile={profile}/>
       </div>
 
@@ -4085,8 +4086,8 @@ function SharkDiamondWidget({onNavigate,profile}:{onNavigate:()=>void;profile:Us
   );
 }
 
-function TaxiVehicleSelectPage({onBack,onSelect,lang}:{
-  onBack:()=>void; onSelect:(v:'taxi'|'moto')=>void; lang:Lang;
+function TaxiVehicleSelectPage({onBack,onSelect,lang,cycleLang}:{
+  onBack:()=>void; onSelect:(v:'taxi'|'moto')=>void; lang:Lang; cycleLang:()=>void;
 }) {
   const isAR=lang==='ar'; const isAMZ=lang==='amz';
   return (
@@ -4098,7 +4099,7 @@ function TaxiVehicleSelectPage({onBack,onSelect,lang}:{
           <p style={{color:'#FDE68A',fontWeight:900,fontSize:14,letterSpacing:'0.12em',margin:0}}>🚖 BRIDGE TAXI · MOTO</p>
           <p style={{color:'rgba(253,230,138,0.5)',fontSize:9,letterSpacing:'0.18em',margin:0}}>CHOISISSEZ VOTRE VÉHICULE · سافي</p>
         </div>
-        <div style={{width:38}}/>
+        <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.12)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:11,fontWeight:900,flexShrink:0}}>{LANG_LABELS[lang]}</button>
       </div>
       <div style={{position:'relative',zIndex:10,padding:'20px 20px 60px',display:'flex',flexDirection:'column',gap:18}}>
         <p style={{textAlign:'center',color:'rgba(255,255,255,0.7)',fontSize:14,fontWeight:700,margin:'0 0 8px'}}>
@@ -4292,7 +4293,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
             <p style={{color:'#FDE68A',fontWeight:900,fontSize:14,letterSpacing:'0.12em',margin:0}}>🚖 BRIDGE TAXI</p>
             <p style={{color:'rgba(253,230,138,0.5)',fontSize:9,letterSpacing:'0.18em',margin:0}}>CONFORT · SAFI · آسفي</p>
           </div>
-          <div style={{width:38}}/>
+          <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.12)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:11,fontWeight:900,flexShrink:0}}>{LANG_LABELS[lang]}</button>
         </div>
       </div>
 
@@ -4609,7 +4610,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
             <p style={{color:'#FED7AA',fontWeight:900,fontSize:14,letterSpacing:'0.12em',margin:0}}>🛵 BRIDGE MOTO TAXI</p>
             <p style={{color:'rgba(254,215,170,0.5)',fontSize:9,letterSpacing:'0.18em',margin:0}}>RAPIDE · SAFI · آسفي</p>
           </div>
-          <div style={{width:38}}/>
+          <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.12)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:11,fontWeight:900,flexShrink:0}}>{LANG_LABELS[lang]}</button>
         </div>
       </div>
       {bookingRef&&(
@@ -5160,7 +5161,8 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
       <div style={{position:'fixed',top:16,left:isAR?'auto':16,right:isAR?16:'auto',zIndex:50}}>
         <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(219,39,119,0.15)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#9D174D',fontSize:18}}>←</button>
       </div>
-      <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50}}>
+      <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
+        <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(219,39,119,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#9D174D',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
         <SharkDiamondWidget onNavigate={()=>navigateFleur('/game')} profile={profile}/>
       </div>
 
@@ -5676,7 +5678,8 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
       <div style={{position:'fixed',top:16,left:isAR?'auto':16,right:isAR?16:'auto',zIndex:50}}>
         <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(120,53,15,0.15)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--c-text)',fontSize:18}}>←</button>
       </div>
-      <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50}}>
+      <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
+        <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(120,53,15,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--c-text)',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
         <SharkDiamondWidget onNavigate={()=>navigateTabac('/game')} profile={profile}/>
       </div>
 
@@ -6212,12 +6215,12 @@ export default function App() {
 
   const backToHub=()=>{setMode('hub');setService('none');};
   if(service==='none') return <DarkModeCtx.Provider value={dv}><ServiceSelectPage onSelect={s=>{if(s==='taxi')setService('taxi-select');else setService(s);}} onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/></DarkModeCtx.Provider>;
-  if(service==='taxi-select') return <DarkModeCtx.Provider value={dv}><TaxiVehicleSelectPage onBack={()=>setService('none')} onSelect={v=>setService(v)} lang={lang}/></DarkModeCtx.Provider>;
+  if(service==='taxi-select') return <DarkModeCtx.Provider value={dv}><TaxiVehicleSelectPage onBack={()=>setService('none')} onSelect={v=>setService(v)} lang={lang} cycleLang={cycleLang}/></DarkModeCtx.Provider>;
   if(service==='taxi') return <DarkModeCtx.Provider value={dv}><TaxiPage onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
   if(service==='moto') return <DarkModeCtx.Provider value={dv}><MotoTaxiPage onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
   if(service==='tabac') return <DarkModeCtx.Provider value={dv}><TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
   if(service==='fleurs') return <DarkModeCtx.Provider value={dv}><FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
-  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
+  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={
