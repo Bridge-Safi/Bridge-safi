@@ -4478,32 +4478,11 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
       <div className="fixed inset-0 pointer-events-none" style={{background:'radial-gradient(ellipse at 50% 0%,rgba(219,39,119,0.07) 0%,transparent 60%)'}}/>
 
       {/* Top nav */}
-      <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
-        <button onClick={onBack}
-          className="flex items-center gap-0.5 px-1.5 rounded-full transition-all active:scale-90"
-          style={{...pillStyle,height:'24px',minWidth:'unset'}}>
-          <span style={{fontSize:'9px'}}>🛵</span><span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
-          <span style={{fontSize:'9px'}}>🚖</span><span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
-          <span style={{fontSize:'9px'}}>🚬</span><span style={{fontSize:'8px',color:'#9CA3AF'}}>←</span>
-        </button>
+      <div style={{position:'fixed',top:16,left:isAR?'auto':16,right:isAR?16:'auto',zIndex:50}}>
+        <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(219,39,119,0.15)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#9D174D',fontSize:18}}>←</button>
       </div>
-      <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
-        <button onClick={()=>setShowProfile(true)}
-          className="rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 relative"
-          style={{...pillStyle,width:'44px',padding:0,overflow:'hidden'}}>
-          {profile.avatar
-            ?<img src={profile.avatar} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'50%'}}/>
-            :<span style={{fontSize:'18px'}}>👤</span>
-          }
-          {profile.name&&<span className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{background:'#EC4899'}}/>}
-        </button>
-        <button onClick={cycleLang}
-          className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 px-3 ${isAMZ?'font-tifinagh':''}`}
-          style={{...pillStyle,fontSize:'13px'}}>
-          {LANG_LABELS[lang]}
-        </button>
+      <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50}}>
         <SharkDiamondWidget onNavigate={()=>navigateFleur('/game')} profile={profile}/>
-        <DarkToggle/>
       </div>
 
       {/* ── TAB CONTENT ────────────────────────────────────────── */}
@@ -4897,35 +4876,11 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   return(
     <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`} style={{background:'var(--c-bg)',color:'var(--c-text)'}}>
       {/* Header */}
-      <div className={`fixed top-5 z-50 ${isAR?'right-5':'left-5'}`}>
-        <button onClick={onBack}
-          className="flex items-center gap-0.5 px-1.5 rounded-full transition-all active:scale-90 hover:scale-110"
-          style={{...pillStyle,height:'24px',minWidth:'unset'}}>
-          <span style={{fontSize:'9px',lineHeight:1}}>🛵</span>
-          <span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
-          <span style={{fontSize:'9px',lineHeight:1}}>🚖</span>
-          <span style={{fontSize:'8px',color:'#D9C5A0',fontWeight:900}}>|</span>
-          <span style={{fontSize:'9px',lineHeight:1}}>🌹</span>
-          <span style={{fontSize:'8px',lineHeight:1,color:'#9CA3AF'}}>←</span>
-        </button>
+      <div style={{position:'fixed',top:16,left:isAR?'auto':16,right:isAR?16:'auto',zIndex:50}}>
+        <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(120,53,15,0.15)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--c-text)',fontSize:18}}>←</button>
       </div>
-      <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
-        <button onClick={cycleLang}
-          className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 px-3 ${isAMZ?'font-tifinagh':''}`}
-          style={{...pillStyle,fontSize:'13px'}}>
-          {LANG_LABELS[lang]}
-        </button>
-        <button onClick={()=>setShowProfile(true)}
-          className="rounded-full flex items-center justify-center font-black text-xl transition-all active:scale-90 hover:scale-110 relative"
-          style={{...pillStyle,width:'44px',padding:0,overflow:'hidden'}}>
-          {profile.avatar
-            ?<img src={profile.avatar} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'50%'}}/>
-            :<span style={{fontSize:'18px'}}>👤</span>
-          }
-          {profile.name&&<span className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{background:'#10B981'}}/>}
-        </button>
+      <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50}}>
         <SharkDiamondWidget onNavigate={()=>navigateTabac('/game')} profile={profile}/>
-        <DarkToggle/>
       </div>
 
       {/* Content */}
