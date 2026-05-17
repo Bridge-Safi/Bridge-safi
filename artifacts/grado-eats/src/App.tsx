@@ -4766,6 +4766,48 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   );
 }
 
+// ─── TABAC CATALOG ────────────────────────────────────────────────────────────
+
+const TABAC_CATALOG:{id:string;brand:string;name:string;price:number;cat:'premium'|'intl'|'local'}[] = [
+  // ── Premium ──
+  {id:'marl-red',    brand:'Marlboro',     name:'Marlboro Red',           price:38, cat:'premium'},
+  {id:'marl-gold',   brand:'Marlboro',     name:'Marlboro Gold',          price:38, cat:'premium'},
+  {id:'marl-blue',   brand:'Marlboro',     name:'Marlboro Blue',          price:38, cat:'premium'},
+  {id:'marl-blk',    brand:'Marlboro',     name:'Marlboro Double Black',  price:42, cat:'premium'},
+  {id:'marl-menth',  brand:'Marlboro',     name:'Marlboro Menthol',       price:40, cat:'premium'},
+  {id:'davidoff',    brand:'Davidoff',     name:'Davidoff Classic',       price:45, cat:'premium'},
+  {id:'davidoff-sl', brand:'Davidoff',     name:'Davidoff Slims',         price:45, cat:'premium'},
+  {id:'parl',        brand:'Parliament',   name:'Parliament Aqua Blue',   price:42, cat:'premium'},
+  {id:'dunhill',     brand:'Dunhill',      name:'Dunhill International',  price:35, cat:'premium'},
+  // ── International ──
+  {id:'camel',       brand:'Camel',        name:'Camel Classic',          price:32, cat:'intl'},
+  {id:'camel-blue',  brand:'Camel',        name:'Camel Blue',             price:32, cat:'intl'},
+  {id:'camel-yel',   brand:'Camel',        name:'Camel Yellow',           price:32, cat:'intl'},
+  {id:'win-red',     brand:'Winston',      name:'Winston Classic',        price:30, cat:'intl'},
+  {id:'win-blue',    brand:'Winston',      name:'Winston Blue',           price:30, cat:'intl'},
+  {id:'lm-red',      brand:'L&M',          name:'L&M Red Label',          price:28, cat:'intl'},
+  {id:'lm-blue',     brand:'L&M',          name:'L&M Blue Label',         price:28, cat:'intl'},
+  {id:'kent',        brand:'Kent',         name:'Kent HD Blue',           price:28, cat:'intl'},
+  {id:'gaul',        brand:'Gauloises',    name:'Gauloises Blondes',      price:28, cat:'intl'},
+  {id:'prince',      brand:'Prince',       name:'Prince Classic',         price:28, cat:'intl'},
+  {id:'pall-red',    brand:'Pall Mall',    name:'Pall Mall Red',          price:25, cat:'intl'},
+  {id:'pall-blue',   brand:'Pall Mall',    name:'Pall Mall Blue',         price:25, cat:'intl'},
+  {id:'roth',        brand:'Rothmans',     name:'Rothmans International', price:25, cat:'intl'},
+  {id:'chest',       brand:'Chesterfield', name:'Chesterfield Red',       price:25, cat:'intl'},
+  {id:'merit',       brand:'Merit',        name:'Merit Blue',             price:22, cat:'intl'},
+  {id:'bond-red',    brand:'Bond Street',  name:'Bond Street Red',        price:22, cat:'intl'},
+  {id:'bond-blue',   brand:'Bond Street',  name:'Bond Street Blue',       price:22, cat:'intl'},
+  {id:'vicr',        brand:'Viceroy',      name:'Viceroy Classic',        price:22, cat:'intl'},
+  {id:'karl',        brand:'Karelia',      name:'Karelia Special',        price:22, cat:'intl'},
+  // ── Maroc 🇲🇦 ──
+  {id:'marq',        brand:'Marquise',     name:'Marquise Classic',       price:20, cat:'local'},
+  {id:'marq-m',      brand:'Marquise',     name:'Marquise Menthol',       price:20, cat:'local'},
+  {id:'legend',      brand:'Legend',       name:'Legend Blue',            price:20, cat:'local'},
+  {id:'royale',      brand:'Royale',       name:'Royale',                 price:18, cat:'local'},
+  {id:'casa',        brand:'Casa Sport',   name:'Casa Sport Original',    price:14, cat:'local'},
+  {id:'casa-new',    brand:'Casa Sport',   name:'Casa Sport New',         price:15, cat:'local'},
+] as {id:string;brand:string;name:string;price:number;cat:'premium'|'intl'|'local'}[];
+
 // ─── TABAC PAGE ───────────────────────────────────────────────────────────────
 
 function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
@@ -4773,8 +4815,13 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   profile:UserProfile; saveProfile:(p:UserProfile)=>void;
   onOrderSuccess?:(ref:string)=>void;
 }) {
+  // ── State ──
   const [showProfile,setShowProfile]=useState(false);
+  const [ageVerified,setAgeVerified]=useState(()=>{try{return localStorage.getItem('bridge_tabac_age18')==='1';}catch{return false;}});
   const [delivMode,setDelivMode]=useState<'delivery'|'collect'>('delivery');
+  const [tabacCart,setTabacCart]=useState<{id:string;qty:number}[]>([]);
+  const [tabacCat,setTabacCat]=useState<'premium'|'intl'|'local'>('premium');
+  const [tabacSearch,setTabacSearch]=useState('');
   const [name,setName]=useState(profile.name??'');
   const [addr,setAddr]=useState(profile.address??'');
   const [phone,setPhone]=useState(profile.phone??'');
@@ -4790,6 +4837,13 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   const [tabacGems,setTabacGems]=useState(0);
   const [tabacGemMAD,setTabacGemMAD]=useState(0);
   const maxTabacGemMAD=Math.floor(tabacGems/200);
+
+  // ── Night detection ──
+  const nowH=new Date().getHours();
+  const isNight=nowH>=22||nowH<6;
+  const DELIV_FEE=delivMode==='delivery'?(isNight?18:12):0;
+  const SVC_FEE=6;
+
   useEffect(()=>{
     if(!tabacUser?.id) return;
     getAuthHeadersTabac().then(h=>fetch('/api/game/diamonds',{credentials:'include',headers:h})
@@ -4798,15 +4852,23 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
       .catch(()=>{}));
   },[tabacUser?.id,getAuthHeadersTabac]);
 
-  const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
+  const isAR=lang==='ar'; const fClass=fontClass(lang);
   const t=T[lang];
-  const pillStyle:React.CSSProperties={
-    background:'var(--c-card)',border:'2.5px solid #D9C5A0',color:'#065F46',
-    boxShadow:'0 4px 20px rgba(6,95,70,0.15)',height:'44px',minWidth:'44px',
-  };
-  const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
 
-  const WA_SVG=<svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>;
+  // ── Cart helpers ──
+  const addCig=(id:string)=>setTabacCart(c=>{const ex=c.find(x=>x.id===id);return ex?c.map(x=>x.id===id?{...x,qty:x.qty+1}:x):[...c,{id,qty:1}];});
+  const remCig=(id:string)=>setTabacCart(c=>{const ex=c.find(x=>x.id===id);if(!ex)return c;if(ex.qty===1)return c.filter(x=>x.id!==id);return c.map(x=>x.id===id?{...x,qty:x.qty-1}:x);});
+  const cigQty=(id:string)=>tabacCart.find(x=>x.id===id)?.qty??0;
+  const cartSubtotal=tabacCart.reduce((s,ci)=>{const p=TABAC_CATALOG.find(f=>f.id===ci.id);return s+(p?p.price*ci.qty:0);},0);
+  const cartTotal=cartSubtotal+DELIV_FEE+SVC_FEE-tabacGemMAD;
+  const cartCount=tabacCart.reduce((s,ci)=>s+ci.qty,0);
+
+  const visibleCigs=TABAC_CATALOG.filter(c=>
+    c.cat===tabacCat&&(tabacSearch===''||c.name.toLowerCase().includes(tabacSearch.toLowerCase())||c.brand.toLowerCase().includes(tabacSearch.toLowerCase()))
+  );
+
+  const inputCls=`w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all ${fClass}`;
+  const inputStyle=(hasErr:boolean):React.CSSProperties=>({background:'#F9F6F0',border:`1.5px solid ${hasErr?'#EF4444':'#E5E1D8'}`,color:'var(--c-text)'});
 
   const handleTabacWalletPay=async(type:'apple'|'google')=>{
     if(!name.trim()||!phone.trim()||(delivMode==='delivery'&&!addr.trim())){setErr('*');return;}
@@ -4814,7 +4876,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
     const methods=type==='apple'
       ?[{supportedMethods:'https://apple.com/apple-pay',data:{version:3,merchantIdentifier:'merchant.ma.safi-bridge',merchantCapabilities:['supports3DS'],supportedNetworks:['visa','masterCard'],countryCode:'MA'}}]
       :[{supportedMethods:'https://google.com/pay',data:{apiVersion:2,apiVersionMinor:0,merchantInfo:{merchantName:'Bridge Safi'},allowedPaymentMethods:[{type:'CARD',parameters:{allowedAuthMethods:['PAN_ONLY','CRYPTOGRAM_3DS'],allowedCardNetworks:['MASTERCARD','VISA']},tokenizationSpecification:{type:'PAYMENT_GATEWAY',parameters:{gateway:'example',gatewayMerchantId:'bridge-safi'}}}]}}];
-    const details={total:{label:'Bridge Tabac · Safi',amount:{currency:'MAD',value:'0'}}};
+    const details={total:{label:'Bridge Tabac · Safi',amount:{currency:'MAD',value:String(cartTotal)}}};
     try{
       if(typeof PaymentRequest==='undefined') throw new Error('unsupported');
       const pr=new PaymentRequest(methods,details);
@@ -4828,51 +4890,67 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   };
 
   const handleSend=async(payLabel?:string)=>{
-    if(!name.trim()||!phone.trim()||(delivMode==='delivery'&&!addr.trim())){
-      setErr('*');return;
-    }
+    if(!name.trim()||!phone.trim()||(delivMode==='delivery'&&!addr.trim())){setErr('*');return;}
     setSending(true);
     const deliveryAddress=delivMode==='delivery'?`${addr.trim()}, Safi, Maroc`:t.tabacCollectAddress;
     const driverTrackUrl=`${window.location.origin}/driver/${orderRef}`;
     const payInfo=payLabel?payLabel:tabacPayMethod==='qr'?'QR Code':tabacPayMethod==='cash'?'Espèces':tabacPayMethod==='apple'?'Apple Pay':tabacPayMethod==='google'?'Google Pay':'Espèces';
-    try {
-      await fetch('/api/orders/inbound',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','x-bridge-secret':'bridge-safi-8b269bba03fd8c0205116f3f'}, 
-        body:JSON.stringify({
-          customerName:name.trim(),customerPhone:phone.trim(),
-          deliveryAddress,pickupAddress:'Bridge Tabac — Safi',
-          items:[{name:'🚬 Commande Bridge Tabac',qty:1,price:0}],
-          total:0,source:'Bridge Tabac',paymentMethod:payInfo,
-        }),
+    const itemsList=tabacCart.map(ci=>{const p=TABAC_CATALOG.find(f=>f.id===ci.id)!;return `${p.name} x${ci.qty} (${p.price*ci.qty} DH)`;}).join('\n');
+    const notesStr=`🚬 Bridge Tabac${isNight?' 🌙 NUIT':''}\n${itemsList||'Commande générale'}\n—\nSous-total: ${cartSubtotal} DH\nLivraison: ${DELIV_FEE} DH${isNight?' (tarif nuit)':''}\nService: ${SVC_FEE} DH\nTotal: ${cartTotal} DH\n💳 ${payInfo}\n👤 ${name.trim()} — ${phone.trim()}`;
+    const apiItems=tabacCart.length>0
+      ?tabacCart.map(ci=>{const p=TABAC_CATALOG.find(f=>f.id===ci.id)!;return {name:p.name,qty:ci.qty,price:p.price};})
+      :[{name:'🚬 Commande Bridge Tabac',qty:1,price:0}];
+    try{
+      await fetch('/api/orders/inbound',{method:'POST',headers:{'Content-Type':'application/json','x-bridge-secret':'bridge-safi-8b269bba03fd8c0205116f3f'},
+        body:JSON.stringify({customerName:name.trim(),customerPhone:phone.trim(),deliveryAddress,pickupAddress:'Bridge Tabac — Safi',items:apiItems,total:cartTotal,source:'Bridge Tabac',paymentMethod:payInfo}),
       }).catch(()=>{});
-      await fetch(`${DRIVER_APP_URL}/api/deliveries`,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          trackingNumber:orderRef,
-          customerName:name.trim(),customerPhone:phone.trim(),
-          pickupAddress:'Bridge Tabac — Safi',
-          deliveryAddress,
-          priority:'normal',
-          notes:`🚬 Commande Bridge Tabac\n💳 ${payInfo}\n👤 ${name.trim()} — ${phone.trim()}`,
-          driverTrackUrl,
-        }),
+      await fetch(`${DRIVER_APP_URL}/api/deliveries`,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({trackingNumber:orderRef,customerName:name.trim(),customerPhone:phone.trim(),pickupAddress:'Bridge Tabac — Safi',deliveryAddress,priority:'normal',notes:notesStr,driverTrackUrl}),
       }).catch(()=>{});
-    } finally { setSending(false); }
+    }finally{setSending(false);}
     if(tabacGemMAD>0){getAuthHeadersTabac().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:tabacGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${tabacUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     localStorage.setItem('bridge_last_ref',orderRef);
     setSent(true);
     onOrderSuccess?.(orderRef);
   };
 
-  const inputCls=`w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all ${fClass}`;
-  const inputStyle=(hasErr:boolean):React.CSSProperties=>({
-    background:'#F9F6F0',border:`1.5px solid ${hasErr?'#EF4444':'#E5E1D8'}`,color:'var(--c-text)',
-  });
+  const catTabs:{key:'premium'|'intl'|'local';label:string;emoji:string}[]=[
+    {key:'premium',label:'Premium',emoji:'⭐'},
+    {key:'intl',label:'International',emoji:'🌍'},
+    {key:'local',label:'Maroc 🇲🇦',emoji:''},
+  ];
 
   return(
     <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`} style={{background:'var(--c-bg)',color:'var(--c-text)'}}>
+
+      {/* ── Age Gate Modal ── */}
+      {!ageVerified&&(
+        <div style={{position:'fixed',inset:0,zIndex:200,background:'rgba(0,0,0,0.88)',display:'flex',alignItems:'center',justifyContent:'center',padding:24}}>
+          <div style={{background:'#1C1006',border:'2px solid rgba(180,83,9,0.5)',borderRadius:24,padding:32,maxWidth:320,width:'100%',textAlign:'center',boxShadow:'0 20px 60px rgba(0,0,0,0.8)'}}>
+            <div style={{fontSize:56,marginBottom:16}}>🔞</div>
+            <h2 style={{color:'#F59E0B',fontSize:20,fontWeight:900,marginBottom:8,letterSpacing:'0.04em'}}>
+              {lang==='ar'?'تحذير — 18+':lang==='en'?'Warning — 18+':'Accès réservé — 18+'}
+            </h2>
+            <p style={{color:'rgba(255,255,255,0.65)',fontSize:13,lineHeight:1.6,marginBottom:24}}>
+              {lang==='ar'?'بيع التبغ محظور على القاصرين.\nيجب أن يكون عمرك 18 سنة أو أكثر.':lang==='en'?'Tobacco sales are prohibited to minors.\nYou must be 18 or older to continue.':'La vente de tabac est interdite aux mineurs.\nVous devez avoir 18 ans ou plus pour continuer.'}
+            </p>
+            <div style={{display:'flex',flexDirection:'column',gap:10}}>
+              <button onClick={()=>{setAgeVerified(true);try{localStorage.setItem('bridge_tabac_age18','1');}catch{}}}
+                style={{padding:'14px 0',borderRadius:14,background:'linear-gradient(135deg,#B45309,#78350F)',color:'white',fontWeight:900,fontSize:14,border:'none',cursor:'pointer',letterSpacing:'0.05em'}}>
+                ✅ {lang==='ar'?'نعم، عمري +18':lang==='en'?'Yes, I am 18+':'Oui, j\'ai 18 ans ou plus'}
+              </button>
+              <button onClick={onBack}
+                style={{padding:'12px 0',borderRadius:14,background:'rgba(255,255,255,0.06)',color:'rgba(255,255,255,0.5)',fontWeight:700,fontSize:13,border:'1px solid rgba(255,255,255,0.1)',cursor:'pointer'}}>
+                {lang==='ar'?'رجوع':lang==='en'?'Go back':'Retour'}
+              </button>
+            </div>
+            <p style={{color:'rgba(239,68,68,0.7)',fontSize:10,marginTop:16,fontWeight:700,letterSpacing:'0.1em'}}>
+              {lang==='ar'?'🚫 بيع التبغ للقاصرين محظور قانوناً':lang==='en'?'🚫 Tobacco sales to minors are illegal':'🚫 Vente de tabac aux mineurs interdite par la loi'}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div style={{position:'fixed',top:16,left:isAR?'auto':16,right:isAR?16:'auto',zIndex:50}}>
         <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(120,53,15,0.15)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--c-text)',fontSize:18}}>←</button>
@@ -4882,85 +4960,184 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
       </div>
 
       {/* Content */}
-      <div className="flex flex-col items-center px-5 pt-24 pb-12 max-w-sm mx-auto w-full">
-        <h1 className={`font-black text-xl tracking-wider mb-0.5 ${fClass}`} style={{color:'#7D4F2E'}}>BRIDGE TABAC</h1>
-        <p className="text-[10px] tracking-widest font-bold mb-5" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
+      <div className="flex flex-col items-center px-5 pt-20 pb-12 max-w-sm mx-auto w-full gap-4">
+
+        {/* Title + night badge */}
+        <div className="text-center">
+          <h1 className={`font-black text-xl tracking-wider mb-0.5 ${fClass}`} style={{color:'#7D4F2E'}}>BRIDGE TABAC</h1>
+          <p className="text-[10px] tracking-widest font-bold" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
+          {isNight&&<div style={{display:'inline-flex',alignItems:'center',gap:5,background:'rgba(30,10,0,0.9)',border:'1px solid rgba(251,191,36,0.4)',borderRadius:50,padding:'3px 12px',marginTop:6}}>
+            <span style={{fontSize:12}}>🌙</span>
+            <span style={{color:'#FDE68A',fontSize:10,fontWeight:900,letterSpacing:'0.12em'}}>TARIF NUIT</span>
+          </div>}
+        </div>
+
+        {/* ── Catalogue ── */}
+        {!sent&&(
+          <div className="w-full">
+            {/* Search */}
+            <input value={tabacSearch} onChange={e=>setTabacSearch(e.target.value)}
+              placeholder={lang==='ar'?'بحث…':lang==='en'?'Search…':'Rechercher…'}
+              className={`w-full px-4 py-2.5 rounded-xl text-sm outline-none mb-3 ${fClass}`}
+              style={{background:'var(--c-card)',border:'1.5px solid var(--c-border)',color:'var(--c-text)'}}/>
+
+            {/* Category tabs */}
+            <div className="flex gap-1.5 mb-3">
+              {catTabs.map(tab=>(
+                <button key={tab.key} onClick={()=>{setTabacCat(tab.key);setTabacSearch('');}}
+                  className="flex-1 py-2 rounded-xl font-black text-[10px] transition-all active:scale-95"
+                  style={{background:tabacCat===tab.key?'#B45309':'var(--c-card)',color:tabacCat===tab.key?'white':'#9CA3AF',border:`1.5px solid ${tabacCat===tab.key?'#B45309':'var(--c-border)'}`,letterSpacing:'0.04em'}}>
+                  {tab.emoji} {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Items grid */}
+            <div className="flex flex-col gap-2">
+              {visibleCigs.map(cig=>{
+                const qty=cigQty(cig.id);
+                return(
+                  <div key={cig.id} className="flex items-center justify-between gap-2 rounded-2xl px-3 py-2.5"
+                    style={{background:qty>0?'rgba(180,83,9,0.12)':'var(--c-card)',border:`1.5px solid ${qty>0?'rgba(180,83,9,0.5)':'var(--c-border)'}`,transition:'all 0.15s'}}>
+                    <div style={{flex:1,minWidth:0}}>
+                      <p className="font-black text-[12px] truncate" style={{color:'var(--c-text)'}}>{cig.name}</p>
+                      <p className="text-[10px] font-bold" style={{color:'#B45309'}}>{cig.price} DH{isNight&&qty>0?' 🌙':''}</p>
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      {qty>0&&(
+                        <>
+                          <button onClick={()=>remCig(cig.id)} style={{width:28,height:28,borderRadius:'50%',border:'none',background:'rgba(180,83,9,0.2)',color:'#B45309',fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
+                          <span className="font-black text-sm w-5 text-center" style={{color:'var(--c-text)'}}>{qty}</span>
+                        </>
+                      )}
+                      <button onClick={()=>addCig(cig.id)} style={{width:28,height:28,borderRadius:'50%',border:'none',background:'#B45309',color:'white',fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>+</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Cart summary */}
+            {cartCount>0&&(
+              <div className="mt-3 rounded-2xl p-3" style={{background:'rgba(180,83,9,0.1)',border:'1.5px solid rgba(180,83,9,0.35)'}}>
+                <p className="font-black text-[11px] mb-2" style={{color:'#B45309'}}>🛒 {cartCount} {lang==='ar'?'علبة':lang==='en'?'pack(s)':'paquet(s)'} sélectionné(s)</p>
+                {tabacCart.map(ci=>{const p=TABAC_CATALOG.find(f=>f.id===ci.id)!;return(
+                  <div key={ci.id} className="flex justify-between text-[11px]" style={{color:'rgba(var(--c-text-rgb,0,0,0),0.7)'}}>
+                    <span>{p.name} ×{ci.qty}</span><span className="font-bold">{p.price*ci.qty} DH</span>
+                  </div>
+                );})}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Mode selector */}
-        <div className="flex gap-2 w-full mb-5">
-          {([
-            {key:'delivery'as const, label:t.delivOption, desc:t.delivOptionDesc, color:'#065F46', selBg:'#D1FAE5', bg:'#F0FDF4'},
-            {key:'collect'as const,  label:t.collectOption, desc:t.collectOptionDesc, color:'#B45309', selBg:'#FEF3C7', bg:'#FFFBEB'},
-          ]).map(opt=>{
-            const sel=delivMode===opt.key;
-            return(
-              <button key={opt.key} onClick={()=>{setDelivMode(opt.key);setErr('');}}
-                className={`flex-1 rounded-2xl p-3 text-left transition-all duration-200 active:scale-95 ${isAR?'text-right':''}`}
-                style={{background:sel?opt.selBg:opt.bg,border:`2px solid ${sel?opt.color:'#E5E1D8'}`}}>
-                <p className={`font-black text-[11px] leading-tight ${fClass}`} style={{color:opt.color}}>{opt.label}</p>
-                <p className={`text-[9px] mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{opt.desc}</p>
-                {sel&&<div className="mt-1.5 w-3 h-3 rounded-full flex items-center justify-center" style={{background:opt.color}}>
-                  <svg width="7" height="7" viewBox="0 0 10 10" fill="white"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>
-                </div>}
-              </button>
-            );
-          })}
-        </div>
+        {!sent&&(
+          <div className="flex gap-2 w-full">
+            {([
+              {key:'delivery'as const,label:t.delivOption,desc:t.delivOptionDesc,color:'#065F46',selBg:'#D1FAE5',bg:'#F0FDF4'},
+              {key:'collect'as const,label:t.collectOption,desc:t.collectOptionDesc,color:'#B45309',selBg:'#FEF3C7',bg:'#FFFBEB'},
+            ]).map(opt=>{
+              const sel=delivMode===opt.key;
+              return(
+                <button key={opt.key} onClick={()=>{setDelivMode(opt.key);setErr('');}}
+                  className={`flex-1 rounded-2xl p-3 text-left transition-all duration-200 active:scale-95 ${isAR?'text-right':''}`}
+                  style={{background:sel?opt.selBg:opt.bg,border:`2px solid ${sel?opt.color:'#E5E1D8'}`}}>
+                  <p className={`font-black text-[11px] leading-tight ${fClass}`} style={{color:opt.color}}>{opt.label}</p>
+                  <p className={`text-[9px] mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{opt.desc}</p>
+                  {sel&&<div className="mt-1.5 w-3 h-3 rounded-full flex items-center justify-center" style={{background:opt.color}}>
+                    <svg width="7" height="7" viewBox="0 0 10 10" fill="white"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>
+                  </div>}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Form */}
-        <div className="w-full flex flex-col gap-3 mb-5">
-          <div>
-            <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:'#065F46'}}>👤 {t.nameLabel}</p>
-            <input className={inputCls} style={inputStyle(!!err&&!name.trim())}
-              placeholder={t.namePh} value={name} onChange={e=>{setName(e.target.value);setErr('');}}/>
-          </div>
-          {delivMode==='delivery'&&(
-            <AddressAutocomplete
-              label={`📍 ${t.addrLabel}`}
-              value={addr}
-              onChange={v=>{setAddr(v);setErr('');}}
-              placeholder={t.addrPh}
-              lang={lang}
-              error={!!err&&!addr.trim()}/>
-          )}
-          {delivMode==='collect'&&(
-            <div className="rounded-xl px-4 py-3" style={{background:'#FEF3C7',border:'1.5px solid #FDE68A'}}>
-              <p className={`text-[10px] font-medium ${fClass}`} style={{color:'#92400E'}}>🏪 {t.tabacCollectAddress}</p>
+        {!sent&&(
+          <div className="w-full flex flex-col gap-3">
+            <div>
+              <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:'#065F46'}}>👤 {t.nameLabel}</p>
+              <input className={inputCls} style={inputStyle(!!err&&!name.trim())} placeholder={t.namePh} value={name} onChange={e=>{setName(e.target.value);setErr('');}}/>
             </div>
-          )}
-          <div>
-            <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:'#065F46'}}>📞 {t.phoneLabel}</p>
-            <input className={inputCls} style={inputStyle(!!err&&!phone.trim())}
-              placeholder={t.phonePh} value={phone} type="tel"
-              onChange={e=>{setPhone(e.target.value);setErr('');}}/>
+            {delivMode==='delivery'&&(
+              <AddressAutocomplete label={`📍 ${t.addrLabel}`} value={addr} onChange={v=>{setAddr(v);setErr('');}} placeholder={t.addrPh} lang={lang} error={!!err&&!addr.trim()}/>
+            )}
+            {delivMode==='collect'&&(
+              <div className="rounded-xl px-4 py-3" style={{background:'#FEF3C7',border:'1.5px solid #FDE68A'}}>
+                <p className={`text-[10px] font-medium ${fClass}`} style={{color:'#92400E'}}>🏪 {t.tabacCollectAddress}</p>
+              </div>
+            )}
+            <div>
+              <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:'#065F46'}}>📞 {t.phoneLabel}</p>
+              <input className={inputCls} style={inputStyle(!!err&&!phone.trim())} placeholder={t.phonePh} value={phone} type="tel" onChange={e=>{setPhone(e.target.value);setErr('');}}/>
+            </div>
+            {err&&<p className={`text-xs font-bold ${fClass}`} style={{color:'#EF4444'}}>⚠️ {lang==='ar'?'يرجى ملء جميع الحقول المطلوبة':lang==='en'?'Please fill in all required fields':'Veuillez remplir tous les champs requis'}</p>}
           </div>
-          {err&&<p className={`text-xs font-bold ${fClass}`} style={{color:'#EF4444'}}>⚠️ {lang==='ar'?'يرجى ملء جميع الحقول المطلوبة':lang==='en'?'Please fill in all required fields':lang==='amz'?'ⵔⵏⵓ ⵉⵙⵡⵓⵔⵉⵡⵏ ⵉⵍⴰⵎⵎⴰⵏ':'Veuillez remplir tous les champs requis'}</p>}
-        </div>
+        )}
 
-        {/* Success screen overlay */}
+        {/* Success */}
         {sent&&(
-          <div className="rounded-3xl p-6 text-center" style={{background:'#F0FDF4',border:'2px solid #059669',boxShadow:'0 8px 32px rgba(5,150,105,0.18)'}}>
+          <div className="rounded-3xl p-6 text-center w-full" style={{background:'#F0FDF4',border:'2px solid #059669',boxShadow:'0 8px 32px rgba(5,150,105,0.18)'}}>
             <div className="text-5xl mb-3">✅</div>
             <p className={`font-black text-base mb-1 ${fClass}`} style={{color:'#065F46'}}>
-              {lang==='ar'?'تم إرسال طلبك!':lang==='en'?'Order placed!':lang==='amz'?'ⵜⵓⴷⴷⵙ ⵜⴰⵖⵓⵍⵜ ⵉⵏⵓ!':'Commande envoyée !'}
+              {lang==='ar'?'تم إرسال طلبك!':lang==='en'?'Order placed!':'Commande envoyée !'}
             </p>
             <p className="text-2xl font-black tracking-[0.25em] my-2" style={{color:'#B45309'}}>{orderRef}</p>
             <p className={`text-[11px] mb-4 ${fClass}`} style={{color:'#6B7280'}}>
-              {lang==='ar'?'سيتصل بك الليبرور قريباً':lang==='en'?'The driver will contact you soon':lang==='amz'?'ⴰⵙⵙⵉⵍⵓ ⴰⴷ ⵉⵙⵓⵙ ⵅⵅⵉⵏ':'Le livreur vous contactera bientôt'}
+              {lang==='ar'?'سيتصل بك الليبرور قريباً':lang==='en'?'The driver will contact you soon':'Le livreur vous contactera bientôt'}
             </p>
             <button onClick={()=>onOrderSuccess?.(orderRef)}
               className={`w-full py-3 rounded-2xl font-black text-sm text-white active:scale-95 transition-all ${fClass}`}
               style={{background:'#065F46',boxShadow:'0 4px 14px rgba(6,95,70,0.35)'}}>
-              📍 {lang==='ar'?'متابعة الطلب':lang==='en'?'Track order':lang==='amz'?'ⴰⵙⴽⵍⵙ ⵏ ⵓⵎⵢⴰⵡⴰ':'Suivre ma commande'}
+              📍 {lang==='ar'?'متابعة الطلب':lang==='en'?'Track order':'Suivre ma commande'}
             </button>
           </div>
         )}
 
-        {/* 💎 Diamond reduction — Tabac */}
+        {/* ── Frais obligatoires ── */}
+        {!sent&&(
+          <div className="w-full rounded-2xl p-4" style={{background:'var(--c-card)',border:'1.5px solid var(--c-border)'}}>
+            <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#065F46'}}>
+              🧾 {lang==='ar'?'تفاصيل الفاتورة':lang==='en'?'Order summary':'Récapitulatif'}
+            </p>
+            {cartSubtotal>0&&(
+              <div className="flex justify-between text-[12px] mb-1.5">
+                <span style={{color:'rgba(var(--c-text-rgb,0,0,0),0.6)'}}>{lang==='ar'?'المجموع الفرعي':lang==='en'?'Subtotal':'Sous-total'}</span>
+                <span className="font-bold" style={{color:'var(--c-text)'}}>{cartSubtotal} DH</span>
+              </div>
+            )}
+            {delivMode==='delivery'&&(
+              <div className="flex justify-between text-[12px] mb-1.5">
+                <span style={{color:'rgba(var(--c-text-rgb,0,0,0),0.6)'}}>
+                  🛵 {lang==='ar'?'توصيل':lang==='en'?'Delivery':'Livraison'}{isNight&&<span style={{color:'#F59E0B',fontWeight:700}}> 🌙 +6 DH nuit</span>}
+                </span>
+                <span className="font-bold" style={{color:'#B45309'}}>{DELIV_FEE} DH</span>
+              </div>
+            )}
+            <div className="flex justify-between text-[12px] mb-2">
+              <span style={{color:'rgba(var(--c-text-rgb,0,0,0),0.6)'}}>⚙️ {lang==='ar'?'رسوم الخدمة':lang==='en'?'Service fee':'Frais de service'}</span>
+              <span className="font-bold" style={{color:'#B45309'}}>{SVC_FEE} DH</span>
+            </div>
+            {tabacGemMAD>0&&(
+              <div className="flex justify-between text-[12px] mb-2">
+                <span style={{color:'#4ADE80'}}>💎 {lang==='ar'?'خصم ماسات':lang==='en'?'Diamond discount':'Réduction 💎'}</span>
+                <span className="font-bold" style={{color:'#4ADE80'}}>-{tabacGemMAD} DH</span>
+              </div>
+            )}
+            <div className="flex justify-between items-center pt-2" style={{borderTop:'1.5px solid var(--c-border)'}}>
+              <span className="font-black text-sm" style={{color:'var(--c-text)'}}>TOTAL</span>
+              <span className="font-black text-lg" style={{color:'#065F46'}}>{cartTotal} DH</span>
+            </div>
+          </div>
+        )}
+
+        {/* 💎 Diamond discount */}
         {!sent&&(
           <div className={`w-full rounded-2xl p-4 ${fClass}`} style={{background:'linear-gradient(135deg,#0A1A12,#0D2E1A)',border:'1px solid rgba(74,222,128,0.3)'}}>
             <p className="text-[11px] font-black mb-1.5" style={{color:'#D9C5A0'}}>
-              💎 {lang==='ar'?'خصم بالماسات':lang==='en'?'Diamond discount':lang==='amz'?'ⵙⵙⵎⵔⵙ ⵉⵎⴰⵙⵙⵏ':'Réduction Diamants'}
+              💎 {lang==='ar'?'خصم بالماسات':lang==='en'?'Diamond discount':'Réduction Diamants'}
             </p>
             {tabacGems>0?(
               <>
@@ -4987,37 +5164,32 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
             ):(
               <div className="flex items-center justify-between gap-2">
                 <p className="text-[10px]" style={{color:'rgba(255,255,255,0.4)'}}>
-                  {lang==='ar'?'لا ماسات — العب لتربح!':lang==='en'?'No diamonds yet — play to earn!':lang==='amz'?'ⵓⵔ ⴷ ⵉⵎⴰⵙⵙⵏ — ⴰⵎⵢⴰⴳⵓ!':'Pas de diamants — jouez pour en gagner !'}
+                  {lang==='ar'?'لا ماسات — العب لتربح!':lang==='en'?'No diamonds — play to earn!':'Pas de diamants — jouez pour en gagner !'}
                 </p>
                 <button onClick={()=>navigateTabac('/game')} className="text-[9px] font-black px-2.5 py-1 rounded-xl" style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.4)',color:'#4ADE80',cursor:'pointer',flexShrink:0}}>🎮 Game</button>
               </div>
             )}
           </div>
         )}
-        {/* ── Mode de paiement ── */}
+
+        {/* Payment */}
         {!sent&&(
-          <div className="rounded-2xl p-4" style={{background:'var(--c-card)',border:'1.5px solid var(--c-border)'}}>
+          <div className="w-full rounded-2xl p-4" style={{background:'var(--c-card)',border:'1.5px solid var(--c-border)'}}>
             <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#065F46'}}>
-              💳 {lang==='ar'?'طريقة الدفع':lang==='en'?'Payment method':lang==='amz'?'ⴰⵣⵔⴼ':'Mode de paiement'}
+              💳 {lang==='ar'?'طريقة الدفع':lang==='en'?'Payment method':'Mode de paiement'}
             </p>
-            <SharedPaymentOptions
-              lang={lang} selected={tabacPayMethod}
-              onSelect={setTabacPayMethod} showCash showCard={false}
-              onWalletPay={handleTabacWalletPay}
-            />
+            <SharedPaymentOptions lang={lang} selected={tabacPayMethod} onSelect={setTabacPayMethod} showCash showCard={false} onWalletPay={handleTabacWalletPay}/>
           </div>
         )}
 
         {/* Send button */}
         {!sent&&(
-          <button onClick={()=>{
-              if(tabacPayMethod==='qr'){handleSend().then(()=>setShowTabacQR(true));}
-              else handleSend();
-            }} disabled={sending}
+          <button onClick={()=>{if(tabacPayMethod==='qr'){handleSend().then(()=>setShowTabacQR(true));}else handleSend();}}
+            disabled={sending}
             className={`w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 active:scale-95 transition-all ${fClass}`}
             style={{background:sending?'#9CA3AF':'#065F46',boxShadow:sending?'none':'0 6px 20px rgba(6,95,70,0.3)',cursor:sending?'not-allowed':'pointer'}}>
             {sending?(
-              <><span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin"/>{lang==='ar'?'جارٍ الإرسال…':lang==='en'?'Sending…':lang==='amz'?'ⵉⵙⵙⵉⴼⵍ…':'Envoi en cours…'}</>
+              <><span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin"/>{lang==='ar'?'جارٍ الإرسال…':lang==='en'?'Sending…':'Envoi en cours…'}</>
             ):(
               <><span>🛵</span>{t.tabacSend}</>
             )}
