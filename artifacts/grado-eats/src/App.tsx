@@ -5113,8 +5113,7 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
 
         {/* BRIDGE title */}
         <div style={{animation:'hubFadeIn 0.5s ease-out 0.2s both',marginBottom:28,textAlign:'center',position:'relative'}}>
-          <div style={{position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)',width:200,height:60,background:'radial-gradient(ellipse,rgba(5,150,105,0.25) 0%,transparent 70%)',filter:'blur(16px)',pointerEvents:'none'}}/>
-          <h1 style={{fontSize:'2.8rem',fontWeight:900,letterSpacing:'0.5em',background:'linear-gradient(160deg,#059669 0%,#065F46 55%,#044434 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text',margin:0,lineHeight:1,position:'relative'}}>BRIDGE</h1>
+          <h1 style={{fontSize:'1.6rem',fontWeight:800,letterSpacing:'0.18em',background:'linear-gradient(135deg,#34d399 0%,#059669 40%,#b45309 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text',margin:0,lineHeight:1,position:'relative',fontStyle:'italic'}}>bridge</h1>
         </div>
 
         {/* ── 2 BIG BUTTONS ── */}
