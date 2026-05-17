@@ -3997,21 +3997,40 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
               {lang==='ar'?'يرجى ملء جميع الحقول':lang==='en'?'Please fill all fields':'Veuillez remplir tous les champs'}
             </p>}
             {/* 💎 Diamond discount */}
-            {maxTaxiGemMAD>0&&(
-              <div style={{borderRadius:14,padding:'12px 14px',background:'#FEFCE8',border:'1.5px solid #FDE047'}}>
-                <p style={{fontSize:10,fontWeight:900,color:'#92400E',letterSpacing:'0.1em',textTransform:'uppercase' as const,margin:'0 0 5px'}}>
-                  💎 {lang==='ar'?'خصم بالماسات':lang==='en'?'Diamond discount':'Réduction Diamants'}
-                </p>
-                <p style={{fontSize:11,color:'#78350F',fontWeight:600,margin:'0 0 7px'}}>
-                  {taxiGems.toLocaleString()} 💎 = {maxTaxiGemMAD} MAD {lang==='ar'?'متاح':lang==='en'?'available':'disponible'}
-                </p>
-                <div style={{display:'flex',alignItems:'center',gap:10}}>
-                  <input type="range" min={0} max={maxTaxiGemMAD} value={taxiGemMAD}
-                    onChange={e=>setTaxiGemMAD(Number(e.target.value))} style={{flex:1,accentColor:'#F59E0B'}}/>
-                  <span style={{fontWeight:900,fontSize:13,color:'#065F46',minWidth:52}}>-{taxiGemMAD} MAD</span>
+            <div style={{borderRadius:14,padding:'12px 14px',background:'linear-gradient(135deg,#0A1A12,#0D2E1A)',border:'1px solid rgba(74,222,128,0.3)'}}>
+              <p style={{fontSize:11,fontWeight:900,color:'#D9C5A0',margin:'0 0 6px'}}>
+                💎 {lang==='ar'?'خصم بالماسات':lang==='en'?'Diamond discount':lang==='amz'?'ⵙⵙⵎⵔⵙ ⵉⵎⴰⵙⵙⵏ':'Réduction Diamants'}
+              </p>
+              {taxiGems>0?(
+                <>
+                  <p style={{fontSize:10,color:'rgba(255,255,255,0.6)',margin:'0 0 8px'}}>
+                    {taxiGems.toLocaleString()} 💎 = {maxTaxiGemMAD} MAD {lang==='ar'?'متاح':lang==='en'?'available':'disponible'}
+                  </p>
+                  {taxiGemMAD>0?(
+                    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                      <span style={{fontSize:10,fontWeight:700,color:'#4ADE80'}}>✓ -{taxiGemMAD} MAD {lang==='ar'?'مطبق':lang==='en'?'applied':'appliqué'}</span>
+                      <button onClick={()=>setTaxiGemMAD(0)} style={{fontSize:9,fontWeight:700,padding:'2px 8px',borderRadius:8,background:'rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.5)',border:'none',cursor:'pointer'}}>✕</button>
+                    </div>
+                  ):(
+                    <div style={{display:'flex',gap:8,flexWrap:'wrap' as const}}>
+                      {[1,2,5,maxTaxiGemMAD].filter((v,i,a)=>v>0&&a.indexOf(v)===i&&v<=maxTaxiGemMAD).map(mad=>(
+                        <button key={mad} onClick={()=>setTaxiGemMAD(mad)}
+                          style={{padding:'4px 12px',borderRadius:12,fontWeight:900,fontSize:10,color:'#4ADE80',background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.5)',cursor:'pointer'}}>
+                          -{mad} MAD
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ):(
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:8}}>
+                  <p style={{fontSize:10,color:'rgba(255,255,255,0.4)',margin:0}}>
+                    {lang==='ar'?'لا ماسات — العب لتربح!':lang==='en'?'No diamonds yet — play to earn!':lang==='amz'?'ⵓⵔ ⴷ ⵉⵎⴰⵙⵙⵏ — ⴰⵎⵢⴰⴳⵓ!':'Pas de diamants — jouez pour en gagner !'}
+                  </p>
+                  <button onClick={()=>navigateTaxi('/game')} style={{flexShrink:0,fontSize:9,fontWeight:900,padding:'4px 10px',borderRadius:10,background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.4)',color:'#4ADE80',cursor:'pointer'}}>🎮 Game</button>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
             {/* Payment */}
             <div style={{borderRadius:16,padding:'14px',background:'var(--c-bg)',border:'1.5px solid var(--c-border)'}}>
               <p style={{fontSize:10,fontWeight:900,color:'#78350F',letterSpacing:'0.1em',textTransform:'uppercase' as const,margin:'0 0 11px'}}>
@@ -4985,20 +5004,41 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
         )}
 
         {/* 💎 Diamond reduction — Tabac */}
-        {!sent&&maxTabacGemMAD>0&&(
-          <div className="w-full rounded-2xl p-4" style={{background:'#FEFCE8',border:'1.5px solid #FDE047'}}>
-            <p className={`text-[10px] font-black uppercase tracking-widest mb-2 ${fClass}`} style={{color:'#92400E'}}>
+        {!sent&&(
+          <div className={`w-full rounded-2xl p-4 ${fClass}`} style={{background:'linear-gradient(135deg,#0A1A12,#0D2E1A)',border:'1px solid rgba(74,222,128,0.3)'}}>
+            <p className="text-[11px] font-black mb-1.5" style={{color:'#D9C5A0'}}>
               💎 {lang==='ar'?'خصم بالماسات':lang==='en'?'Diamond discount':lang==='amz'?'ⵙⵙⵎⵔⵙ ⵉⵎⴰⵙⵙⵏ':'Réduction Diamants'}
             </p>
-            <p className={`text-xs mb-2 ${fClass}`} style={{color:'#78350F',fontWeight:600}}>
-              {tabacGems.toLocaleString()} 💎 = {maxTabacGemMAD} MAD {lang==='ar'?'متاح':lang==='en'?'available':'disponible'}
-            </p>
-            <div className="flex items-center gap-3">
-              <input type="range" min={0} max={maxTabacGemMAD} value={tabacGemMAD}
-                onChange={e=>setTabacGemMAD(Number(e.target.value))}
-                className="flex-1" style={{accentColor:'#065F46'}}/>
-              <span className="font-black text-sm" style={{color:'#065F46',minWidth:52}}>-{tabacGemMAD} MAD</span>
-            </div>
+            {tabacGems>0?(
+              <>
+                <p className="text-[10px] mb-2" style={{color:'rgba(255,255,255,0.6)',fontWeight:600}}>
+                  {tabacGems.toLocaleString()} 💎 = {maxTabacGemMAD} MAD {lang==='ar'?'متاح':lang==='en'?'available':'disponible'}
+                </p>
+                {tabacGemMAD>0?(
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold" style={{color:'#4ADE80'}}>✓ -{tabacGemMAD} MAD {lang==='ar'?'مطبق':lang==='en'?'applied':'appliqué'}</span>
+                    <button onClick={()=>setTabacGemMAD(0)} className="text-[9px] font-bold px-2 py-1 rounded-lg" style={{background:'rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.5)',border:'none',cursor:'pointer'}}>✕</button>
+                  </div>
+                ):(
+                  <div className="flex gap-2 flex-wrap">
+                    {[1,2,5,maxTabacGemMAD].filter((v,i,a)=>v>0&&a.indexOf(v)===i&&v<=maxTabacGemMAD).map(mad=>(
+                      <button key={mad} onClick={()=>setTabacGemMAD(mad)}
+                        className="px-3 py-1 rounded-xl font-black text-[10px] active:scale-95 transition-all"
+                        style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.5)',color:'#4ADE80',cursor:'pointer'}}>
+                        -{mad} MAD
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
+            ):(
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-[10px]" style={{color:'rgba(255,255,255,0.4)'}}>
+                  {lang==='ar'?'لا ماسات — العب لتربح!':lang==='en'?'No diamonds yet — play to earn!':lang==='amz'?'ⵓⵔ ⴷ ⵉⵎⴰⵙⵙⵏ — ⴰⵎⵢⴰⴳⵓ!':'Pas de diamants — jouez pour en gagner !'}
+                </p>
+                <button onClick={()=>navigateTabac('/game')} className="text-[9px] font-black px-2.5 py-1 rounded-xl" style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.4)',color:'#4ADE80',cursor:'pointer',flexShrink:0}}>🎮 Game</button>
+              </div>
+            )}
           </div>
         )}
         {/* ── Mode de paiement ── */}
