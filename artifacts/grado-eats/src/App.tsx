@@ -6023,31 +6023,29 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
               background:pressedGame
                 ?'linear-gradient(145deg,#0a1f12,#0f2d1c,#193d28)'
                 :'linear-gradient(145deg,#071A10 0%,#0D3020 50%,#142E1E 100%)',
-              borderRadius:28,border:'1.5px solid rgba(74,222,128,0.4)',
+              borderRadius:22,border:'1.5px solid rgba(74,222,128,0.4)',
               boxShadow:pressedGame
-                ?'0 0 0 4px rgba(74,222,128,0.3),0 20px 50px rgba(6,95,70,0.5),inset 0 1px 0 rgba(255,255,255,0.2)'
-                :'0 10px 40px rgba(6,95,70,0.4),inset 0 1px 0 rgba(255,255,255,0.12)',
-              padding:'28px 24px',cursor:'pointer',
+                ?'0 0 0 4px rgba(74,222,128,0.3),0 12px 30px rgba(6,95,70,0.5),inset 0 1px 0 rgba(255,255,255,0.2)'
+                :'0 8px 28px rgba(6,95,70,0.4),inset 0 1px 0 rgba(255,255,255,0.12)',
+              padding:'14px 20px',cursor:'pointer',
               transform:pressedGame?'scale(0.96)':'scale(1)',
               transition:'all 0.22s cubic-bezier(.34,1.56,.64,1)',
               position:'relative',overflow:'hidden',textAlign:'center',
             }}>
-            {/* Glass shine */}
-            <div style={{position:'absolute',top:0,left:0,right:0,height:'50%',background:'linear-gradient(180deg,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0) 100%)',borderRadius:'28px 28px 60% 60%',pointerEvents:'none'}}/>
-            {/* Shark image + gem icon */}
-            <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:16,marginBottom:14}}>
-              <div style={{width:64,height:64,borderRadius:'50%',overflow:'hidden',border:'2px solid #D9C5A0',boxShadow:'0 0 20px rgba(74,222,128,0.5)',flexShrink:0}}>
+            <div style={{position:'absolute',top:0,left:0,right:0,height:'50%',background:'linear-gradient(180deg,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0) 100%)',borderRadius:'22px 22px 60% 60%',pointerEvents:'none'}}/>
+            <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:14,marginBottom:10}}>
+              <div style={{width:48,height:48,borderRadius:'50%',overflow:'hidden',border:'2px solid #D9C5A0',boxShadow:'0 0 14px rgba(74,222,128,0.5)',flexShrink:0}}>
                 <img src="/bridge-shark.png" alt="Game" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top'}}/>
               </div>
-              <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:6}}>
-                <span style={{fontSize:32,animation:'hubGemSpin 3s ease-in-out infinite',display:'inline-block',filter:'drop-shadow(0 0 12px rgba(253,224,71,0.7))'}}>💎</span>
-                <div style={{background:'rgba(74,222,128,0.18)',border:'1px solid rgba(74,222,128,0.5)',borderRadius:6,padding:'2px 8px'}}>
-                  <span style={{color:'#4ADE80',fontSize:9,fontWeight:900,letterSpacing:'0.18em'}}>BRIDGE GAME</span>
+              <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4}}>
+                <span style={{fontSize:24,animation:'hubGemSpin 3s ease-in-out infinite',display:'inline-block',filter:'drop-shadow(0 0 10px rgba(253,224,71,0.7))'}}>💎</span>
+                <div style={{background:'rgba(74,222,128,0.18)',border:'1px solid rgba(74,222,128,0.5)',borderRadius:5,padding:'2px 7px'}}>
+                  <span style={{color:'#4ADE80',fontSize:8,fontWeight:900,letterSpacing:'0.16em'}}>BRIDGE GAME</span>
                 </div>
               </div>
             </div>
-            <p style={{color:'#FDE047',fontSize:22,fontWeight:900,letterSpacing:'0.06em',margin:'0 0 6px',textShadow:'0 2px 12px rgba(253,224,71,0.4)'}} className={fClass}>{t.hubGame}</p>
-            <p style={{color:'rgba(255,255,255,0.6)',fontSize:11,fontWeight:600,margin:0}} className={fClass}>{t.hubGameSub}</p>
+            <p style={{color:'#FDE047',fontSize:17,fontWeight:900,letterSpacing:'0.06em',margin:'0 0 4px',textShadow:'0 2px 12px rgba(253,224,71,0.4)'}} className={fClass}>{t.hubGame}</p>
+            <p style={{color:'rgba(255,255,255,0.6)',fontSize:10,fontWeight:600,margin:0}} className={fClass}>{t.hubGameSub}</p>
           </button>
 
           {/* MISSIONS BUTTON */}
@@ -6055,24 +6053,24 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
             onClick={()=>navigate('/missions')}
             style={{
               background:'linear-gradient(145deg,#0f172a 0%,#1e1035 50%,#12112a 100%)',
-              borderRadius:28,border:'1.5px solid rgba(139,92,246,0.4)',
-              boxShadow:'0 10px 40px rgba(109,40,217,0.25),inset 0 1px 0 rgba(255,255,255,0.08)',
-              padding:'20px 24px',cursor:'pointer',
+              borderRadius:18,border:'1.5px solid rgba(139,92,246,0.4)',
+              boxShadow:'0 6px 24px rgba(109,40,217,0.25),inset 0 1px 0 rgba(255,255,255,0.08)',
+              padding:'11px 20px',cursor:'pointer',
               position:'relative',overflow:'hidden',textAlign:'center',
               transition:'all 0.2s',
             }}>
-            <div style={{position:'absolute',top:0,left:0,right:0,height:'50%',background:'linear-gradient(180deg,rgba(255,255,255,0.08) 0%,rgba(255,255,255,0) 100%)',borderRadius:'28px 28px 60% 60%',pointerEvents:'none'}}/>
-            <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:14,marginBottom:10}}>
-              <span style={{fontSize:36}}>💰</span>
-              <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:5}}>
-                <span style={{fontSize:22}}>🎬</span>
-                <div style={{background:'rgba(139,92,246,0.2)',border:'1px solid rgba(139,92,246,0.5)',borderRadius:6,padding:'2px 8px'}}>
-                  <span style={{color:'#a78bfa',fontSize:9,fontWeight:900,letterSpacing:'0.18em'}}>MISSIONS</span>
+            <div style={{position:'absolute',top:0,left:0,right:0,height:'50%',background:'linear-gradient(180deg,rgba(255,255,255,0.08) 0%,rgba(255,255,255,0) 100%)',borderRadius:'18px 18px 60% 60%',pointerEvents:'none'}}/>
+            <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:12,marginBottom:7}}>
+              <span style={{fontSize:26}}>💰</span>
+              <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4}}>
+                <span style={{fontSize:18}}>🎬</span>
+                <div style={{background:'rgba(139,92,246,0.2)',border:'1px solid rgba(139,92,246,0.5)',borderRadius:5,padding:'1px 7px'}}>
+                  <span style={{color:'#a78bfa',fontSize:8,fontWeight:900,letterSpacing:'0.16em'}}>MISSIONS</span>
                 </div>
               </div>
             </div>
-            <p style={{color:'#c4b5fd',fontSize:18,fontWeight:900,letterSpacing:'0.04em',margin:'0 0 4px'}} className={fClass}>Pubs & Missions</p>
-            <p style={{color:'rgba(255,255,255,0.5)',fontSize:11,fontWeight:600,margin:0}} className={fClass}>Gagne jusqu'à 15 DH/jour en 💎</p>
+            <p style={{color:'#c4b5fd',fontSize:15,fontWeight:900,letterSpacing:'0.04em',margin:'0 0 3px'}} className={fClass}>Pubs & Missions</p>
+            <p style={{color:'rgba(255,255,255,0.5)',fontSize:10,fontWeight:600,margin:0}} className={fClass}>Gagne jusqu'à 15 DH/jour en 💎</p>
           </button>
         </div>
 
