@@ -3256,7 +3256,7 @@ function PharmaciePage({onBack,lang,profile}:{onBack:()=>void;lang:Lang;profile:
 
 // ─── SERVICE SELECT PAGE ──────────────────────────────────────────────────────
 
-function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSelect:(s:'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie')=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void}) {
+function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:{onSelect:(s:'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie')=>void;onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void}) {
   const [pressed,setPressed]=useState<'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'|null>(null);
   const [showProfile,setShowProfile]=useState(false);
   const [,navigate]=useLocation();
@@ -3280,10 +3280,27 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
   return(
     <div className={`fixed inset-0 flex flex-col z-40 ${isAR?'rtl':'ltr'}`}
       style={{background:'var(--c-bg)',overflowY:'auto'}}>
+      <style>{`
+        @keyframes svcFloat{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-9px) rotate(4deg);}}
+        @keyframes svcFadeUp{0%{opacity:0;transform:translateY(22px) scale(0.96);}100%{opacity:1;transform:translateY(0) scale(1);}}
+        @keyframes svcShine{0%{left:-100%;}100%{left:200%;}}
+        @keyframes svcPulseRed{0%,100%{box-shadow:0 8px 32px rgba(185,28,28,0.35);}50%{box-shadow:0 8px 48px rgba(185,28,28,0.7);}}
+      `}</style>
       {/* Background watermark */}
       <div className="fixed inset-0 opacity-[0.04] pointer-events-none" style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
 
       {/* ── TOP BAR ── */}
+
+      {/* Back to Hub button — TOP CENTER */}
+      <div className="absolute top-3 left-1/2 z-50" style={{transform:'translateX(-50%)'}}>
+        <button onClick={onBack}
+          style={{display:'flex',alignItems:'center',gap:6,background:'rgba(185,28,28,0.15)',border:'1.5px solid rgba(239,68,68,0.35)',borderRadius:20,padding:'6px 16px',cursor:'pointer',backdropFilter:'blur(10px)',transition:'all 0.2s'}}
+          onMouseEnter={e=>(e.currentTarget.style.background='rgba(185,28,28,0.28)')}
+          onMouseLeave={e=>(e.currentTarget.style.background='rgba(185,28,28,0.15)')}>
+          <span style={{fontSize:14}}>{isAR?'→':'←'}</span>
+          <span style={{fontSize:10,fontWeight:900,color:'#fca5a5',letterSpacing:'0.1em'}}>HUB</span>
+        </button>
+      </div>
 
       {/* Profile button + Bridge ID + Diamonds — LEFT */}
       <div className={`absolute top-3 z-50 flex flex-col items-center gap-1 ${isAR?'right-3':'left-3'}`}>
@@ -3381,15 +3398,18 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
              grad:'linear-gradient(145deg,#1C0A00 0%,#7D4F2E 55%,#A0623A 100%)',
              glow:'rgba(125,79,46,0.5)', border:'rgba(160,98,58,0.4)'},
           ];
+          const cardIdx:{[k:string]:number}={delivery:0,taxi:1,fleurs:3,tabac:4};
           const renderCard=(item:{key:'delivery'|'taxi'|'fleurs'|'tabac'|'pharmacie';label:string;sub:string;emoji:string;pending?:boolean;grad:string;glow:string;border:string})=>{
             const isPressed=pressed===item.key;
+            const idx=cardIdx[item.key]??0;
             return(
               <button key={item.key} onClick={()=>choose(item.key)}
                 style={{
                   background:'none',border:'none',cursor:'pointer',padding:0,
                   transform:isPressed?'scale(0.94)':'scale(1)',
                   transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',
-                  opacity:item.pending?0.78:1,
+                  opacity:item.pending?0.82:1,
+                  animation:`svcFadeUp 0.45s ease-out ${idx*0.08}s both`,
                 }}>
                 <div style={{
                   background: item.grad,
@@ -3404,14 +3424,17 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
                   transition:'box-shadow 0.25s,border-color 0.25s',
                   minHeight:140,
                 }}>
+                  {/* Glass shine */}
                   <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'24px 24px 60% 60%',pointerEvents:'none'}}/>
+                  {/* Sweep shine on hover */}
+                  <div style={{position:'absolute',top:0,bottom:0,width:'40%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.07),transparent)',animation:'svcShine 3.5s ease-in-out infinite',pointerEvents:'none'}}/>
                   {item.pending&&(
                     <div style={{position:'absolute',top:10,right:isAR?'auto':10,left:isAR?10:'auto',background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'3px 10px',display:'flex',alignItems:'center',gap:5,backdropFilter:'blur(6px)'}}>
                       <span style={{width:6,height:6,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
                       <span style={{color:'#fff',fontSize:9,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
                     </div>
                   )}
-                  <span style={{fontSize:44,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>{item.emoji}</span>
+                  <span style={{fontSize:44,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))',display:'inline-block',animation:`svcFloat ${3.2+idx*0.35}s ease-in-out ${idx*0.25}s infinite`}}>{item.emoji}</span>
                   <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.08em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>{item.label}</p>
                   <p style={{color:'rgba(255,255,255,0.75)',fontSize:10,fontWeight:600,margin:0,textAlign:'center'}}>{item.sub}</p>
                 </div>
@@ -3428,7 +3451,7 @@ function ServiceSelectPage({onSelect,lang,cycleLang,profile,saveProfile}:{onSele
               {(()=>{
                 const isPh=pressed==='pharmacie';
                 return(
-                  <button onClick={()=>choose('pharmacie')} style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:isPh?'scale(0.97)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',opacity:0.82}}>
+                  <button onClick={()=>choose('pharmacie')} style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:isPh?'scale(0.97)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',opacity:0.82,animation:'svcFadeUp 0.45s ease-out 0.16s both'}}>
                     <div style={{
                       background:'linear-gradient(145deg,#0C0E2B 0%,#1E1B4B 35%,#312E81 65%,#1D4ED8 100%)',
                       borderRadius:24,border:`1.5px solid ${isPh?'rgba(255,255,255,0.5)':'rgba(99,102,241,0.5)'}`,
@@ -5353,7 +5376,7 @@ export default function App() {
   if(mode==='hub') return <DarkModeCtx.Provider value={dv}><HubPage onServices={()=>setMode('services')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/></DarkModeCtx.Provider>;
 
   const backToHub=()=>{setMode('hub');setService('none');};
-  if(service==='none') return <DarkModeCtx.Provider value={dv}><ServiceSelectPage onSelect={s=>setService(s)} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/></DarkModeCtx.Provider>;
+  if(service==='none') return <DarkModeCtx.Provider value={dv}><ServiceSelectPage onSelect={s=>setService(s)} onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/></DarkModeCtx.Provider>;
   if(service==='taxi') return <DarkModeCtx.Provider value={dv}><TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
   if(service==='tabac') return <DarkModeCtx.Provider value={dv}><TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
   if(service==='fleurs') return <DarkModeCtx.Provider value={dv}><FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
