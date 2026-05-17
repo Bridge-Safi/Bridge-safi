@@ -24,3 +24,4 @@ export * from "./profiles";
 export * from "./restaurants";
 export * from "./coupons";
 export * from "./visits";
+export * from "./missions";

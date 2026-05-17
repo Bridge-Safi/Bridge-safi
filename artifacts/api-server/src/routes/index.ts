@@ -10,6 +10,7 @@ import restaurantProfileRouter from "./restaurant-profile";
 import adminRouter from "./admin";
 import couponsRouter from "./coupons";
 import visitsRouter from "./visits";
+import missionsRouter from "./missions";
 
 const router: IRouter = Router();
 
@@ -24,5 +25,6 @@ router.use(restaurantProfileRouter);
 router.use(adminRouter);
 router.use(couponsRouter);
 router.use(visitsRouter);
+router.use(missionsRouter);
 
 export default router;
