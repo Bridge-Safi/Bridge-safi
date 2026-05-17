@@ -5132,12 +5132,12 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
             onClick={()=>{setPressedServices(true);setTimeout(onServices,280);}}
             style={{
               background:pressedServices
-                ?'linear-gradient(145deg,#044434,#065F46,#059669)'
-                :'linear-gradient(145deg,#064E3B 0%,#065F46 45%,#059669 100%)',
-              borderRadius:28,border:'1.5px solid rgba(52,211,153,0.45)',
+                ?'linear-gradient(145deg,#3b0a0a,#7f1d1d,#9b1c1c)'
+                :'linear-gradient(145deg,#450a0a 0%,#7f1d1d 45%,#b91c1c 100%)',
+              borderRadius:28,border:'1.5px solid rgba(239,68,68,0.35)',
               boxShadow:pressedServices
-                ?'0 0 0 4px rgba(5,150,105,0.4),0 20px 50px rgba(5,150,105,0.6),inset 0 1px 0 rgba(255,255,255,0.25)'
-                :'0 10px 40px rgba(5,150,105,0.5),inset 0 1px 0 rgba(255,255,255,0.2)',
+                ?'0 0 0 4px rgba(185,28,28,0.4),0 20px 50px rgba(185,28,28,0.6),inset 0 1px 0 rgba(255,255,255,0.2)'
+                :'0 10px 40px rgba(185,28,28,0.45),0 2px 8px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.15)',
               padding:'28px 24px',cursor:'pointer',
               transform:pressedServices?'scale(0.96)':'scale(1)',
               transition:'all 0.22s cubic-bezier(.34,1.56,.64,1)',
