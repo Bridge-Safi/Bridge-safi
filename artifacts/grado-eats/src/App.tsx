@@ -3856,20 +3856,6 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({clientLat:clientPos?.lat,clientLng:clientPos?.lng,clientAddress:pickup,destination:destination.trim(),customerName:name.trim(),customerPhone:phone.trim()}),
       }).catch(()=>{});
-      await fetch(`${DRIVER_APP_URL}/api/deliveries`,{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          trackingNumber:ref,
-          customerName:name.trim(),
-          customerPhone:phone.trim(),
-          pickupAddress:pickup,
-          deliveryAddress:destination.trim(),
-          priority:'urgent',
-          notes:`🚖 BRIDGE TAXI\n📍 Départ: ${pickup}\n🏁 Destination: ${destination.trim()}\n👤 ${name.trim()} — ${phone.trim()}\n💳 Paiement: ${payInfo}\n🔗 GPS: ${driverTrackUrl}`,
-          driverTrackUrl,
-          type:'taxi',
-        }),
-      }).catch(()=>{});
     }finally{setSending(false);}
     if(taxiGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:taxiGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${taxiUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     localStorage.setItem('bridge_taxi_ref',ref);
