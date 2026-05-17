@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Bridge Safi — Partenariat</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#070d1a;font-family:'Inter',sans-serif;color:#fff;padding:40px 20px;min-height:100vh;display:flex;justify-content:center;align-items:flex-start}
+  .wrap{max-width:620px;width:100%}
+
+  /* Header */
+  .header{background:linear-gradient(135deg,#0f172a 0%,#1e1040 50%,#0f172a 100%);border-radius:24px 24px 0 0;padding:48px 40px 40px;text-align:center;position:relative;overflow:hidden;border:1px solid rgba(139,92,246,0.2)}
+  .header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% -20%,rgba(139,92,246,0.25) 0%,transparent 65%)}
+  .stars{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+  .star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;opacity:0.4}
+  .logo-ring{width:90px;height:90px;margin:0 auto 20px;background:linear-gradient(135deg,#7c3aed,#4f46e5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;box-shadow:0 0 40px rgba(124,58,237,0.5),0 0 80px rgba(124,58,237,0.2);position:relative}
+  .logo-ring::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:2px solid rgba(139,92,246,0.4)}
+  .brand{font-size:34px;font-weight:900;letter-spacing:-0.02em;background:linear-gradient(135deg,#a78bfa,#818cf8,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
+  .tagline{font-size:13px;color:#94a3b8;letter-spacing:0.12em;text-transform:uppercase;font-weight:600}
+
+  /* Body */
+  .body{background:#0f172a;border-left:1px solid rgba(255,255,255,0.06);border-right:1px solid rgba(255,255,255,0.06);padding:36px 40px}
+
+  .greeting{font-size:18px;font-weight:800;margin-bottom:16px;color:#e2e8f0}
+  .intro{font-size:14px;color:#94a3b8;line-height:1.8;margin-bottom:30px}
+  .intro b{color:#c4b5fd;font-weight:700}
+
+  /* Services grid */
+  .section-title{font-size:11px;font-weight:800;color:#64748b;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px}
+  .services{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:30px}
+  .svc{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:10px}
+  .svc-icon{font-size:22px;flex-shrink:0}
+  .svc-name{font-size:13px;font-weight:700;color:#e2e8f0}
+  .svc-sub{font-size:11px;color:#475569;margin-top:2px}
+
+  /* Stats */
+  .stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:30px}
+  .stat{background:linear-gradient(135deg,rgba(124,58,237,0.12),rgba(79,70,229,0.08));border:1px solid rgba(139,92,246,0.18);border-radius:14px;padding:16px;text-align:center}
+  .stat-val{font-size:24px;font-weight:900;background:linear-gradient(135deg,#a78bfa,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .stat-label{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:0.1em;margin-top:4px;font-weight:600}
+
+  /* Offer */
+  .offer-box{background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(5,150,105,0.06));border:1px solid rgba(16,185,129,0.2);border-radius:18px;padding:24px;margin-bottom:28px}
+  .offer-title{font-size:15px;font-weight:900;color:#10b981;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .offer-items{display:flex;flex-direction:column;gap:9px}
+  .offer-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#94a3b8;line-height:1.5}
+  .offer-item::before{content:'✓';color:#10b981;font-weight:900;flex-shrink:0;margin-top:1px}
+
+  /* Diamond badge */
+  .diamond-block{background:linear-gradient(135deg,#1e1040,#0f172a);border:1px solid rgba(139,92,246,0.25);border-radius:18px;padding:22px;margin-bottom:28px;text-align:center}
+  .diamond-title{font-size:13px;font-weight:800;color:#a78bfa;margin-bottom:10px;letter-spacing:0.04em}
+  .diamond-row{display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap}
+  .diamond-pill{background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.25);border-radius:20px;padding:8px 16px;font-size:12px;font-weight:700;color:#c4b5fd}
+
+  /* CTA */
+  .cta-wrap{text-align:center;margin-bottom:28px}
+  .cta{display:inline-block;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;font-weight:900;font-size:15px;padding:16px 40px;border-radius:50px;text-decoration:none;letter-spacing:0.04em;box-shadow:0 0 30px rgba(124,58,237,0.4),0 4px 20px rgba(0,0,0,0.3)}
+  .cta-sub{font-size:11px;color:#475569;margin-top:10px;font-weight:600}
+
+  /* Footer */
+  .footer{background:#070d1a;border:1px solid rgba(255,255,255,0.05);border-top:none;border-radius:0 0 24px 24px;padding:28px 40px;text-align:center}
+  .footer-logo{font-size:18px;font-weight:900;background:linear-gradient(135deg,#a78bfa,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+  .footer-text{font-size:11px;color:#334155;line-height:1.6}
+  .footer-contact{margin-top:12px;display:flex;justify-content:center;gap:20px}
+  .fc{font-size:11px;color:#64748b;font-weight:600}
+  .fc span{color:#a78bfa}
+
+  /* Divider */
+  .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(139,92,246,0.2),transparent);margin:24px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="stars">
+      <div class="star" style="top:15%;left:10%"></div><div class="star" style="top:25%;left:85%"></div>
+      <div class="star" style="top:60%;left:5%"></div><div class="star" style="top:70%;left:92%"></div>
+      <div class="star" style="top:40%;left:50%"></div><div class="star" style="top:80%;left:30%"></div>
+      <div class="star" style="top:10%;left:60%"></div><div class="star" style="top:50%;left:75%"></div>
+    </div>
+    <div class="logo-ring">🌉</div>
+    <div class="brand">BRIDGE SAFI</div>
+    <div class="tagline">La super-app de Safi — Livraison · Services · Diamants</div>
+  </div>
+
+  <!-- BODY -->
+  <div class="body">
+    <div class="greeting">Bonjour,</div>
+    <div class="intro">
+      Nous vous contactons depuis <b>Bridge Safi</b>, la première super-application mobile dédiée à la ville de Safi. Notre mission : rendre chaque service du quotidien accessible en quelques secondes, sans se déplacer.<br><br>
+      Nous proposons un <b>partenariat publicitaire innovant</b> qui vous permet de toucher directement des milliers d'habitants de Safi — sans frais fixes, uniquement à la performance.
+    </div>
+
+    <!-- Services -->
+    <div class="section-title">🚀 Nos services actifs</div>
+    <div class="services">
+      <div class="svc"><div class="svc-icon">🚖</div><div><div class="svc-name">Bridge Taxi</div><div class="svc-sub">Réservation en ligne</div></div></div>
+      <div class="svc"><div class="svc-icon">🍔</div><div><div class="svc-name">Bridge Eats</div><div class="svc-sub">Livraison repas</div></div></div>
+      <div class="svc"><div class="svc-icon">💊</div><div><div class="svc-name">Bridge Pharma</div><div class="svc-sub">Livraison médicaments</div></div></div>
+      <div class="svc"><div class="svc-icon">🌸</div><div><div class="svc-name">Bridge Fleurs</div><div class="svc-sub">Livraison fleurs & cadeaux</div></div></div>
+      <div class="svc"><div class="svc-icon">🚬</div><div><div class="svc-name">Bridge Tabac</div><div class="svc-sub">Livraison tabac</div></div></div>
+      <div class="svc"><div class="svc-icon">🎮</div><div><div class="svc-name">Bridge Game</div><div class="svc-sub">Système de récompenses</div></div></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="section-title">📊 Bridge en chiffres</div>
+    <div class="stats">
+      <div class="stat"><div class="stat-val">Safi</div><div class="stat-label">Ville cible</div></div>
+      <div class="stat"><div class="stat-val">6</div><div class="stat-label">Services actifs</div></div>
+      <div class="stat"><div class="stat-val">💎</div><div class="stat-label">Fidélité unique</div></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Diamond system -->
+    <div class="diamond-block">
+      <div class="diamond-title">💎 Le système Diamond — notre avantage concurrentiel</div>
+      <div style="font-size:12px;color:#94a3b8;line-height:1.7;margin-bottom:14px">
+        Nos utilisateurs gagnent des <b style="color:#c4b5fd">diamants</b> en accomplissant des missions sponsorisées par nos partenaires — regarder une publicité, s'inscrire sur un site, télécharger une application. Ces diamants sont convertibles en réductions sur nos services.
+      </div>
+      <div class="diamond-row">
+        <div class="diamond-pill">📱 Téléchargement app → +20 000 💎</div>
+        <div class="diamond-pill">🎬 Pub vidéo 60s → +1 000 💎</div>
+        <div class="diamond-pill">📊 Sondage → +2 400 💎</div>
+      </div>
+    </div>
+
+    <!-- Offer -->
+    <div class="offer-box">
+      <div class="offer-title">🤝 Ce que nous vous proposons</div>
+      <div class="offer-items">
+        <div class="offer-item">Affichage de votre offre dans notre section <b style="color:#a7f3d0">Missions & Pubs</b>, vue par tous nos utilisateurs actifs à Safi</div>
+        <div class="offer-item">Paiement uniquement à la conversion — vous ne payez que lorsqu'un utilisateur effectue l'action souhaitée</div>
+        <div class="offer-item">Bannière publicitaire dans notre app, exposée à chaque ouverture de session</div>
+        <div class="offer-item">Rapport mensuel des conversions et du taux d'engagement</div>
+        <div class="offer-item">Budget flexible — à partir de 500 DH / mois</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-wrap">
+      <a class="cta" href="mailto:bridge.safi@gmail.com">📩 Répondre à ce mail</a>
+      <div class="cta-sub">Ou contactez-nous directement sur WhatsApp pour une démo live</div>
+    </div>
+
+    <div style="font-size:12px;color:#475569;text-align:center;line-height:1.7;font-style:italic">
+      "Glovo a quitté Safi. Bridge Safi est là pour rester — et pour construire<br>l'économie numérique de notre ville avec ses acteurs locaux."
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-logo">BRIDGE SAFI</div>
+    <div class="footer-text">
+      La super-app de Safi, Maroc<br>
+      Livraison · Taxi · Pharmacie · Fleurs · Tabac · Jeux
+    </div>
+    <div class="footer-contact">
+      <div class="fc">✉️ <span>bridge.safi@gmail.com</span></div>
+      <div class="fc">🌐 <span>safi-bridge.ma</span></div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

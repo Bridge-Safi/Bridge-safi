@@ -108,3 +108,9 @@ id = "LCy85g0qHFq9j2TfbmyDV"
 uri = "file://screenshots/play_store_04_restaurant.jpg"
 type = "image"
 title = "Capture 4 — Espace Restaurant"
+
+[[outputs]]
+id = "K7EbaktFwecTDewfFu1XA"
+uri = "file://screenshots/email-bridge.jpg"
+type = "image"
+title = "Email Bridge Safi — Présentation partenariat"
