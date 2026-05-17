@@ -266,7 +266,7 @@ const DELIVERY_FEE = 12;   // MAD — frais livraison de base (affiché au clien
 const KM_RATE      = 1;    // MAD/km — silencieux, non affiché au client
 const RESTAURANT_LAT = 32.2994; // Centre-ville Safi (point de départ calcul distance)
 const RESTAURANT_LNG = -9.2372;
-const SERVICE_FEE  = 5;    // MAD — frais service optionnel
+const SERVICE_FEE  = 6.5;  // MAD — frais service obligatoires
 
 function haversineKm(lat1:number,lng1:number,lat2:number,lng2:number):number{
   const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
@@ -3186,69 +3186,381 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
 
 // ─── BRIDGE PHARMACIE PAGE ────────────────────────────────────────────────────
 
-function PharmaciePage({onBack,lang,profile}:{onBack:()=>void;lang:Lang;profile:UserProfile}) {
+// ─── PHARMACIE CATALOG ────────────────────────────────────────────────────────
+
+interface MedEntry {id:string;name:string;desc:string;price:number;cat:'douleur'|'digestif'|'rhume'|'peau'|'vitamines'|'yeux';emoji:string;}
+const PHARMA_CATALOG:MedEntry[]=[
+  // ── 💊 Douleur & Fièvre ──
+  {id:'doli-500',  name:'Doliprane 500mg',        desc:'Paracétamol 20 cp',         price:14, cat:'douleur', emoji:'💊'},
+  {id:'doli-1000', name:'Doliprane 1000mg',        desc:'Paracétamol 8 cp',          price:18, cat:'douleur', emoji:'💊'},
+  {id:'effera',    name:'Efferalgan 500mg',         desc:'Effervescent 16 cp',        price:22, cat:'douleur', emoji:'🫧'},
+  {id:'dafal',     name:'Dafalgan 1g Effervescent', desc:'Paracétamol fort 8 cp',     price:22, cat:'douleur', emoji:'🫧'},
+  {id:'aspegic',   name:'Aspégic 500mg',            desc:'Aspirine sachets ×10',      price:18, cat:'douleur', emoji:'💊'},
+  {id:'advil',     name:'Advil 400mg',              desc:'Ibuprofène 14 cp',          price:28, cat:'douleur', emoji:'💊'},
+  {id:'nurofen',   name:'Nurofen 200mg',            desc:'Ibuprofène 24 cp',          price:35, cat:'douleur', emoji:'💊'},
+  {id:'voltarene', name:'Voltarène Gel 1%',         desc:'Anti-inflammatoire 50g',    price:55, cat:'douleur', emoji:'🧴'},
+  // ── 🤢 Digestif & Estomac ──
+  {id:'smecta',    name:'Smecta',                   desc:'Diarrhée sachets ×10',      price:38, cat:'digestif', emoji:'🟡'},
+  {id:'imodium',   name:'Imodium 2mg',              desc:'Loperamide 12 gel',         price:35, cat:'digestif', emoji:'💊'},
+  {id:'maalox',    name:'Maalox Suspension',        desc:'Antiacide 250ml',           price:45, cat:'digestif', emoji:'🥛'},
+  {id:'gaviscon',  name:'Gaviscon Advance',          desc:'Brûlures 30 cp',            price:55, cat:'digestif', emoji:'💊'},
+  {id:'lacteol',   name:'Lacteol Fort',             desc:'Probiotique 10 sachets',    price:50, cat:'digestif', emoji:'🦠'},
+  {id:'charbon',   name:'Charbon Activé',           desc:'Intoxication 20 cp',        price:25, cat:'digestif', emoji:'⬛'},
+  {id:'duphalac',  name:'Duphalac',                 desc:'Laxatif sirop 200ml',       price:48, cat:'digestif', emoji:'🍶'},
+  {id:'motilium',  name:'Motilium 10mg',            desc:'Nausées 30 cp',             price:42, cat:'digestif', emoji:'💊'},
+  // ── 🤧 Rhume, Toux & Gorge ──
+  {id:'actifed',   name:'Actifed',                  desc:'Rhume 16 cp',               price:38, cat:'rhume', emoji:'🤧'},
+  {id:'fervex',    name:'Fervex',                   desc:'Grippe 8 sachets',          price:42, cat:'rhume', emoji:'🫗'},
+  {id:'rhinathiol',name:'Rhinathiol Sirop',          desc:'Expectorant 250ml',         price:45, cat:'rhume', emoji:'🍶'},
+  {id:'toplexil',  name:'Toplexil Sirop',           desc:'Toux sèche 250ml',          price:40, cat:'rhume', emoji:'🍶'},
+  {id:'strepsils', name:'Strepsils Miel-Citron',    desc:'Pastilles gorge ×24',       price:32, cat:'rhume', emoji:'🍯'},
+  {id:'neocodion', name:'Néo-Codion',               desc:'Toux 30 cp',                price:38, cat:'rhume', emoji:'💊'},
+  {id:'physiomer', name:'Physiomer Spray',           desc:'Nez bouché 135ml',          price:58, cat:'rhume', emoji:'💨'},
+  // ── 🩹 Plaies & Peau ──
+  {id:'biafine',   name:'Biafine Émulsion',         desc:'Brûlures 93g',              price:58, cat:'peau', emoji:'🧴'},
+  {id:'bepanthen', name:'Bepanthen Pommade',        desc:'Cicatrisant 100g',          price:68, cat:'peau', emoji:'🧴'},
+  {id:'betadine',  name:'Bétadine Solution',        desc:'Antiseptique 125ml',        price:40, cat:'peau', emoji:'🟤'},
+  {id:'flammazine',name:'Flammazine Crème',         desc:'Brûlures graves 50g',       price:75, cat:'peau', emoji:'🧴'},
+  {id:'cicatryl',  name:'Cicatryl Pommade',         desc:'Cicatrisant 50g',           price:48, cat:'peau', emoji:'🧴'},
+  {id:'eau-oxy',   name:'Eau Oxygénée 10vol',       desc:'Antiseptique 250ml',        price:12, cat:'peau', emoji:'🫧'},
+  {id:'mercuro',   name:'Éosine Aqueuse',           desc:'Désinfectant 2× 2ml',       price:15, cat:'peau', emoji:'🔴'},
+  // ── 💊 Vitamines & Compléments ──
+  {id:'vitc',      name:'Vitamine C 1000mg',        desc:'Effervescent ×20',          price:32, cat:'vitamines', emoji:'🍊'},
+  {id:'supradyn',  name:'Supradyn',                 desc:'Multivitamines 30 cp',      price:68, cat:'vitamines', emoji:'💛'},
+  {id:'magne-b6',  name:'Magné B6',                desc:'Magnésium 60 cp',           price:55, cat:'vitamines', emoji:'💊'},
+  {id:'becozyme',  name:'Becozyme C Forte',         desc:'Vitamines B+C 30 cp',       price:45, cat:'vitamines', emoji:'💊'},
+  {id:'vitd3',     name:'Vitamine D3 1000UI',       desc:'Gouttes 10ml',              price:45, cat:'vitamines', emoji:'☀️'},
+  {id:'zinc',      name:'Zinc 15mg',                desc:'Immunité 30 cp',            price:35, cat:'vitamines', emoji:'💊'},
+  // ── 👁️ Yeux & Nez ──
+  {id:'rhinomer',  name:'Rhinomer Spray',           desc:'Lavage nasal 135ml',        price:48, cat:'yeux', emoji:'👃'},
+  {id:'visine',    name:'Visine Yeux Rouges',       desc:'Collyre 15ml',              price:38, cat:'yeux', emoji:'👁️'},
+  {id:'collyre-b', name:'Collyre Bleu',             desc:'Décongestionnant 10ml',     price:28, cat:'yeux', emoji:'🔵'},
+  {id:'artelac',   name:'Artelac Gouttes',          desc:'Larmes artificielles 10ml', price:55, cat:'yeux', emoji:'💧'},
+];
+
+function PharmaciePage({onBack,lang,profile,saveProfile}:{onBack:()=>void;lang:Lang;profile:UserProfile;saveProfile:(p:UserProfile)=>void}) {
   const fClass=fontClass(lang); const isAR=lang==='ar';
   const [,navigatePharm]=useLocation();
-  const msgs:{fr:string;en:string;ar:string;amz:string}={
-    fr:'Bridge Pharmacie sera lancé très bientôt.\nLivraison de médicaments & produits parapharmacie,\nde jour comme de nuit à Safi.',
-    en:'Bridge Pharmacie launching very soon.\nMedication & parapharmacy delivery,\nday and night in Safi.',
-    ar:'سيُطلق بريدج فارماسي قريباً جداً.\nتوصيل الأدوية ومستلزمات الصيدلية،\nليلاً ونهاراً في آسفي.',
-    amz:'Bridge Pharmacie ⵜⴰⵖ ⴷ ⵓⴳⵉⵏ.\nⴰⵙⵙⵓⴼⵖ ⵏ ⵉⵙⵙⴰⵏ ⴷ ⵉⵙⴽⵉⵔⵏ,\nⵉⴹ ⴷ ⵡⴰⵙⵙ ⵖ ⵙⴰⴼⵉ.',
+
+  // ── Night ──
+  const nowH=new Date().getHours();
+  const isNight=nowH>=22||nowH<6;
+  const NIGHT_SURCHARGE=10; // DH par médicament la nuit
+  const DELIV_FEE_PHARM=(isNight?18:12);
+  const SVC_FEE_PHARM=6.5;
+
+  // ── State ──
+  const [pharmCart,setPharmCart]=useState<{id:string;qty:number}[]>([]);
+  const [pharmCat,setPharmCat]=useState<MedEntry['cat']>('douleur');
+  const [pharmSearch,setPharmSearch]=useState('');
+  const [delivMode,setDelivMode]=useState<'delivery'|'collect'>('delivery');
+  const [name,setName]=useState(profile.name??'');
+  const [addr,setAddr]=useState(profile.address??'');
+  const [phone,setPhone]=useState(profile.phone??'');
+  const [err,setErr]=useState('');
+  const [sending,setSending]=useState(false);
+  const [sent,setSent]=useState(false);
+  const [orderRef]=useState(()=>`PH-${Math.floor(1000+Math.random()*9000)}`);
+  const [payMethod,setPayMethod]=useState<PayMethodType>(null);
+  const [showQR,setShowQR]=useState(false);
+  const {user:pharmUser}=useUser();
+  const getAuthHeadersPharm=useAuthHeaders();
+  const [pharmGems,setPharmGems]=useState(0);
+  const [pharmGemMAD,setPharmGemMAD]=useState(0);
+  const maxPharmGemMAD=Math.floor(pharmGems/200);
+
+  useEffect(()=>{
+    if(!pharmUser?.id) return;
+    getAuthHeadersPharm().then(h=>fetch('/api/game/diamonds',{credentials:'include',headers:h})
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{if(d&&typeof d.diamonds==='number')setPharmGems(d.diamonds);})
+      .catch(()=>{}));
+  },[pharmUser?.id,getAuthHeadersPharm]);
+
+  // ── Cart helpers ──
+  const addMed=(id:string)=>setPharmCart(c=>{const ex=c.find(x=>x.id===id);return ex?c.map(x=>x.id===id?{...x,qty:x.qty+1}:x):[...c,{id,qty:1}];});
+  const remMed=(id:string)=>setPharmCart(c=>{const ex=c.find(x=>x.id===id);if(!ex)return c;if(ex.qty===1)return c.filter(x=>x.id!==id);return c.map(x=>x.id===id?{...x,qty:x.qty-1}:x);});
+  const medQty=(id:string)=>pharmCart.find(x=>x.id===id)?.qty??0;
+  const medPrice=(m:MedEntry)=>m.price+(isNight?NIGHT_SURCHARGE:0);
+  const cartSubtotal=pharmCart.reduce((s,ci)=>{const m=PHARMA_CATALOG.find(f=>f.id===ci.id);return s+(m?medPrice(m)*ci.qty:0);},0);
+  const cartTotal=cartSubtotal+DELIV_FEE_PHARM+SVC_FEE_PHARM-pharmGemMAD;
+  const cartCount=pharmCart.reduce((s,ci)=>s+ci.qty,0);
+
+  const visibleMeds=PHARMA_CATALOG.filter(m=>
+    m.cat===pharmCat&&(pharmSearch===''||m.name.toLowerCase().includes(pharmSearch.toLowerCase()))
+  );
+
+  const catTabs:{key:MedEntry['cat'];label:string;emoji:string}[]=[
+    {key:'douleur',   label:lang==='ar'?'ألم':lang==='en'?'Pain':'Douleur',     emoji:'💊'},
+    {key:'digestif',  label:lang==='ar'?'هضم':lang==='en'?'Digestive':'Digestif', emoji:'🤢'},
+    {key:'rhume',     label:lang==='ar'?'زكام':lang==='en'?'Cold':'Rhume',       emoji:'🤧'},
+    {key:'peau',      label:lang==='ar'?'جلد':lang==='en'?'Skin':'Peau',         emoji:'🩹'},
+    {key:'vitamines', label:lang==='ar'?'فيتامين':lang==='en'?'Vitamins':'Vitamines', emoji:'💛'},
+    {key:'yeux',      label:lang==='ar'?'عيون':lang==='en'?'Eyes':'Yeux',        emoji:'👁️'},
+  ];
+
+  const inputCls=`w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all ${fClass}`;
+  const inputStyle=(hasErr:boolean):React.CSSProperties=>({background:'rgba(255,255,255,0.07)',border:`1.5px solid ${hasErr?'#EF4444':'rgba(165,180,252,0.2)'}`,color:'#fff'});
+
+  const handleWalletPay=async(type:'apple'|'google')=>{
+    if(!name.trim()||!phone.trim()||(delivMode==='delivery'&&!addr.trim())){setErr('*');return;}
+    const payLabel=type==='apple'?'Apple Pay':'Google Pay';
+    const methods=type==='apple'
+      ?[{supportedMethods:'https://apple.com/apple-pay',data:{version:3,merchantIdentifier:'merchant.ma.safi-bridge',merchantCapabilities:['supports3DS'],supportedNetworks:['visa','masterCard'],countryCode:'MA'}}]
+      :[{supportedMethods:'https://google.com/pay',data:{apiVersion:2,apiVersionMinor:0,merchantInfo:{merchantName:'Bridge Safi'},allowedPaymentMethods:[{type:'CARD',parameters:{allowedAuthMethods:['PAN_ONLY','CRYPTOGRAM_3DS'],allowedCardNetworks:['MASTERCARD','VISA']},tokenizationSpecification:{type:'PAYMENT_GATEWAY',parameters:{gateway:'example',gatewayMerchantId:'bridge-safi'}}}]}}];
+    const details={total:{label:'Bridge Pharmacie · Safi',amount:{currency:'MAD',value:String(cartTotal)}}};
+    try{
+      if(typeof PaymentRequest==='undefined') throw new Error('unsupported');
+      const pr=new PaymentRequest(methods,details);
+      const canMake=await pr.canMakePayment().catch(()=>false);
+      if(!canMake) throw new Error('unavailable');
+      const response=await pr.show();
+      await response.complete('success');
+      setPayMethod(type);
+      await handleSend(payLabel);
+    }catch{setPayMethod('cash');}
   };
+
+  const handleSend=async(payLabel?:string)=>{
+    if(!name.trim()||!phone.trim()||(delivMode==='delivery'&&!addr.trim())){setErr('*');return;}
+    setSending(true);
+    const deliveryAddress=delivMode==='delivery'?`${addr.trim()}, Safi, Maroc`:'Pharmacie Bridge Safi — Retrait sur place';
+    const driverTrackUrl=`${window.location.origin}/driver/${orderRef}`;
+    const payInfo=payLabel?payLabel:payMethod==='qr'?'QR Code':payMethod==='cash'?'Espèces':payMethod==='apple'?'Apple Pay':payMethod==='google'?'Google Pay':'Espèces';
+    const itemsList=pharmCart.map(ci=>{const m=PHARMA_CATALOG.find(f=>f.id===ci.id)!;const ep=medPrice(m);return `${m.name} ×${ci.qty} (${ep*ci.qty} DH${isNight?' 🌙':''})`;}).join('\n');
+    const notesStr=`💊 Bridge Pharmacie${isNight?' 🌙 NUIT':''}\n${itemsList||'Commande générale'}\n—\nSous-total: ${cartSubtotal} DH\nLivraison: ${DELIV_FEE_PHARM} DH${isNight?' (tarif nuit)':''}\nService: ${SVC_FEE_PHARM} DH\nTotal: ${cartTotal} DH\n💳 ${payInfo}\n👤 ${name.trim()} — ${phone.trim()}`;
+    const apiItems=pharmCart.length>0
+      ?pharmCart.map(ci=>{const m=PHARMA_CATALOG.find(f=>f.id===ci.id)!;return {name:m.name,qty:ci.qty,price:medPrice(m)};})
+      :[{name:'💊 Commande Bridge Pharmacie',qty:1,price:0}];
+    try{
+      await fetch('/api/orders/inbound',{method:'POST',headers:{'Content-Type':'application/json','x-bridge-secret':'bridge-safi-8b269bba03fd8c0205116f3f'},
+        body:JSON.stringify({customerName:name.trim(),customerPhone:phone.trim(),deliveryAddress,pickupAddress:'Bridge Pharmacie — Safi',items:apiItems,total:cartTotal,source:'Bridge Pharmacie',paymentMethod:payInfo}),
+      }).catch(()=>{});
+      await fetch(`${DRIVER_APP_URL}/api/deliveries`,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({trackingNumber:orderRef,customerName:name.trim(),customerPhone:phone.trim(),pickupAddress:'Pharmacie Bridge Safi',deliveryAddress,priority:'normal',notes:notesStr,driverTrackUrl}),
+      }).catch(()=>{});
+    }finally{setSending(false);}
+    if(pharmGemMAD>0){getAuthHeadersPharm().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:pharmGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${pharmUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
+    localStorage.setItem('bridge_last_ref',orderRef);
+    setSent(true);
+  };
+
   return(
-    <div className={`min-h-screen flex flex-col items-center justify-center ${fClass}`}
+    <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`}
       dir={isAR?'rtl':'ltr'}
-      style={{background:'linear-gradient(160deg,#060818 0%,#0C0E2B 40%,#1E1B4B 70%,#0F172A 100%)',padding:24,position:'relative',overflow:'hidden'}}>
-      {/* Stars background */}
-      {Array.from({length:30}).map((_,i)=>(
-        <div key={i} style={{position:'absolute',borderRadius:'50%',background:'#fff',
-          width:Math.random()*2+1,height:Math.random()*2+1,
-          top:`${Math.random()*100}%`,left:`${Math.random()*100}%`,
-          opacity:Math.random()*0.6+0.2,
-          animation:`pulse2 ${(Math.random()*3+2).toFixed(1)}s ease-in-out infinite`,
-          animationDelay:`${(Math.random()*3).toFixed(1)}s`,
-        }}/>
-      ))}
-      {/* Back button */}
-      <button onClick={onBack}
-        style={{position:'absolute',top:20,left:isAR?'auto':20,right:isAR?20:'auto',background:'rgba(255,255,255,0.08)',border:'1.5px solid rgba(255,255,255,0.15)',borderRadius:50,padding:'10px 18px',color:'#fff',fontWeight:700,fontSize:13,cursor:'pointer',backdropFilter:'blur(12px)',zIndex:10,display:'flex',alignItems:'center',gap:6}}>
-        <span style={{fontSize:16}}>←</span>
-        {lang==='ar'?'رجوع':lang==='en'?'Back':lang==='amz'?'ⴰⴷⴷⵓ':'Retour'}
-      </button>
-      {/* Shark diamond widget top-right */}
-      <div style={{position:'absolute',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:10}}>
+      style={{background:'linear-gradient(160deg,#060818 0%,#0C0E2B 40%,#1E1B4B 70%,#0F172A 100%)',color:'#fff',minHeight:'100dvh'}}>
+
+      {/* Header */}
+      <div style={{position:'fixed',top:16,left:isAR?'auto':16,right:isAR?16:'auto',zIndex:50}}>
+        <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(165,180,252,0.12)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:18}}>←</button>
+      </div>
+      <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50}}>
         <SharkDiamondWidget onNavigate={()=>navigatePharm('/game')} profile={profile}/>
       </div>
+
       {/* Content */}
-      <div style={{textAlign:'center',maxWidth:320,zIndex:1}}>
-        {/* Night moon illustration */}
-        <div style={{marginBottom:28,position:'relative',display:'inline-block'}}>
-          <div style={{width:100,height:100,borderRadius:'50%',background:'linear-gradient(135deg,#1E1B4B,#312E81)',border:'2px solid rgba(165,180,252,0.4)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 40px rgba(99,102,241,0.5)',margin:'0 auto'}}>
-            <span style={{fontSize:52}}>💊</span>
-          </div>
-          <div style={{position:'absolute',top:-8,right:-8,background:'rgba(99,102,241,0.3)',borderRadius:'50%',width:30,height:30,display:'flex',alignItems:'center',justifyContent:'center',border:'1px solid rgba(165,180,252,0.4)'}}>
-            <span style={{fontSize:16}}>🌙</span>
-          </div>
+      <div className={`flex flex-col items-center px-5 pt-20 pb-12 max-w-sm mx-auto w-full gap-4 ${fClass}`}>
+
+        {/* Title */}
+        <div className="text-center">
+          <h1 className={`font-black text-xl tracking-wider mb-0.5 ${fClass}`} style={{color:'#A5B4FC'}}>BRIDGE PHARMACIE</h1>
+          <p className="text-[10px] tracking-widest font-bold" style={{color:'rgba(165,180,252,0.6)'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
+          {isNight&&<div style={{display:'inline-flex',alignItems:'center',gap:5,background:'rgba(99,102,241,0.2)',border:'1px solid rgba(165,180,252,0.35)',borderRadius:50,padding:'3px 12px',marginTop:6}}>
+            <span style={{fontSize:12}}>🌙</span>
+            <span style={{color:'#C7D2FE',fontSize:10,fontWeight:900,letterSpacing:'0.12em'}}>TARIF NUIT +{NIGHT_SURCHARGE} DH/méd.</span>
+          </div>}
         </div>
-        <p style={{color:'rgba(165,180,252,0.6)',fontSize:10,fontWeight:900,letterSpacing:'0.2em',textTransform:'uppercase',margin:'0 0 8px'}}>Bridge Services</p>
-        <h1 style={{color:'#fff',fontSize:26,fontWeight:900,margin:'0 0 6px',letterSpacing:'0.04em'}}>Bridge Pharmacie</h1>
-        {/* EN ATTENTE badge */}
-        <div style={{display:'inline-flex',alignItems:'center',gap:7,background:'rgba(239,68,68,0.15)',border:'1.5px solid rgba(239,68,68,0.4)',borderRadius:50,padding:'6px 16px',marginBottom:24}}>
-          <span style={{width:8,height:8,borderRadius:'50%',background:'#EF4444',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
-          <span style={{color:'#FCA5A5',fontSize:11,fontWeight:900,letterSpacing:'0.15em'}}>EN ATTENTE</span>
-        </div>
-        <p style={{color:'rgba(199,210,254,0.75)',fontSize:14,lineHeight:1.7,margin:'0 0 32px',whiteSpace:'pre-line'}}>{msgs[lang]}</p>
-        {/* Feature previews */}
-        {[
-          {icon:'🌙',fr:'Disponible la nuit',en:'Available at night',ar:'متاح ليلاً',amz:'ⴰⵙⵙⵓⴼⵖ ⵉⴹ'},
-          {icon:'🚚',fr:'Livraison express',en:'Express delivery',ar:'توصيل سريع',amz:'ⴰⵙⵙⵓⴼⵖ ⵣⵔⵉⵔⵉ'},
-          {icon:'💊',fr:'Médicaments & para',en:'Meds & parapharmacy',ar:'أدوية ومستلزمات',amz:'ⵉⵙⵙⴰⵏ ⴷ ⵉⵙⴽⵉⵔⵏ'},
-        ].map(f=>(
-          <div key={f.icon} style={{display:'flex',alignItems:'center',gap:12,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:14,padding:'12px 16px',marginBottom:10,textAlign:isAR?'right':'left'}}>
-            <span style={{fontSize:22,flexShrink:0}}>{f.icon}</span>
-            <span style={{color:'rgba(199,210,254,0.85)',fontSize:13,fontWeight:600}}>{f[lang]}</span>
+
+        {/* ── Catalogue ── */}
+        {!sent&&(
+          <div className="w-full">
+            {/* Search */}
+            <input value={pharmSearch} onChange={e=>setPharmSearch(e.target.value)}
+              placeholder={lang==='ar'?'بحث دواء…':lang==='en'?'Search medication…':'Rechercher un médicament…'}
+              className={`w-full px-4 py-2.5 rounded-xl text-sm outline-none mb-3 ${fClass}`}
+              style={{background:'rgba(165,180,252,0.1)',border:'1.5px solid rgba(165,180,252,0.2)',color:'#fff'}}/>
+
+            {/* Category tabs — horizontal scroll */}
+            <div className="flex gap-1.5 mb-3 overflow-x-auto pb-1" style={{scrollbarWidth:'none'}}>
+              {catTabs.map(tab=>(
+                <button key={tab.key} onClick={()=>{setPharmCat(tab.key);setPharmSearch('');}}
+                  className="flex-shrink-0 py-2 px-3 rounded-xl font-black text-[10px] transition-all active:scale-95"
+                  style={{background:pharmCat===tab.key?'#6366F1':'rgba(165,180,252,0.1)',color:pharmCat===tab.key?'white':'rgba(165,180,252,0.6)',border:`1.5px solid ${pharmCat===tab.key?'#6366F1':'rgba(165,180,252,0.2)'}`,letterSpacing:'0.04em',whiteSpace:'nowrap'}}>
+                  {tab.emoji} {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Items list */}
+            <div className="flex flex-col gap-2">
+              {visibleMeds.map(med=>{
+                const qty=medQty(med.id);
+                const ep=medPrice(med);
+                return(
+                  <div key={med.id} className="flex items-center gap-3 rounded-2xl px-3 py-2.5"
+                    style={{background:qty>0?'rgba(99,102,241,0.18)':'rgba(255,255,255,0.04)',border:`1.5px solid ${qty>0?'rgba(99,102,241,0.5)':'rgba(165,180,252,0.15)'}`,transition:'all 0.15s'}}>
+                    {/* Med icon box */}
+                    <div style={{width:38,height:38,borderRadius:10,flexShrink:0,background:'rgba(99,102,241,0.25)',border:'1px solid rgba(165,180,252,0.25)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}>
+                      {med.emoji}
+                    </div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <p className="font-black text-[12px] truncate" style={{color:'#E0E7FF'}}>{med.name}</p>
+                      <p className="text-[10px]" style={{color:'rgba(165,180,252,0.55)'}}>{med.desc}</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-[11px] font-black" style={{color:'#A5B4FC'}}>{ep} DH</span>
+                        {isNight&&<span style={{background:'rgba(251,191,36,0.15)',border:'1px solid rgba(251,191,36,0.4)',borderRadius:4,padding:'0 4px',fontSize:9,color:'#F59E0B',fontWeight:700}}>🌙 +{NIGHT_SURCHARGE}</span>}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      {qty>0&&(
+                        <>
+                          <button onClick={()=>remMed(med.id)} style={{width:28,height:28,borderRadius:'50%',border:'none',background:'rgba(99,102,241,0.25)',color:'#A5B4FC',fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
+                          <span className="font-black text-sm w-5 text-center" style={{color:'#fff'}}>{qty}</span>
+                        </>
+                      )}
+                      <button onClick={()=>addMed(med.id)} style={{width:28,height:28,borderRadius:'50%',border:'none',background:'#6366F1',color:'white',fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>+</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Cart mini summary */}
+            {cartCount>0&&(
+              <div className="mt-3 rounded-2xl p-3" style={{background:'rgba(99,102,241,0.15)',border:'1.5px solid rgba(99,102,241,0.4)'}}>
+                <p className="font-black text-[11px] mb-1.5" style={{color:'#A5B4FC'}}>🛒 {cartCount} {lang==='ar'?'منتج':lang==='en'?'item(s)':'produit(s)'} sélectionné(s)</p>
+                {pharmCart.map(ci=>{const m=PHARMA_CATALOG.find(f=>f.id===ci.id)!;const ep=medPrice(m);return(
+                  <div key={ci.id} className="flex justify-between text-[11px]" style={{color:'rgba(165,180,252,0.7)'}}>
+                    <span>{m.name} ×{ci.qty}</span><span className="font-bold">{ep*ci.qty} DH</span>
+                  </div>
+                );})}
+              </div>
+            )}
           </div>
-        ))}
+        )}
+
+        {/* Mode selector */}
+        {!sent&&(
+          <div className="flex gap-2 w-full">
+            {([
+              {key:'delivery'as const,label:lang==='ar'?'توصيل':lang==='en'?'Delivery':'Livraison',desc:lang==='ar'?'إلى بابك':lang==='en'?'To your door':'À votre porte',color:'#6366F1'},
+              {key:'collect'as const,label:lang==='ar'?'استلام':lang==='en'?'Collect':'Retrait',desc:lang==='ar'?'من الصيدلية':lang==='en'?'From pharmacy':'De la pharmacie',color:'#8B5CF6'},
+            ]).map(opt=>{
+              const sel=delivMode===opt.key;
+              return(
+                <button key={opt.key} onClick={()=>{setDelivMode(opt.key);setErr('');}}
+                  className="flex-1 rounded-2xl p-3 text-left transition-all duration-200 active:scale-95"
+                  style={{background:sel?'rgba(99,102,241,0.2)':'rgba(255,255,255,0.04)',border:`2px solid ${sel?opt.color:'rgba(165,180,252,0.15)'}`}}>
+                  <p className={`font-black text-[11px] leading-tight ${fClass}`} style={{color:opt.color}}>{opt.label}</p>
+                  <p className={`text-[9px] mt-0.5 ${fClass}`} style={{color:'rgba(165,180,252,0.4)'}}>{opt.desc}</p>
+                  {sel&&<div className="mt-1.5 w-3 h-3 rounded-full flex items-center justify-center" style={{background:opt.color}}>
+                    <svg width="7" height="7" viewBox="0 0 10 10" fill="white"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>
+                  </div>}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Form */}
+        {!sent&&(
+          <div className="w-full flex flex-col gap-3">
+            <div>
+              <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:'#A5B4FC'}}>👤 {lang==='ar'?'الاسم':lang==='en'?'Name':'Nom'}</p>
+              <input className={inputCls} style={inputStyle(!!err&&!name.trim())} placeholder={lang==='ar'?'اسمك الكامل…':lang==='en'?'Your name…':'Votre nom…'} value={name} onChange={e=>{setName(e.target.value);setErr('');}}/>
+            </div>
+            {delivMode==='delivery'&&(
+              <AddressAutocomplete label={`📍 ${lang==='ar'?'العنوان':lang==='en'?'Address':'Adresse'}`} value={addr} onChange={v=>{setAddr(v);setErr('');}}
+                placeholder={lang==='ar'?'عنوان التوصيل…':lang==='en'?'Delivery address…':'Adresse de livraison…'} lang={lang} error={!!err&&!addr.trim()}/>
+            )}
+            <div>
+              <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:'#A5B4FC'}}>📞 {lang==='ar'?'الهاتف':lang==='en'?'Phone':'Téléphone'}</p>
+              <input className={inputCls} style={inputStyle(!!err&&!phone.trim())} placeholder="06XXXXXXXX" value={phone} type="tel" onChange={e=>{setPhone(e.target.value);setErr('');}}/>
+            </div>
+            {err&&<p className={`text-xs font-bold ${fClass}`} style={{color:'#EF4444'}}>⚠️ {lang==='ar'?'يرجى ملء جميع الحقول':lang==='en'?'Please fill all fields':'Veuillez remplir tous les champs'}</p>}
+          </div>
+        )}
+
+        {/* Success */}
+        {sent&&(
+          <div className="rounded-3xl p-6 text-center w-full" style={{background:'rgba(99,102,241,0.15)',border:'2px solid rgba(99,102,241,0.5)',boxShadow:'0 8px 32px rgba(99,102,241,0.25)'}}>
+            <div className="text-5xl mb-3">✅</div>
+            <p className={`font-black text-base mb-1 ${fClass}`} style={{color:'#A5B4FC'}}>
+              {lang==='ar'?'تم إرسال طلبك!':lang==='en'?'Order placed!':'Commande envoyée !'}
+            </p>
+            <p className="text-2xl font-black tracking-[0.25em] my-2" style={{color:'#818CF8'}}>{orderRef}</p>
+            <p className={`text-[11px] mb-4 ${fClass}`} style={{color:'rgba(165,180,252,0.6)'}}>
+              {lang==='ar'?'سيتصل بك الليبرور قريباً':lang==='en'?'Driver will contact you soon':'Le livreur vous contactera bientôt'}
+            </p>
+          </div>
+        )}
+
+        {/* Order summary */}
+        {!sent&&cartCount>0&&(
+          <div className="w-full rounded-2xl p-4" style={{background:'rgba(255,255,255,0.04)',border:'1.5px solid rgba(165,180,252,0.15)'}}>
+            <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#A5B4FC'}}>🧾 {lang==='ar'?'الفاتورة':lang==='en'?'Summary':'Récapitulatif'}</p>
+            {cartSubtotal>0&&<div className="flex justify-between text-[12px] mb-1.5"><span style={{color:'rgba(165,180,252,0.5)'}}>{lang==='ar'?'المجموع':lang==='en'?'Subtotal':'Sous-total'}</span><span className="font-bold" style={{color:'#E0E7FF'}}>{cartSubtotal} DH</span></div>}
+            {delivMode==='delivery'&&<div className="flex justify-between text-[12px] mb-1.5"><span style={{color:'rgba(165,180,252,0.5)'}}>🛵 {lang==='ar'?'توصيل':lang==='en'?'Delivery':'Livraison'}{isNight&&<span style={{color:'#F59E0B',fontWeight:700}}> 🌙</span>}</span><span className="font-bold" style={{color:'#A5B4FC'}}>{DELIV_FEE_PHARM} DH</span></div>}
+            <div className="flex justify-between text-[12px] mb-2"><span style={{color:'rgba(165,180,252,0.5)'}}>⚙️ {lang==='ar'?'رسوم الخدمة':lang==='en'?'Service fee':'Frais de service'}</span><span className="font-bold" style={{color:'#A5B4FC'}}>{SVC_FEE_PHARM} DH</span></div>
+            {pharmGemMAD>0&&<div className="flex justify-between text-[12px] mb-2"><span style={{color:'#4ADE80'}}>💎 Réduction</span><span className="font-bold" style={{color:'#4ADE80'}}>-{pharmGemMAD} DH</span></div>}
+            <div className="flex justify-between items-center pt-2" style={{borderTop:'1.5px solid rgba(165,180,252,0.15)'}}><span className="font-black text-sm" style={{color:'#E0E7FF'}}>TOTAL</span><span className="font-black text-lg" style={{color:'#818CF8'}}>{cartTotal} DH</span></div>
+          </div>
+        )}
+
+        {/* 💎 Diamonds */}
+        {!sent&&(
+          <div className={`w-full rounded-2xl p-4 ${fClass}`} style={{background:'linear-gradient(135deg,#0A1A12,#0D2E1A)',border:'1px solid rgba(74,222,128,0.3)'}}>
+            <p className="text-[11px] font-black mb-1.5" style={{color:'#D9C5A0'}}>💎 {lang==='ar'?'خصم بالماسات':lang==='en'?'Diamond discount':'Réduction Diamants'}</p>
+            {pharmGems>0?(
+              <>
+                <p className="text-[10px] mb-2" style={{color:'rgba(255,255,255,0.6)',fontWeight:600}}>{pharmGems.toLocaleString()} 💎 = {maxPharmGemMAD} MAD</p>
+                {pharmGemMAD>0?(
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold" style={{color:'#4ADE80'}}>✓ -{pharmGemMAD} MAD appliqué</span>
+                    <button onClick={()=>setPharmGemMAD(0)} className="text-[9px] font-bold px-2 py-1 rounded-lg" style={{background:'rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.5)',border:'none',cursor:'pointer'}}>✕</button>
+                  </div>
+                ):(
+                  <div className="flex gap-2 flex-wrap">
+                    {[1,2,5,maxPharmGemMAD].filter((v,i,a)=>v>0&&a.indexOf(v)===i&&v<=maxPharmGemMAD).map(mad=>(
+                      <button key={mad} onClick={()=>setPharmGemMAD(mad)} className="px-3 py-1 rounded-xl font-black text-[10px] active:scale-95 transition-all"
+                        style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.5)',color:'#4ADE80',cursor:'pointer'}}>
+                        -{mad} MAD
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
+            ):(
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-[10px]" style={{color:'rgba(255,255,255,0.4)'}}>{lang==='ar'?'لا ماسات — العب لتربح!':lang==='en'?'No diamonds — play to earn!':'Pas de diamants — jouez !'}</p>
+                <button onClick={()=>navigatePharm('/game')} className="text-[9px] font-black px-2.5 py-1 rounded-xl" style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.4)',color:'#4ADE80',cursor:'pointer',flexShrink:0}}>🎮 Game</button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Payment */}
+        {!sent&&(
+          <div className="w-full rounded-2xl p-4" style={{background:'rgba(255,255,255,0.04)',border:'1.5px solid rgba(165,180,252,0.15)'}}>
+            <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#A5B4FC'}}>💳 {lang==='ar'?'طريقة الدفع':lang==='en'?'Payment':'Mode de paiement'}</p>
+            <SharedPaymentOptions lang={lang} selected={payMethod} onSelect={setPayMethod} showCash showCard={false} onWalletPay={handleWalletPay}/>
+          </div>
+        )}
+
+        {/* Send button */}
+        {!sent&&(
+          <button onClick={()=>{if(payMethod==='qr'){handleSend().then(()=>setShowQR(true));}else handleSend();}}
+            disabled={sending}
+            className={`w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 active:scale-95 transition-all ${fClass}`}
+            style={{background:sending?'#9CA3AF':'#6366F1',boxShadow:sending?'none':'0 6px 20px rgba(99,102,241,0.4)',cursor:sending?'not-allowed':'pointer'}}>
+            {sending?(
+              <><span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin"/>{lang==='ar'?'جارٍ الإرسال…':lang==='en'?'Sending…':'Envoi en cours…'}</>
+            ):(
+              <><span>🛵</span>{lang==='ar'?'تأكيد الطلب':lang==='en'?'Place order':'Commander'}</>
+            )}
+          </button>
+        )}
+        {showQR&&<QRPayModal lang={lang} onClose={()=>setShowQR(false)} onConfirm={()=>setShowQR(false)}/>}
       </div>
     </div>
   );
@@ -4738,7 +5050,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           saveProfile={saveProfile}
           onClearCart={()=>{setCart([]);setShowCheckout(false);}}
           restaurantName="Rayhana Fleurs"
-          serviceFeeThreshold={40} serviceFeeAmount={6}
+          serviceFeeThreshold={40} serviceFeeAmount={6.5}
           onOrderSuccess={ref=>{
             setCart([]);setShowCheckout(false);
             setLastRef(ref);
@@ -4754,45 +5066,85 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
 
 // ─── TABAC CATALOG ────────────────────────────────────────────────────────────
 
-const TABAC_CATALOG:{id:string;brand:string;name:string;price:number;cat:'premium'|'intl'|'local'}[] = [
+interface CigEntry {id:string;brand:string;name:string;price:number;cat:'premium'|'intl'|'local';img:string;c1:string;c2:string;label:string;}
+const TABAC_CATALOG:CigEntry[] = [
   // ── Premium ──
-  {id:'marl-red',    brand:'Marlboro',     name:'Marlboro Red',           price:38, cat:'premium'},
-  {id:'marl-gold',   brand:'Marlboro',     name:'Marlboro Gold',          price:38, cat:'premium'},
-  {id:'marl-blue',   brand:'Marlboro',     name:'Marlboro Blue',          price:38, cat:'premium'},
-  {id:'marl-blk',    brand:'Marlboro',     name:'Marlboro Double Black',  price:42, cat:'premium'},
-  {id:'marl-menth',  brand:'Marlboro',     name:'Marlboro Menthol',       price:40, cat:'premium'},
-  {id:'davidoff',    brand:'Davidoff',     name:'Davidoff Classic',       price:45, cat:'premium'},
-  {id:'davidoff-sl', brand:'Davidoff',     name:'Davidoff Slims',         price:45, cat:'premium'},
-  {id:'parl',        brand:'Parliament',   name:'Parliament Aqua Blue',   price:42, cat:'premium'},
-  {id:'dunhill',     brand:'Dunhill',      name:'Dunhill International',  price:35, cat:'premium'},
+  {id:'marl-red',    brand:'Marlboro',     name:'Marlboro Red',           price:38, cat:'premium', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Marlboro_Red.jpg/80px-Marlboro_Red.jpg',    c1:'#CC1224',c2:'#8B0000',label:'RED'},
+  {id:'marl-gold',   brand:'Marlboro',     name:'Marlboro Gold',          price:38, cat:'premium', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Marlboro_Gold.jpg/80px-Marlboro_Gold.jpg',  c1:'#B8860B',c2:'#7A5C00',label:'GOLD'},
+  {id:'marl-blue',   brand:'Marlboro',     name:'Marlboro Blue',          price:38, cat:'premium', img:'',c1:'#1B3A8A',c2:'#0D2060',label:'BLUE'},
+  {id:'marl-blk',    brand:'Marlboro',     name:'Marlboro Double Black',  price:42, cat:'premium', img:'',c1:'#0D0D0D',c2:'#2D2D2D',label:'BLACK'},
+  {id:'marl-menth',  brand:'Marlboro',     name:'Marlboro Menthol',       price:40, cat:'premium', img:'',c1:'#0F7A4B',c2:'#065F38',label:'MENTHOL'},
+  {id:'davidoff',    brand:'Davidoff',     name:'Davidoff Classic',       price:45, cat:'premium', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Davidoff_cigarettes.jpg/80px-Davidoff_cigarettes.jpg', c1:'#1C2951',c2:'#0A1528',label:'CLASSIC'},
+  {id:'davidoff-sl', brand:'Davidoff',     name:'Davidoff Slims',         price:45, cat:'premium', img:'',c1:'#1C3B6E',c2:'#0D2045',label:'SLIMS'},
+  {id:'parl',        brand:'Parliament',   name:'Parliament Aqua Blue',   price:42, cat:'premium', img:'',c1:'#4A8FC4',c2:'#2D6A9A',label:'AQUA'},
+  {id:'dunhill',     brand:'Dunhill',      name:'Dunhill International',  price:35, cat:'premium', img:'',c1:'#7C1A2E',c2:'#4A0F1A',label:'INT\'L'},
   // ── International ──
-  {id:'camel',       brand:'Camel',        name:'Camel Classic',          price:32, cat:'intl'},
-  {id:'camel-blue',  brand:'Camel',        name:'Camel Blue',             price:32, cat:'intl'},
-  {id:'camel-yel',   brand:'Camel',        name:'Camel Yellow',           price:32, cat:'intl'},
-  {id:'win-red',     brand:'Winston',      name:'Winston Classic',        price:30, cat:'intl'},
-  {id:'win-blue',    brand:'Winston',      name:'Winston Blue',           price:30, cat:'intl'},
-  {id:'lm-red',      brand:'L&M',          name:'L&M Red Label',          price:28, cat:'intl'},
-  {id:'lm-blue',     brand:'L&M',          name:'L&M Blue Label',         price:28, cat:'intl'},
-  {id:'kent',        brand:'Kent',         name:'Kent HD Blue',           price:28, cat:'intl'},
-  {id:'gaul',        brand:'Gauloises',    name:'Gauloises Blondes',      price:28, cat:'intl'},
-  {id:'prince',      brand:'Prince',       name:'Prince Classic',         price:28, cat:'intl'},
-  {id:'pall-red',    brand:'Pall Mall',    name:'Pall Mall Red',          price:25, cat:'intl'},
-  {id:'pall-blue',   brand:'Pall Mall',    name:'Pall Mall Blue',         price:25, cat:'intl'},
-  {id:'roth',        brand:'Rothmans',     name:'Rothmans International', price:25, cat:'intl'},
-  {id:'chest',       brand:'Chesterfield', name:'Chesterfield Red',       price:25, cat:'intl'},
-  {id:'merit',       brand:'Merit',        name:'Merit Blue',             price:22, cat:'intl'},
-  {id:'bond-red',    brand:'Bond Street',  name:'Bond Street Red',        price:22, cat:'intl'},
-  {id:'bond-blue',   brand:'Bond Street',  name:'Bond Street Blue',       price:22, cat:'intl'},
-  {id:'vicr',        brand:'Viceroy',      name:'Viceroy Classic',        price:22, cat:'intl'},
-  {id:'karl',        brand:'Karelia',      name:'Karelia Special',        price:22, cat:'intl'},
+  {id:'camel',       brand:'Camel',        name:'Camel Classic',          price:32, cat:'intl',    img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Camel_cigarettes_annual_report_1921.jpg/80px-Camel_cigarettes_annual_report_1921.jpg',c1:'#C8943B',c2:'#8B6419',label:'CLASSIC'},
+  {id:'camel-blue',  brand:'Camel',        name:'Camel Blue',             price:32, cat:'intl',    img:'',c1:'#2156A4',c2:'#133B7A',label:'BLUE'},
+  {id:'camel-yel',   brand:'Camel',        name:'Camel Yellow',           price:32, cat:'intl',    img:'',c1:'#D4A52A',c2:'#A07A10',label:'YELLOW'},
+  {id:'win-red',     brand:'Winston',      name:'Winston Classic',        price:30, cat:'intl',    img:'',c1:'#CC2020',c2:'#8B0000',label:'CLASSIC'},
+  {id:'win-blue',    brand:'Winston',      name:'Winston Blue',           price:30, cat:'intl',    img:'',c1:'#1B5097',c2:'#0D3060',label:'BLUE'},
+  {id:'lm-red',      brand:'L&M',          name:'L&M Red Label',          price:28, cat:'intl',    img:'',c1:'#C41230',c2:'#8B0010',label:'RED'},
+  {id:'lm-blue',     brand:'L&M',          name:'L&M Blue Label',         price:28, cat:'intl',    img:'',c1:'#1B4FA0',c2:'#0D3070',label:'BLUE'},
+  {id:'kent',        brand:'Kent',         name:'Kent HD Blue',           price:28, cat:'intl',    img:'',c1:'#00539C',c2:'#003070',label:'HD BLUE'},
+  {id:'gaul',        brand:'Gauloises',    name:'Gauloises Blondes',      price:28, cat:'intl',    img:'',c1:'#2459A9',c2:'#123A7A',label:'BLONDES'},
+  {id:'prince',      brand:'Prince',       name:'Prince Classic',         price:28, cat:'intl',    img:'',c1:'#1E4A8C',c2:'#0D2E5C',label:'CLASSIC'},
+  {id:'pall-red',    brand:'Pall Mall',    name:'Pall Mall Red',          price:25, cat:'intl',    img:'',c1:'#B81B2D',c2:'#7A0D1A',label:'RED'},
+  {id:'pall-blue',   brand:'Pall Mall',    name:'Pall Mall Blue',         price:25, cat:'intl',    img:'',c1:'#1A4A9A',c2:'#0D2E66',label:'BLUE'},
+  {id:'roth',        brand:'Rothmans',     name:'Rothmans International', price:25, cat:'intl',    img:'',c1:'#1A3A8A',c2:'#0D2060',label:'INT\'L'},
+  {id:'chest',       brand:'Chesterfield', name:'Chesterfield Red',       price:25, cat:'intl',    img:'',c1:'#8B1C2C',c2:'#5A0E18',label:'RED'},
+  {id:'merit',       brand:'Merit',        name:'Merit Blue',             price:22, cat:'intl',    img:'',c1:'#2A5298',c2:'#163060',label:'BLUE'},
+  {id:'bond-red',    brand:'Bond Street',  name:'Bond Street Red',        price:22, cat:'intl',    img:'',c1:'#A01E2E',c2:'#6A0F1A',label:'RED'},
+  {id:'bond-blue',   brand:'Bond Street',  name:'Bond Street Blue',       price:22, cat:'intl',    img:'',c1:'#1A4A9A',c2:'#0D2E66',label:'BLUE'},
+  {id:'vicr',        brand:'Viceroy',      name:'Viceroy Classic',        price:22, cat:'intl',    img:'',c1:'#1A3A8A',c2:'#0D2060',label:'CLASSIC'},
+  {id:'karl',        brand:'Karelia',      name:'Karelia Special',        price:22, cat:'intl',    img:'',c1:'#1A5A3A',c2:'#0D3A24',label:'SPECIAL'},
   // ── Maroc 🇲🇦 ──
-  {id:'marq',        brand:'Marquise',     name:'Marquise Classic',       price:20, cat:'local'},
-  {id:'marq-m',      brand:'Marquise',     name:'Marquise Menthol',       price:20, cat:'local'},
-  {id:'legend',      brand:'Legend',       name:'Legend Blue',            price:20, cat:'local'},
-  {id:'royale',      brand:'Royale',       name:'Royale',                 price:18, cat:'local'},
-  {id:'casa',        brand:'Casa Sport',   name:'Casa Sport Original',    price:14, cat:'local'},
-  {id:'casa-new',    brand:'Casa Sport',   name:'Casa Sport New',         price:15, cat:'local'},
-] as {id:string;brand:string;name:string;price:number;cat:'premium'|'intl'|'local'}[];
+  {id:'marq',        brand:'Marquise',     name:'Marquise Classic',       price:20, cat:'local',   img:'',c1:'#7B1A2A',c2:'#4A0D18',label:'CLASSIC'},
+  {id:'marq-m',      brand:'Marquise',     name:'Marquise Menthol',       price:20, cat:'local',   img:'',c1:'#0B6B3A',c2:'#064524',label:'MENTHOL'},
+  {id:'legend',      brand:'Legend',       name:'Legend Blue',            price:20, cat:'local',   img:'',c1:'#1A3A8A',c2:'#0D2060',label:'BLUE'},
+  {id:'royale',      brand:'Royale',       name:'Royale',                 price:18, cat:'local',   img:'',c1:'#1A5A3A',c2:'#0D3A24',label:'ROYALE'},
+  {id:'casa',        brand:'Casa Sport',   name:'Casa Sport Original',    price:14, cat:'local',   img:'',c1:'#E65C00',c2:'#B84000',label:'ORIGINAL'},
+  {id:'casa-new',    brand:'Casa Sport',   name:'Casa Sport New',         price:15, cat:'local',   img:'',c1:'#C8860A',c2:'#8B5C00',label:'NEW'},
+];
+
+// ─── CIG ITEM (must be a component to use useState for img fallback) ─────────
+
+function CigItem({cig,qty,isNight,effectivePrice,onAdd,onRem}:{cig:CigEntry;qty:number;isNight:boolean;effectivePrice:number;onAdd:()=>void;onRem:()=>void}) {
+  const [imgOk,setImgOk]=useState(!!cig.img);
+  return(
+    <div className="flex items-center gap-3 rounded-2xl px-3 py-2"
+      style={{background:qty>0?'rgba(180,83,9,0.12)':'var(--c-card)',border:`1.5px solid ${qty>0?'rgba(180,83,9,0.5)':'var(--c-border)'}`,transition:'all 0.15s'}}>
+      {/* Pack image */}
+      <div style={{width:40,height:52,borderRadius:6,flexShrink:0,overflow:'hidden',boxShadow:'0 2px 8px rgba(0,0,0,0.35)'}}>
+        {cig.img&&imgOk?(
+          <img src={cig.img} alt={cig.name} onError={()=>setImgOk(false)} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+        ):(
+          <div style={{width:'100%',height:'100%',background:`linear-gradient(160deg,${cig.c1},${cig.c2})`,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'3px 2px',gap:1}}>
+            <span style={{color:'rgba(255,255,255,0.95)',fontSize:6,fontWeight:900,textAlign:'center',letterSpacing:'0.05em',textTransform:'uppercase',lineHeight:1.1}}>{cig.brand}</span>
+            <div style={{width:'75%',height:'0.5px',background:'rgba(255,255,255,0.4)'}}/>
+            <span style={{color:'rgba(255,255,255,0.7)',fontSize:5,textAlign:'center',letterSpacing:'0.06em',textTransform:'uppercase'}}>{cig.label}</span>
+          </div>
+        )}
+      </div>
+      <div style={{flex:1,minWidth:0}}>
+        <p className="font-black text-[12px] truncate" style={{color:'var(--c-text)'}}>{cig.name}</p>
+        <div className="flex items-center gap-1.5">
+          <p className="text-[11px] font-black" style={{color:'#B45309'}}>{effectivePrice} DH</p>
+          {isNight&&<span style={{background:'rgba(251,191,36,0.15)',border:'1px solid rgba(251,191,36,0.4)',borderRadius:4,padding:'0 4px',fontSize:9,color:'#F59E0B',fontWeight:700}}>🌙 +8</span>}
+        </div>
+      </div>
+      <div className="flex items-center gap-1.5 flex-shrink-0">
+        {qty>0&&(
+          <>
+            <button onClick={onRem} style={{width:28,height:28,borderRadius:'50%',border:'none',background:'rgba(180,83,9,0.2)',color:'#B45309',fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
+            <span className="font-black text-sm w-5 text-center" style={{color:'var(--c-text)'}}>{qty}</span>
+          </>
+        )}
+        <button onClick={onAdd} style={{width:28,height:28,borderRadius:'50%',border:'none',background:'#B45309',color:'white',fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>+</button>
+      </div>
+    </div>
+  );
+}
 
 // ─── TABAC PAGE ───────────────────────────────────────────────────────────────
 
@@ -4828,7 +5180,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   const nowH=new Date().getHours();
   const isNight=nowH>=22||nowH<6;
   const DELIV_FEE=delivMode==='delivery'?(isNight?18:12):0;
-  const SVC_FEE=6;
+  const SVC_FEE=6.5;
 
   useEffect(()=>{
     if(!tabacUser?.id) return;
@@ -4845,7 +5197,8 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   const addCig=(id:string)=>setTabacCart(c=>{const ex=c.find(x=>x.id===id);return ex?c.map(x=>x.id===id?{...x,qty:x.qty+1}:x):[...c,{id,qty:1}];});
   const remCig=(id:string)=>setTabacCart(c=>{const ex=c.find(x=>x.id===id);if(!ex)return c;if(ex.qty===1)return c.filter(x=>x.id!==id);return c.map(x=>x.id===id?{...x,qty:x.qty-1}:x);});
   const cigQty=(id:string)=>tabacCart.find(x=>x.id===id)?.qty??0;
-  const cartSubtotal=tabacCart.reduce((s,ci)=>{const p=TABAC_CATALOG.find(f=>f.id===ci.id);return s+(p?p.price*ci.qty:0);},0);
+  const cigPrice=(p:CigEntry)=>p.price+(isNight?8:0);
+  const cartSubtotal=tabacCart.reduce((s,ci)=>{const p=TABAC_CATALOG.find(f=>f.id===ci.id);return s+(p?cigPrice(p)*ci.qty:0);},0);
   const cartTotal=cartSubtotal+DELIV_FEE+SVC_FEE-tabacGemMAD;
   const cartCount=tabacCart.reduce((s,ci)=>s+ci.qty,0);
 
@@ -4881,10 +5234,10 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
     const deliveryAddress=delivMode==='delivery'?`${addr.trim()}, Safi, Maroc`:t.tabacCollectAddress;
     const driverTrackUrl=`${window.location.origin}/driver/${orderRef}`;
     const payInfo=payLabel?payLabel:tabacPayMethod==='qr'?'QR Code':tabacPayMethod==='cash'?'Espèces':tabacPayMethod==='apple'?'Apple Pay':tabacPayMethod==='google'?'Google Pay':'Espèces';
-    const itemsList=tabacCart.map(ci=>{const p=TABAC_CATALOG.find(f=>f.id===ci.id)!;return `${p.name} x${ci.qty} (${p.price*ci.qty} DH)`;}).join('\n');
+    const itemsList=tabacCart.map(ci=>{const p=TABAC_CATALOG.find(f=>f.id===ci.id)!;const ep=cigPrice(p);return `${p.name} x${ci.qty} (${ep*ci.qty} DH${isNight?' 🌙':''})`; }).join('\n');
     const notesStr=`🚬 Bridge Tabac${isNight?' 🌙 NUIT':''}\n${itemsList||'Commande générale'}\n—\nSous-total: ${cartSubtotal} DH\nLivraison: ${DELIV_FEE} DH${isNight?' (tarif nuit)':''}\nService: ${SVC_FEE} DH\nTotal: ${cartTotal} DH\n💳 ${payInfo}\n👤 ${name.trim()} — ${phone.trim()}`;
     const apiItems=tabacCart.length>0
-      ?tabacCart.map(ci=>{const p=TABAC_CATALOG.find(f=>f.id===ci.id)!;return {name:p.name,qty:ci.qty,price:p.price};})
+      ?tabacCart.map(ci=>{const p=TABAC_CATALOG.find(f=>f.id===ci.id)!;return {name:p.name,qty:ci.qty,price:cigPrice(p)};})
       :[{name:'🚬 Commande Bridge Tabac',qty:1,price:0}];
     try{
       await fetch('/api/orders/inbound',{method:'POST',headers:{'Content-Type':'application/json','x-bridge-secret':'bridge-safi-8b269bba03fd8c0205116f3f'},
@@ -4980,36 +5333,20 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
 
             {/* Items grid */}
             <div className="flex flex-col gap-2">
-              {visibleCigs.map(cig=>{
-                const qty=cigQty(cig.id);
-                return(
-                  <div key={cig.id} className="flex items-center justify-between gap-2 rounded-2xl px-3 py-2.5"
-                    style={{background:qty>0?'rgba(180,83,9,0.12)':'var(--c-card)',border:`1.5px solid ${qty>0?'rgba(180,83,9,0.5)':'var(--c-border)'}`,transition:'all 0.15s'}}>
-                    <div style={{flex:1,minWidth:0}}>
-                      <p className="font-black text-[12px] truncate" style={{color:'var(--c-text)'}}>{cig.name}</p>
-                      <p className="text-[10px] font-bold" style={{color:'#B45309'}}>{cig.price} DH{isNight&&qty>0?' 🌙':''}</p>
-                    </div>
-                    <div className="flex items-center gap-1.5 flex-shrink-0">
-                      {qty>0&&(
-                        <>
-                          <button onClick={()=>remCig(cig.id)} style={{width:28,height:28,borderRadius:'50%',border:'none',background:'rgba(180,83,9,0.2)',color:'#B45309',fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
-                          <span className="font-black text-sm w-5 text-center" style={{color:'var(--c-text)'}}>{qty}</span>
-                        </>
-                      )}
-                      <button onClick={()=>addCig(cig.id)} style={{width:28,height:28,borderRadius:'50%',border:'none',background:'#B45309',color:'white',fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>+</button>
-                    </div>
-                  </div>
-                );
-              })}
+              {visibleCigs.map(cig=>(
+                <CigItem key={cig.id} cig={cig} qty={cigQty(cig.id)} isNight={isNight}
+                  effectivePrice={cigPrice(cig)}
+                  onAdd={()=>addCig(cig.id)} onRem={()=>remCig(cig.id)}/>
+              ))}
             </div>
 
             {/* Cart summary */}
             {cartCount>0&&(
               <div className="mt-3 rounded-2xl p-3" style={{background:'rgba(180,83,9,0.1)',border:'1.5px solid rgba(180,83,9,0.35)'}}>
                 <p className="font-black text-[11px] mb-2" style={{color:'#B45309'}}>🛒 {cartCount} {lang==='ar'?'علبة':lang==='en'?'pack(s)':'paquet(s)'} sélectionné(s)</p>
-                {tabacCart.map(ci=>{const p=TABAC_CATALOG.find(f=>f.id===ci.id)!;return(
-                  <div key={ci.id} className="flex justify-between text-[11px]" style={{color:'rgba(var(--c-text-rgb,0,0,0),0.7)'}}>
-                    <span>{p.name} ×{ci.qty}</span><span className="font-bold">{p.price*ci.qty} DH</span>
+                {tabacCart.map(ci=>{const p=TABAC_CATALOG.find(f=>f.id===ci.id)!;const ep=cigPrice(p);return(
+                  <div key={ci.id} className="flex justify-between text-[11px]" style={{color:'var(--c-text)',opacity:0.75}}>
+                    <span>{p.name} ×{ci.qty}{isNight?' 🌙':''}</span><span className="font-bold">{ep*ci.qty} DH</span>
                   </div>
                 );})}
               </div>
@@ -5498,7 +5835,7 @@ export default function App() {
   if(service==='taxi') return <DarkModeCtx.Provider value={dv}><TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
   if(service==='tabac') return <DarkModeCtx.Provider value={dv}><TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
   if(service==='fleurs') return <DarkModeCtx.Provider value={dv}><FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
-  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang} profile={profile}/></DarkModeCtx.Provider>;
+  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={
