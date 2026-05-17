@@ -4077,6 +4077,72 @@ function SharkDiamondWidget({onNavigate,profile}:{onNavigate:()=>void;profile:Us
   );
 }
 
+function TaxiVehicleSelectPage({onBack,onSelect,lang}:{
+  onBack:()=>void; onSelect:(v:'taxi'|'moto')=>void; lang:Lang;
+}) {
+  const isAR=lang==='ar'; const isAMZ=lang==='amz';
+  return (
+    <div style={{position:'fixed',inset:0,overflow:'hidden auto',background:'#000',zIndex:10}}>
+      <div style={{position:'absolute',inset:0,background:'linear-gradient(160deg,#0D1117 0%,#1A0A00 50%,#0D1117 100%)'}}/>
+      <div style={{position:'relative',zIndex:10,display:'flex',alignItems:'center',gap:10,padding:'52px 16px 16px'}}>
+        <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.12)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:18,flexShrink:0}}>←</button>
+        <div style={{flex:1,textAlign:'center'}}>
+          <p style={{color:'#FDE68A',fontWeight:900,fontSize:14,letterSpacing:'0.12em',margin:0}}>🚖 BRIDGE TAXI · MOTO</p>
+          <p style={{color:'rgba(253,230,138,0.5)',fontSize:9,letterSpacing:'0.18em',margin:0}}>CHOISISSEZ VOTRE VÉHICULE · سافي</p>
+        </div>
+        <div style={{width:38}}/>
+      </div>
+      <div style={{position:'relative',zIndex:10,padding:'20px 20px 60px',display:'flex',flexDirection:'column',gap:18}}>
+        <p style={{textAlign:'center',color:'rgba(255,255,255,0.7)',fontSize:14,fontWeight:700,margin:'0 0 8px'}}>
+          {isAR?'اختر وسيلة التنقل':isAMZ?'ⵙⵙⵔⵏ ⵓⵙⵜⴰⵢ':lang==='en'?'Choose your vehicle':'Quel véhicule pour votre course ?'}
+        </p>
+        <button onClick={()=>onSelect('taxi')}
+          style={{width:'100%',borderRadius:24,border:'2px solid rgba(245,158,11,0.4)',background:'linear-gradient(135deg,rgba(120,53,15,0.5) 0%,rgba(245,158,11,0.15) 100%)',padding:'24px 20px',cursor:'pointer',textAlign:'left' as const,backdropFilter:'blur(12px)',display:'flex',alignItems:'center',gap:18}}>
+          <div style={{fontSize:52,lineHeight:1,flexShrink:0}}>🚖</div>
+          <div style={{flex:1}}>
+            <p style={{color:'#FDE68A',fontWeight:900,fontSize:18,margin:'0 0 4px',letterSpacing:'0.04em'}}>
+              {lang==='en'?'Comfort Taxi':isAR?'تاكسي كونفور':isAMZ?'ⵜⴰⴽⵙⵉ':'Taxi Confort'}
+            </p>
+            <p style={{color:'rgba(253,230,138,0.65)',fontSize:12,margin:'0 0 10px',fontWeight:600}}>
+              {lang==='en'?'Safi & all Morocco':isAR?'سافي وكل المغرب':'Safi & tout le Maroc'}
+            </p>
+            <div style={{display:'flex',gap:8,flexWrap:'wrap' as const}}>
+              <span style={{background:'rgba(245,158,11,0.2)',border:'1px solid rgba(245,158,11,0.5)',borderRadius:8,padding:'3px 10px',fontSize:11,fontWeight:700,color:'#FDE68A'}}>
+                👥 1–5 {lang==='en'?'seats':isAR?'مقاعد':'places'}
+              </span>
+              <span style={{background:'rgba(245,158,11,0.2)',border:'1px solid rgba(245,158,11,0.5)',borderRadius:8,padding:'3px 10px',fontSize:11,fontWeight:700,color:'#FDE68A'}}>
+                📍 {lang==='en'?'Trip price':isAR?'سعر حسب الرحلة':'Prix selon trajet'}
+              </span>
+            </div>
+          </div>
+          <div style={{color:'rgba(253,230,138,0.5)',fontSize:22,flexShrink:0}}>›</div>
+        </button>
+        <button onClick={()=>onSelect('moto')}
+          style={{width:'100%',borderRadius:24,border:'2px solid rgba(249,115,22,0.4)',background:'linear-gradient(135deg,rgba(154,52,18,0.5) 0%,rgba(249,115,22,0.15) 100%)',padding:'24px 20px',cursor:'pointer',textAlign:'left' as const,backdropFilter:'blur(12px)',display:'flex',alignItems:'center',gap:18}}>
+          <div style={{fontSize:52,lineHeight:1,flexShrink:0}}>🛵</div>
+          <div style={{flex:1}}>
+            <p style={{color:'#FED7AA',fontWeight:900,fontSize:18,margin:'0 0 4px',letterSpacing:'0.04em'}}>
+              {lang==='en'?'Moto Taxi':isAR?'موتو تاكسي':'Moto Taxi'}
+            </p>
+            <p style={{color:'rgba(254,215,170,0.65)',fontSize:12,margin:'0 0 10px',fontWeight:600}}>
+              {lang==='en'?'Quick & affordable · Safi':isAR?'سريع وبأسعار معقولة · سافي':'Rapide & économique · Safi'}
+            </p>
+            <div style={{display:'flex',gap:8,flexWrap:'wrap' as const}}>
+              <span style={{background:'rgba(249,115,22,0.2)',border:'1px solid rgba(249,115,22,0.5)',borderRadius:8,padding:'3px 10px',fontSize:11,fontWeight:700,color:'#FED7AA'}}>
+                👤 1 {lang==='en'?'seat':isAR?'مقعد':'place'}
+              </span>
+              <span style={{background:'rgba(249,115,22,0.2)',border:'1px solid rgba(249,115,22,0.5)',borderRadius:8,padding:'4px 12px',fontSize:13,fontWeight:900,color:'#FED7AA'}}>
+                💰 7 DH {lang==='en'?'flat rate':isAR?'سعر ثابت':'prix fixe'}
+              </span>
+            </div>
+          </div>
+          <div style={{color:'rgba(254,215,170,0.5)',fontSize:22,flexShrink:0}}>›</div>
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   onBack:()=>void; lang:Lang; cycleLang:()=>void;
   profile:UserProfile; saveProfile:(p:UserProfile)=>void;
@@ -4091,6 +4157,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
 
   // ── Booking form state ──
+  const [passengers,setPassengers]=useState<1|2|5>(1);
   const [name,setName]=useState(profile.name??'');
   const [phone,setPhone]=useState(profile.phone??'');
   const [destination,setDestination]=useState('');
@@ -4166,7 +4233,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
     try{
       await fetch(`/api/tracking/${ref}`,{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({clientLat:clientPos?.lat,clientLng:clientPos?.lng,clientAddress:pickup,destination:destination.trim(),customerName:name.trim(),customerPhone:phone.trim()}),
+        body:JSON.stringify({clientLat:clientPos?.lat,clientLng:clientPos?.lng,clientAddress:pickup,destination:destination.trim(),customerName:name.trim(),customerPhone:phone.trim(),passengers,vehicleType:'taxi'}),
       }).catch(()=>{});
     }finally{setSending(false);}
     if(taxiGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:taxiGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${taxiUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
@@ -4272,6 +4339,26 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
               <AddressAutocomplete label='' value={destination} onChange={setDestination}
                 placeholder={lang==='ar'?'وجهتك (أي مكان بالمغرب)':lang==='en'?'Where to? (anywhere in Morocco)':'Destination (partout au Maroc)'}
                 lang={lang} nationwide/>
+            </div>
+            {/* Passengers */}
+            <div>
+              <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:8}}>
+                <span style={{fontSize:14}}>👥</span>
+                <span style={{fontSize:10,fontWeight:800,color:'#78350F',letterSpacing:'0.1em',textTransform:'uppercase' as const}}>
+                  {lang==='ar'?'عدد المسافرين':lang==='en'?'Passengers':lang==='amz'?'ⵉⵎⵓⵙⵙⵓⵜⵏ':'Nombre de passagers'}
+                </span>
+              </div>
+              <div style={{display:'flex',gap:10}}>
+                {([1,2,5] as const).map(n=>(
+                  <button key={n} onClick={()=>setPassengers(n)}
+                    style={{flex:1,padding:'10px 0',borderRadius:12,border:`2px solid ${passengers===n?'#F59E0B':'var(--c-border)'}`,
+                      background:passengers===n?'rgba(245,158,11,0.15)':'var(--c-bg)',
+                      color:passengers===n?'#78350F':'var(--c-text)',
+                      fontWeight:900,fontSize:13,cursor:'pointer',transition:'all 0.15s'}}>
+                    {n} {n===1?(lang==='ar'?'شخص':lang==='en'?'person':'pers.'):(lang==='ar'?'أشخاص':lang==='en'?'people':'pers.')}
+                  </button>
+                ))}
+              </div>
             </div>
             {/* Name + Phone */}
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
@@ -4388,6 +4475,293 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
 
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
       {showTaxiQR&&<QRPayModal lang={lang} onClose={()=>setShowTaxiQR(false)} onConfirm={()=>setShowTaxiQR(false)}/>}
+    </div>
+  );
+}
+
+// ─── MOTO TAXI PAGE ────────────────────────────────────────────────────────────
+function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
+  onBack:()=>void; lang:Lang; cycleLang:()=>void;
+  profile:UserProfile; saveProfile:(p:UserProfile)=>void;
+}) {
+  const MOTO_PRICE=7;
+  const [showProfile,setShowProfile]=useState(false);
+  const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
+  const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
+
+  const [name,setName]=useState(profile.name??'');
+  const [phone,setPhone]=useState(profile.phone??'');
+  const [destination,setDestination]=useState('');
+  const [clientPos,setClientPos]=useState<{lat:number;lng:number}|null>(null);
+  const [clientAddress,setClientAddress]=useState(profile.address??'');
+  const [gettingGPS,setGettingGPS]=useState(false);
+  const [sending,setSending]=useState(false);
+  const [bookingRef,setBookingRef]=useState<string>(()=>{try{return localStorage.getItem('bridge_moto_ref')||'';}catch{return '';}});
+  const [formErr,setFormErr]=useState('');
+  const [motoPayMethod,setMotoPayMethod]=useState<PayMethodType>(null);
+  const [showMotoQR,setShowMotoQR]=useState(false);
+  const {user:motoUser}=useUser();
+  const getAuthHeaders=useAuthHeaders();
+  const [,navigateMoto]=useLocation();
+  const [motoGems,setMotoGems]=useState(0);
+  const [motoGemMAD,setMotoGemMAD]=useState(0);
+  const maxMotoGemMAD=Math.min(Math.floor(motoGems/200),MOTO_PRICE);
+  useEffect(()=>{
+    if(!motoUser?.id) return;
+    getAuthHeaders().then(h=>fetch('/api/game/diamonds',{credentials:'include',headers:h})
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{if(d&&typeof d.diamonds==='number')setMotoGems(d.diamonds);})
+      .catch(()=>{}));
+  },[motoUser?.id,getAuthHeaders]);
+
+  const [trackData,setTrackData]=useState<{found:boolean;lat?:number;lng?:number;status?:string;driverName?:string;eta?:number;clientLat?:number;clientLng?:number}|null>(null);
+  const trackIntervalRef=useRef<number|null>(null);
+
+  const getClientGPS=()=>{
+    if(!navigator.geolocation){setClientAddress('GPS non disponible');return;}
+    setGettingGPS(true);
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      const {latitude:lat,longitude:lng}=pos.coords;
+      setClientPos({lat,lng});setGettingGPS(false);
+      try{
+        const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+        const d=await r.json();
+        setClientAddress(d.display_name?.split(',').slice(0,3).join(', ')||`${lat.toFixed(5)}, ${lng.toFixed(5)}`);
+      }catch{setClientAddress(`${lat.toFixed(5)}, ${lng.toFixed(5)}`);}
+    },()=>{setGettingGPS(false);setClientAddress('Saisissez votre adresse manuellement');},{enableHighAccuracy:true,timeout:8000});
+  };
+
+  const handleMotoWalletPay=async(type:'apple'|'google')=>{
+    if(!name.trim()||!phone.trim()||!destination.trim()){setFormErr('*');return;}
+    const payLabel=type==='apple'?'Apple Pay':'Google Pay';
+    const methods=type==='apple'
+      ?[{supportedMethods:'https://apple.com/apple-pay',data:{version:3,merchantIdentifier:'merchant.ma.safi-bridge',merchantCapabilities:['supports3DS'],supportedNetworks:['visa','masterCard'],countryCode:'MA'}}]
+      :[{supportedMethods:'https://google.com/pay',data:{apiVersion:2,apiVersionMinor:0,merchantInfo:{merchantName:'Bridge Safi'},allowedPaymentMethods:[{type:'CARD',parameters:{allowedAuthMethods:['PAN_ONLY','CRYPTOGRAM_3DS'],allowedCardNetworks:['MASTERCARD','VISA']},tokenizationSpecification:{type:'PAYMENT_GATEWAY',parameters:{gateway:'example',gatewayMerchantId:'bridge-safi'}}}]}}];
+    const finalPrice=MOTO_PRICE-motoGemMAD;
+    const details={total:{label:'Bridge Moto Taxi · Safi',amount:{currency:'MAD',value:String(finalPrice)}}};
+    try{
+      if(typeof PaymentRequest==='undefined') throw new Error('unsupported');
+      const pr=new PaymentRequest(methods,details);
+      const canMake=await pr.canMakePayment().catch(()=>false);
+      if(!canMake) throw new Error('unavailable');
+      const response=await pr.show();
+      await response.complete('success');
+      setMotoPayMethod(type);
+      await handleMotoBook(payLabel);
+    }catch{setMotoPayMethod('cash');}
+  };
+
+  const handleMotoBook=async(payLabel?:string)=>{
+    if(!name.trim()||!phone.trim()||!destination.trim()){setFormErr('*');return;}
+    setSending(true);setFormErr('');
+    const ref='MT-'+Math.floor(1000+Math.random()*9000);
+    const pickup=clientAddress||'Safi, Maroc';
+    const finalPrice=MOTO_PRICE-motoGemMAD;
+    try{
+      await fetch(`/api/tracking/${ref}`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({clientLat:clientPos?.lat,clientLng:clientPos?.lng,clientAddress:pickup,destination:destination.trim(),customerName:name.trim(),customerPhone:phone.trim(),vehicleType:'moto',motoPrice:finalPrice,passengers:1}),
+      }).catch(()=>{});
+    }finally{setSending(false);}
+    if(motoGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:motoGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${motoUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
+    localStorage.setItem('bridge_moto_ref',ref);
+    setBookingRef(ref);
+    if(motoPayMethod==='qr') setShowMotoQR(true);
+  };
+
+  useEffect(()=>{
+    if(!bookingRef) return;
+    const poll=async()=>{
+      try{const r=await fetch(`/api/tracking/${bookingRef}`);if(r.ok){const d=await r.json();setTrackData(d);}else setTrackData({found:false});}
+      catch{setTrackData(null);}
+    };
+    poll();
+    trackIntervalRef.current=window.setInterval(poll,3000);
+    return()=>{if(trackIntervalRef.current)clearInterval(trackIntervalRef.current);};
+  },[bookingRef]);
+
+  const driverPos=(trackData?.found&&trackData.lat&&trackData.lng&&trackData.status==='accepted')?{lat:trackData.lat,lng:trackData.lng}:null;
+  const mapClientPos=trackData?.clientLat&&trackData?.clientLng?{lat:trackData.clientLat,lng:trackData.clientLng}:clientPos;
+  const statusColor={waiting:'#F59E0B',accepted:'#10B981',arrived:'#3B82F6'}[trackData?.status||'waiting']||'#9CA3AF';
+  const statusLabel={
+    waiting:{fr:'En attente d\'un motard…',en:'Waiting for a rider…',ar:'بانتظار سائق موتو…',amz:'ⵔⴰⴷ ⵢⴰⵙ ⵓⵙⵔⴰⵜⵏ…'},
+    accepted:{fr:'Motard en route 🛵',en:'Rider on the way 🛵',ar:'السائق في الطريق 🛵',amz:'ⴰⵎⴰⵏ ⵖ ⵓⵣⵣⵓⵍ 🛵'},
+    arrived:{fr:'Votre motard est arrivé ! 🎉',en:'Your rider has arrived! 🎉',ar:'وصل سائقك! 🎉',amz:'ⵢⵓⵙ ⵓⵙⵔⴰⵜⵏ ⵉⵏⴽ! 🎉'},
+  }[trackData?.status||'']?.[lang]||'';
+
+  return(
+    <div className={isAR?'rtl':'ltr'} style={{position:'fixed',inset:0,overflow:'hidden',background:'#000',zIndex:10}}>
+      <div style={{position:'absolute',inset:0}}>
+        <TaxiMap driverPos={bookingRef?driverPos:null} clientPos={bookingRef?mapClientPos:clientPos}/>
+      </div>
+      <div style={{position:'absolute',top:0,left:0,right:0,zIndex:40,background:'linear-gradient(180deg,rgba(10,14,18,0.94) 0%,rgba(10,14,18,0) 100%)',paddingBottom:28}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,padding:'14px 16px 0'}}>
+          <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.12)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:18,flexShrink:0}}>←</button>
+          <div style={{flex:1,textAlign:'center'}}>
+            <p style={{color:'#FED7AA',fontWeight:900,fontSize:14,letterSpacing:'0.12em',margin:0}}>🛵 BRIDGE MOTO TAXI</p>
+            <p style={{color:'rgba(254,215,170,0.5)',fontSize:9,letterSpacing:'0.18em',margin:0}}>RAPIDE · SAFI · آسفي</p>
+          </div>
+          <div style={{width:38}}/>
+        </div>
+      </div>
+      {bookingRef&&(
+        <div style={{position:'absolute',top:80,left:'50%',transform:'translateX(-50%)',zIndex:35,background:'rgba(13,17,23,0.88)',backdropFilter:'blur(12px)',borderRadius:20,padding:'5px 16px',border:'1px solid rgba(254,215,170,0.25)',display:'flex',alignItems:'center',gap:7,whiteSpace:'nowrap'}}>
+          <div style={{width:7,height:7,borderRadius:'50%',background:statusColor,animation:'pulse 1.2s infinite'}}/>
+          <span style={{color:'#FED7AA',fontSize:10,fontWeight:900,letterSpacing:'0.15em'}}>{bookingRef} · LIVE GPS</span>
+        </div>
+      )}
+      {!bookingRef&&(
+        <div style={{position:'absolute',bottom:0,left:0,right:0,zIndex:30,maxHeight:'78vh',display:'flex',flexDirection:'column',borderRadius:'26px 26px 0 0',background:'var(--c-card)',boxShadow:'0 -12px 50px rgba(0,0,0,0.65)',border:'1px solid rgba(154,52,18,0.15)',borderBottom:'none'}}>
+          <div style={{display:'flex',justifyContent:'center',padding:'12px 0 4px',flexShrink:0}}>
+            <div style={{width:36,height:4,borderRadius:2,background:'rgba(154,52,18,0.22)'}}/>
+          </div>
+          <div style={{padding:'4px 20px 12px',borderBottom:'1px solid var(--c-border)',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'space-between',gap:10}}>
+            <div>
+              <p style={{fontWeight:900,fontSize:18,color:'var(--c-text)',margin:0}}>
+                {lang==='ar'?'📍 إلى أين؟':lang==='en'?'📍 Where to?':lang==='amz'?'📍 ⵖⴰⵜ ⵔⴰⴷ?':'📍 Votre course ?'}
+              </p>
+              <p style={{fontSize:11,color:'#9CA3AF',margin:'2px 0 0'}}>Moto Taxi · Safi</p>
+            </div>
+            <div style={{background:'linear-gradient(135deg,#EA580C,#F97316)',borderRadius:12,padding:'6px 14px',flexShrink:0}}>
+              <p style={{color:'white',fontWeight:900,fontSize:18,margin:0,lineHeight:1}}>7 DH</p>
+              <p style={{color:'rgba(255,255,255,0.8)',fontSize:9,fontWeight:700,margin:0,textAlign:'center' as const}}>PRIX FIXE</p>
+            </div>
+          </div>
+          <div style={{overflowY:'auto',flex:1,padding:'16px 20px 36px',display:'flex',flexDirection:'column',gap:14}}>
+            <div>
+              <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:7}}>
+                <div style={{width:11,height:11,borderRadius:'50%',background:'#10B981',border:'2px solid white',boxShadow:'0 0 0 2px rgba(16,185,129,0.25)',flexShrink:0}}/>
+                <span style={{fontSize:10,fontWeight:800,color:'#065F46',letterSpacing:'0.1em',textTransform:'uppercase' as const}}>
+                  {lang==='ar'?'موقع الانطلاق':lang==='en'?'Pickup location':'Point de départ'}
+                </span>
+              </div>
+              <AddressAutocomplete label='' value={clientAddress} onChange={setClientAddress}
+                placeholder={lang==='ar'?'Adresse à Safi':lang==='en'?'Address in Safi':'Adresse à Safi'} lang={lang}/>
+              <button onClick={getClientGPS} style={{width:'100%',marginTop:6,padding:'9px 12px',borderRadius:10,border:clientPos?'1.5px solid rgba(16,185,129,0.35)':'none',background:clientPos?'rgba(16,185,129,0.1)':gettingGPS?'rgba(154,52,18,0.6)':'#9A3412',color:clientPos?'#065F46':'white',fontWeight:900,fontSize:12,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
+                {gettingGPS?<><span style={{animation:'spin 1s linear infinite',display:'inline-block'}}>⟳</span>{lang==='en'?'Detecting…':'Détection…'}</>
+                  :clientPos?<>✓ GPS · {clientPos.lat.toFixed(4)}, {clientPos.lng.toFixed(4)}</>
+                  :<><span>🎯</span>{lang==='ar'?'تحديد موقعي':lang==='en'?'Use my location':'Ma position GPS'}</>}
+              </button>
+            </div>
+            <div>
+              <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:7}}>
+                <div style={{width:11,height:11,borderRadius:3,background:'#F97316',flexShrink:0}}/>
+                <span style={{fontSize:10,fontWeight:800,color:'#9A3412',letterSpacing:'0.1em',textTransform:'uppercase' as const}}>
+                  {lang==='ar'?'الوجهة':lang==='en'?'Destination':'Destination'}
+                </span>
+              </div>
+              <AddressAutocomplete label='' value={destination} onChange={setDestination}
+                placeholder={lang==='ar'?'وجهتك في سافي':lang==='en'?'Where to? (Safi)':'Destination (Safi)'} lang={lang}/>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+              <div>
+                <label style={{fontSize:10,fontWeight:800,color:'#9A3412',letterSpacing:'0.08em',textTransform:'uppercase' as const,display:'block',marginBottom:4}}>👤 {lang==='ar'?'الاسم':lang==='en'?'Name':'Nom'}</label>
+                <input value={name} onChange={e=>setName(e.target.value)} placeholder={lang==='en'?'Full name':'Nom complet'}
+                  style={{width:'100%',borderRadius:10,border:'1.5px solid var(--c-border)',padding:'10px 11px',fontSize:13,background:'var(--c-bg)',color:'var(--c-text)',outline:'none',boxSizing:'border-box' as const}}/>
+              </div>
+              <div>
+                <label style={{fontSize:10,fontWeight:800,color:'#9A3412',letterSpacing:'0.08em',textTransform:'uppercase' as const,display:'block',marginBottom:4}}>📞 {lang==='ar'?'الهاتف':lang==='en'?'Phone':'Tél'}</label>
+                <input value={phone} onChange={e=>setPhone(e.target.value)} type="tel" placeholder="+212 6..."
+                  style={{width:'100%',borderRadius:10,border:'1.5px solid var(--c-border)',padding:'10px 11px',fontSize:13,background:'var(--c-bg)',color:'var(--c-text)',outline:'none',boxSizing:'border-box' as const}}/>
+              </div>
+            </div>
+            {formErr&&<p style={{color:'#DC2626',fontSize:12,fontWeight:700,margin:0}}>
+              {lang==='ar'?'يرجى ملء جميع الحقول':lang==='en'?'Please fill all fields':'Veuillez remplir tous les champs'}
+            </p>}
+            <div style={{borderRadius:14,padding:'12px 14px',background:'linear-gradient(135deg,#0A1A12,#0D2E1A)',border:'1px solid rgba(74,222,128,0.3)'}}>
+              <p style={{fontSize:11,fontWeight:900,color:'#D9C5A0',margin:'0 0 6px'}}>
+                💎 {lang==='ar'?'خصم بالماسات':lang==='en'?'Diamond discount':lang==='amz'?'ⵙⵙⵎⵔⵙ ⵉⵎⴰⵙⵙⵏ':'Réduction Diamants'}
+              </p>
+              {motoGems>0?(
+                <>
+                  <p style={{fontSize:10,color:'rgba(255,255,255,0.6)',margin:'0 0 8px'}}>
+                    {motoGems.toLocaleString()} 💎 → max {maxMotoGemMAD} MAD / {MOTO_PRICE} DH
+                  </p>
+                  {motoGemMAD>0?(
+                    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                      <span style={{fontSize:10,fontWeight:700,color:'#4ADE80'}}>✓ -{motoGemMAD} MAD → {MOTO_PRICE-motoGemMAD} DH {lang==='en'?'applied':'appliqué'}</span>
+                      <button onClick={()=>setMotoGemMAD(0)} style={{fontSize:9,fontWeight:700,padding:'2px 8px',borderRadius:8,background:'rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.5)',border:'none',cursor:'pointer'}}>✕</button>
+                    </div>
+                  ):(
+                    <div style={{display:'flex',gap:8,flexWrap:'wrap' as const}}>
+                      {[1,2,3,4,5,6,7,maxMotoGemMAD].filter((v,i,a)=>v>0&&v<=MOTO_PRICE&&v<=maxMotoGemMAD&&a.indexOf(v)===i).slice(0,5).map(mad=>(
+                        <button key={mad} onClick={()=>setMotoGemMAD(mad)}
+                          style={{padding:'4px 12px',borderRadius:12,fontWeight:900,fontSize:10,color:'#4ADE80',background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.5)',cursor:'pointer'}}>
+                          -{mad} MAD
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ):(
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:8}}>
+                  <p style={{fontSize:10,color:'rgba(255,255,255,0.4)',margin:0}}>
+                    {lang==='ar'?'لا ماسات':lang==='en'?'No diamonds yet — play to earn!':lang==='amz'?'ⵓⵔ ⴷ ⵉⵎⴰⵙⵙⵏ':'Pas de diamants — jouez pour en gagner !'}
+                  </p>
+                  <button onClick={()=>navigateMoto('/game')} style={{flexShrink:0,fontSize:9,fontWeight:900,padding:'4px 10px',borderRadius:10,background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.4)',color:'#4ADE80',cursor:'pointer'}}>🎮 Game</button>
+                </div>
+              )}
+            </div>
+            <div style={{borderRadius:16,padding:'14px',background:'var(--c-bg)',border:'1.5px solid var(--c-border)'}}>
+              <p style={{fontSize:10,fontWeight:900,color:'#9A3412',letterSpacing:'0.1em',textTransform:'uppercase' as const,margin:'0 0 11px'}}>
+                💳 {lang==='ar'?'طريقة الدفع':lang==='en'?'Payment method':'Mode de paiement'}
+              </p>
+              <SharedPaymentOptions lang={lang} selected={motoPayMethod} onSelect={setMotoPayMethod} showCash showCard={false} onWalletPay={handleMotoWalletPay}/>
+            </div>
+            <div style={{borderRadius:14,padding:'12px 16px',background:'linear-gradient(135deg,rgba(234,88,12,0.12),rgba(249,115,22,0.06))',border:'1px solid rgba(234,88,12,0.3)',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+              <span style={{fontSize:12,fontWeight:700,color:'var(--c-text)'}}>🛵 {lang==='en'?'Total':lang==='ar'?'المجموع':'Total à payer'}</span>
+              <div style={{textAlign:'right' as const}}>
+                <span style={{fontSize:22,fontWeight:900,color:'#EA580C'}}>{MOTO_PRICE-motoGemMAD} DH</span>
+                {motoGemMAD>0&&<p style={{fontSize:10,color:'#4ADE80',margin:0}}>-{motoGemMAD} MAD 💎</p>}
+              </div>
+            </div>
+            <button onClick={()=>{if(!motoPayMethod){setFormErr('*pay');return;}handleMotoBook();}} disabled={sending}
+              style={{width:'100%',padding:'16px',borderRadius:18,border:'none',background:sending?'#9CA3AF':'linear-gradient(135deg,#9A3412 0%,#F97316 100%)',color:'white',fontWeight:900,fontSize:15,boxShadow:sending?'none':'0 8px 28px rgba(234,88,12,0.45)',cursor:sending?'wait':'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
+              {sending?<>⏳ {lang==='ar'?'جاري الإرسال…':lang==='en'?'Sending…':'Envoi en cours…'}</>
+                :<>🛵 {lang==='ar'?'احجز الآن':lang==='amz'?'ⵙⵖⵏ':lang==='en'?'Book Now':'Réserver maintenant'}</>}
+            </button>
+          </div>
+        </div>
+      )}
+      {bookingRef&&(
+        <div style={{position:'absolute',bottom:0,left:0,right:0,zIndex:30,borderRadius:'26px 26px 0 0',background:'var(--c-card)',boxShadow:'0 -12px 50px rgba(0,0,0,0.65)',border:'1px solid rgba(154,52,18,0.15)',borderBottom:'none',padding:'14px 20px 40px'}}>
+          <div style={{display:'flex',justifyContent:'center',marginBottom:12}}>
+            <div style={{width:36,height:4,borderRadius:2,background:'rgba(154,52,18,0.22)'}}/>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:12}}>
+            <div style={{width:11,height:11,borderRadius:'50%',background:statusColor,flexShrink:0,animation:'pulse 1.5s infinite'}}/>
+            <p style={{fontWeight:900,fontSize:15,color:statusColor,flex:1,margin:0}}>
+              {statusLabel||{fr:'Recherche d\'un motard…',en:'Finding a rider…',ar:'البحث عن سائق موتو…',amz:'ⵔⴰⴷ ⵉⴼⴼⵖⵏ ⵓⵙⵔⴰⵜⵏ…'}[lang]}
+            </p>
+            {trackData?.eta&&<span style={{fontSize:13,fontWeight:900,color:'#F97316',flexShrink:0}}>⏱ {trackData.eta} min</span>}
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:10,padding:'10px 14px',borderRadius:14,background:'var(--c-bg)',border:'1px solid var(--c-border)',marginBottom:12}}>
+            <span style={{fontSize:24}}>🛵</span>
+            <div style={{flex:1}}>
+              <p style={{fontSize:13,fontWeight:700,color:'var(--c-text)',margin:'0 0 1px'}}>{trackData?.driverName||'Bridge Moto Taxi'}</p>
+              <p style={{fontSize:10,color:'#9CA3AF',margin:0}}>Réf: <strong style={{color:'var(--c-text)'}}>{bookingRef}</strong> · 7 DH prix fixe</p>
+            </div>
+            {trackData?.status==='arrived'&&<span style={{fontSize:20}}>🎉</span>}
+          </div>
+          {trackData?.status==='arrived'&&(
+            <div style={{borderRadius:12,padding:'10px 14px',background:'#EFF6FF',border:'1px solid #BFDBFE',textAlign:'center' as const,marginBottom:12}}>
+              <p style={{fontWeight:900,color:'#1D4ED8',fontSize:13,margin:0}}>🎉 {lang==='ar'?'وصل سائقك!':lang==='en'?'Driver has arrived!':'Votre motard est là !'}</p>
+            </div>
+          )}
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+            <button onClick={()=>{setBookingRef('');localStorage.removeItem('bridge_moto_ref');setTrackData(null);}}
+              style={{padding:'11px',borderRadius:14,border:'none',background:'#FEE2E2',color:'#DC2626',fontWeight:900,fontSize:13,cursor:'pointer'}}>
+              ✕ {lang==='ar'?'إلغاء':lang==='en'?'Cancel':'Annuler'}
+            </button>
+            <button onClick={()=>{if(trackIntervalRef.current){clearInterval(trackIntervalRef.current);trackIntervalRef.current=null;}const r=window.setInterval(async()=>{try{const res=await fetch(`/api/tracking/${bookingRef}`);if(res.ok)setTrackData(await res.json());}catch{}},3000);trackIntervalRef.current=r;}}
+              style={{padding:'11px',borderRadius:14,border:'none',background:'#D1FAE5',color:'#065F46',fontWeight:900,fontSize:13,cursor:'pointer'}}>
+              ↺ {lang==='ar'?'تحديث':lang==='en'?'Refresh':'Actualiser'}
+            </button>
+          </div>
+        </div>
+      )}
+      {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
+      {showMotoQR&&<QRPayModal lang={lang} onClose={()=>setShowMotoQR(false)} onConfirm={()=>setShowMotoQR(false)}/>}
     </div>
   );
 }
@@ -5707,7 +6081,7 @@ function loadNav() {
   try {
     const raw=localStorage.getItem(NAV_KEY);
     if(!raw) return null;
-    return JSON.parse(raw) as {lang:Lang;service:'none'|'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie';page:Page;restaurantId:string|null};
+    return JSON.parse(raw) as {lang:Lang;service:'none'|'delivery'|'taxi'|'taxi-select'|'moto'|'tabac'|'fleurs'|'pharmacie';page:Page;restaurantId:string|null};
   } catch { return null; }
 }
 
@@ -5734,7 +6108,7 @@ export default function App() {
   // splashDone becomes true after 3s; we also wait for Clerk to load
   const [splashDone,setSplashDone] = useState(false);
   const [mode,setMode]             = useState<'hub'|'services'>('hub');
-  const [service,setService]       = useState<'none'|'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'>(saved?.service??'none');
+  const [service,setService]       = useState<'none'|'delivery'|'taxi'|'taxi-select'|'moto'|'tabac'|'fleurs'|'pharmacie'>(saved?.service??'none');
   const [cart,setCart]         = useState<CartItem[]>([]);
   const [showCart,setShowCart] = useState(false);
   const [showProfile,setShowProfile] = useState(false);
@@ -5831,8 +6205,10 @@ export default function App() {
   if(mode==='hub') return <DarkModeCtx.Provider value={dv}><HubPage onServices={()=>setMode('services')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/></DarkModeCtx.Provider>;
 
   const backToHub=()=>{setMode('hub');setService('none');};
-  if(service==='none') return <DarkModeCtx.Provider value={dv}><ServiceSelectPage onSelect={s=>setService(s)} onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/></DarkModeCtx.Provider>;
-  if(service==='taxi') return <DarkModeCtx.Provider value={dv}><TaxiPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
+  if(service==='none') return <DarkModeCtx.Provider value={dv}><ServiceSelectPage onSelect={s=>{if(s==='taxi')setService('taxi-select');else setService(s);}} onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/></DarkModeCtx.Provider>;
+  if(service==='taxi-select') return <DarkModeCtx.Provider value={dv}><TaxiVehicleSelectPage onBack={()=>setService('none')} onSelect={v=>setService(v)} lang={lang}/></DarkModeCtx.Provider>;
+  if(service==='taxi') return <DarkModeCtx.Provider value={dv}><TaxiPage onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
+  if(service==='moto') return <DarkModeCtx.Provider value={dv}><MotoTaxiPage onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
   if(service==='tabac') return <DarkModeCtx.Provider value={dv}><TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
   if(service==='fleurs') return <DarkModeCtx.Provider value={dv}><FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
   if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
