@@ -6229,22 +6229,12 @@ export default function App() {
   <DarkModeCtx.Provider value={dv}>
     <div className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{color:'var(--c-text)'}}>
 
-      {/* ── Top-left: Services back + Driver ── */}
-      <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'right-5':'left-5'}`}>
+      {/* ── Top-left: Back ── */}
+      <div className={`fixed top-4 z-50 flex items-center gap-2 ${isAR?'right-4':'left-4'}`}>
         <button onClick={()=>setService('none')}
-          className="flex items-center gap-0.5 px-1.5 rounded-full transition-all active:scale-90 hover:scale-110"
-          style={{...pillStyle, height:'24px', minWidth:'unset'}}>
-          <span style={{fontSize:'9px', lineHeight:1}}>🚬</span>
-          <span style={{fontSize:'8px', color:'#D9C5A0', fontWeight:900}}>|</span>
-          <span style={{fontSize:'9px', lineHeight:1}}>🚖</span>
-          <span style={{fontSize:'8px', color:'#D9C5A0', fontWeight:900}}>|</span>
-          <span style={{fontSize:'9px', lineHeight:1}}>🌹</span>
-          <span style={{fontSize:'8px', lineHeight:1, color:'#9CA3AF'}}>←</span>
-        </button>
-        <button onClick={()=>setShowDriver(true)}
-          className="flex items-center gap-1 px-2 rounded-full transition-all active:scale-90 hover:scale-110 font-black text-[10px]"
-          style={{...pillStyle, height:'24px', minWidth:'unset', color:'#065F46'}}>
-          <span style={{fontSize:'11px'}}>🛵</span>
+          className="flex items-center justify-center rounded-full transition-all active:scale-90"
+          style={{...pillStyle, width:'42px', height:'42px', padding:0, fontSize:'18px'}}>
+          ←
         </button>
       </div>
 
