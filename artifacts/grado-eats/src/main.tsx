@@ -3426,6 +3426,322 @@ function AdminCouponsPanel({ adminKey }: { adminKey: string }) {
   );
 }
 
+// ─── Missions / Pub page ─────────────────────────────────────────────────────
+// Pour brancher AdGate : remplace '' par l'URL offerwall de ton compte AdGate
+const ADGATE_OFFERWALL_URL = '';
+
+interface MissionData {
+  id: number; type: string; title: string; description: string;
+  rewardDiamonds: number; dailyLimit: number;
+  durationSeconds?: number | null; externalUrl?: string | null;
+  sortOrder: number; active: boolean;
+}
+interface MissionCompl { id: number; missionId: number; diamondsAwarded: number; }
+
+function MissionsPage() {
+  const [, navigate] = useLocation();
+  const { getToken, isSignedIn } = useAuth();
+  const [missions, setMissions] = useState<MissionData[]>([]);
+  const [completions, setCompletions] = useState<MissionCompl[]>([]);
+  const [todayDiamonds, setTodayDiamonds] = useState(0);
+  const DAILY_CAP = 3000;
+
+  // Ad overlay state
+  const [adMission, setAdMission] = useState<MissionData | null>(null);
+  const [adCountdown, setAdCountdown] = useState(0);
+  const [adDone, setAdDone] = useState(false);
+  const adTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Social confirm state
+  const [socialMission, setSocialMission] = useState<MissionData | null>(null);
+  const [socialReady, setSocialReady] = useState(false);
+  const socialTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Toast
+  const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
+  const showToast = (msg: string, ok = true) => {
+    setToast({ msg, ok });
+    setTimeout(() => setToast(null), 3500);
+  };
+
+  const authHeaders = async (): Promise<Record<string, string>> => {
+    const t = isSignedIn ? await getToken() : null;
+    const h: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (t) h['Authorization'] = `Bearer ${t}`;
+    return h;
+  };
+
+  const loadMissions = async () => {
+    try {
+      const h = await authHeaders();
+      const r = await fetch('/api/missions', { headers: h });
+      if (!r.ok) return;
+      const d = await r.json();
+      setMissions(d.missions ?? []);
+      setCompletions(d.completions ?? []);
+      setTodayDiamonds(d.todayDiamonds ?? 0);
+    } catch {}
+  };
+
+  useEffect(() => { loadMissions(); }, []); // eslint-disable-line
+
+  // Count today completions for a given mission
+  const todayCount = (missionId: number) =>
+    completions.filter(c => c.missionId === missionId).length;
+
+  const complete = async (mission: MissionData) => {
+    if (!isSignedIn) { showToast('Connecte-toi pour gagner des 💎 !', false); return; }
+    try {
+      const h = await authHeaders();
+      const r = await fetch(`/api/missions/${mission.id}/complete`, { method: 'POST', headers: h });
+      const d = await r.json();
+      if (!r.ok) { showToast(d.error || 'Erreur', false); return; }
+      setTodayDiamonds(d.todayDiamonds);
+      setCompletions(prev => [...prev, { id: Date.now(), missionId: mission.id, diamondsAwarded: d.awarded }]);
+      showToast(`+${d.awarded.toLocaleString()} 💎 crédités ! (${(d.awarded / 200).toFixed(1)} DH)`, true);
+    } catch { showToast('Erreur réseau', false); }
+  };
+
+  // ── Video / Fortune mission flow ──
+  const startAd = (mission: MissionData) => {
+    if (!isSignedIn) { showToast('Connecte-toi pour gagner des 💎 !', false); return; }
+    const cnt = todayCount(mission.id);
+    if (mission.dailyLimit !== -1 && cnt >= mission.dailyLimit) { showToast('Limite journalière atteinte', false); return; }
+    const dur = mission.durationSeconds ?? 30;
+    setAdMission(mission); setAdCountdown(dur); setAdDone(false);
+    if (adTimerRef.current) clearInterval(adTimerRef.current);
+    adTimerRef.current = setInterval(() => {
+      setAdCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(adTimerRef.current!);
+          setAdDone(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const claimAd = async () => {
+    if (!adMission) return;
+    const m = adMission;
+    setAdMission(null); setAdDone(false);
+    await complete(m);
+  };
+
+  // ── Social mission flow ──
+  const startSocial = (mission: MissionData) => {
+    if (!isSignedIn) { showToast('Connecte-toi pour gagner des 💎 !', false); return; }
+    const cnt = todayCount(mission.id);
+    if (mission.dailyLimit !== -1 && cnt >= mission.dailyLimit) { showToast('Déjà effectué !', false); return; }
+    if (mission.externalUrl) window.open(mission.externalUrl, '_blank');
+    setSocialMission(mission); setSocialReady(false);
+    if (socialTimerRef.current) clearTimeout(socialTimerRef.current);
+    socialTimerRef.current = setTimeout(() => setSocialReady(true), 5000);
+  };
+
+  const claimSocial = async () => {
+    if (!socialMission) return;
+    const m = socialMission;
+    setSocialMission(null);
+    await complete(m);
+  };
+
+  const dh = (d: number, type?: string) => {
+    // Offerwall: show real ad payout value (AdGate pays ~15 DH per install)
+    if (type === 'offerwall') return '~15 DH';
+    return `${(d / 200).toFixed(2).replace(/\.?0+$/, '')} DH`;
+  };
+  const pct = Math.min(100, Math.round((todayDiamonds / DAILY_CAP) * 100));
+
+  const grouped: Record<string, MissionData[]> = { video: [], social: [], offerwall: [], survey: [], fortune: [] };
+  for (const m of missions) { if (grouped[m.type]) grouped[m.type].push(m); }
+
+  const catLabel: Record<string, string> = {
+    video: '🎬 Publicités vidéo',
+    offerwall: '📱 Jeux & Offres',
+    social: '📣 Réseaux sociaux',
+    survey: '📊 Sondages',
+    fortune: '🎡 Roue de la fortune',
+  };
+
+  const S = {
+    page: { minHeight: '100dvh', background: '#0f172a', color: '#fff', fontFamily: 'inherit', paddingBottom: 80 } as React.CSSProperties,
+    header: { display: 'flex', alignItems: 'center', gap: 12, padding: '16px 16px 12px', borderBottom: '1px solid rgba(255,255,255,0.07)' } as React.CSSProperties,
+    back: { background: 'rgba(255,255,255,0.07)', border: 'none', color: '#94a3b8', borderRadius: 12, width: 38, height: 38, fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 } as React.CSSProperties,
+    card: { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, marginBottom: 10, cursor: 'pointer', transition: 'background 0.15s' } as React.CSSProperties,
+    pill: (done: boolean) => ({ background: done ? 'rgba(16,185,129,0.15)' : 'rgba(59,130,246,0.15)', color: done ? '#10b981' : '#60a5fa', borderRadius: 20, padding: '4px 10px', fontSize: 11, fontWeight: 800, whiteSpace: 'nowrap' as const }),
+  };
+
+  return (
+    <div style={S.page}>
+      {/* Header */}
+      <div style={S.header}>
+        <button style={S.back} onClick={() => navigate('/')}>←</button>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 17, fontWeight: 900, letterSpacing: '0.02em' }}>💎 Gagner des diamants</div>
+          <div style={{ fontSize: 11, color: '#64748b', marginTop: 1 }}>Regarde des pubs, fais des missions</div>
+        </div>
+        <div style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 12, padding: '6px 12px', textAlign: 'center' }}>
+          <div style={{ fontSize: 13, fontWeight: 900, color: '#10b981' }}>{todayDiamonds.toLocaleString()} 💎</div>
+          <div style={{ fontSize: 9, color: '#64748b', letterSpacing: '0.06em' }}>AUJOURD'HUI</div>
+        </div>
+      </div>
+
+      {/* Daily progress */}
+      <div style={{ padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 11, color: '#94a3b8' }}>
+          <span>Plafond journalier</span>
+          <span style={{ fontWeight: 800, color: pct >= 100 ? '#10b981' : '#f59e0b' }}>
+            {todayDiamonds.toLocaleString()} / {DAILY_CAP.toLocaleString()} 💎 ({dh(todayDiamonds)} / 15 DH)
+          </span>
+        </div>
+        <div style={{ height: 8, background: 'rgba(255,255,255,0.08)', borderRadius: 99 }}>
+          <div style={{ height: '100%', borderRadius: 99, width: `${pct}%`, background: pct >= 100 ? '#10b981' : 'linear-gradient(90deg,#3b82f6,#8b5cf6)', transition: 'width 0.5s' }} />
+        </div>
+        {pct >= 100 && <div style={{ fontSize: 11, color: '#10b981', fontWeight: 800, marginTop: 6, textAlign: 'center' }}>🎉 Plafond atteint ! Revenez demain.</div>}
+      </div>
+
+      {/* Auth nudge */}
+      {!isSignedIn && (
+        <div onClick={() => navigate('/sign-in')} style={{ margin: '12px 16px 0', padding: '12px 14px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 14, fontSize: 12, color: '#fbbf24', fontWeight: 700, cursor: 'pointer', textAlign: 'center' }}>
+          🔒 Connecte-toi pour encaisser tes récompenses →
+        </div>
+      )}
+
+      <div style={{ padding: '16px 16px 0' }}>
+        {(['video','offerwall','social','survey','fortune'] as const).map(cat => {
+          const items = grouped[cat] ?? [];
+          if (!items.length) return null;
+          return (
+            <div key={cat} style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 13, fontWeight: 900, color: '#94a3b8', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>{catLabel[cat]}</div>
+
+              {/* AdGate offerwall embed for offerwall category */}
+              {cat === 'offerwall' && ADGATE_OFFERWALL_URL && (
+                <div style={{ marginBottom: 12, borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <iframe src={ADGATE_OFFERWALL_URL} style={{ width: '100%', height: 500, border: 'none', display: 'block' }} title="Offres partenaires" />
+                </div>
+              )}
+              {cat === 'offerwall' && !ADGATE_OFFERWALL_URL && (
+                <div style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 14, padding: '12px 14px', marginBottom: 12, fontSize: 11, color: '#a78bfa', lineHeight: 1.6 }}>
+                  💡 <b>Intégration AdGate / Lootably</b> : renseigne la constante <code style={{ background: 'rgba(255,255,255,0.1)', padding: '1px 5px', borderRadius: 4 }}>ADGATE_OFFERWALL_URL</code> dans <code>main.tsx</code> pour afficher l'offerwall ici.
+                </div>
+              )}
+
+              {items.map(mission => {
+                const cnt = todayCount(mission.id);
+                const maxed = mission.dailyLimit !== -1 && cnt >= mission.dailyLimit;
+                const isVideo = mission.type === 'video' || mission.type === 'fortune';
+                const isSocial = mission.type === 'social' || mission.type === 'survey';
+                return (
+                  <div
+                    key={mission.id}
+                    style={{ ...S.card, opacity: maxed ? 0.5 : 1 }}
+                    onClick={() => {
+                      if (maxed) return;
+                      if (isVideo) startAd(mission);
+                      else if (isSocial) startSocial(mission);
+                      else complete(mission);
+                    }}
+                  >
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 14, fontWeight: 800, marginBottom: 3 }}>{mission.title}</div>
+                      <div style={{ fontSize: 11, color: '#64748b', lineHeight: 1.4 }}>{mission.description}</div>
+                      {mission.dailyLimit > 1 && (
+                        <div style={{ fontSize: 10, color: '#475569', marginTop: 3 }}>{cnt}/{mission.dailyLimit} fois aujourd'hui</div>
+                      )}
+                    </div>
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <div style={S.pill(maxed)}>
+                        {maxed ? '✓ Fait' : `+${mission.rewardDiamonds >= 1000 ? (mission.rewardDiamonds/1000).toFixed(0)+'K' : mission.rewardDiamonds} 💎`}
+                      </div>
+                      {!maxed && <div style={{ fontSize: 10, color: '#475569', marginTop: 3 }}>{dh(mission.rewardDiamonds, mission.type)}</div>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Video / Fortune ad overlay */}
+      {adMission && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.92)', zIndex: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          {/* Simulated ad banner */}
+          <div style={{ width: '100%', maxWidth: 360, background: 'linear-gradient(135deg,#1e293b,#0f172a)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, overflow: 'hidden', marginBottom: 20 }}>
+            <div style={{ background: '#1e293b', padding: '10px 14px', fontSize: 10, color: '#475569', fontWeight: 700, letterSpacing: '0.1em', display: 'flex', justifyContent: 'space-between' }}>
+              <span>PUBLICITÉ SPONSORISÉE</span>
+              {!adDone && <span style={{ color: '#f59e0b' }}>{adCountdown}s</span>}
+            </div>
+            <div style={{ height: 180, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: 20 }}>
+              <div style={{ fontSize: 48 }}>{adMission.type === 'fortune' ? '🎡' : '🎬'}</div>
+              <div style={{ fontSize: 13, color: '#94a3b8', textAlign: 'center', lineHeight: 1.5 }}>
+                {adMission.type === 'fortune' ? 'Roue de la fortune en cours…' : 'Visionnage de la publicité en cours…'}
+              </div>
+              {/* Fake progress bar */}
+              {!adDone && (
+                <div style={{ width: '100%', height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 99 }}>
+                  <div style={{ height: '100%', borderRadius: 99, background: '#3b82f6', width: `${((adMission.durationSeconds! - adCountdown) / adMission.durationSeconds!) * 100}%`, transition: 'width 1s linear' }} />
+                </div>
+              )}
+            </div>
+            <div style={{ padding: '10px 14px 16px' }}>
+              {adDone ? (
+                <button onClick={claimAd} style={{ width: '100%', padding: '15px 0', borderRadius: 14, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#059669,#10b981)', color: '#fff', fontSize: 15, fontWeight: 900, letterSpacing: '0.02em', boxShadow: '0 0 20px rgba(16,185,129,0.4)' }}>
+                  🎁 Réclamer {adMission.rewardDiamonds.toLocaleString()} 💎
+                </button>
+              ) : (
+                <div style={{ textAlign: 'center', color: '#475569', fontSize: 12, fontWeight: 700 }}>
+                  Patiente encore {adCountdown}s pour récupérer ta récompense…
+                </div>
+              )}
+            </div>
+          </div>
+          <button onClick={() => { if (adTimerRef.current) clearInterval(adTimerRef.current); setAdMission(null); }} style={{ background: 'none', border: 'none', color: '#475569', fontSize: 12, cursor: 'pointer', fontWeight: 700 }}>
+            Annuler
+          </button>
+        </div>
+      )}
+
+      {/* Social confirm overlay */}
+      {socialMission && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <div style={{ width: '100%', maxWidth: 340, background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, padding: '28px 24px', textAlign: 'center' }}>
+            <div style={{ fontSize: 40, marginBottom: 14 }}>
+              {socialMission.title.split(' ')[0]}
+            </div>
+            <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 8 }}>{socialMission.title}</div>
+            <div style={{ fontSize: 12, color: '#64748b', marginBottom: 20, lineHeight: 1.5 }}>
+              {socialMission.externalUrl ? 'La page s\'est ouverte dans un nouvel onglet. Effectue l\'action puis confirme ci-dessous.' : socialMission.description}
+            </div>
+            {socialReady ? (
+              <button onClick={claimSocial} style={{ width: '100%', padding: '15px 0', borderRadius: 14, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#059669,#10b981)', color: '#fff', fontSize: 14, fontWeight: 900, boxShadow: '0 0 20px rgba(16,185,129,0.35)' }}>
+                ✅ C'est fait — Réclamer {socialMission.rewardDiamonds.toLocaleString()} 💎
+              </button>
+            ) : (
+              <div style={{ padding: '12px 0', color: '#f59e0b', fontSize: 12, fontWeight: 700 }}>
+                ⏳ Attends quelques secondes…
+              </div>
+            )}
+            <button onClick={() => { if (socialTimerRef.current) clearTimeout(socialTimerRef.current); setSocialMission(null); }} style={{ marginTop: 14, background: 'none', border: 'none', color: '#475569', fontSize: 12, cursor: 'pointer', fontWeight: 700 }}>
+              Annuler
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <div style={{ position: 'fixed', bottom: 90, left: '50%', transform: 'translateX(-50%)', background: toast.ok ? '#059669' : '#dc2626', color: '#fff', padding: '10px 20px', borderRadius: 20, fontSize: 13, fontWeight: 800, zIndex: 300, whiteSpace: 'nowrap', boxShadow: '0 4px 20px rgba(0,0,0,0.4)', maxWidth: '90vw', textAlign: 'center' }}>
+          {toast.msg}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AdminAuthPage() {
   const [email, setEmail] = useState('');
   const [adminKey, setAdminKey] = useState('');
@@ -3801,6 +4117,7 @@ function ClerkProviderWithRoutes() {
           <Route path="/sign-up/*?" component={SignUpPage} />
           <Route path="/forgot-password" component={ForgotPasswordPage} />
           <Route path="/game" component={GamePage} />
+          <Route path="/missions" component={MissionsPage} />
           <Route path="/assistant" component={BridgeAssistantPage} />
           <Route path="/dispatch" component={DispatchPage} />
           <Route path="/driver/:ref" component={DriverTrackerPage} />

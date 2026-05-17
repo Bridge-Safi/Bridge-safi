@@ -72,6 +72,28 @@ To update the bank QR: change `BRIDGE_QR_PAY_URL` near line 198 in `artifacts/gr
 - `GameRulesModal` component in `main.tsx` above `GamePage`
 - Rules: 2 days × 3h/day = 6h; 1,000 💎/hour; 6,000 💎 target; missing 1,000 💎 = 5 DH; free delivery bonus at 7h
 
+## Missions & Pubs (Bridge Earn)
+
+- Route: `/missions` (visible pour tous, encaissement requiert connexion)
+- Bouton d'accès: Hub page → carte **"Pubs & Missions"** (violet, sous Bridge Game)
+- Plafond journalier: **3 000 💎 = 15 DH** par utilisateur par jour
+- DB: tables `missions` (catalogue) + `mission_completions` (suivi par utilisateur/jour)
+- API: `GET /api/missions`, `POST /api/missions/:id/complete`, `GET /api/missions/earnings`
+- Missions pré-configurées:
+  - 🎬 Pub vidéo 30s → 600 💎 (3 DH) × 5/jour
+  - 🎬 Pub vidéo 60s → 1 000 💎 (5 DH) × 3/jour
+  - 📸 Suivre Instagram → 300 💎 (1.5 DH) × 1/total
+  - 📺 Abonner YouTube → 400 💎 (2 DH) × 1/total
+  - 👍 Facebook → 200 💎 (1 DH) × 1/total
+  - 📱 Télécharger jeu → **20 000 💎 (~15 DH)** × 1/jour
+  - 📊 Sondage → 2 400 💎 (12 DH) × 1/jour
+  - 🎡 Roue fortune → 6 💎 × 10/jour
+- **AdGate / Lootably**: changer `ADGATE_OFFERWALL_URL` dans `main.tsx` (ligne ~3434) pour brancher l'offerwall iframe
+- Flux UX:
+  - Vidéo: countdown overlay → bouton "Réclamer" → diamants crédités
+  - Social: ouvre l'URL dans un nouvel onglet → 5s → bouton "C'est fait"
+  - Offerwall: iframe AdGate (ou placeholder de config si URL vide)
+
 ## Bridge AI Assistant
 
 - Route: `/assistant` (accessible without auth)

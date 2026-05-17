@@ -5188,6 +5188,31 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
             <p style={{color:'#FDE047',fontSize:22,fontWeight:900,letterSpacing:'0.06em',margin:'0 0 6px',textShadow:'0 2px 12px rgba(253,224,71,0.4)'}} className={fClass}>{t.hubGame}</p>
             <p style={{color:'rgba(255,255,255,0.6)',fontSize:11,fontWeight:600,margin:0}} className={fClass}>{t.hubGameSub}</p>
           </button>
+
+          {/* MISSIONS BUTTON */}
+          <button
+            onClick={()=>navigate('/missions')}
+            style={{
+              background:'linear-gradient(145deg,#0f172a 0%,#1e1035 50%,#12112a 100%)',
+              borderRadius:28,border:'1.5px solid rgba(139,92,246,0.4)',
+              boxShadow:'0 10px 40px rgba(109,40,217,0.25),inset 0 1px 0 rgba(255,255,255,0.08)',
+              padding:'20px 24px',cursor:'pointer',
+              position:'relative',overflow:'hidden',textAlign:'center',
+              transition:'all 0.2s',
+            }}>
+            <div style={{position:'absolute',top:0,left:0,right:0,height:'50%',background:'linear-gradient(180deg,rgba(255,255,255,0.08) 0%,rgba(255,255,255,0) 100%)',borderRadius:'28px 28px 60% 60%',pointerEvents:'none'}}/>
+            <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:14,marginBottom:10}}>
+              <span style={{fontSize:36}}>💰</span>
+              <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:5}}>
+                <span style={{fontSize:22}}>🎬</span>
+                <div style={{background:'rgba(139,92,246,0.2)',border:'1px solid rgba(139,92,246,0.5)',borderRadius:6,padding:'2px 8px'}}>
+                  <span style={{color:'#a78bfa',fontSize:9,fontWeight:900,letterSpacing:'0.18em'}}>MISSIONS</span>
+                </div>
+              </div>
+            </div>
+            <p style={{color:'#c4b5fd',fontSize:18,fontWeight:900,letterSpacing:'0.04em',margin:'0 0 4px'}} className={fClass}>Pubs & Missions</p>
+            <p style={{color:'rgba(255,255,255,0.5)',fontSize:11,fontWeight:600,margin:0}} className={fClass}>Gagne jusqu'à 15 DH/jour en 💎</p>
+          </button>
         </div>
 
         {/* Footer */}

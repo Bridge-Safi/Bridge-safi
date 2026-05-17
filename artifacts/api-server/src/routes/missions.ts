@@ -19,7 +19,7 @@ async function seedMissionsIfEmpty() {
     { type: 'social',    title: '📸 Suivre Bridge sur Instagram',     description: 'Suis la page officielle Bridge Safi sur Instagram',               rewardDiamonds: 300,    dailyLimit: 1,  externalUrl: 'https://instagram.com/bridgesafi', sortOrder: 3, active: true },
     { type: 'social',    title: '📺 S\'abonner à Bridge YouTube',     description: 'Abonne-toi à la chaîne YouTube de Bridge Safi',                   rewardDiamonds: 400,    dailyLimit: 1,  externalUrl: 'https://youtube.com/@bridgesafi',  sortOrder: 4, active: true },
     { type: 'social',    title: '👍 Rejoindre Bridge Facebook',       description: 'Rejoins et aime la page Facebook de Bridge Safi',                 rewardDiamonds: 200,    dailyLimit: 1,  externalUrl: 'https://facebook.com/bridgesafi',  sortOrder: 5, active: true },
-    { type: 'offerwall', title: '📱 Télécharger un jeu partenaire',   description: 'Télécharge et atteins le niveau 5 d\'un jeu partenaire',           rewardDiamonds: 10000,  dailyLimit: 1,  sortOrder: 6, active: true },
+    { type: 'offerwall', title: '📱 Télécharger un jeu partenaire',   description: 'Télécharge et atteins le niveau 5 d\'un jeu partenaire — 15 DH offerts !', rewardDiamonds: 20000, dailyLimit: 1, sortOrder: 6, active: true },
     { type: 'survey',    title: '📊 Sondage rapide (2-3 min)',        description: 'Réponds à un sondage pour gagner le maximum de diamants',          rewardDiamonds: 2400,   dailyLimit: 1,  sortOrder: 7, active: true },
     { type: 'fortune',   title: '🎡 Roue de la fortune',              description: 'Tente ta chance à la roue — regarde une pub et gagne des diamants',rewardDiamonds: 6,      dailyLimit: 10, durationSeconds: 15,  sortOrder: 8, active: true },
   ]);
