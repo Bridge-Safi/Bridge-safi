@@ -3521,7 +3521,6 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
 
       </div>
 
-      <WAButton/>
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
     </div>
   );
@@ -4743,7 +4742,6 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
         ))}
       </div>
 
-      <WAButton/>
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={p=>{saveProfile(p);setShowCheckout(false);}} onClose={()=>setShowProfile(false)}/>}
       {showCheckout&&(
         <CheckoutDrawer
@@ -5028,7 +5026,6 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
         {showTabacQR&&<QRPayModal lang={lang} onClose={()=>setShowTabacQR(false)} onConfirm={()=>setShowTabacQR(false)}/>}
       </div>
 
-      <WAButton/>
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
     </div>
   );
@@ -5206,7 +5203,6 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
         <p style={{color:'#9CA3AF',fontSize:9,textAlign:'center',marginTop:24,letterSpacing:'0.15em'}}>© 2026 BRIDGE SAFI · safi-bridge.ma</p>
       </div>
 
-      <WAButton/>
       {showProfileModal&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfileModal(false)}/>}
     </div>
   );
@@ -5449,7 +5445,6 @@ export default function App() {
         <p className="text-center text-[9px] pb-2" style={{color:'#C9BFB2'}}>{t.footer}</p>
       </nav>
 
-      <WAButton/>
       <PWAInstallBanner lang={lang}/>
       {showCart&&<CheckoutDrawer cart={cart} lang={lang} onClose={()=>setShowCart(false)} onQty={adjustQty} profile={profile} saveProfile={saveProfile} onClearCart={clearCart} restaurantName={selectedRestaurant?.name} onOrderSuccess={ref=>{setLastOrderRef(ref);setPage('tracking');setShowCart(false);}}/>}
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
