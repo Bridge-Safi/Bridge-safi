@@ -3905,7 +3905,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   }[trackData?.status||'']?.[lang]||'';
 
   return(
-    <div className={isAR?'rtl':'ltr'} style={{position:'fixed',inset:0,overflow:'hidden',background:'#0A0E12',zIndex:10}}>
+    <div className={isAR?'rtl':'ltr'} style={{position:'fixed',inset:0,overflow:'hidden',background:'#000',zIndex:10}}>
 
       {/* ── Full-screen map ── */}
       <div style={{position:'absolute',inset:0}}>
@@ -4209,7 +4209,7 @@ function SplashScreen() {
 
   return (
     <div style={{position:'fixed',inset:0,zIndex:50,overflow:'hidden',
-      background:'linear-gradient(160deg,#030712 0%,#020c07 40%,#0d1117 100%)',
+      background:'#000',
       display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
 
       <style>{`
@@ -5060,7 +5060,7 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
   return (
     <div className={`fixed inset-0 overflow-y-auto flex flex-col ${isAR?'rtl':'ltr'}`}
       style={{background: dark
-        ? 'linear-gradient(160deg,#020c07 0%,#030712 50%,#050a10 100%)'
+        ? '#000'
         : 'linear-gradient(160deg,#f0fdf4 0%,#fefce8 50%,#f0fdf4 100%)'}}>
 
       <style>{`

@@ -14,13 +14,13 @@
 }
 
 html.dark {
-  --c-bg:       #0C1A10;
-  --c-nav:      rgba(10,22,14,0.98);
-  --c-nav-soft: rgba(10,22,14,0.94);
-  --c-card:     #162019;
-  --c-input:    #1A2B1E;
+  --c-bg:       #000000;
+  --c-nav:      rgba(0,0,0,0.98);
+  --c-nav-soft: rgba(0,0,0,0.94);
+  --c-card:     #111111;
+  --c-input:    #1a1a1a;
   --c-text:     #E5E1D8;
-  --c-border:   #27392C;
+  --c-border:   #2a2a2a;
   --c-muted:    #6B7280;
   color-scheme: dark;
 }
