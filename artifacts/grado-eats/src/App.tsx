@@ -3188,55 +3188,90 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
 
 // ─── PHARMACIE CATALOG ────────────────────────────────────────────────────────
 
-interface MedEntry {id:string;name:string;desc:string;price:number;cat:'douleur'|'digestif'|'rhume'|'peau'|'vitamines'|'yeux';emoji:string;}
+interface MedEntry {id:string;name:string;desc:string;price:number;cat:'douleur'|'digestif'|'rhume'|'peau'|'vitamines'|'yeux';emoji:string;img?:string;}
 const PHARMA_CATALOG:MedEntry[]=[
   // ── 💊 Douleur & Fièvre ──
-  {id:'doli-500',  name:'Doliprane 500mg',        desc:'Paracétamol 20 cp',         price:14, cat:'douleur', emoji:'💊'},
-  {id:'doli-1000', name:'Doliprane 1000mg',        desc:'Paracétamol 8 cp',          price:18, cat:'douleur', emoji:'💊'},
-  {id:'effera',    name:'Efferalgan 500mg',         desc:'Effervescent 16 cp',        price:22, cat:'douleur', emoji:'🫧'},
-  {id:'dafal',     name:'Dafalgan 1g Effervescent', desc:'Paracétamol fort 8 cp',     price:22, cat:'douleur', emoji:'🫧'},
-  {id:'aspegic',   name:'Aspégic 500mg',            desc:'Aspirine sachets ×10',      price:18, cat:'douleur', emoji:'💊'},
-  {id:'advil',     name:'Advil 400mg',              desc:'Ibuprofène 14 cp',          price:28, cat:'douleur', emoji:'💊'},
-  {id:'nurofen',   name:'Nurofen 200mg',            desc:'Ibuprofène 24 cp',          price:35, cat:'douleur', emoji:'💊'},
-  {id:'voltarene', name:'Voltarène Gel 1%',         desc:'Anti-inflammatoire 50g',    price:55, cat:'douleur', emoji:'🧴'},
+  {id:'doli-500',  name:'Doliprane 500mg',        desc:'Paracétamol 20 cp',         price:11.50, cat:'douleur', emoji:'💊', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Doliprane.jpg/120px-Doliprane.jpg'},
+  {id:'doli-1000', name:'Doliprane 1000mg',        desc:'Paracétamol 8 cp',          price:16.50, cat:'douleur', emoji:'💊', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Doliprane.jpg/120px-Doliprane.jpg'},
+  {id:'effera',    name:'Efferalgan 500mg',         desc:'Effervescent 16 cp',        price:20.50, cat:'douleur', emoji:'🫧'},
+  {id:'dafal',     name:'Dafalgan 1g Effervescent', desc:'Paracétamol fort 8 cp',     price:21.50, cat:'douleur', emoji:'🫧'},
+  {id:'aspegic',   name:'Aspégic 500mg',            desc:'Aspirine sachets ×10',      price:16.50, cat:'douleur', emoji:'💊'},
+  {id:'advil',     name:'Advil 400mg',              desc:'Ibuprofène 14 cp',          price:26.50, cat:'douleur', emoji:'💊'},
+  {id:'nurofen',   name:'Nurofen 200mg',            desc:'Ibuprofène 24 cp',          price:33.50, cat:'douleur', emoji:'💊'},
+  {id:'voltarene', name:'Voltarène Gel 1%',         desc:'Anti-inflammatoire 50g',    price:53.50, cat:'douleur', emoji:'🧴'},
   // ── 🤢 Digestif & Estomac ──
-  {id:'smecta',    name:'Smecta',                   desc:'Diarrhée sachets ×10',      price:38, cat:'digestif', emoji:'🟡'},
-  {id:'imodium',   name:'Imodium 2mg',              desc:'Loperamide 12 gel',         price:35, cat:'digestif', emoji:'💊'},
-  {id:'maalox',    name:'Maalox Suspension',        desc:'Antiacide 250ml',           price:45, cat:'digestif', emoji:'🥛'},
-  {id:'gaviscon',  name:'Gaviscon Advance',          desc:'Brûlures 30 cp',            price:55, cat:'digestif', emoji:'💊'},
-  {id:'lacteol',   name:'Lacteol Fort',             desc:'Probiotique 10 sachets',    price:50, cat:'digestif', emoji:'🦠'},
-  {id:'charbon',   name:'Charbon Activé',           desc:'Intoxication 20 cp',        price:25, cat:'digestif', emoji:'⬛'},
-  {id:'duphalac',  name:'Duphalac',                 desc:'Laxatif sirop 200ml',       price:48, cat:'digestif', emoji:'🍶'},
-  {id:'motilium',  name:'Motilium 10mg',            desc:'Nausées 30 cp',             price:42, cat:'digestif', emoji:'💊'},
+  {id:'smecta',    name:'Smecta',                   desc:'Diarrhée sachets ×10',      price:35.50, cat:'digestif', emoji:'🟡'},
+  {id:'imodium',   name:'Imodium 2mg',              desc:'Loperamide 12 gel',         price:33.50, cat:'digestif', emoji:'💊', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Imodium.jpg/120px-Imodium.jpg'},
+  {id:'maalox',    name:'Maalox Suspension',        desc:'Antiacide 250ml',           price:43.50, cat:'digestif', emoji:'🥛'},
+  {id:'gaviscon',  name:'Gaviscon Advance',          desc:'Brûlures 30 cp',            price:53.50, cat:'digestif', emoji:'💊'},
+  {id:'lacteol',   name:'Lacteol Fort',             desc:'Probiotique 10 sachets',    price:48.50, cat:'digestif', emoji:'🦠'},
+  {id:'charbon',   name:'Charbon Activé',           desc:'Intoxication 20 cp',        price:23.50, cat:'digestif', emoji:'⬛'},
+  {id:'duphalac',  name:'Duphalac',                 desc:'Laxatif sirop 200ml',       price:46.50, cat:'digestif', emoji:'🍶'},
+  {id:'motilium',  name:'Motilium 10mg',            desc:'Nausées 30 cp',             price:40.50, cat:'digestif', emoji:'💊'},
   // ── 🤧 Rhume, Toux & Gorge ──
-  {id:'actifed',   name:'Actifed',                  desc:'Rhume 16 cp',               price:38, cat:'rhume', emoji:'🤧'},
-  {id:'fervex',    name:'Fervex',                   desc:'Grippe 8 sachets',          price:42, cat:'rhume', emoji:'🫗'},
-  {id:'rhinathiol',name:'Rhinathiol Sirop',          desc:'Expectorant 250ml',         price:45, cat:'rhume', emoji:'🍶'},
-  {id:'toplexil',  name:'Toplexil Sirop',           desc:'Toux sèche 250ml',          price:40, cat:'rhume', emoji:'🍶'},
-  {id:'strepsils', name:'Strepsils Miel-Citron',    desc:'Pastilles gorge ×24',       price:32, cat:'rhume', emoji:'🍯'},
-  {id:'neocodion', name:'Néo-Codion',               desc:'Toux 30 cp',                price:38, cat:'rhume', emoji:'💊'},
-  {id:'physiomer', name:'Physiomer Spray',           desc:'Nez bouché 135ml',          price:58, cat:'rhume', emoji:'💨'},
+  {id:'actifed',   name:'Actifed',                  desc:'Rhume 16 cp',               price:35.50, cat:'rhume', emoji:'🤧'},
+  {id:'fervex',    name:'Fervex',                   desc:'Grippe 8 sachets',          price:40.50, cat:'rhume', emoji:'🫗'},
+  {id:'rhinathiol',name:'Rhinathiol Sirop',          desc:'Expectorant 250ml',         price:43.50, cat:'rhume', emoji:'🍶'},
+  {id:'toplexil',  name:'Toplexil Sirop',           desc:'Toux sèche 250ml',          price:38.50, cat:'rhume', emoji:'🍶'},
+  {id:'strepsils', name:'Strepsils Miel-Citron',    desc:'Pastilles gorge ×24',       price:30.50, cat:'rhume', emoji:'🍯'},
+  {id:'neocodion', name:'Néo-Codion',               desc:'Toux 30 cp',                price:35.50, cat:'rhume', emoji:'💊'},
+  {id:'physiomer', name:'Physiomer Spray',           desc:'Nez bouché 135ml',          price:55.50, cat:'rhume', emoji:'💨'},
   // ── 🩹 Plaies & Peau ──
-  {id:'biafine',   name:'Biafine Émulsion',         desc:'Brûlures 93g',              price:58, cat:'peau', emoji:'🧴'},
-  {id:'bepanthen', name:'Bepanthen Pommade',        desc:'Cicatrisant 100g',          price:68, cat:'peau', emoji:'🧴'},
-  {id:'betadine',  name:'Bétadine Solution',        desc:'Antiseptique 125ml',        price:40, cat:'peau', emoji:'🟤'},
-  {id:'flammazine',name:'Flammazine Crème',         desc:'Brûlures graves 50g',       price:75, cat:'peau', emoji:'🧴'},
-  {id:'cicatryl',  name:'Cicatryl Pommade',         desc:'Cicatrisant 50g',           price:48, cat:'peau', emoji:'🧴'},
-  {id:'eau-oxy',   name:'Eau Oxygénée 10vol',       desc:'Antiseptique 250ml',        price:12, cat:'peau', emoji:'🫧'},
-  {id:'mercuro',   name:'Éosine Aqueuse',           desc:'Désinfectant 2× 2ml',       price:15, cat:'peau', emoji:'🔴'},
+  {id:'biafine',   name:'Biafine Émulsion',         desc:'Brûlures 93g',              price:55.50, cat:'peau', emoji:'🧴'},
+  {id:'bepanthen', name:'Bepanthen Pommade',        desc:'Cicatrisant 100g',          price:65.50, cat:'peau', emoji:'🧴'},
+  {id:'betadine',  name:'Bétadine Solution',        desc:'Antiseptique 125ml',        price:38.50, cat:'peau', emoji:'🟤', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Betadine.jpg/120px-Betadine.jpg'},
+  {id:'flammazine',name:'Flammazine Crème',         desc:'Brûlures graves 50g',       price:72.50, cat:'peau', emoji:'🧴'},
+  {id:'cicatryl',  name:'Cicatryl Pommade',         desc:'Cicatrisant 50g',           price:45.50, cat:'peau', emoji:'🧴'},
+  {id:'eau-oxy',   name:'Eau Oxygénée 10vol',       desc:'Antiseptique 250ml',        price:10.50, cat:'peau', emoji:'🫧'},
+  {id:'mercuro',   name:'Éosine Aqueuse',           desc:'Désinfectant 2× 2ml',       price:13.50, cat:'peau', emoji:'🔴'},
   // ── 💊 Vitamines & Compléments ──
-  {id:'vitc',      name:'Vitamine C 1000mg',        desc:'Effervescent ×20',          price:32, cat:'vitamines', emoji:'🍊'},
-  {id:'supradyn',  name:'Supradyn',                 desc:'Multivitamines 30 cp',      price:68, cat:'vitamines', emoji:'💛'},
-  {id:'magne-b6',  name:'Magné B6',                desc:'Magnésium 60 cp',           price:55, cat:'vitamines', emoji:'💊'},
-  {id:'becozyme',  name:'Becozyme C Forte',         desc:'Vitamines B+C 30 cp',       price:45, cat:'vitamines', emoji:'💊'},
-  {id:'vitd3',     name:'Vitamine D3 1000UI',       desc:'Gouttes 10ml',              price:45, cat:'vitamines', emoji:'☀️'},
-  {id:'zinc',      name:'Zinc 15mg',                desc:'Immunité 30 cp',            price:35, cat:'vitamines', emoji:'💊'},
+  {id:'vitc',      name:'Vitamine C 1000mg',        desc:'Effervescent ×20',          price:30.50, cat:'vitamines', emoji:'🍊'},
+  {id:'supradyn',  name:'Supradyn',                 desc:'Multivitamines 30 cp',      price:65.50, cat:'vitamines', emoji:'💛'},
+  {id:'magne-b6',  name:'Magné B6',                desc:'Magnésium 60 cp',           price:53.50, cat:'vitamines', emoji:'💊'},
+  {id:'becozyme',  name:'Becozyme C Forte',         desc:'Vitamines B+C 30 cp',       price:43.50, cat:'vitamines', emoji:'💊'},
+  {id:'vitd3',     name:'Vitamine D3 1000UI',       desc:'Gouttes 10ml',              price:42.50, cat:'vitamines', emoji:'☀️'},
+  {id:'zinc',      name:'Zinc 15mg',                desc:'Immunité 30 cp',            price:32.50, cat:'vitamines', emoji:'💊'},
   // ── 👁️ Yeux & Nez ──
-  {id:'rhinomer',  name:'Rhinomer Spray',           desc:'Lavage nasal 135ml',        price:48, cat:'yeux', emoji:'👃'},
-  {id:'visine',    name:'Visine Yeux Rouges',       desc:'Collyre 15ml',              price:38, cat:'yeux', emoji:'👁️'},
-  {id:'collyre-b', name:'Collyre Bleu',             desc:'Décongestionnant 10ml',     price:28, cat:'yeux', emoji:'🔵'},
-  {id:'artelac',   name:'Artelac Gouttes',          desc:'Larmes artificielles 10ml', price:55, cat:'yeux', emoji:'💧'},
+  {id:'rhinomer',  name:'Rhinomer Spray',           desc:'Lavage nasal 135ml',        price:46.50, cat:'yeux', emoji:'👃'},
+  {id:'visine',    name:'Visine Yeux Rouges',       desc:'Collyre 15ml',              price:35.50, cat:'yeux', emoji:'👁️'},
+  {id:'collyre-b', name:'Collyre Bleu',             desc:'Décongestionnant 10ml',     price:25.50, cat:'yeux', emoji:'🔵'},
+  {id:'artelac',   name:'Artelac Gouttes',          desc:'Larmes artificielles 10ml', price:52.50, cat:'yeux', emoji:'💧'},
 ];
+
+function MedItem({med,qty,isNight,nightSurcharge,effectivePrice,onAdd,onRem}:{med:MedEntry;qty:number;isNight:boolean;nightSurcharge:number;effectivePrice:number;onAdd:()=>void;onRem:()=>void}) {
+  const [imgOk,setImgOk]=useState(!!med.img);
+  return(
+    <div className="flex items-center gap-3 rounded-2xl px-3 py-2.5"
+      style={{background:qty>0?'rgba(99,102,241,0.18)':'rgba(255,255,255,0.04)',border:`1.5px solid ${qty>0?'rgba(99,102,241,0.5)':'rgba(165,180,252,0.15)'}`,transition:'all 0.15s'}}>
+      <div style={{width:40,height:52,borderRadius:8,flexShrink:0,overflow:'hidden',boxShadow:'0 2px 8px rgba(0,0,0,0.35)'}}>
+        {med.img&&imgOk?(
+          <img src={med.img} alt={med.name} onError={()=>setImgOk(false)} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+        ):(
+          <div style={{width:'100%',height:'100%',background:'rgba(99,102,241,0.25)',border:'1px solid rgba(165,180,252,0.25)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}>
+            {med.emoji}
+          </div>
+        )}
+      </div>
+      <div style={{flex:1,minWidth:0}}>
+        <p className="font-black text-[12px] truncate" style={{color:'#E0E7FF'}}>{med.name}</p>
+        <p className="text-[10px]" style={{color:'rgba(165,180,252,0.55)'}}>{med.desc}</p>
+        <div className="flex items-center gap-1.5 mt-0.5">
+          <span className="text-[11px] font-black" style={{color:'#A5B4FC'}}>{effectivePrice} DH</span>
+          {isNight&&<span style={{background:'rgba(251,191,36,0.15)',border:'1px solid rgba(251,191,36,0.4)',borderRadius:4,padding:'0 4px',fontSize:9,color:'#F59E0B',fontWeight:700}}>🌙 +{nightSurcharge}</span>}
+        </div>
+      </div>
+      <div className="flex items-center gap-1.5 flex-shrink-0">
+        {qty>0&&(
+          <>
+            <button onClick={onRem} style={{width:28,height:28,borderRadius:'50%',border:'none',background:'rgba(99,102,241,0.25)',color:'#A5B4FC',fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
+            <span className="font-black text-sm w-5 text-center" style={{color:'#fff'}}>{qty}</span>
+          </>
+        )}
+        <button onClick={onAdd} style={{width:28,height:28,borderRadius:'50%',border:'none',background:'#6366F1',color:'white',fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>+</button>
+      </div>
+    </div>
+  );
+}
 
 function PharmaciePage({onBack,lang,profile,saveProfile}:{onBack:()=>void;lang:Lang;profile:UserProfile;saveProfile:(p:UserProfile)=>void}) {
   const fClass=fontClass(lang); const isAR=lang==='ar';
@@ -3393,36 +3428,9 @@ function PharmaciePage({onBack,lang,profile,saveProfile}:{onBack:()=>void;lang:L
 
             {/* Items list */}
             <div className="flex flex-col gap-2">
-              {visibleMeds.map(med=>{
-                const qty=medQty(med.id);
-                const ep=medPrice(med);
-                return(
-                  <div key={med.id} className="flex items-center gap-3 rounded-2xl px-3 py-2.5"
-                    style={{background:qty>0?'rgba(99,102,241,0.18)':'rgba(255,255,255,0.04)',border:`1.5px solid ${qty>0?'rgba(99,102,241,0.5)':'rgba(165,180,252,0.15)'}`,transition:'all 0.15s'}}>
-                    {/* Med icon box */}
-                    <div style={{width:38,height:38,borderRadius:10,flexShrink:0,background:'rgba(99,102,241,0.25)',border:'1px solid rgba(165,180,252,0.25)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}>
-                      {med.emoji}
-                    </div>
-                    <div style={{flex:1,minWidth:0}}>
-                      <p className="font-black text-[12px] truncate" style={{color:'#E0E7FF'}}>{med.name}</p>
-                      <p className="text-[10px]" style={{color:'rgba(165,180,252,0.55)'}}>{med.desc}</p>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="text-[11px] font-black" style={{color:'#A5B4FC'}}>{ep} DH</span>
-                        {isNight&&<span style={{background:'rgba(251,191,36,0.15)',border:'1px solid rgba(251,191,36,0.4)',borderRadius:4,padding:'0 4px',fontSize:9,color:'#F59E0B',fontWeight:700}}>🌙 +{NIGHT_SURCHARGE}</span>}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5 flex-shrink-0">
-                      {qty>0&&(
-                        <>
-                          <button onClick={()=>remMed(med.id)} style={{width:28,height:28,borderRadius:'50%',border:'none',background:'rgba(99,102,241,0.25)',color:'#A5B4FC',fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
-                          <span className="font-black text-sm w-5 text-center" style={{color:'#fff'}}>{qty}</span>
-                        </>
-                      )}
-                      <button onClick={()=>addMed(med.id)} style={{width:28,height:28,borderRadius:'50%',border:'none',background:'#6366F1',color:'white',fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>+</button>
-                    </div>
-                  </div>
-                );
-              })}
+              {visibleMeds.map(med=>(
+                <MedItem key={med.id} med={med} qty={medQty(med.id)} isNight={isNight} nightSurcharge={NIGHT_SURCHARGE} effectivePrice={medPrice(med)} onAdd={()=>addMed(med.id)} onRem={()=>remMed(med.id)}/>
+              ))}
             </div>
 
             {/* Cart mini summary */}
@@ -5443,42 +5451,42 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
 interface CigEntry {id:string;brand:string;name:string;price:number;cat:'premium'|'intl'|'local';img:string;c1:string;c2:string;label:string;}
 const TABAC_CATALOG:CigEntry[] = [
   // ── Premium ──
-  {id:'marl-red',    brand:'Marlboro',     name:'Marlboro Red',           price:38, cat:'premium', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Marlboro_Red.jpg/80px-Marlboro_Red.jpg',    c1:'#CC1224',c2:'#8B0000',label:'RED'},
-  {id:'marl-gold',   brand:'Marlboro',     name:'Marlboro Gold',          price:38, cat:'premium', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Marlboro_Gold.jpg/80px-Marlboro_Gold.jpg',  c1:'#B8860B',c2:'#7A5C00',label:'GOLD'},
-  {id:'marl-blue',   brand:'Marlboro',     name:'Marlboro Blue',          price:38, cat:'premium', img:'',c1:'#1B3A8A',c2:'#0D2060',label:'BLUE'},
-  {id:'marl-blk',    brand:'Marlboro',     name:'Marlboro Double Black',  price:42, cat:'premium', img:'',c1:'#0D0D0D',c2:'#2D2D2D',label:'BLACK'},
-  {id:'marl-menth',  brand:'Marlboro',     name:'Marlboro Menthol',       price:40, cat:'premium', img:'',c1:'#0F7A4B',c2:'#065F38',label:'MENTHOL'},
-  {id:'davidoff',    brand:'Davidoff',     name:'Davidoff Classic',       price:45, cat:'premium', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Davidoff_cigarettes.jpg/80px-Davidoff_cigarettes.jpg', c1:'#1C2951',c2:'#0A1528',label:'CLASSIC'},
-  {id:'davidoff-sl', brand:'Davidoff',     name:'Davidoff Slims',         price:45, cat:'premium', img:'',c1:'#1C3B6E',c2:'#0D2045',label:'SLIMS'},
-  {id:'parl',        brand:'Parliament',   name:'Parliament Aqua Blue',   price:42, cat:'premium', img:'',c1:'#4A8FC4',c2:'#2D6A9A',label:'AQUA'},
-  {id:'dunhill',     brand:'Dunhill',      name:'Dunhill International',  price:35, cat:'premium', img:'',c1:'#7C1A2E',c2:'#4A0F1A',label:'INT\'L'},
+  {id:'marl-red',    brand:'Marlboro',     name:'Marlboro Red',           price:38.50, cat:'premium', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Marlboro_Red.jpg/80px-Marlboro_Red.jpg',    c1:'#CC1224',c2:'#8B0000',label:'RED'},
+  {id:'marl-gold',   brand:'Marlboro',     name:'Marlboro Gold',          price:38.50, cat:'premium', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Marlboro_Gold.jpg/80px-Marlboro_Gold.jpg',  c1:'#B8860B',c2:'#7A5C00',label:'GOLD'},
+  {id:'marl-blue',   brand:'Marlboro',     name:'Marlboro Blue',          price:38.50, cat:'premium', img:'',c1:'#1B3A8A',c2:'#0D2060',label:'BLUE'},
+  {id:'marl-blk',    brand:'Marlboro',     name:'Marlboro Double Black',  price:42.50, cat:'premium', img:'',c1:'#0D0D0D',c2:'#2D2D2D',label:'BLACK'},
+  {id:'marl-menth',  brand:'Marlboro',     name:'Marlboro Menthol',       price:39.50, cat:'premium', img:'',c1:'#0F7A4B',c2:'#065F38',label:'MENTHOL'},
+  {id:'davidoff',    brand:'Davidoff',     name:'Davidoff Classic',       price:46.50, cat:'premium', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Davidoff_cigarettes.jpg/80px-Davidoff_cigarettes.jpg', c1:'#1C2951',c2:'#0A1528',label:'CLASSIC'},
+  {id:'davidoff-sl', brand:'Davidoff',     name:'Davidoff Slims',         price:46.50, cat:'premium', img:'',c1:'#1C3B6E',c2:'#0D2045',label:'SLIMS'},
+  {id:'parl',        brand:'Parliament',   name:'Parliament Aqua Blue',   price:41.50, cat:'premium', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Parliament_cigarettes.JPG/120px-Parliament_cigarettes.JPG',c1:'#4A8FC4',c2:'#2D6A9A',label:'AQUA'},
+  {id:'dunhill',     brand:'Dunhill',      name:'Dunhill International',  price:35.50, cat:'premium', img:'',c1:'#7C1A2E',c2:'#4A0F1A',label:'INT\'L'},
   // ── International ──
-  {id:'camel',       brand:'Camel',        name:'Camel Classic',          price:32, cat:'intl',    img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Camel_cigarettes_annual_report_1921.jpg/80px-Camel_cigarettes_annual_report_1921.jpg',c1:'#C8943B',c2:'#8B6419',label:'CLASSIC'},
-  {id:'camel-blue',  brand:'Camel',        name:'Camel Blue',             price:32, cat:'intl',    img:'',c1:'#2156A4',c2:'#133B7A',label:'BLUE'},
-  {id:'camel-yel',   brand:'Camel',        name:'Camel Yellow',           price:32, cat:'intl',    img:'',c1:'#D4A52A',c2:'#A07A10',label:'YELLOW'},
-  {id:'win-red',     brand:'Winston',      name:'Winston Classic',        price:30, cat:'intl',    img:'',c1:'#CC2020',c2:'#8B0000',label:'CLASSIC'},
-  {id:'win-blue',    brand:'Winston',      name:'Winston Blue',           price:30, cat:'intl',    img:'',c1:'#1B5097',c2:'#0D3060',label:'BLUE'},
-  {id:'lm-red',      brand:'L&M',          name:'L&M Red Label',          price:28, cat:'intl',    img:'',c1:'#C41230',c2:'#8B0010',label:'RED'},
-  {id:'lm-blue',     brand:'L&M',          name:'L&M Blue Label',         price:28, cat:'intl',    img:'',c1:'#1B4FA0',c2:'#0D3070',label:'BLUE'},
-  {id:'kent',        brand:'Kent',         name:'Kent HD Blue',           price:28, cat:'intl',    img:'',c1:'#00539C',c2:'#003070',label:'HD BLUE'},
-  {id:'gaul',        brand:'Gauloises',    name:'Gauloises Blondes',      price:28, cat:'intl',    img:'',c1:'#2459A9',c2:'#123A7A',label:'BLONDES'},
-  {id:'prince',      brand:'Prince',       name:'Prince Classic',         price:28, cat:'intl',    img:'',c1:'#1E4A8C',c2:'#0D2E5C',label:'CLASSIC'},
-  {id:'pall-red',    brand:'Pall Mall',    name:'Pall Mall Red',          price:25, cat:'intl',    img:'',c1:'#B81B2D',c2:'#7A0D1A',label:'RED'},
-  {id:'pall-blue',   brand:'Pall Mall',    name:'Pall Mall Blue',         price:25, cat:'intl',    img:'',c1:'#1A4A9A',c2:'#0D2E66',label:'BLUE'},
-  {id:'roth',        brand:'Rothmans',     name:'Rothmans International', price:25, cat:'intl',    img:'',c1:'#1A3A8A',c2:'#0D2060',label:'INT\'L'},
-  {id:'chest',       brand:'Chesterfield', name:'Chesterfield Red',       price:25, cat:'intl',    img:'',c1:'#8B1C2C',c2:'#5A0E18',label:'RED'},
-  {id:'merit',       brand:'Merit',        name:'Merit Blue',             price:22, cat:'intl',    img:'',c1:'#2A5298',c2:'#163060',label:'BLUE'},
-  {id:'bond-red',    brand:'Bond Street',  name:'Bond Street Red',        price:22, cat:'intl',    img:'',c1:'#A01E2E',c2:'#6A0F1A',label:'RED'},
-  {id:'bond-blue',   brand:'Bond Street',  name:'Bond Street Blue',       price:22, cat:'intl',    img:'',c1:'#1A4A9A',c2:'#0D2E66',label:'BLUE'},
-  {id:'vicr',        brand:'Viceroy',      name:'Viceroy Classic',        price:22, cat:'intl',    img:'',c1:'#1A3A8A',c2:'#0D2060',label:'CLASSIC'},
-  {id:'karl',        brand:'Karelia',      name:'Karelia Special',        price:22, cat:'intl',    img:'',c1:'#1A5A3A',c2:'#0D3A24',label:'SPECIAL'},
+  {id:'camel',       brand:'Camel',        name:'Camel Classic',          price:32.50, cat:'intl',    img:'',c1:'#C8943B',c2:'#8B6419',label:'CLASSIC'},
+  {id:'camel-blue',  brand:'Camel',        name:'Camel Blue',             price:32.50, cat:'intl',    img:'',c1:'#2156A4',c2:'#133B7A',label:'BLUE'},
+  {id:'camel-yel',   brand:'Camel',        name:'Camel Yellow',           price:32.50, cat:'intl',    img:'',c1:'#D4A52A',c2:'#A07A10',label:'YELLOW'},
+  {id:'win-red',     brand:'Winston',      name:'Winston Classic',        price:29.50, cat:'intl',    img:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Five_packs_of_Winston_in_Baku%2C_Azerbaijan.jpg/120px-Five_packs_of_Winston_in_Baku%2C_Azerbaijan.jpg',c1:'#CC2020',c2:'#8B0000',label:'CLASSIC'},
+  {id:'win-blue',    brand:'Winston',      name:'Winston Blue',           price:29.50, cat:'intl',    img:'',c1:'#1B5097',c2:'#0D3060',label:'BLUE'},
+  {id:'lm-red',      brand:'L&M',          name:'L&M Red Label',          price:26.50, cat:'intl',    img:'',c1:'#C41230',c2:'#8B0010',label:'RED'},
+  {id:'lm-blue',     brand:'L&M',          name:'L&M Blue Label',         price:26.50, cat:'intl',    img:'',c1:'#1B4FA0',c2:'#0D3070',label:'BLUE'},
+  {id:'kent',        brand:'Kent',         name:'Kent HD Blue',           price:27.50, cat:'intl',    img:'',c1:'#00539C',c2:'#003070',label:'HD BLUE'},
+  {id:'gaul',        brand:'Gauloises',    name:'Gauloises Blondes',      price:27.50, cat:'intl',    img:'',c1:'#2459A9',c2:'#123A7A',label:'BLONDES'},
+  {id:'prince',      brand:'Prince',       name:'Prince Classic',         price:26.50, cat:'intl',    img:'',c1:'#1E4A8C',c2:'#0D2E5C',label:'CLASSIC'},
+  {id:'pall-red',    brand:'Pall Mall',    name:'Pall Mall Red',          price:23.50, cat:'intl',    img:'',c1:'#B81B2D',c2:'#7A0D1A',label:'RED'},
+  {id:'pall-blue',   brand:'Pall Mall',    name:'Pall Mall Blue',         price:23.50, cat:'intl',    img:'',c1:'#1A4A9A',c2:'#0D2E66',label:'BLUE'},
+  {id:'roth',        brand:'Rothmans',     name:'Rothmans International', price:23.50, cat:'intl',    img:'',c1:'#1A3A8A',c2:'#0D2060',label:'INT\'L'},
+  {id:'chest',       brand:'Chesterfield', name:'Chesterfield Red',       price:24.50, cat:'intl',    img:'',c1:'#8B1C2C',c2:'#5A0E18',label:'RED'},
+  {id:'merit',       brand:'Merit',        name:'Merit Blue',             price:21.50, cat:'intl',    img:'',c1:'#2A5298',c2:'#163060',label:'BLUE'},
+  {id:'bond-red',    brand:'Bond Street',  name:'Bond Street Red',        price:20.50, cat:'intl',    img:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Bondstreet_cigarettes.JPG/120px-Bondstreet_cigarettes.JPG',c1:'#A01E2E',c2:'#6A0F1A',label:'RED'},
+  {id:'bond-blue',   brand:'Bond Street',  name:'Bond Street Blue',       price:20.50, cat:'intl',    img:'',c1:'#1A4A9A',c2:'#0D2E66',label:'BLUE'},
+  {id:'vicr',        brand:'Viceroy',      name:'Viceroy Classic',        price:20.50, cat:'intl',    img:'',c1:'#1A3A8A',c2:'#0D2060',label:'CLASSIC'},
+  {id:'karl',        brand:'Karelia',      name:'Karelia Special',        price:20.50, cat:'intl',    img:'',c1:'#1A5A3A',c2:'#0D3A24',label:'SPECIAL'},
   // ── Maroc 🇲🇦 ──
-  {id:'marq',        brand:'Marquise',     name:'Marquise Classic',       price:20, cat:'local',   img:'',c1:'#7B1A2A',c2:'#4A0D18',label:'CLASSIC'},
-  {id:'marq-m',      brand:'Marquise',     name:'Marquise Menthol',       price:20, cat:'local',   img:'',c1:'#0B6B3A',c2:'#064524',label:'MENTHOL'},
-  {id:'legend',      brand:'Legend',       name:'Legend Blue',            price:20, cat:'local',   img:'',c1:'#1A3A8A',c2:'#0D2060',label:'BLUE'},
-  {id:'royale',      brand:'Royale',       name:'Royale',                 price:18, cat:'local',   img:'',c1:'#1A5A3A',c2:'#0D3A24',label:'ROYALE'},
-  {id:'casa',        brand:'Casa Sport',   name:'Casa Sport Original',    price:14, cat:'local',   img:'',c1:'#E65C00',c2:'#B84000',label:'ORIGINAL'},
-  {id:'casa-new',    brand:'Casa Sport',   name:'Casa Sport New',         price:15, cat:'local',   img:'',c1:'#C8860A',c2:'#8B5C00',label:'NEW'},
+  {id:'marq',        brand:'Marquise',     name:'Marquise Classic',       price:19.50, cat:'local',   img:'',c1:'#7B1A2A',c2:'#4A0D18',label:'CLASSIC'},
+  {id:'marq-m',      brand:'Marquise',     name:'Marquise Menthol',       price:19.50, cat:'local',   img:'',c1:'#0B6B3A',c2:'#064524',label:'MENTHOL'},
+  {id:'legend',      brand:'Legend',       name:'Legend Blue',            price:19.50, cat:'local',   img:'',c1:'#1A3A8A',c2:'#0D2060',label:'BLUE'},
+  {id:'royale',      brand:'Royale',       name:'Royale',                 price:17.50, cat:'local',   img:'',c1:'#1A5A3A',c2:'#0D3A24',label:'ROYALE'},
+  {id:'casa',        brand:'Casa Sport',   name:'Casa Sport Original',    price:12.50, cat:'local',   img:'',c1:'#E65C00',c2:'#B84000',label:'ORIGINAL'},
+  {id:'casa-new',    brand:'Casa Sport',   name:'Casa Sport New',         price:13.50, cat:'local',   img:'',c1:'#C8860A',c2:'#8B5C00',label:'NEW'},
 ];
 
 // ─── CIG ITEM (must be a component to use useState for img fallback) ─────────
