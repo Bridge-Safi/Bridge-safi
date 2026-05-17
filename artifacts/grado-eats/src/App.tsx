@@ -1700,31 +1700,31 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
     <div>
       {/* Hero banner */}
       <section className="relative mx-5 mb-5 rounded-3xl overflow-hidden" style={{boxShadow:'0 8px 32px rgba(6,95,70,0.18)'}}>
-        <img src="/cover-eats.jpeg" alt="Bridge Safi" className="w-full h-52 object-cover" style={{objectPosition:'center 30%'}}/>
+        <img src="/cover-eats.jpeg" alt="Bridge Safi" className="w-full h-40 object-cover" style={{objectPosition:'center 30%'}}/>
         <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.92) 0%,rgba(4,55,38,0.25) 60%,transparent 100%)'}}/>
-        <div className="absolute bottom-0 left-0 right-0 p-5">
-          <span className="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full inline-block mb-2" style={{background:'#D9C5A0',color:'#065F46'}}>SAFI · آسفي · ⵙⴰⴼⵉ</span>
-          <h2 className={`text-xl font-black text-white leading-tight mb-1 ${fClass}`}>{t.restaurantsTitle}</h2>
+        <div className="absolute bottom-0 left-0 right-0 p-4">
+          <span className="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full inline-block mb-1.5" style={{background:'#D9C5A0',color:'#065F46'}}>SAFI · آسفي · ⵙⴰⴼⵉ</span>
+          <h2 className={`text-xl font-black text-white leading-tight mb-0.5 ${fClass}`}>{t.restaurantsTitle}</h2>
           <p className="text-white/75 text-xs">{t.heroSub}</p>
         </div>
       </section>
 
       {/* Category filter chips */}
-      <div className="mb-4" style={{overflowX:'auto',WebkitOverflowScrolling:'touch',scrollbarWidth:'none'}}>
-        <div className="flex gap-2 px-4" style={{width:'max-content'}}>
+      <div className="mb-5" style={{overflowX:'auto',WebkitOverflowScrolling:'touch',scrollbarWidth:'none'}}>
+        <div className="flex gap-2.5 px-4" style={{width:'max-content'}}>
           {CUISINE_FILTERS.map(f=>{
             const isActive=activeFilter===f.id;
             return (
               <button
                 key={f.id}
                 onClick={()=>setActiveFilter(f.id as FilterId)}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all duration-200 select-none ${fClass}`}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-bold whitespace-nowrap transition-all duration-200 select-none active:scale-95 ${fClass}`}
                 style={isActive
-                  ? {background:'#065F46',color:'#FDFCF9',boxShadow:'0 4px 14px rgba(6,95,70,0.35)',transform:'scale(1.06)'}
-                  : {background:'#F0EDE6',color:'#374151',boxShadow:'0 2px 6px rgba(0,0,0,0.06)'}
+                  ? {background:'#065F46',color:'#FDFCF9',boxShadow:'0 4px 14px rgba(6,95,70,0.35)',transform:'scale(1.05)'}
+                  : {background:'#F0EDE6',color:'#374151',boxShadow:'0 2px 8px rgba(0,0,0,0.08)'}
                 }
               >
-                <span style={{fontSize:'15px',lineHeight:1}}>{f.emoji}</span>
+                <span style={{fontSize:'19px',lineHeight:1}}>{f.emoji}</span>
                 <span>{f.label[lang]}</span>
               </button>
             );
