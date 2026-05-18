@@ -384,21 +384,39 @@ const RESTAURANT_PINS: Record<string, string> = {
   "Burger Corner Safi":   "5678",
 };
 
-// GET /api/orders/by-restaurant?name=X&pin=Y
+// GET /api/orders/by-restaurant?name=X&pin=Y  (also accepts Clerk Bearer token)
 router.get("/orders/by-restaurant", async (req, res) => {
   try {
-    const name = (req.query.name as string || "").trim();
-    const pin  = (req.query.pin  as string || "").trim();
-    if (!name) { res.status(400).json({ error: "name required" }); return; }
-    const correctPin = RESTAURANT_PINS[name];
-    if (!correctPin || pin !== correctPin) { res.status(401).json({ error: "PIN incorrect" }); return; }
+    let resolvedName: string | null = null;
+
+    // Try Clerk auth first
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith("Bearer ")) {
+      try {
+        const { clerkClient } = await import("@clerk/express");
+        const payload = await clerkClient.verifyToken(authHeader.slice(7));
+        const { db: dbInst, restaurantsTable: rt } = await import("@workspace/db");
+        const { eq: eqFn } = await import("drizzle-orm");
+        const rows = await dbInst.select().from(rt).where(eqFn(rt.ownerId, payload.sub));
+        if (rows.length > 0) resolvedName = rows[0].name;
+      } catch { /* fall through to PIN */ }
+    }
+
+    if (!resolvedName) {
+      const name = (req.query.name as string || "").trim();
+      const pin  = (req.query.pin  as string || "").trim();
+      if (!name) { res.status(400).json({ error: "name required" }); return; }
+      const correctPin = RESTAURANT_PINS[name];
+      if (!correctPin || pin !== correctPin) { res.status(401).json({ error: "PIN incorrect" }); return; }
+      resolvedName = name;
+    }
+
     const allOrders = await db
       .select()
       .from(ordersTable)
-      .where(eq(ordersTable.restaurantName, name))
+      .where(eq(ordersTable.restaurantName, resolvedName))
       .orderBy(desc(ordersTable.createdAt))
       .limit(50);
-    // Hide orders awaiting payment confirmation — not yet paid
     const orders = allOrders.filter(o => o.status !== "pending_payment");
     res.json({ orders });
   } catch (err) {
@@ -413,9 +431,21 @@ router.patch("/orders/by-ref/:ref/status", async (req, res) => {
     const { status, pin, restaurantName } = req.body;
     const allowed = ["accepted", "refused", "preparing", "ready", "delivered", "cancelled"];
     if (!allowed.includes(status)) { res.status(400).json({ error: "Invalid status" }); return; }
-    // Verify PIN
-    const correctPin = restaurantName ? RESTAURANT_PINS[restaurantName] : undefined;
-    if (!correctPin || pin !== correctPin) { res.status(401).json({ error: "PIN incorrect" }); return; }
+
+    // Accept Clerk Bearer OR PIN
+    const authHeader = req.headers.authorization;
+    let authorized = false;
+    if (authHeader?.startsWith("Bearer ")) {
+      try {
+        const { clerkClient } = await import("@clerk/express");
+        await clerkClient.verifyToken(authHeader.slice(7));
+        authorized = true;
+      } catch { /* fall through */ }
+    }
+    if (!authorized) {
+      const correctPin = restaurantName ? RESTAURANT_PINS[restaurantName] : undefined;
+      if (!correctPin || pin !== correctPin) { res.status(401).json({ error: "PIN incorrect" }); return; }
+    }
     const { eq: eqFn } = await import("drizzle-orm");
     const [order] = await db
       .update(ordersTable)

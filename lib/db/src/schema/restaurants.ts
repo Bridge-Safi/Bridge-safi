@@ -8,6 +8,8 @@ export const restaurantsTable = pgTable("restaurants", {
   lat:         real("lat"),
   lng:         real("lng"),
   webhookUrl:  text("webhook_url"),
+  ownerId:     text("owner_id"),
+  ownerEmail:  text("owner_email"),
   updatedAt:   timestamp("updated_at").notNull().defaultNow(),
 });
 

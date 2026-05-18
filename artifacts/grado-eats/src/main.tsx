@@ -2704,10 +2704,17 @@ type RestoProfile = {
 
 function RestaurantOwnerPage() {
   const [, navigate] = useLocation();
+  const { isLoaded, isSignedIn, user } = useUser();
+  const { getToken } = useAuth();
+
+  // Clerk-auth state
   const [restoName, setRestoName] = useState('');
-  const [pin, setPin] = useState('');
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [loginErr, setLoginErr] = useState('');
+  const [linked, setLinked] = useState(false);      // restaurant linked to Clerk account
+  const [linking, setLinking] = useState(false);
+  const [linkErr, setLinkErr] = useState('');
+  const [claimName, setClaimName] = useState('');
+  const [claimPin, setClaimPin] = useState('');
+
   const [orders, setOrders] = useState<RestoOrder[]>([]);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
@@ -2720,17 +2727,39 @@ function RestaurantOwnerPage() {
   const seenRefs = useRef<Set<string>>(new Set());
   const pollRef = useRef<number|null>(null);
 
-  // Restore session
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('bridge_resto_session');
-      if (saved) { const s = JSON.parse(saved); setRestoName(s.name); setPin(s.pin); setLoggedIn(true); }
-    } catch {}
-  }, []);
+  const authHeaders = async (): Promise<HeadersInit> => {
+    const token = await getToken();
+    return token ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
+  };
 
-  const fetchOrders = async (name: string, p: string) => {
+  // On load, check if Clerk user already has a restaurant linked
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn) return;
+    (async () => {
+      setLoading(true);
+      const h = await authHeaders();
+      const r = await fetch('/api/restaurant/me', { headers: h }).catch(() => null);
+      if (r?.ok) {
+        const data = await r.json();
+        if (data.restaurant) {
+          setRestoName(data.restaurant.name);
+          setLinked(true);
+          if (data.restaurant.phone) setProfile(p => ({...p, phone: data.restaurant.phone ?? ''}));
+          if (data.restaurant.address) setProfile(p => ({...p, address: data.restaurant.address ?? ''}));
+          if (data.restaurant.lat != null) setProfile(p => ({...p, lat: String(data.restaurant.lat)}));
+          if (data.restaurant.lng != null) setProfile(p => ({...p, lng: String(data.restaurant.lng)}));
+          if (data.restaurant.webhookUrl) setProfile(p => ({...p, webhookUrl: data.restaurant.webhookUrl ?? ''}));
+          if (data.bridgeSecret) setBridgeSecret(data.bridgeSecret);
+        }
+      }
+      setLoading(false);
+    })();
+  }, [isLoaded, isSignedIn]);
+
+  const fetchOrders = async () => {
     try {
-      const r = await fetch(`/api/orders/by-restaurant?name=${encodeURIComponent(name)}&pin=${encodeURIComponent(p)}`);
+      const h = await authHeaders();
+      const r = await fetch('/api/orders/by-restaurant', { headers: h });
       if (!r.ok) return;
       const data = await r.json();
       const newOrders: RestoOrder[] = data.orders || [];
@@ -2741,32 +2770,13 @@ function RestaurantOwnerPage() {
     } catch {}
   };
 
-  const fetchProfile = async (name: string, p: string) => {
-    try {
-      const r = await fetch(`/api/restaurant/profile?name=${encodeURIComponent(name)}&pin=${encodeURIComponent(p)}`);
-      if (!r.ok) return;
-      const data = await r.json();
-      if (data.profile) {
-        setProfile({
-          phone:      data.profile.phone      ?? '',
-          address:    data.profile.address    ?? '',
-          lat:        data.profile.lat        != null ? String(data.profile.lat) : '',
-          lng:        data.profile.lng        != null ? String(data.profile.lng) : '',
-          webhookUrl: data.profile.webhookUrl ?? '',
-        });
-      }
-      if (data.bridgeSecret) setBridgeSecret(data.bridgeSecret);
-    } catch {}
-  };
-
   const saveProfile = async () => {
     setProfileLoading(true); setProfileSaved(false);
     try {
+      const h = await authHeaders();
       await fetch('/api/restaurant/profile', {
-        method: 'PATCH',
-        headers: {'Content-Type':'application/json'},
+        method: 'PATCH', headers: h,
         body: JSON.stringify({
-          name: restoName, pin,
           phone:      profile.phone      || null,
           address:    profile.address    || null,
           lat:        profile.lat        ? parseFloat(profile.lat)  : null,
@@ -2788,79 +2798,112 @@ function RestaurantOwnerPage() {
   };
 
   useEffect(() => {
-    if (!loggedIn) return;
-    fetchOrders(restoName, pin);
-    fetchProfile(restoName, pin);
-    pollRef.current = window.setInterval(() => fetchOrders(restoName, pin), 12000);
+    if (!linked) return;
+    fetchOrders();
+    pollRef.current = window.setInterval(fetchOrders, 12000);
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
-  }, [loggedIn, restoName, pin]);
+  }, [linked]);
 
-  const handleLogin = async () => {
-    setLoginErr(''); setLoading(true);
+  const handleClaim = async () => {
+    if (!claimName || claimPin.length !== 4) return;
+    setLinking(true); setLinkErr('');
     try {
-      const r = await fetch(`/api/orders/by-restaurant?name=${encodeURIComponent(restoName)}&pin=${encodeURIComponent(pin)}`);
-      if (r.status === 401) { setLoginErr('PIN incorrect — réessayez'); setLoading(false); return; }
-      if (!r.ok) { setLoginErr('Erreur serveur'); setLoading(false); return; }
-      localStorage.setItem('bridge_resto_session', JSON.stringify({name:restoName, pin}));
+      const h = await authHeaders();
+      const r = await fetch('/api/restaurant/claim', {
+        method: 'POST', headers: h,
+        body: JSON.stringify({ name: claimName, pin: claimPin }),
+      });
       const data = await r.json();
-      const o: RestoOrder[] = data.orders || [];
-      o.forEach(x => seenRefs.current.add(x.ref));
-      setOrders(o); setLoggedIn(true);
-    } catch { setLoginErr('Erreur de connexion'); }
-    setLoading(false);
+      if (!r.ok) { setLinkErr(data.error || 'Erreur'); setLinking(false); return; }
+      setRestoName(data.restaurant.name);
+      if (data.bridgeSecret) setBridgeSecret(data.bridgeSecret);
+      setLinked(true);
+    } catch { setLinkErr('Erreur de connexion'); }
+    setLinking(false);
   };
 
   const updateStatus = async (ref: string, status: string) => {
+    const h = await authHeaders();
     await fetch(`/api/orders/by-ref/${ref}/status`, {
-      method:'PATCH', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({status, pin, restaurantName: restoName}),
+      method:'PATCH', headers: h,
+      body: JSON.stringify({ status, restaurantName: restoName }),
     });
     setOrders(prev => prev.map(o => o.ref === ref ? {...o, status} : o));
   };
 
-  const logout = () => {
-    localStorage.removeItem('bridge_resto_session');
-    setLoggedIn(false); setOrders([]); setPin(''); seenRefs.current.clear();
+  const logout = async () => {
+    setLinked(false); setRestoName(''); setOrders([]); setClaimName(''); setClaimPin('');
+    seenRefs.current.clear();
   };
 
   const pending = orders.filter(o => o.status === 'pending');
   const active  = orders.filter(o => ['accepted','preparing'].includes(o.status));
   const done    = orders.filter(o => ['ready','delivered','refused','cancelled','on_the_way'].includes(o.status));
 
-  // ── LOGIN SCREEN ────────────────────────────────────────────────────────────
-  if (!loggedIn) return (
+  // ── NOT SIGNED IN ────────────────────────────────────────────────────────────
+  if (!isLoaded || loading) return (
+    <div style={{minHeight:'100dvh',background:'linear-gradient(135deg,#0A1A0F,#0D2E1A)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+      <span style={{color:'rgba(255,255,255,0.4)',fontSize:13}}>Chargement…</span>
+    </div>
+  );
+
+  if (!isSignedIn) return (
     <div style={{minHeight:'100dvh',background:'linear-gradient(135deg,#0A1A0F 0%,#0D2E1A 50%,#0A1A0F 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'20px',fontFamily:'system-ui'}}>
-      <div style={{fontSize:48,marginBottom:12}}>🍽️</div>
+      <div style={{fontSize:52,marginBottom:14}}>🍽️</div>
       <h1 style={{color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.1em',margin:'0 0 4px',textAlign:'center'}}>ESPACE RESTAURATEURS</h1>
       <p style={{color:'rgba(255,255,255,0.4)',fontSize:12,fontWeight:600,margin:'0 0 28px',textAlign:'center'}}>Bridge Safi · Interface partenaire</p>
+      <div style={{width:'100%',maxWidth:340,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:24,padding:'24px 20px',display:'flex',flexDirection:'column',gap:14,textAlign:'center'}}>
+        <p style={{color:'rgba(255,255,255,0.6)',fontSize:13,margin:0}}>Connectez-vous avec votre compte Bridge pour accéder à votre espace restaurateur.</p>
+        <button onClick={()=>navigate('/sign-in?redirect_url=/restaurant')}
+          style={{width:'100%',padding:'15px 0',borderRadius:14,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669,#4ADE80)',color:'#fff',fontSize:15,fontWeight:900}}>
+          Se connecter →
+        </button>
+        <button onClick={()=>navigate('/sign-up?redirect_url=/restaurant')}
+          style={{width:'100%',padding:'13px 0',borderRadius:14,border:'1px solid rgba(255,255,255,0.15)',cursor:'pointer',background:'transparent',color:'rgba(255,255,255,0.6)',fontSize:13,fontWeight:700}}>
+          Créer un compte
+        </button>
+      </div>
+      <button onClick={()=>navigate('/')} style={{marginTop:20,background:'none',border:'none',color:'rgba(255,255,255,0.35)',fontSize:12,fontWeight:700,cursor:'pointer'}}>
+        ← Retour à Bridge
+      </button>
+    </div>
+  );
+
+  // ── SIGNED IN BUT NO RESTAURANT LINKED YET ────────────────────────────────
+  if (!linked) return (
+    <div style={{minHeight:'100dvh',background:'linear-gradient(135deg,#0A1A0F 0%,#0D2E1A 50%,#0A1A0F 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'20px',fontFamily:'system-ui'}}>
+      <div style={{fontSize:52,marginBottom:14}}>🍽️</div>
+      <h1 style={{color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.1em',margin:'0 0 4px',textAlign:'center'}}>LIER VOTRE RESTAURANT</h1>
+      <p style={{color:'rgba(255,255,255,0.4)',fontSize:12,fontWeight:600,margin:'0 0 6px',textAlign:'center'}}>Connecté : <strong style={{color:'#4ADE80'}}>{user?.emailAddresses?.[0]?.emailAddress}</strong></p>
+      <p style={{color:'rgba(255,255,255,0.3)',fontSize:11,margin:'0 0 24px',textAlign:'center'}}>Choisissez votre restaurant et entrez le PIN fourni par Bridge Safi</p>
 
       <div style={{width:'100%',maxWidth:340,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:24,padding:'24px 20px',display:'flex',flexDirection:'column',gap:14}}>
         <div>
-          <label style={{color:'rgba(255,255,255,0.5)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',display:'block',marginBottom:6}}>Votre Restaurant</label>
-          <select value={restoName} onChange={e=>setRestoName(e.target.value)}
-            style={{width:'100%',padding:'13px 14px',borderRadius:14,background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',color: restoName?'#fff':'rgba(255,255,255,0.4)',fontSize:14,fontWeight:700,outline:'none',appearance:'none'}}>
+          <label style={{color:'rgba(255,255,255,0.5)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase' as const,display:'block',marginBottom:6}}>Votre Restaurant</label>
+          <select value={claimName} onChange={e=>setClaimName(e.target.value)}
+            style={{width:'100%',padding:'13px 14px',borderRadius:14,background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',color:claimName?'#fff':'rgba(255,255,255,0.4)',fontSize:14,fontWeight:700,outline:'none',appearance:'none' as const}}>
             <option value="">-- Sélectionner --</option>
             {RESTO_RESTAURANTS.map(r=><option key={r} value={r} style={{background:'#1a2e1f',color:'#fff'}}>{r}</option>)}
           </select>
         </div>
-
         <div>
-          <label style={{color:'rgba(255,255,255,0.5)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',display:'block',marginBottom:6}}>Code PIN (4 chiffres)</label>
-          <input type="password" inputMode="numeric" maxLength={4} value={pin} onChange={e=>setPin(e.target.value.replace(/\D/g,'').slice(0,4))}
+          <label style={{color:'rgba(255,255,255,0.5)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase' as const,display:'block',marginBottom:6}}>Code PIN (4 chiffres)</label>
+          <input type="password" inputMode="numeric" maxLength={4} value={claimPin} onChange={e=>setClaimPin(e.target.value.replace(/\D/g,'').slice(0,4))}
             placeholder="••••"
-            style={{width:'100%',boxSizing:'border-box',padding:'13px 14px',borderRadius:14,background:'rgba(255,255,255,0.08)',border:`1px solid ${loginErr?'#EF4444':'rgba(255,255,255,0.15)'}`,color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.5em',textAlign:'center',outline:'none'}}
-            onKeyDown={e=>{if(e.key==='Enter')handleLogin();}}/>
-          {loginErr && <p style={{color:'#F87171',fontSize:11,fontWeight:700,margin:'6px 0 0'}}>{loginErr}</p>}
+            style={{width:'100%',boxSizing:'border-box' as const,padding:'13px 14px',borderRadius:14,background:'rgba(255,255,255,0.08)',border:`1px solid ${linkErr?'#EF4444':'rgba(255,255,255,0.15)'}`,color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.5em',textAlign:'center' as const,outline:'none'}}
+            onKeyDown={e=>{if(e.key==='Enter')handleClaim();}}/>
+          {linkErr && <p style={{color:'#F87171',fontSize:11,fontWeight:700,margin:'6px 0 0'}}>{linkErr}</p>}
         </div>
-
-        <button onClick={handleLogin} disabled={!restoName||pin.length!==4||loading}
-          style={{width:'100%',padding:'15px 0',borderRadius:14,border:'none',cursor:!restoName||pin.length!==4||loading?'not-allowed':'pointer',
-            background:!restoName||pin.length!==4||loading?'rgba(255,255,255,0.1)':'linear-gradient(135deg,#059669,#4ADE80)',
-            color:!restoName||pin.length!==4||loading?'rgba(255,255,255,0.4)':'#fff',fontSize:15,fontWeight:900,letterSpacing:'0.05em'}}>
-          {loading ? 'Connexion...' : 'Se connecter →'}
+        <button onClick={handleClaim} disabled={!claimName||claimPin.length!==4||linking}
+          style={{width:'100%',padding:'15px 0',borderRadius:14,border:'none',cursor:!claimName||claimPin.length!==4||linking?'not-allowed':'pointer',
+            background:!claimName||claimPin.length!==4||linking?'rgba(255,255,255,0.1)':'linear-gradient(135deg,#059669,#4ADE80)',
+            color:!claimName||claimPin.length!==4||linking?'rgba(255,255,255,0.4)':'#fff',fontSize:15,fontWeight:900}}>
+          {linking ? 'Liaison en cours…' : 'Lier mon restaurant →'}
         </button>
+        <p style={{color:'rgba(255,255,255,0.25)',fontSize:10,textAlign:'center' as const,margin:0}}>
+          Le PIN est fourni par l'équipe Bridge Safi lors de l'inscription partenaire
+        </p>
       </div>
-
       <button onClick={()=>navigate('/')} style={{marginTop:20,background:'none',border:'none',color:'rgba(255,255,255,0.35)',fontSize:12,fontWeight:700,cursor:'pointer'}}>
         ← Retour à Bridge
       </button>
@@ -2982,7 +3025,7 @@ function RestaurantOwnerPage() {
             ))}
           </div>
 
-          <button onClick={()=>fetchOrders(restoName,pin)}
+          <button onClick={()=>fetchOrders()}
             style={{width:'100%',padding:'10px 0',borderRadius:14,border:'1px solid rgba(255,255,255,0.1)',background:'rgba(255,255,255,0.04)',color:'rgba(255,255,255,0.5)',fontSize:12,fontWeight:700,cursor:'pointer',marginBottom:14}}>
             🔄 Actualiser les commandes
           </button>
