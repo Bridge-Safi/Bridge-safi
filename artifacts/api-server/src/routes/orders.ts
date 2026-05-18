@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { db, ordersTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
-import { getAuth } from "@clerk/express";
+import { getAuth, verifyToken } from "@clerk/express";
 import { notifyDrivers, notifySpecificDrivers, notifyDriversExcept } from "./push";
 import { getDriverPositions } from "./tracking";
 import { addSSEClient, removeSSEClient, broadcastOrder } from "../lib/sse";
@@ -98,6 +98,14 @@ async function smartDispatch(restaurantName: string | null | undefined, payload:
 const router = Router();
 
 // ── Webhooks par restaurant ─────────────────────────────────────────────────
+// Base URL used for callbackUrl — prefer production domain, fallback to Replit domain
+function getApiBase(): string {
+  const domains = process.env.REPLIT_DOMAINS ?? "";
+  const first = domains.split(",")[0]?.trim();
+  if (first) return `https://${first}`;
+  return "https://safi-bridge.ma";
+}
+
 async function forwardToRestaurant(order: typeof ordersTable.$inferSelect) {
   if (!order.restaurantName) return;
   try {
@@ -108,21 +116,24 @@ async function forwardToRestaurant(order: typeof ordersTable.$inferSelect) {
     const resto = rows[0];
     if (!resto?.webhookUrl) return;
     const token = resto.webhookToken ?? BRIDGE_INBOUND_SECRET;
+    const callbackUrl = `${getApiBase()}/api/callbacks/order-status`;
     await fetch(resto.webhookUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "x-bridge-token": token },
+      headers: { "Content-Type": "application/json", "X-Bridge-Token": token },
       body: JSON.stringify({
-        ref: order.ref,
-        customerName: order.customerName,
+        orderNumber:   order.ref,
+        orderId:       order.id,
+        customerName:  order.customerName,
         customerPhone: order.customerPhone,
         deliveryAddress: order.customerAddress,
-        items: order.items,
-        total: order.total,
-        deliveryMode: order.deliveryMode,
+        items:         order.items,
+        totalAmount:   order.total,
+        deliveryMode:  order.deliveryMode,
         paymentMethod: order.paymentMethod,
         restaurantName: order.restaurantName,
-        status: order.status,
-        createdAt: order.createdAt,
+        status:        order.status,
+        createdAt:     order.createdAt,
+        callbackUrl,
       }),
     });
     logger.info({ ref: order.ref, restaurant: order.restaurantName }, "Order forwarded to restaurant webhook");
@@ -130,6 +141,59 @@ async function forwardToRestaurant(order: typeof ordersTable.$inferSelect) {
     logger.error({ err, restaurant: order.restaurantName }, "Failed to forward order to restaurant webhook");
   }
 }
+
+// ── Callback entrant depuis restaurant.safi-bridge.ma ───────────────────────
+// POST /api/callbacks/order-status
+// Reçu quand le restaurateur change le statut d'une commande
+router.post("/callbacks/order-status", async (req, res) => {
+  try {
+    const { orderId, orderNumber, status, estimatedPrepTime, rejectionReason } = req.body as {
+      orderId?: number;
+      orderNumber?: string;
+      status?: string;
+      estimatedPrepTime?: number;
+      rejectionReason?: string | null;
+    };
+
+    const allowed = ["accepted", "ready", "rejected", "preparing", "delivered", "cancelled"];
+    if (!status || !allowed.includes(status)) {
+      res.status(400).json({ error: "Statut invalide" }); return;
+    }
+    if (!orderNumber && !orderId) {
+      res.status(400).json({ error: "orderNumber ou orderId requis" }); return;
+    }
+
+    // Map "rejected" → "refused" for internal consistency
+    const internalStatus = status === "rejected" ? "refused" : status;
+
+    let updated;
+    if (orderNumber) {
+      [updated] = await db.update(ordersTable)
+        .set({ status: internalStatus, updatedAt: new Date() })
+        .where(eq(ordersTable.ref, orderNumber))
+        .returning();
+    } else {
+      const { eq: eqFn } = await import("drizzle-orm");
+      [updated] = await db.update(ordersTable)
+        .set({ status: internalStatus, updatedAt: new Date() })
+        .where(eqFn(ordersTable.id, orderId!))
+        .returning();
+    }
+
+    if (!updated) { res.status(404).json({ error: "Commande introuvable" }); return; }
+
+    logger.info({
+      ref: updated.ref,
+      status: internalStatus,
+      estimatedPrepTime,
+      rejectionReason,
+    }, "Order status updated via restaurant callback");
+
+    res.json({ ok: true, ref: updated.ref, status: internalStatus });
+  } catch (err) {
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+});
 
 // ── Webhook entrant partenaire (ex: Bridge Eats) ────────────────────────────
 router.post("/orders/inbound", async (req, res) => {
@@ -393,8 +457,7 @@ router.get("/orders/by-restaurant", async (req, res) => {
     const authHeader = req.headers.authorization;
     if (authHeader?.startsWith("Bearer ")) {
       try {
-        const { clerkClient } = await import("@clerk/express");
-        const payload = await clerkClient.verifyToken(authHeader.slice(7));
+        const payload = await verifyToken(authHeader.slice(7), { secretKey: process.env.CLERK_SECRET_KEY! });
         const { db: dbInst, restaurantsTable: rt } = await import("@workspace/db");
         const { eq: eqFn } = await import("drizzle-orm");
         const rows = await dbInst.select().from(rt).where(eqFn(rt.ownerId, payload.sub));
@@ -438,8 +501,7 @@ router.patch("/orders/by-ref/:ref/status", async (req, res) => {
     let authorized = false;
     if (authHeader?.startsWith("Bearer ")) {
       try {
-        const { clerkClient } = await import("@clerk/express");
-        await clerkClient.verifyToken(authHeader.slice(7));
+        await verifyToken(authHeader.slice(7), { secretKey: process.env.CLERK_SECRET_KEY! });
         authorized = true;
       } catch { /* fall through */ }
     }

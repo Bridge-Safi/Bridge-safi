@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { db, restaurantsTable } from "@workspace/db";
 import { eq, or } from "drizzle-orm";
-import { clerkClient } from "@clerk/express";
+import { clerkClient, verifyToken } from "@clerk/express";
 import { logger } from "../lib/logger";
 
 const router = Router();
@@ -26,7 +26,7 @@ async function getClerkUserId(authHeader: string | undefined): Promise<{userId:s
   if (!authHeader?.startsWith("Bearer ")) return null;
   const token = authHeader.slice(7);
   try {
-    const payload = await clerkClient.verifyToken(token);
+    const payload = await verifyToken(token, { secretKey: process.env.CLERK_SECRET_KEY! });
     const userId = payload.sub;
     const user = await clerkClient.users.getUser(userId);
     const email = user.emailAddresses[0]?.emailAddress ?? "";
