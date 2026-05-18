@@ -98,19 +98,19 @@ async function smartDispatch(restaurantName: string | null | undefined, payload:
 const router = Router();
 
 // ── Webhooks par restaurant ─────────────────────────────────────────────────
-const RESTAURANT_WEBHOOKS: Record<string, string> = {
-  "Kebab Express Safi": "https://303eedda-22da-41f3-8687-e84c69502bcd-00-2g2wlpsf6p1h3.riker.replit.dev/api/webhook/orders",
-};
-
 async function forwardToRestaurant(order: typeof ordersTable.$inferSelect) {
-  const webhookUrl = order.restaurantName
-    ? RESTAURANT_WEBHOOKS[order.restaurantName]
-    : undefined;
-  if (!webhookUrl) return;
+  if (!order.restaurantName) return;
   try {
-    await fetch(webhookUrl, {
+    const { db: dbInst, restaurantsTable: rt } = await import("@workspace/db");
+    const { sql: sqlRaw } = await import("drizzle-orm");
+    const rows = await dbInst.select().from(rt)
+      .where(sqlRaw`lower(${rt.name}) = lower(${order.restaurantName})`);
+    const resto = rows[0];
+    if (!resto?.webhookUrl) return;
+    const token = resto.webhookToken ?? BRIDGE_INBOUND_SECRET;
+    await fetch(resto.webhookUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "x-bridge-secret": BRIDGE_INBOUND_SECRET },
+      headers: { "Content-Type": "application/json", "x-bridge-token": token },
       body: JSON.stringify({
         ref: order.ref,
         customerName: order.customerName,
