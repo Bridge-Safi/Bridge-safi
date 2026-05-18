@@ -49,6 +49,13 @@
       "description": "Commander du tabac",
       "url": "/?service=tabac",
       "icons": [{ "src": "/bridge-tabac-logo.jpeg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Bridge Moto Taxi",
+      "short_name": "Moto Taxi",
+      "description": "Panneau chauffeur moto taxi",
+      "url": "/dispatch",
+      "icons": [{ "src": "/logo_taxi.jpeg", "sizes": "96x96" }]
     }
   ]
 }

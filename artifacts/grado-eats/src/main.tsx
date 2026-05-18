@@ -1736,7 +1736,7 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
       <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg,#78350F 0%,#1A2F23 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'system-ui, sans-serif' }}>
         <div style={{ width: '100%', maxWidth: '360px', background: '#fff', borderRadius: '24px', padding: '28px 24px', boxShadow: '0 8px 40px rgba(0,0,0,0.3)', textAlign: 'center' }}>
           <div style={{ fontSize: '56px', marginBottom: '8px' }}>🚖</div>
-          <h1 style={{ fontSize: '18px', fontWeight: '900', color: '#78350F', margin: '0 0 2px' }}>Bridge Taxi — Chauffeur</h1>
+          <h1 style={{ fontSize: '18px', fontWeight: '900', color: '#78350F', margin: '0 0 2px' }}>Bridge Moto Taxi</h1>
           <p style={{ fontSize: '11px', color: '#9CA3AF', margin: '0 0 20px' }}>Course #{ref}</p>
 
           {taxiState === 'loading' && (
@@ -2007,8 +2007,17 @@ function DispatchPage() {
   const motoSeenRefs = useRef<Set<string>>(new Set());
   const [driverOffers, setDriverOffers] = useState<Record<string,string>>({});
 
+  // Update page title based on role (affects PWA app name on install)
+  useEffect(() => {
+    if (role === 'moto') document.title = 'Bridge Moto Taxi';
+    else if (role === 'taxi') document.title = 'Bridge Taxi — Safi';
+    else if (role === 'livreur') document.title = 'Bridge Livraison';
+    else document.title = 'Bridge Dispatch';
+    return () => { document.title = 'Bridge Safi · Livraison & Taxi à Safi, Maroc'; };
+  }, [role]);
+
   const handleSetRole = async (r: 'livreur' | 'taxi' | 'moto') => {
-    const defaultNames = { livreur: 'Livreur de Repas', taxi: 'Taxi Confort', moto: 'Moto Chauffeur' };
+    const defaultNames = { livreur: 'Livreur de Repas', taxi: 'Taxi Confort', moto: 'Bridge Moto Taxi' };
     const name = driverName.trim() || defaultNames[r];
     localStorage.setItem('bridge_driver_name', name);
     setRole(r);
@@ -2231,7 +2240,7 @@ function DispatchPage() {
     await fetch(`/api/tracking/${booking.ref}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: 'accepted', driverName: driverName || 'Chauffeur Moto' }),
+      body: JSON.stringify({ status: 'accepted', driverName: driverName || 'Bridge Moto Taxi' }),
     }).catch(() => {});
     if (!navigator.geolocation) { setMotoGPS('denied'); return; }
     motoWatchId.current = navigator.geolocation.watchPosition(
@@ -2241,7 +2250,7 @@ function DispatchPage() {
         fetch(`/api/tracking/${booking.ref}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ lat, lng, status: 'accepted', driverName: driverName || 'Chauffeur Moto' }),
+          body: JSON.stringify({ lat, lng, status: 'accepted', driverName: driverName || 'Bridge Moto Taxi' }),
         }).catch(() => {});
       },
       () => setMotoGPS('denied'),
@@ -2309,8 +2318,8 @@ function DispatchPage() {
             style={{ padding: '18px 16px', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#9A3412,#F97316)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 24px rgba(249,115,22,0.35)', display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left' }}>
             <span style={{ fontSize: 26, flexShrink: 0 }}>🛵</span>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 900 }}>Moto Chauffeur</div>
-              <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85 }}>Courses moto — Bridge Scooter</div>
+              <div style={{ fontSize: 15, fontWeight: 900 }}>Bridge Moto Taxi</div>
+              <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85 }}>Courses moto — Bridge Moto Taxi</div>
             </div>
           </button>
         </div>
@@ -2326,14 +2335,14 @@ function DispatchPage() {
   const accentLight = role === 'taxi' ? '#FEF3C7' : role === 'moto' ? '#FFEDD5' : '#D1FAE5';
   const accentDark = role === 'taxi' ? '#B45309' : role === 'moto' ? '#9A3412' : '#065F46';
   const icon = role === 'taxi' ? '🚖' : role === 'moto' ? '🛵' : '🛵';
-  const label = role === 'taxi' ? 'Taxi Confort' : role === 'moto' ? 'Moto Chauffeur' : 'Livreur de Repas';
+  const label = role === 'taxi' ? 'Taxi Confort' : role === 'moto' ? 'Moto Taxi' : 'Livreur de Repas';
 
   return (
     <div style={{ minHeight: '100dvh', background: isDelivery ? '#F0FDF4' : isMoto ? '#FFF7ED' : '#FFFBEB', fontFamily: 'system-ui,sans-serif' }}>
       {/* Header */}
       <div style={{ background: accentDark, padding: '52px 20px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 10, fontWeight: 800, letterSpacing: '0.2em', margin: '0 0 2px' }}>BRIDGE DISPATCH</p>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 10, fontWeight: 800, letterSpacing: '0.2em', margin: '0 0 2px' }}>{isMoto ? 'BRIDGE MOTO TAXI' : 'BRIDGE DISPATCH'}</p>
           <h1 style={{ color: '#fff', fontSize: '1.1rem', fontWeight: 900, margin: 0 }}>{icon} {driverName || label}</h1>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
