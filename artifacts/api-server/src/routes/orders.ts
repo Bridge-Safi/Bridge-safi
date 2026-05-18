@@ -411,10 +411,11 @@ router.get("/orders/by-restaurant", async (req, res) => {
       resolvedName = name;
     }
 
+    const { sql: sqlRaw } = await import("drizzle-orm");
     const allOrders = await db
       .select()
       .from(ordersTable)
-      .where(eq(ordersTable.restaurantName, resolvedName))
+      .where(sqlRaw`lower(${ordersTable.restaurantName}) = lower(${resolvedName})`)
       .orderBy(desc(ordersTable.createdAt))
       .limit(50);
     const orders = allOrders.filter(o => o.status !== "pending_payment");
