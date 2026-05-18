@@ -2461,9 +2461,10 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
   const sendOrderToAPI=async(paymentMethod:string)=>{
     try{
       const items=cart.map(i=>({name:i.item.names['fr'],qty:i.qty,price:i.totalPerUnit,options:Object.entries(i.selectedOptions).flatMap(([,ids])=>ids)}));
+      const ah=await getAuthHeaders();
       await fetch('/api/orders',{
         method:'POST',
-        headers:{'Content-Type':'application/json'},
+        headers:{...ah,'Content-Type':'application/json'},
         body:JSON.stringify({
           ref:orderRef,
           service:'delivery',
