@@ -2733,6 +2733,8 @@ function RestaurantOwnerPage() {
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
   const [copied, setCopied] = useState('');
+  const [pushEnabled, setPushEnabled] = useState(false);
+  const [pushLoading, setPushLoading] = useState(false);
   const seenRefs = useRef<Set<string>>(new Set());
   const pollRef = useRef<number|null>(null);
 
@@ -2843,6 +2845,65 @@ function RestaurantOwnerPage() {
   const logout = async () => {
     setLinked(false); setRestoName(''); setOrders([]); setClaimName(''); setClaimPin('');
     seenRefs.current.clear();
+  };
+
+  // Check if push already subscribed when restaurant is linked
+  useEffect(() => {
+    if (!linked || !restoName) return;
+    (async () => {
+      try {
+        const reg = await navigator.serviceWorker?.getRegistration();
+        if (!reg) return;
+        const sub = await reg.pushManager?.getSubscription();
+        setPushEnabled(!!sub);
+      } catch {}
+    })();
+  }, [linked, restoName]);
+
+  const togglePushNotifications = async () => {
+    if (pushLoading) return;
+    setPushLoading(true);
+    try {
+      const reg = await navigator.serviceWorker?.getRegistration();
+      if (!reg) { alert("Service worker non disponible. Rechargez la page."); setPushLoading(false); return; }
+
+      if (pushEnabled) {
+        // Unsubscribe
+        const sub = await reg.pushManager?.getSubscription();
+        if (sub) {
+          await fetch('/api/push/subscribe', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ endpoint: sub.endpoint }),
+          });
+          await sub.unsubscribe();
+        }
+        setPushEnabled(false);
+      } else {
+        // Subscribe
+        const vapidRes = await fetch('/api/push/vapid-key');
+        const { publicKey } = await vapidRes.json();
+        const sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: publicKey,
+        });
+        const json = sub.toJSON();
+        await fetch('/api/push/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            endpoint: json.endpoint,
+            keys: json.keys,
+            restaurantName: restoName,
+          }),
+        });
+        setPushEnabled(true);
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Erreur lors de l'activation des notifications.");
+    }
+    setPushLoading(false);
   };
 
   const pending = orders.filter(o => o.status === 'pending');
@@ -3166,6 +3227,25 @@ function RestaurantOwnerPage() {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Push Notifications */}
+          <div style={{background:'rgba(255,255,255,0.03)',border:`1px solid ${pushEnabled?'rgba(74,222,128,0.25)':'rgba(255,255,255,0.08)'}`,borderRadius:18,padding:'16px',marginBottom:16}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
+              <span style={{fontSize:16}}>🔔</span>
+              <p style={{color:'#fff',fontSize:13,fontWeight:900,margin:0}}>Notifications push</p>
+              {pushEnabled && <span style={{marginLeft:'auto',fontSize:10,fontWeight:900,color:'#4ADE80',background:'rgba(74,222,128,0.15)',padding:'3px 8px',borderRadius:8}}>ACTIF</span>}
+            </div>
+            <p style={{color:'rgba(255,255,255,0.35)',fontSize:11,fontWeight:600,margin:'0 0 14px'}}>
+              Recevez une alerte instantanée sur cet appareil dès qu'une nouvelle commande arrive — avant même le livreur.
+            </p>
+            <button onClick={togglePushNotifications} disabled={pushLoading}
+              style={{width:'100%',padding:'13px 0',borderRadius:14,cursor:pushLoading?'not-allowed':'pointer',
+                background: pushEnabled ? 'rgba(239,68,68,0.15)' : pushLoading ? 'rgba(255,255,255,0.08)' : 'linear-gradient(135deg,#065F46,#059669)',
+                border: pushEnabled ? '1px solid rgba(239,68,68,0.4)' : 'none',
+                color: pushEnabled?'#F87171':'#fff',fontSize:13,fontWeight:900,transition:'all 0.3s'}}>
+              {pushLoading ? '⏳ En cours…' : pushEnabled ? '🔕 Désactiver les notifications' : '🔔 Activer les notifications sur cet appareil'}
+            </button>
           </div>
 
           {/* Save button */}

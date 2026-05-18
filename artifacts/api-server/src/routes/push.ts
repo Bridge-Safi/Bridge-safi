@@ -14,16 +14,16 @@ router.get("/push/vapid-key", (_req, res) => {
 
 router.post("/push/subscribe", async (req, res) => {
   try {
-    const { endpoint, keys, driverName } = req.body;
+    const { endpoint, keys, driverName, restaurantName } = req.body;
     if (!endpoint || !keys?.p256dh || !keys?.auth) {
       res.status(400).json({ error: "Missing subscription fields" }); return;
     }
     await db
       .insert(pushSubscriptionsTable)
-      .values({ endpoint, p256dh: keys.p256dh, auth: keys.auth, driverName: driverName || null })
+      .values({ endpoint, p256dh: keys.p256dh, auth: keys.auth, driverName: driverName || null, restaurantName: restaurantName || null })
       .onConflictDoUpdate({
         target: pushSubscriptionsTable.endpoint,
-        set: { p256dh: keys.p256dh, auth: keys.auth, driverName: driverName || null },
+        set: { p256dh: keys.p256dh, auth: keys.auth, driverName: driverName || null, restaurantName: restaurantName || null },
       });
     res.json({ ok: true });
   } catch (err) {
@@ -41,6 +41,37 @@ router.delete("/push/subscribe", async (req, res) => {
     res.status(500).json({ error: "Failed to remove subscription" });
   }
 });
+
+/** Send push notification to the restaurant owner(s) for a given restaurant. */
+export async function notifyRestaurantOwner(restaurantName: string, payload: object) {
+  if (!restaurantName) return;
+  try {
+    const { sql: sqlRaw } = await import("drizzle-orm");
+    const subs = await db
+      .select()
+      .from(pushSubscriptionsTable)
+      .where(sqlRaw`lower(${pushSubscriptionsTable.restaurantName}) = lower(${restaurantName})`);
+    if (subs.length === 0) return;
+    const results = await Promise.allSettled(
+      subs.map(sub =>
+        webpush.sendNotification(
+          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+          JSON.stringify(payload),
+        )
+      )
+    );
+    const deadEndpoints = subs
+      .filter((_, i) => results[i].status === "rejected")
+      .map(s => s.endpoint);
+    if (deadEndpoints.length > 0) {
+      await Promise.allSettled(
+        deadEndpoints.map(ep =>
+          db.delete(pushSubscriptionsTable).where(eq(pushSubscriptionsTable.endpoint, ep))
+        )
+      );
+    }
+  } catch (_) {}
+}
 
 export async function notifyDrivers(payload: object) {
   try {

@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import { db, ordersTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
 import { getAuth, verifyToken } from "@clerk/express";
-import { notifyDrivers, notifySpecificDrivers, notifyDriversExcept } from "./push";
+import { notifyDrivers, notifySpecificDrivers, notifyDriversExcept, notifyRestaurantOwner } from "./push";
 import { getDriverPositions } from "./tracking";
 import { addSSEClient, removeSSEClient, broadcastOrder } from "../lib/sse";
 import { logger } from "../lib/logger";
@@ -347,10 +347,20 @@ router.post("/orders", requireClerkAuth, async (req, res) => {
     // If QR payment: wait for client confirmation — do NOT dispatch yet
     if (isQR) return;
 
-    // Instant push to all connected driver panels via SSE
+    // 1️⃣ Notify restaurant owner FIRST via push (before drivers)
+    if (restaurantName) {
+      notifyRestaurantOwner(restaurantName, {
+        type: "NEW_ORDER",
+        title: "🔔 Nouvelle commande !",
+        body: `${customerName} · ${Number(total)} MAD`,
+        data: { orderId: order.id, ref: order.ref, url: "/resto" },
+      }).catch(() => {});
+    }
+
+    // 2️⃣ Instant push to all connected driver panels via SSE
     broadcastOrder({ type: "NEW_ORDER", orderId: order.id, ref: order.ref });
 
-    // Smart dispatch: nearby drivers first, then all after 2 min
+    // 3️⃣ Smart dispatch: nearby drivers first, then all after 2 min
     smartDispatch(restaurantName, {
       type: "NEW_ORDER",
       title: "🛵 Nouvelle commande !",

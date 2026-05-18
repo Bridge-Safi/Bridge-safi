@@ -33,6 +33,10 @@ async function migrate() {
       webhook_url TEXT,
       updated_at TIMESTAMP NOT NULL DEFAULT NOW()
     );
+    ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS webhook_token TEXT;
+    ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS owner_id TEXT;
+    ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS owner_email TEXT;
+    ALTER TABLE push_subscriptions ADD COLUMN IF NOT EXISTS restaurant_name TEXT;
     CREATE TABLE IF NOT EXISTS game_diamonds (
       user_id TEXT PRIMARY KEY,
       diamonds INTEGER NOT NULL DEFAULT 0,
