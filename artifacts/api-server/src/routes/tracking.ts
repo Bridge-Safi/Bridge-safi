@@ -20,6 +20,8 @@ interface TrackPos {
   driverName?: string;
   customerName?: string;
   customerPhone?: string;
+  clientPrice?: number;
+  driverPrice?: number;
 }
 
 // In-memory store: orderRef → position  (auto-expires after 3h)
@@ -89,7 +91,7 @@ router.get("/tracking-pending", (req, res) => {
 // Client → create taxi booking (initial, status=waiting)
 router.post("/tracking/:ref", (req, res) => {
   const { ref } = req.params;
-  const { clientLat, clientLng, clientAddress, destination, customerName, customerPhone } = req.body;
+  const { clientLat, clientLng, clientAddress, destination, customerName, customerPhone, clientPrice } = req.body;
   positions.set(ref, {
     lat: clientLat ?? 32.2994,
     lng: clientLng ?? -9.2372,
@@ -101,6 +103,7 @@ router.post("/tracking/:ref", (req, res) => {
     destination: destination ?? undefined,
     customerName: customerName ?? undefined,
     customerPhone: customerPhone ?? undefined,
+    clientPrice: typeof clientPrice === 'number' && clientPrice > 0 ? clientPrice : undefined,
   });
   req.log.info({ ref }, "taxi booking created");
   res.json({ ok: true });
@@ -117,7 +120,7 @@ router.post("/tracking/:ref", (req, res) => {
 // Driver → push position / update status
 router.put("/tracking/:ref", (req, res) => {
   const { ref } = req.params;
-  const { lat, lng, heading, speed, eta, status, driverName } = req.body;
+  const { lat, lng, heading, speed, eta, status, driverName, driverPrice } = req.body;
   const existing = positions.get(ref);
   if (lat !== undefined && lng !== undefined &&
       (typeof lat !== "number" || typeof lng !== "number")) {
@@ -133,6 +136,7 @@ router.put("/tracking/:ref", (req, res) => {
     ...(eta !== undefined ? { eta } : {}),
     ...(status ? { status } : {}),
     ...(driverName ? { driverName } : {}),
+    ...(typeof driverPrice === 'number' ? { driverPrice } : {}),
     updatedAt: Date.now(),
   };
   positions.set(ref, updated);

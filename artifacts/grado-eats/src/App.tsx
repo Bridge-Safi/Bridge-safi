@@ -4012,7 +4012,7 @@ function WAButton() {
 
 // ─── TAXI TRACKING MAP ─────────────────────────────────────────────────────────
 
-function TaxiMap({driverPos,clientPos}:{driverPos:{lat:number;lng:number}|null;clientPos:{lat:number;lng:number}|null}) {
+function TaxiMap({driverPos,clientPos,fakeVehicles}:{driverPos:{lat:number;lng:number}|null;clientPos:{lat:number;lng:number}|null;fakeVehicles?:Array<{lat:number;lng:number;id:number;emoji:string}>}) {
   const center = driverPos ?? clientPos ?? {lat:32.2994,lng:-9.2372};
   const taxiIcon = L.divIcon({className:'',html:'<div style="font-size:34px;line-height:1;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.7))">🚖</div>',iconSize:[36,36],iconAnchor:[18,18]});
   const pinIcon = L.divIcon({className:'',html:'<div style="display:flex;flex-direction:column;align-items:center"><div style="width:16px;height:16px;border-radius:50%;background:#10B981;border:2.5px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,0.5)"></div><div style="width:2px;height:10px;background:#10B981;border-radius:1px;margin-top:-1px"></div></div>',iconSize:[16,26],iconAnchor:[8,26]});
@@ -4024,6 +4024,10 @@ function TaxiMap({driverPos,clientPos}:{driverPos:{lat:number;lng:number}|null;c
   return (
     <MapContainer center={[center.lat,center.lng]} zoom={14} style={{width:'100%',height:'100%'}} zoomControl={false} attributionControl={false}>
       <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"/>
+      {fakeVehicles?.map(v=>{
+        const fi=L.divIcon({className:'',html:`<div style="font-size:24px;line-height:1;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.6));opacity:0.75">${v.emoji}</div>`,iconSize:[26,26],iconAnchor:[13,13]});
+        return <Marker key={v.id} position={[v.lat,v.lng]} icon={fi}/>;
+      })}
       {driverPos&&<><Marker position={[driverPos.lat,driverPos.lng]} icon={taxiIcon}/><Fly pos={driverPos}/></>}
       {clientPos&&<Marker position={[clientPos.lat,clientPos.lng]} icon={pinIcon}/>}
       {!driverPos&&clientPos&&<Fly pos={clientPos}/>}
@@ -4197,9 +4201,22 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   },[taxiUser?.id,getAuthHeaders]);
 
   // ── Tracking state ──
-  const [trackData,setTrackData]=useState<{found:boolean;lat?:number;lng?:number;status?:string;driverName?:string;eta?:number;clientLat?:number;clientLng?:number}|null>(null);
+  const [trackData,setTrackData]=useState<{found:boolean;lat?:number;lng?:number;status?:string;driverName?:string;eta?:number;clientLat?:number;clientLng?:number;driverPrice?:number}|null>(null);
   const trackIntervalRef=useRef<number|null>(null);
   const [taxiRating,setTaxiRating]=useState(0);
+  const [prixProposeTaxi,setPrixProposeTaxi]=useState('');
+  const [acceptedDriverOfferTaxi,setAcceptedDriverOfferTaxi]=useState(false);
+  const [fakeVehiclesTaxi,setFakeVehiclesTaxi]=useState([
+    {lat:32.3010,lng:-9.2390,id:1,emoji:'🚖'},
+    {lat:32.3050,lng:-9.2430,id:2,emoji:'🚖'},
+    {lat:32.2940,lng:-9.2310,id:3,emoji:'🚖'},
+    {lat:32.3080,lng:-9.2470,id:4,emoji:'🚖'},
+    {lat:32.2960,lng:-9.2280,id:5,emoji:'🚖'},
+  ]);
+  const fvTaxiDir=useRef([
+    {dlat:0.0003,dlng:0.0001},{dlat:-0.0002,dlng:0.0004},{dlat:0.0001,dlng:-0.0003},
+    {dlat:-0.0004,dlng:0.0002},{dlat:0.0002,dlng:0.0003}
+  ]);
 
   const getClientGPS=()=>{
     if(!navigator.geolocation){setClientAddress('GPS non disponible');return;}
@@ -4245,7 +4262,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
     try{
       await fetch(`/api/tracking/${ref}`,{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({clientLat:clientPos?.lat,clientLng:clientPos?.lng,clientAddress:pickup,destination:destination.trim(),customerName:name.trim(),customerPhone:phone.trim(),passengers,vehicleType:'taxi'}),
+        body:JSON.stringify({clientLat:clientPos?.lat,clientLng:clientPos?.lng,clientAddress:pickup,destination:destination.trim(),customerName:name.trim(),customerPhone:phone.trim(),passengers,vehicleType:'taxi',clientPrice:parseFloat(prixProposeTaxi)||undefined}),
       }).catch(()=>{});
       await fetch(`${DRIVER_APP_URL}/api/trips`,{
         method:'POST',headers:{'Content-Type':'application/json'},
@@ -4260,7 +4277,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
     else setActiveTab(1);
   };
 
-  // Poll tracking when booking is active
+  // Poll tracking when booking is active (20s = cheapest for client)
   useEffect(()=>{
     if(!bookingRef) return;
     const poll=async()=>{
@@ -4271,9 +4288,24 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
       }catch{setTrackData(null);}
     };
     poll();
-    trackIntervalRef.current=window.setInterval(poll,3000);
+    trackIntervalRef.current=window.setInterval(poll,20000);
     return()=>{if(trackIntervalRef.current)clearInterval(trackIntervalRef.current);};
   },[bookingRef]);
+
+  // Animate fake taxis when waiting for a driver
+  useEffect(()=>{
+    if(!bookingRef||trackData?.status==='accepted'||trackData?.status==='completed') return;
+    const iv=setInterval(()=>{
+      setFakeVehiclesTaxi(prev=>prev.map((v,i)=>{
+        const d=fvTaxiDir.current[i];
+        const SAFI_LAT=32.2994,SAFI_LNG=-9.2372;
+        if(Math.abs(v.lat+d.dlat-SAFI_LAT)>0.025) d.dlat=-d.dlat;
+        if(Math.abs(v.lng+d.dlng-SAFI_LNG)>0.035) d.dlng=-d.dlng;
+        return{...v,lat:v.lat+d.dlat*(0.7+Math.random()*0.6),lng:v.lng+d.dlng*(0.7+Math.random()*0.6)};
+      }));
+    },3000);
+    return()=>clearInterval(iv);
+  },[bookingRef,trackData?.status]);
 
   const driverPos=(trackData?.found&&trackData.lat&&trackData.lng&&trackData.status==='accepted')?{lat:trackData.lat,lng:trackData.lng}:null;
   const mapClientPos=trackData?.clientLat&&trackData?.clientLng?{lat:trackData.clientLat,lng:trackData.clientLng}:clientPos;
@@ -4291,7 +4323,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
 
       {/* ── Full-screen map ── */}
       <div style={{position:'absolute',inset:0}}>
-        <TaxiMap driverPos={bookingRef?driverPos:null} clientPos={bookingRef?mapClientPos:clientPos}/>
+        <TaxiMap driverPos={bookingRef?driverPos:null} clientPos={bookingRef?mapClientPos:clientPos} fakeVehicles={bookingRef&&(!trackData||trackData.status==='waiting')?fakeVehiclesTaxi:undefined}/>
       </div>
 
       {/* ── Top gradient overlay ── */}
@@ -4357,6 +4389,23 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
               <AddressAutocomplete label='' value={destination} onChange={setDestination}
                 placeholder={lang==='ar'?'وجهتك (أي مكان بالمغرب)':lang==='en'?'Where to? (anywhere in Morocco)':'Destination (partout au Maroc)'}
                 lang={lang} nationwide/>
+            </div>
+            {/* Prix proposé */}
+            <div>
+              <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:7}}>
+                <span style={{fontSize:14}}>💰</span>
+                <span style={{fontSize:10,fontWeight:800,color:'#78350F',letterSpacing:'0.1em',textTransform:'uppercase' as const}}>
+                  {lang==='ar'?'السعر المقترح':lang==='en'?'Your price offer':'Prix proposé (optionnel)'}
+                </span>
+              </div>
+              <div style={{display:'flex',gap:8,alignItems:'center'}}>
+                <input type="number" value={prixProposeTaxi} onChange={e=>setPrixProposeTaxi(e.target.value)} min="0" placeholder={lang==='ar'?'مثال: 80':lang==='en'?'e.g. 80':'ex: 80'}
+                  style={{flex:1,borderRadius:10,border:'1.5px solid var(--c-border)',padding:'10px 11px',fontSize:15,fontWeight:900,background:'var(--c-bg)',color:'var(--c-text)',outline:'none',boxSizing:'border-box' as const}}/>
+                <span style={{fontWeight:900,color:'var(--c-text)',fontSize:14,whiteSpace:'nowrap' as const}}>DH</span>
+              </div>
+              <p style={{fontSize:10,color:'#9CA3AF',margin:'4px 0 0'}}>
+                {lang==='ar'?'السائق يرى سعرك ويمكنه الرد باقتراح مختلف':lang==='en'?'Driver will see your offer and can counter-propose':'Le chauffeur voit votre offre et peut proposer un autre prix'}
+              </p>
             </div>
             {/* Passengers */}
             <div>
@@ -4483,11 +4532,35 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
               style={{padding:'11px',borderRadius:14,border:'none',background:'#FEE2E2',color:'#DC2626',fontWeight:900,fontSize:13,cursor:'pointer'}}>
               ✕ {lang==='ar'?'إلغاء':lang==='en'?'Cancel':'Annuler'}
             </button>
-            <button onClick={()=>{if(trackIntervalRef.current){clearInterval(trackIntervalRef.current);trackIntervalRef.current=null;}const r=window.setInterval(async()=>{try{const res=await fetch(`/api/tracking/${bookingRef}`);if(res.ok)setTrackData(await res.json());}catch{}},3000);trackIntervalRef.current=r;}}
+            <button onClick={()=>{if(trackIntervalRef.current){clearInterval(trackIntervalRef.current);trackIntervalRef.current=null;}fetch(`/api/tracking/${bookingRef}`).then(r=>r.ok?r.json():null).then(d=>{if(d)setTrackData(d);}).catch(()=>{});const r=window.setInterval(async()=>{try{const res=await fetch(`/api/tracking/${bookingRef}`);if(res.ok)setTrackData(await res.json());}catch{}},20000);trackIntervalRef.current=r;}}
               style={{padding:'11px',borderRadius:14,border:'none',background:'#D1FAE5',color:'#065F46',fontWeight:900,fontSize:13,cursor:'pointer'}}>
               ↺ {lang==='ar'?'تحديث':lang==='en'?'Refresh':'Actualiser'}
             </button>
           </div>
+          {trackData?.driverPrice&&!acceptedDriverOfferTaxi&&(
+            <div style={{marginTop:12,borderRadius:14,padding:'12px 14px',background:'linear-gradient(135deg,#FEF3C7,#FDE68A)',border:'1.5px solid #F59E0B'}}>
+              <p style={{fontWeight:900,color:'#92400E',fontSize:13,margin:'0 0 8px'}}>
+                🚖 {lang==='ar'?'السائق يقترح':lang==='en'?'Driver offers':'Le chauffeur propose'} <strong style={{fontSize:17}}>{trackData.driverPrice} DH</strong>
+              </p>
+              <div style={{display:'flex',gap:8}}>
+                <button onClick={()=>setAcceptedDriverOfferTaxi(true)}
+                  style={{flex:1,padding:'9px',borderRadius:10,border:'none',background:'#10B981',color:'white',fontWeight:900,fontSize:13,cursor:'pointer'}}>
+                  ✓ {lang==='ar'?'قبول':lang==='en'?'Accept':'Accepter'}
+                </button>
+                <button onClick={()=>setAcceptedDriverOfferTaxi(false)}
+                  style={{flex:1,padding:'9px',borderRadius:10,border:'none',background:'#EF4444',color:'white',fontWeight:900,fontSize:13,cursor:'pointer'}}>
+                  ✕ {lang==='ar'?'رفض':lang==='en'?'Decline':'Refuser'}
+                </button>
+              </div>
+            </div>
+          )}
+          {acceptedDriverOfferTaxi&&trackData?.driverPrice&&(
+            <div style={{marginTop:12,borderRadius:14,padding:'10px 14px',background:'#D1FAE5',border:'1.5px solid #10B981',textAlign:'center' as const}}>
+              <p style={{fontWeight:900,color:'#065F46',fontSize:13,margin:0}}>
+                ✅ {lang==='ar'?'تم الاتفاق على':lang==='en'?'Agreed price:':'Prix accepté :'} <strong>{trackData.driverPrice} DH</strong>
+              </p>
+            </div>
+          )}
         </div>
       )}
 
@@ -4564,9 +4637,20 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
       .catch(()=>{}));
   },[motoUser?.id,getAuthHeaders]);
 
-  const [trackData,setTrackData]=useState<{found:boolean;lat?:number;lng?:number;status?:string;driverName?:string;eta?:number;clientLat?:number;clientLng?:number}|null>(null);
+  const [trackData,setTrackData]=useState<{found:boolean;lat?:number;lng?:number;status?:string;driverName?:string;eta?:number;clientLat?:number;clientLng?:number;driverPrice?:number}|null>(null);
   const trackIntervalRef=useRef<number|null>(null);
-  const [taxiRating,setTaxiRating]=useState(0);
+  const [prixProposeMoto,setPrixProposeMoto]=useState('');
+  const [acceptedDriverOfferMoto,setAcceptedDriverOfferMoto]=useState(false);
+  const [fakeVehiclesMoto,setFakeVehiclesMoto]=useState([
+    {lat:32.2990,lng:-9.2360,id:1,emoji:'🛵'},
+    {lat:32.3040,lng:-9.2410,id:2,emoji:'🛵'},
+    {lat:32.2950,lng:-9.2300,id:3,emoji:'🛵'},
+    {lat:32.3070,lng:-9.2450,id:4,emoji:'🛵'},
+  ]);
+  const fvMotoDir=useRef([
+    {dlat:0.0004,dlng:0.0002},{dlat:-0.0003,dlng:0.0005},{dlat:0.0002,dlng:-0.0004},
+    {dlat:-0.0003,dlng:0.0001}
+  ]);
 
   const getClientGPS=()=>{
     if(!navigator.geolocation){setClientAddress('GPS non disponible');return;}
@@ -4613,7 +4697,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
     try{
       await fetch(`/api/tracking/${ref}`,{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({clientLat:clientPos?.lat,clientLng:clientPos?.lng,clientAddress:pickup,destination:destination.trim(),customerName:name.trim(),customerPhone:phone.trim(),vehicleType:'moto',motoPrice:finalPrice,passengers:1}),
+        body:JSON.stringify({clientLat:clientPos?.lat,clientLng:clientPos?.lng,clientAddress:pickup,destination:destination.trim(),customerName:name.trim(),customerPhone:phone.trim(),vehicleType:'moto',motoPrice:finalPrice,passengers:1,clientPrice:parseFloat(prixProposeMoto)||undefined}),
       }).catch(()=>{});
       await fetch(`${DRIVER_APP_URL}/api/trips`,{
         method:'POST',headers:{'Content-Type':'application/json'},
@@ -4634,9 +4718,24 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
       catch{setTrackData(null);}
     };
     poll();
-    trackIntervalRef.current=window.setInterval(poll,3000);
+    trackIntervalRef.current=window.setInterval(poll,20000);
     return()=>{if(trackIntervalRef.current)clearInterval(trackIntervalRef.current);};
   },[bookingRef]);
+
+  // Animate fake motos when waiting for a driver
+  useEffect(()=>{
+    if(!bookingRef||trackData?.status==='accepted'||trackData?.status==='completed') return;
+    const iv=setInterval(()=>{
+      setFakeVehiclesMoto(prev=>prev.map((v,i)=>{
+        const d=fvMotoDir.current[i];
+        const SAFI_LAT=32.2994,SAFI_LNG=-9.2372;
+        if(Math.abs(v.lat+d.dlat-SAFI_LAT)>0.025) d.dlat=-d.dlat;
+        if(Math.abs(v.lng+d.dlng-SAFI_LNG)>0.035) d.dlng=-d.dlng;
+        return{...v,lat:v.lat+d.dlat*(0.7+Math.random()*0.6),lng:v.lng+d.dlng*(0.7+Math.random()*0.6)};
+      }));
+    },3000);
+    return()=>clearInterval(iv);
+  },[bookingRef,trackData?.status]);
 
   const driverPos=(trackData?.found&&trackData.lat&&trackData.lng&&trackData.status==='accepted')?{lat:trackData.lat,lng:trackData.lng}:null;
   const mapClientPos=trackData?.clientLat&&trackData?.clientLng?{lat:trackData.clientLat,lng:trackData.clientLng}:clientPos;
@@ -4652,7 +4751,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   return(
     <div className={isAR?'rtl':'ltr'} style={{position:'fixed',inset:0,overflow:'hidden',background:'#000',zIndex:10}}>
       <div style={{position:'absolute',inset:0}}>
-        <TaxiMap driverPos={bookingRef?driverPos:null} clientPos={bookingRef?mapClientPos:clientPos}/>
+        <TaxiMap driverPos={bookingRef?driverPos:null} clientPos={bookingRef?mapClientPos:clientPos} fakeVehicles={bookingRef&&(!trackData||trackData.status==='waiting')?fakeVehiclesMoto:undefined}/>
       </div>
       <div style={{position:'absolute',top:0,left:0,right:0,zIndex:40,background:'linear-gradient(180deg,rgba(10,14,18,0.94) 0%,rgba(10,14,18,0) 100%)',paddingBottom:28}}>
         <div style={{display:'flex',alignItems:'center',gap:10,padding:'14px 16px 0'}}>
@@ -4712,6 +4811,23 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
               </div>
               <AddressAutocomplete label='' value={destination} onChange={setDestination}
                 placeholder={lang==='ar'?'وجهتك في سافي':lang==='en'?'Where to? (Safi)':'Destination (Safi)'} lang={lang}/>
+            </div>
+            {/* Prix proposé moto */}
+            <div>
+              <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:7}}>
+                <span style={{fontSize:14}}>💰</span>
+                <span style={{fontSize:10,fontWeight:800,color:'#9A3412',letterSpacing:'0.1em',textTransform:'uppercase' as const}}>
+                  {lang==='ar'?'السعر المقترح':lang==='en'?'Your price offer':'Prix proposé (optionnel)'}
+                </span>
+              </div>
+              <div style={{display:'flex',gap:8,alignItems:'center'}}>
+                <input type="number" value={prixProposeMoto} onChange={e=>setPrixProposeMoto(e.target.value)} min="0" placeholder={lang==='ar'?'مثال: 15':lang==='en'?'e.g. 15':'ex: 15'}
+                  style={{flex:1,borderRadius:10,border:'1.5px solid var(--c-border)',padding:'10px 11px',fontSize:15,fontWeight:900,background:'var(--c-bg)',color:'var(--c-text)',outline:'none',boxSizing:'border-box' as const}}/>
+                <span style={{fontWeight:900,color:'var(--c-text)',fontSize:14,whiteSpace:'nowrap' as const}}>DH</span>
+              </div>
+              <p style={{fontSize:10,color:'#9CA3AF',margin:'4px 0 0'}}>
+                {lang==='ar'?'المرسال يرى سعرك':lang==='en'?'Driver sees your offer':'Le motard voit votre offre et peut counter-proposer'}
+              </p>
             </div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
               <div>
@@ -4813,13 +4929,38 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
               style={{padding:'11px',borderRadius:14,border:'none',background:'#FEE2E2',color:'#DC2626',fontWeight:900,fontSize:13,cursor:'pointer'}}>
               ✕ {lang==='ar'?'إلغاء':lang==='en'?'Cancel':'Annuler'}
             </button>
-            <button onClick={()=>{if(trackIntervalRef.current){clearInterval(trackIntervalRef.current);trackIntervalRef.current=null;}const r=window.setInterval(async()=>{try{const res=await fetch(`/api/tracking/${bookingRef}`);if(res.ok)setTrackData(await res.json());}catch{}},3000);trackIntervalRef.current=r;}}
+            <button onClick={()=>{if(trackIntervalRef.current){clearInterval(trackIntervalRef.current);trackIntervalRef.current=null;}fetch(`/api/tracking/${bookingRef}`).then(r=>r.ok?r.json():null).then(d=>{if(d)setTrackData(d);}).catch(()=>{});const r=window.setInterval(async()=>{try{const res=await fetch(`/api/tracking/${bookingRef}`);if(res.ok)setTrackData(await res.json());}catch{}},20000);trackIntervalRef.current=r;}}
               style={{padding:'11px',borderRadius:14,border:'none',background:'#D1FAE5',color:'#065F46',fontWeight:900,fontSize:13,cursor:'pointer'}}>
               ↺ {lang==='ar'?'تحديث':lang==='en'?'Refresh':'Actualiser'}
             </button>
           </div>
+          {trackData?.driverPrice&&!acceptedDriverOfferMoto&&(
+            <div style={{marginTop:12,borderRadius:14,padding:'12px 14px',background:'linear-gradient(135deg,#FFF7ED,#FED7AA)',border:'1.5px solid #F97316'}}>
+              <p style={{fontWeight:900,color:'#7C2D12',fontSize:13,margin:'0 0 8px'}}>
+                🛵 {lang==='ar'?'المرسال يقترح':lang==='en'?'Rider offers':'Le motard propose'} <strong style={{fontSize:17}}>{trackData.driverPrice} DH</strong>
+              </p>
+              <div style={{display:'flex',gap:8}}>
+                <button onClick={()=>setAcceptedDriverOfferMoto(true)}
+                  style={{flex:1,padding:'9px',borderRadius:10,border:'none',background:'#10B981',color:'white',fontWeight:900,fontSize:13,cursor:'pointer'}}>
+                  ✓ {lang==='ar'?'قبول':lang==='en'?'Accept':'Accepter'}
+                </button>
+                <button onClick={()=>setAcceptedDriverOfferMoto(false)}
+                  style={{flex:1,padding:'9px',borderRadius:10,border:'none',background:'#EF4444',color:'white',fontWeight:900,fontSize:13,cursor:'pointer'}}>
+                  ✕ {lang==='ar'?'رفض':lang==='en'?'Decline':'Refuser'}
+                </button>
+              </div>
+            </div>
+          )}
+          {acceptedDriverOfferMoto&&trackData?.driverPrice&&(
+            <div style={{marginTop:12,borderRadius:14,padding:'10px 14px',background:'#D1FAE5',border:'1.5px solid #10B981',textAlign:'center' as const}}>
+              <p style={{fontWeight:900,color:'#065F46',fontSize:13,margin:0}}>
+                ✅ {lang==='ar'?'تم الاتفاق على':lang==='en'?'Agreed price:':'Prix accepté :'} <strong>{trackData.driverPrice} DH</strong>
+              </p>
+            </div>
+          )}
         </div>
       )}
+
       {/* ── COURSE TERMINÉE overlay ── */}
       {trackData?.status==='completed'&&bookingRef&&(
         <div style={{position:'absolute',inset:0,zIndex:60,background:'linear-gradient(180deg,#0c0a04 0%,#1a1205 60%,#0c0a04 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'40px 24px'}}>

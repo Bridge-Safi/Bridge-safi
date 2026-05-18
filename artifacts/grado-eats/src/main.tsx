@@ -1928,7 +1928,7 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
 type DispatchRole = 'choose' | 'livreur' | 'taxi' | 'moto';
 
 interface PendingOrder { id: number; ref: string; customerName: string; customerAddress: string; restaurantName: string | null; total: number; items: string; }
-interface PendingTaxi { ref: string; customerName?: string; clientAddress?: string; destination?: string; clientLat?: number; clientLng?: number; }
+interface PendingTaxi { ref: string; customerName?: string; clientAddress?: string; destination?: string; clientLat?: number; clientLng?: number; clientPrice?: number; driverPrice?: number; }
 
 async function registerPush(driverName: string): Promise<boolean> {
   try {
@@ -2005,6 +2005,7 @@ function DispatchPage() {
   const [motoGPS, setMotoGPS] = useState<'idle' | 'active' | 'denied'>('idle');
   const motoWatchId = useRef<number | null>(null);
   const motoSeenRefs = useRef<Set<string>>(new Set());
+  const [driverOffers, setDriverOffers] = useState<Record<string,string>>({});
 
   const handleSetRole = async (r: 'livreur' | 'taxi' | 'moto') => {
     const defaultNames = { livreur: 'Livreur de Repas', taxi: 'Taxi Confort', moto: 'Moto Chauffeur' };
@@ -2434,7 +2435,29 @@ function DispatchPage() {
                 </div>
                 <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>👤 {booking.customerName || 'Client'}</p>
                 {booking.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>📍 Départ : {booking.clientAddress}</p>}
-                {booking.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 12px' }}>🏁 Destination : {booking.destination}</p>}
+                {booking.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 6px' }}>🏁 Destination : {booking.destination}</p>}
+                {booking.clientPrice && (
+                  <div style={{ background: '#FEF3C7', borderRadius: 10, padding: '8px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: 12, color: '#92400E', fontWeight: 800 }}>💰 Client propose : <strong style={{ fontSize: 15 }}>{booking.clientPrice} DH</strong></span>
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                  <input
+                    type="number" min="0" placeholder="Contre-offre (DH)"
+                    value={driverOffers[booking.ref] ?? ''}
+                    onChange={e => setDriverOffers(prev => ({ ...prev, [booking.ref]: e.target.value }))}
+                    style={{ flex: 1, borderRadius: 10, border: '1.5px solid #E5E7EB', padding: '9px 10px', fontSize: 13, fontWeight: 700, outline: 'none' }}
+                  />
+                  <button
+                    onClick={() => {
+                      const v = parseFloat(driverOffers[booking.ref] || '');
+                      if (!v) return;
+                      fetch(`/api/tracking/${booking.ref}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ driverPrice: v }) }).catch(() => {});
+                    }}
+                    style={{ padding: '9px 14px', borderRadius: 10, border: 'none', background: '#F59E0B', color: '#fff', fontWeight: 900, fontSize: 13, cursor: 'pointer' }}>
+                    📨
+                  </button>
+                </div>
                 <button onClick={() => acceptTaxi(booking)}
                   style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#B45309,#F59E0B)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(180,83,9,0.3)' }}>
                   ✅ Accepter la course
@@ -2492,7 +2515,29 @@ function DispatchPage() {
                 </div>
                 <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>👤 {booking.customerName || 'Client'}</p>
                 {booking.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>📍 Départ : {booking.clientAddress}</p>}
-                {booking.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 12px' }}>🏁 Destination : {booking.destination}</p>}
+                {booking.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 6px' }}>🏁 Destination : {booking.destination}</p>}
+                {booking.clientPrice && (
+                  <div style={{ background: '#FFEDD5', borderRadius: 10, padding: '8px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: 12, color: '#7C2D12', fontWeight: 800 }}>💰 Client propose : <strong style={{ fontSize: 15 }}>{booking.clientPrice} DH</strong></span>
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                  <input
+                    type="number" min="0" placeholder="Contre-offre (DH)"
+                    value={driverOffers[booking.ref] ?? ''}
+                    onChange={e => setDriverOffers(prev => ({ ...prev, [booking.ref]: e.target.value }))}
+                    style={{ flex: 1, borderRadius: 10, border: '1.5px solid #E5E7EB', padding: '9px 10px', fontSize: 13, fontWeight: 700, outline: 'none' }}
+                  />
+                  <button
+                    onClick={() => {
+                      const v = parseFloat(driverOffers[booking.ref] || '');
+                      if (!v) return;
+                      fetch(`/api/tracking/${booking.ref}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ driverPrice: v }) }).catch(() => {});
+                    }}
+                    style={{ padding: '9px 14px', borderRadius: 10, border: 'none', background: '#F97316', color: '#fff', fontWeight: 900, fontSize: 13, cursor: 'pointer' }}>
+                    📨
+                  </button>
+                </div>
                 <button onClick={() => acceptMoto(booking)}
                   style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#9A3412,#F97316)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}>
                   ✅ Accepter la course moto
