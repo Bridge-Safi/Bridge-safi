@@ -4244,6 +4244,10 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({clientLat:clientPos?.lat,clientLng:clientPos?.lng,clientAddress:pickup,destination:destination.trim(),customerName:name.trim(),customerPhone:phone.trim(),passengers,vehicleType:'taxi'}),
       }).catch(()=>{});
+      await fetch(`${DRIVER_APP_URL}/api/trips`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({trackingNumber:ref,customerName:name.trim(),customerPhone:phone.trim(),pickupAddress:pickup,destination:destination.trim(),vehicleType:'taxi',passengers,fare:0,paymentMethod:payInfo,driverTrackUrl,status:'scheduled'}),
+      }).catch(()=>{});
     }finally{setSending(false);}
     if(taxiGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:taxiGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${taxiUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     localStorage.setItem('bridge_taxi_ref',ref);
@@ -4564,12 +4568,18 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
     if(!name.trim()||!phone.trim()||!destination.trim()){setFormErr('*');return;}
     setSending(true);setFormErr('');
     const ref='MT-'+Math.floor(1000+Math.random()*9000);
+    const driverTrackUrl=`${window.location.origin}/driver/${ref}`;
     const pickup=clientAddress||'Safi, Maroc';
     const finalPrice=MOTO_PRICE-motoGemMAD;
+    const payInfoMoto=motoPayMethod==='qr'?'QR Code':motoPayMethod==='cash'?'Espèces':motoPayMethod==='apple'?'Apple Pay':motoPayMethod==='google'?'Google Pay':'Espèces';
     try{
       await fetch(`/api/tracking/${ref}`,{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({clientLat:clientPos?.lat,clientLng:clientPos?.lng,clientAddress:pickup,destination:destination.trim(),customerName:name.trim(),customerPhone:phone.trim(),vehicleType:'moto',motoPrice:finalPrice,passengers:1}),
+      }).catch(()=>{});
+      await fetch(`${DRIVER_APP_URL}/api/trips`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({trackingNumber:ref,customerName:name.trim(),customerPhone:phone.trim(),pickupAddress:pickup,destination:destination.trim(),vehicleType:'moto',passengers:1,fare:finalPrice,paymentMethod:payInfoMoto,driverTrackUrl,status:'scheduled'}),
       }).catch(()=>{});
     }finally{setSending(false);}
     if(motoGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:motoGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${motoUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
