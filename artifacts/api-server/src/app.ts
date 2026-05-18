@@ -131,7 +131,7 @@ app.get(["/bridge-game", "/bridge-game/"], (_req, res) => {
 
 // ── Clerk auth + API routes (after bridge-game so Clerk never intercepts it) ─
 app.use(clerkMiddleware({
-  publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
+  publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY ?? process.env.CLERK_PUBLISHABLE_KEY,
   secretKey: process.env.CLERK_SECRET_KEY,
 }));
 

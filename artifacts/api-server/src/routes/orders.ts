@@ -378,6 +378,7 @@ router.post("/orders", requireClerkAuth, async (req, res) => {
     }).catch(() => {});
 
   } catch (err) {
+    logger.error({ err }, "Failed to create order");
     res.status(500).json({ error: "Failed to create order" });
   }
 });
