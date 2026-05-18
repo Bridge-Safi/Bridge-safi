@@ -12,7 +12,7 @@ interface TrackPos {
   eta?: number;
   updatedAt: number;
   // Taxi-specific
-  status?: 'waiting' | 'accepted' | 'arrived';
+  status?: 'waiting' | 'accepted' | 'arrived' | 'completed';
   clientLat?: number;
   clientLng?: number;
   clientAddress?: string;

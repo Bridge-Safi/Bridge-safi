@@ -2425,6 +2425,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
 
   const handleSuccess=()=>{
     localStorage.setItem('bridge_last_ref',orderRef);
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'eats',date:new Date().toISOString(),restaurantName,total});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     onOrderSuccess?.(orderRef);
     setStep('success');
   };
@@ -3377,6 +3378,7 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile}:{onBack:()=>v
     }finally{setSending(false);}
     if(pharmGemMAD>0){getAuthHeadersPharm().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:pharmGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${pharmUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     localStorage.setItem('bridge_last_ref',orderRef);
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'pharmacie',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
   };
 
@@ -4197,6 +4199,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   // ── Tracking state ──
   const [trackData,setTrackData]=useState<{found:boolean;lat?:number;lng?:number;status?:string;driverName?:string;eta?:number;clientLat?:number;clientLng?:number}|null>(null);
   const trackIntervalRef=useRef<number|null>(null);
+  const [taxiRating,setTaxiRating]=useState(0);
 
   const getClientGPS=()=>{
     if(!navigator.geolocation){setClientAddress('GPS non disponible');return;}
@@ -4251,6 +4254,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
     }finally{setSending(false);}
     if(taxiGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:taxiGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${taxiUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     localStorage.setItem('bridge_taxi_ref',ref);
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref,type:'taxi',date:new Date().toISOString(),destination:destination.trim(),address:clientAddress||'Safi',total:0,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setBookingRef(ref);
     if(taxiPayMethod==='qr') setShowTaxiQR(true);
     else setActiveTab(1);
@@ -4274,11 +4278,12 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   const driverPos=(trackData?.found&&trackData.lat&&trackData.lng&&trackData.status==='accepted')?{lat:trackData.lat,lng:trackData.lng}:null;
   const mapClientPos=trackData?.clientLat&&trackData?.clientLng?{lat:trackData.clientLat,lng:trackData.clientLng}:clientPos;
 
-  const statusColor={waiting:'#F59E0B',accepted:'#10B981',arrived:'#3B82F6'}[trackData?.status||'waiting']||'#9CA3AF';
+  const statusColor={waiting:'#F59E0B',accepted:'#10B981',arrived:'#3B82F6',completed:'#059669'}[trackData?.status||'waiting']||'#9CA3AF';
   const statusLabel={
     waiting:{fr:'En attente d\'un chauffeur…',en:'Waiting for a driver…',ar:'بانتظار سائق…',amz:'ⵔⴰⴷ ⵢⴰⵙ ⵓⵙⵔⴰⵜⵏ…'},
     accepted:{fr:'Chauffeur en route 🚖',en:'Driver on the way 🚖',ar:'السائق في الطريق 🚖',amz:'ⴰⵎⴰⵏ ⵖ ⵓⵣⵣⵓⵍ 🚖'},
     arrived:{fr:'Votre chauffeur est arrivé ! 🎉',en:'Your driver has arrived! 🎉',ar:'وصل سائقك! 🎉',amz:'ⵢⵓⵙ ⵓⵙⵔⴰⵜⵏ ⵉⵏⴽ! 🎉'},
+    completed:{fr:'Course terminée ! ✅',en:'Ride completed! ✅',ar:'انتهت الرحلة! ✅',amz:'ⵉⵙⵙⵓⴼⵖ! ✅'},
   }[trackData?.status||'']?.[lang]||'';
 
   return(
@@ -4486,6 +4491,38 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
         </div>
       )}
 
+      {/* ── COURSE TERMINÉE overlay ── */}
+      {trackData?.status==='completed'&&bookingRef&&(
+        <div style={{position:'absolute',inset:0,zIndex:60,background:'linear-gradient(180deg,#020c08 0%,#041410 60%,#020c08 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'40px 24px'}}>
+          <div style={{fontSize:80,marginBottom:16,filter:'drop-shadow(0 0 30px rgba(74,222,128,0.6))'}}>✅</div>
+          <h2 style={{color:'#D9F99D',fontWeight:900,fontSize:26,margin:'0 0 8px',textAlign:'center',textShadow:'0 0 20px rgba(134,239,172,0.4)'}}>
+            {lang==='ar'?'وصلت بسلامة !':lang==='en'?'You arrived safely!':lang==='amz'?'ⵜⴰⵍⴰ ⵢⵓⵙ !':'Vous êtes arrivé(e) !'}
+          </h2>
+          <p style={{color:'rgba(255,255,255,0.5)',fontSize:13,textAlign:'center',margin:'0 0 28px',maxWidth:260}}>
+            {lang==='en'?'Thank you for choosing Bridge Taxi Confort':lang==='ar'?'شكراً لاختيارك Bridge Taxi':'Merci d\'avoir choisi Bridge Taxi Confort'}
+          </p>
+          <div style={{background:'rgba(255,255,255,0.06)',borderRadius:20,padding:'18px 28px',width:'100%',maxWidth:300,marginBottom:24,textAlign:'center',border:'1px solid rgba(217,197,160,0.15)'}}>
+            <p style={{color:'rgba(255,255,255,0.35)',fontSize:10,fontWeight:700,letterSpacing:'0.18em',margin:'0 0 5px'}}>RÉFÉRENCE DE COURSE</p>
+            <p style={{color:'#F59E0B',fontWeight:900,fontSize:22,margin:'0 0 8px'}}>{bookingRef}</p>
+            {trackData?.driverName&&<p style={{color:'rgba(255,255,255,0.6)',fontSize:13,margin:0}}>🚖 {trackData.driverName}</p>}
+          </div>
+          <div style={{marginBottom:28,textAlign:'center'}}>
+            <p style={{color:'rgba(255,255,255,0.35)',fontSize:10,letterSpacing:'0.15em',marginBottom:10}}>
+              {lang==='en'?'RATE YOUR RIDE':lang==='ar'?'قيّم رحلتك':'NOTEZ VOTRE COURSE'}
+            </p>
+            <div style={{display:'flex',gap:6,justifyContent:'center'}}>
+              {[1,2,3,4,5].map(s=>(
+                <button key={s} onClick={()=>setTaxiRating(s)} style={{fontSize:32,background:'none',border:'none',cursor:'pointer',opacity:s<=taxiRating?1:0.2,transition:'opacity 0.15s',padding:2,lineHeight:1}}>⭐</button>
+              ))}
+            </div>
+          </div>
+          <button onClick={()=>{setBookingRef('');localStorage.removeItem('bridge_taxi_ref');setTrackData(null);setTaxiRating(0);}}
+            style={{width:'100%',maxWidth:300,padding:'16px',borderRadius:18,border:'none',background:'linear-gradient(135deg,#78350F,#F59E0B)',color:'white',fontWeight:900,fontSize:15,cursor:'pointer',boxShadow:'0 8px 28px rgba(245,158,11,0.45)'}}>
+            🚖 {lang==='en'?'New ride':lang==='ar'?'رحلة جديدة':'Nouvelle course'}
+          </button>
+        </div>
+      )}
+
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
       {showTaxiQR&&<QRPayModal lang={lang} onClose={()=>setShowTaxiQR(false)} onConfirm={()=>setShowTaxiQR(false)}/>}
     </div>
@@ -4529,6 +4566,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
 
   const [trackData,setTrackData]=useState<{found:boolean;lat?:number;lng?:number;status?:string;driverName?:string;eta?:number;clientLat?:number;clientLng?:number}|null>(null);
   const trackIntervalRef=useRef<number|null>(null);
+  const [taxiRating,setTaxiRating]=useState(0);
 
   const getClientGPS=()=>{
     if(!navigator.geolocation){setClientAddress('GPS non disponible');return;}
@@ -4584,6 +4622,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
     }finally{setSending(false);}
     if(motoGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:motoGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${motoUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     localStorage.setItem('bridge_moto_ref',ref);
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref,type:'moto',date:new Date().toISOString(),destination:destination.trim(),address:clientAddress||'Safi',total:finalPrice,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setBookingRef(ref);
     if(motoPayMethod==='qr') setShowMotoQR(true);
   };
@@ -4601,11 +4640,13 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
 
   const driverPos=(trackData?.found&&trackData.lat&&trackData.lng&&trackData.status==='accepted')?{lat:trackData.lat,lng:trackData.lng}:null;
   const mapClientPos=trackData?.clientLat&&trackData?.clientLng?{lat:trackData.clientLat,lng:trackData.clientLng}:clientPos;
-  const statusColor={waiting:'#F59E0B',accepted:'#10B981',arrived:'#3B82F6'}[trackData?.status||'waiting']||'#9CA3AF';
+  const [motoRating,setMotoRating]=useState(0);
+  const statusColor={waiting:'#F59E0B',accepted:'#10B981',arrived:'#3B82F6',completed:'#059669'}[trackData?.status||'waiting']||'#9CA3AF';
   const statusLabel={
     waiting:{fr:'En attente d\'un motard…',en:'Waiting for a rider…',ar:'بانتظار سائق موتو…',amz:'ⵔⴰⴷ ⵢⴰⵙ ⵓⵙⵔⴰⵜⵏ…'},
     accepted:{fr:'Motard en route 🛵',en:'Rider on the way 🛵',ar:'السائق في الطريق 🛵',amz:'ⴰⵎⴰⵏ ⵖ ⵓⵣⵣⵓⵍ 🛵'},
     arrived:{fr:'Votre motard est arrivé ! 🎉',en:'Your rider has arrived! 🎉',ar:'وصل سائقك! 🎉',amz:'ⵢⵓⵙ ⵓⵙⵔⴰⵜⵏ ⵉⵏⴽ! 🎉'},
+    completed:{fr:'Course terminée ! ✅',en:'Ride completed! ✅',ar:'انتهت الرحلة! ✅',amz:'ⵉⵙⵙⵓⴼⵖ! ✅'},
   }[trackData?.status||'']?.[lang]||'';
 
   return(
@@ -4779,6 +4820,38 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
           </div>
         </div>
       )}
+      {/* ── COURSE TERMINÉE overlay ── */}
+      {trackData?.status==='completed'&&bookingRef&&(
+        <div style={{position:'absolute',inset:0,zIndex:60,background:'linear-gradient(180deg,#0c0a04 0%,#1a1205 60%,#0c0a04 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'40px 24px'}}>
+          <div style={{fontSize:80,marginBottom:16,filter:'drop-shadow(0 0 30px rgba(249,115,22,0.6))'}}>✅</div>
+          <h2 style={{color:'#FED7AA',fontWeight:900,fontSize:26,margin:'0 0 8px',textAlign:'center',textShadow:'0 0 20px rgba(249,115,22,0.4)'}}>
+            {lang==='ar'?'وصلت بسلامة !':lang==='en'?'You arrived safely!':lang==='amz'?'ⵜⴰⵍⴰ ⵢⵓⵙ !':'Vous êtes arrivé(e) !'}
+          </h2>
+          <p style={{color:'rgba(255,255,255,0.5)',fontSize:13,textAlign:'center',margin:'0 0 28px',maxWidth:260}}>
+            {lang==='en'?'Thank you for choosing Bridge Moto Taxi':lang==='ar'?'شكراً لاختيارك Bridge Moto':'Merci d\'avoir choisi Bridge Moto Taxi'}
+          </p>
+          <div style={{background:'rgba(255,255,255,0.06)',borderRadius:20,padding:'18px 28px',width:'100%',maxWidth:300,marginBottom:24,textAlign:'center',border:'1px solid rgba(249,115,22,0.15)'}}>
+            <p style={{color:'rgba(255,255,255,0.35)',fontSize:10,fontWeight:700,letterSpacing:'0.18em',margin:'0 0 5px'}}>RÉFÉRENCE DE COURSE</p>
+            <p style={{color:'#F97316',fontWeight:900,fontSize:22,margin:'0 0 8px'}}>{bookingRef}</p>
+            {trackData?.driverName&&<p style={{color:'rgba(255,255,255,0.6)',fontSize:13,margin:0}}>🛵 {trackData.driverName}</p>}
+          </div>
+          <div style={{marginBottom:28,textAlign:'center'}}>
+            <p style={{color:'rgba(255,255,255,0.35)',fontSize:10,letterSpacing:'0.15em',marginBottom:10}}>
+              {lang==='en'?'RATE YOUR RIDE':lang==='ar'?'قيّم رحلتك':'NOTEZ VOTRE COURSE'}
+            </p>
+            <div style={{display:'flex',gap:6,justifyContent:'center'}}>
+              {[1,2,3,4,5].map(s=>(
+                <button key={s} onClick={()=>setMotoRating(s)} style={{fontSize:32,background:'none',border:'none',cursor:'pointer',opacity:s<=motoRating?1:0.2,transition:'opacity 0.15s',padding:2,lineHeight:1}}>⭐</button>
+              ))}
+            </div>
+          </div>
+          <button onClick={()=>{setBookingRef('');localStorage.removeItem('bridge_moto_ref');setTrackData(null);setMotoRating(0);}}
+            style={{width:'100%',maxWidth:300,padding:'16px',borderRadius:18,border:'none',background:'linear-gradient(135deg,#9A3412,#F97316)',color:'white',fontWeight:900,fontSize:15,cursor:'pointer',boxShadow:'0 8px 28px rgba(249,115,22,0.45)'}}>
+            🛵 {lang==='en'?'New ride':lang==='ar'?'رحلة جديدة':'Nouvelle course'}
+          </button>
+        </div>
+      )}
+
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
       {showMotoQR&&<QRPayModal lang={lang} onClose={()=>setShowMotoQR(false)} onConfirm={()=>setShowMotoQR(false)}/>}
     </div>
@@ -5643,6 +5716,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
     }finally{setSending(false);}
     if(tabacGemMAD>0){getAuthHeadersTabac().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:tabacGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${tabacUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     localStorage.setItem('bridge_last_ref',orderRef);
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'tabac',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
     onOrderSuccess?.(orderRef);
   };
@@ -6085,6 +6159,28 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
             <p style={{color:'#c4b5fd',fontSize:15,fontWeight:900,letterSpacing:'0.04em',margin:'0 0 3px'}} className={fClass}>Pubs & Missions</p>
             <p style={{color:'rgba(255,255,255,0.5)',fontSize:10,fontWeight:600,margin:0}} className={fClass}>Gagne jusqu'à 15 DH/jour en 💎</p>
           </button>
+
+          {/* HISTORY BUTTON */}
+          <button
+            onClick={()=>navigate('/history')}
+            style={{
+              background:'linear-gradient(145deg,#0f1a1a 0%,#0d2020 50%,#0a1515 100%)',
+              borderRadius:18,border:'1.5px solid rgba(45,212,191,0.35)',
+              boxShadow:'0 6px 24px rgba(20,184,166,0.2),inset 0 1px 0 rgba(255,255,255,0.07)',
+              padding:'11px 20px',cursor:'pointer',
+              position:'relative',overflow:'hidden',textAlign:'center' as const,
+              transition:'all 0.2s',
+            }}>
+            <div style={{position:'absolute',top:0,left:0,right:0,height:'50%',background:'linear-gradient(180deg,rgba(255,255,255,0.06) 0%,rgba(255,255,255,0) 100%)',borderRadius:'18px 18px 60% 60%',pointerEvents:'none'}}/>
+            <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:14}}>
+              <span style={{fontSize:22}}>📋</span>
+              <div style={{textAlign:'left' as const}}>
+                <p style={{color:'#5EEAD4',fontSize:15,fontWeight:900,letterSpacing:'0.04em',margin:'0 0 2px'}}>Historique</p>
+                <p style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:600,margin:0}}>Courses & commandes passées</p>
+              </div>
+            </div>
+          </button>
+
         </div>
 
         {/* Footer */}
@@ -6093,6 +6189,97 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
 
       {showProfileModal&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfileModal(false)}/>}
     </div>
+  );
+}
+
+// ─── HISTORY PAGE ─────────────────────────────────────────────────────────────
+type HistoryEntry = {
+  ref: string;
+  type: 'eats'|'tabac'|'pharmacie'|'fleurs'|'taxi'|'moto';
+  date: string;
+  total?: number;
+  destination?: string;
+  address?: string;
+  name?: string;
+  restaurantName?: string;
+};
+
+export function HistoryPageRoute() {
+  const [,navigate]=useLocation();
+  const {dark}=useDark();
+  const [lang]=useState<Lang>(()=>{try{const r=localStorage.getItem('bridge_nav');return r?JSON.parse(r).lang??'fr':'fr';}catch{return 'fr';}});
+  const [entries,setEntries]=useState<HistoryEntry[]>(()=>{
+    try{const r=localStorage.getItem('bridge_history');return r?JSON.parse(r):[];}catch{return [];}
+  });
+  const typeInfo:{[k:string]:{icon:string;label:string;color:string}}={
+    eats:{icon:'🍔',label:'Bridge Eats',color:'#DC2626'},
+    tabac:{icon:'🚬',label:'Bridge Tabac',color:'#6B7280'},
+    pharmacie:{icon:'💊',label:'Bridge Pharmacie',color:'#7C3AED'},
+    fleurs:{icon:'🌹',label:'Bridge Fleurs',color:'#DB2777'},
+    taxi:{icon:'🚖',label:'Bridge Taxi',color:'#B45309'},
+    moto:{icon:'🛵',label:'Bridge Moto',color:'#9A3412'},
+  };
+  const fmtDate=(iso:string)=>{
+    try{const d=new Date(iso);return d.toLocaleDateString('fr-MA',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch{return iso;}
+  };
+  return(
+    <DarkModeCtx.Provider value={{dark,toggle:()=>{}}}>
+    <div style={{background:dark?'#000':'#F9FAFB',minHeight:'100dvh',fontFamily:'system-ui,sans-serif'}}>
+      <style>{`@keyframes hfadeIn{0%{opacity:0;transform:translateY(10px);}100%{opacity:1;transform:translateY(0);}}`}</style>
+      {/* Header */}
+      <div style={{background:dark?'#111':'#fff',padding:'52px 20px 14px',borderBottom:`1px solid ${dark?'#222':'#E5E7EB'}`,position:'sticky',top:0,zIndex:10,display:'flex',alignItems:'center',gap:12}}>
+        <button onClick={()=>navigate('/')} style={{background:'none',border:'none',fontSize:20,cursor:'pointer',color:dark?'#fff':'#111',padding:'4px 8px',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36,borderRadius:'50%',flexShrink:0}}>←</button>
+        <div style={{flex:1}}>
+          <p style={{fontSize:9,fontWeight:800,letterSpacing:'0.2em',color:'#9CA3AF',margin:'0 0 1px'}}>BRIDGE SAFI</p>
+          <h1 style={{fontSize:'1.1rem',fontWeight:900,color:dark?'#fff':'#111',margin:0}}>📋 Historique</h1>
+        </div>
+        <span style={{fontSize:11,color:'#9CA3AF',fontWeight:700}}>{entries.length} entrée{entries.length!==1?'s':''}</span>
+      </div>
+      {/* Content */}
+      <div style={{padding:'16px',maxWidth:480,margin:'0 auto',boxSizing:'border-box' as const}}>
+        {entries.length===0?(
+          <div style={{textAlign:'center',padding:'80px 20px',animation:'hfadeIn 0.4s ease-out'}}>
+            <div style={{fontSize:60,marginBottom:14}}>📭</div>
+            <p style={{fontWeight:800,fontSize:17,color:dark?'#fff':'#374151',margin:'0 0 8px'}}>Aucun historique</p>
+            <p style={{color:'#9CA3AF',fontSize:13,margin:'0 0 28px'}}>Vos commandes et courses apparaîtront ici après chaque service</p>
+            <button onClick={()=>navigate('/')} style={{padding:'12px 24px',borderRadius:14,border:'none',background:'linear-gradient(135deg,#065F46,#34D399)',color:'#fff',fontWeight:900,fontSize:14,cursor:'pointer'}}>
+              Découvrir les services
+            </button>
+          </div>
+        ):entries.map((e,i)=>{
+          const ti=typeInfo[e.type]||{icon:'📦',label:e.type,color:'#6B7280'};
+          return(
+            <div key={i} style={{background:dark?'#1C1C1E':'#fff',borderRadius:16,padding:'14px 16px',marginBottom:10,border:`1px solid ${dark?'#2C2C2E':'#E5E7EB'}`,boxShadow:'0 2px 8px rgba(0,0,0,0.05)',animation:`hfadeIn 0.3s ease-out ${i*0.04}s both`}}>
+              <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:8}}>
+                <div style={{width:42,height:42,borderRadius:12,background:ti.color+'18',display:'flex',alignItems:'center',justifyContent:'center',fontSize:21,flexShrink:0,border:`1px solid ${ti.color}22`}}>{ti.icon}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <p style={{fontWeight:900,fontSize:14,color:dark?'#fff':'#111',margin:'0 0 2px'}}>{ti.label}</p>
+                  <p style={{fontSize:10,color:'#9CA3AF',margin:0}}>{fmtDate(e.date)}</p>
+                </div>
+                <div style={{textAlign:'right' as const,flexShrink:0}}>
+                  {(e.total??0)>0&&<p style={{fontWeight:900,fontSize:15,color:ti.color,margin:'0 0 2px'}}>{e.total} DH</p>}
+                  <span style={{fontSize:10,fontWeight:700,color:'#059669',background:'rgba(5,150,105,0.1)',borderRadius:6,padding:'2px 7px'}}>✓ Effectué</span>
+                </div>
+              </div>
+              <div style={{fontSize:11,fontWeight:600,color:dark?'#D1D5DB':'#374151',background:dark?'#2C2C2E':'#F9FAFB',borderRadius:10,padding:'8px 12px',display:'flex',gap:6,flexWrap:'wrap' as const,alignItems:'center'}}>
+                <span style={{color:ti.color,fontWeight:800}}>{e.ref}</span>
+                {e.restaurantName&&<span style={{color:'#9CA3AF'}}>· {e.restaurantName}</span>}
+                {e.name&&<span style={{color:'#9CA3AF'}}>· {e.name}</span>}
+                {e.destination&&<><span style={{color:'#9CA3AF'}}>→</span><span>{e.destination}</span></>}
+                {!e.destination&&e.address&&<span style={{color:'#9CA3AF'}}>· {e.address.split(',')[0]}</span>}
+              </div>
+            </div>
+          );
+        })}
+        {entries.length>0&&(
+          <button onClick={()=>{try{localStorage.removeItem('bridge_history');}catch{}setEntries([]);}}
+            style={{width:'100%',padding:'13px',borderRadius:14,border:`1px solid ${dark?'#3C3C3E':'#FEE2E2'}`,background:'transparent',color:'#EF4444',fontWeight:700,fontSize:13,cursor:'pointer',marginTop:4}}>
+            🗑 Effacer tout l'historique
+          </button>
+        )}
+      </div>
+    </div>
+    </DarkModeCtx.Provider>
   );
 }
 

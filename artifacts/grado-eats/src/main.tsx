@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { ClerkProvider, useAuth, useClerk, useUser } from '@clerk/react';
 import { Switch, Route, useLocation, Router as WouterRouter } from 'wouter';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
-import App from "./App";
+import App, { HistoryPageRoute } from "./App";
 import "./index.css";
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -2206,10 +2206,20 @@ function DispatchPage() {
 
   const finishTaxi = async () => {
     if (taxiWatchId.current != null) navigator.geolocation.clearWatch(taxiWatchId.current);
-    if (activeTaxi) await fetch(`/api/tracking/${activeTaxi.ref}`, {
-      method: 'PUT', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: 'arrived' }),
-    }).catch(() => {});
+    if (activeTaxi) {
+      await fetch(`/api/tracking/${activeTaxi.ref}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'completed' }),
+      }).catch(() => {});
+      // Save to driver history
+      try {
+        const raw = localStorage.getItem('bridge_driver_history');
+        const arr = raw ? JSON.parse(raw) : [];
+        arr.unshift({ ref: activeTaxi.ref, type: 'taxi', customerName: activeTaxi.customerName, from: activeTaxi.clientAddress, to: activeTaxi.destination, date: new Date().toISOString(), driver: driverName });
+        if (arr.length > 100) arr.splice(100);
+        localStorage.setItem('bridge_driver_history', JSON.stringify(arr));
+      } catch {}
+    }
     setActiveTaxi(null);
     setTaxiGPS('idle');
   };
@@ -2240,10 +2250,19 @@ function DispatchPage() {
 
   const finishMoto = async () => {
     if (motoWatchId.current != null) navigator.geolocation.clearWatch(motoWatchId.current);
-    if (activeMoto) await fetch(`/api/tracking/${activeMoto.ref}`, {
-      method: 'PUT', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: 'arrived' }),
-    }).catch(() => {});
+    if (activeMoto) {
+      await fetch(`/api/tracking/${activeMoto.ref}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'completed' }),
+      }).catch(() => {});
+      try {
+        const raw = localStorage.getItem('bridge_driver_history');
+        const arr = raw ? JSON.parse(raw) : [];
+        arr.unshift({ ref: activeMoto.ref, type: 'moto', customerName: activeMoto.customerName, from: activeMoto.clientAddress, to: activeMoto.destination, date: new Date().toISOString(), driver: driverName });
+        if (arr.length > 100) arr.splice(100);
+        localStorage.setItem('bridge_driver_history', JSON.stringify(arr));
+      } catch {}
+    }
     setActiveMoto(null);
     setMotoGPS('idle');
   };
@@ -2445,8 +2464,8 @@ function DispatchPage() {
             )}
 
             <button onClick={finishTaxi}
-              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#1D4ED8,#3B82F6)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer' }}>
-              🏁 Course terminée — Arrivé !
+              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#059669,#34D399)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(5,150,105,0.4)' }}>
+              ✅ J'ai déposé le client
             </button>
             <style>{`@keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:1;transform:scale(1.3);}}`}</style>
           </div>
@@ -2503,8 +2522,8 @@ function DispatchPage() {
             )}
 
             <button onClick={finishMoto}
-              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#1D4ED8,#3B82F6)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer' }}>
-              🏁 Course terminée — Arrivé !
+              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#059669,#34D399)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(5,150,105,0.4)' }}>
+              ✅ J'ai déposé le client
             </button>
             <style>{`@keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:1;transform:scale(1.3);}}`}</style>
           </div>
@@ -4343,6 +4362,7 @@ function ClerkProviderWithRoutes() {
           <Route path="/game" component={GamePage} />
           <Route path="/missions" component={MissionsPage} />
           <Route path="/assistant" component={BridgeAssistantPage} />
+          <Route path="/history" component={HistoryPageRoute} />
           <Route path="/dispatch" component={DispatchPage} />
           <Route path="/driver/:ref" component={DriverTrackerPage} />
           <Route path="/resto" component={RestaurantOwnerPage} />
