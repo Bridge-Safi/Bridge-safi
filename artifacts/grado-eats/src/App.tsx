@@ -3223,8 +3223,13 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
         if(res.ok){
           const data=await res.json();
           if(data.found){
-            setRealPos({lat:data.lat,lng:data.lng});
-            setLastSeen(data.updatedAt);
+            // Only treat as real GPS if coordinates are non-zero (non-zero = actual device GPS)
+            // lat=0,lng=0 is the default placeholder set by syncTrackingStatus — not real GPS
+            const hasRealGPS = Math.abs(data.lat) > 0.001 || Math.abs(data.lng) > 0.001;
+            if(hasRealGPS){
+              setRealPos({lat:data.lat,lng:data.lng});
+              setLastSeen(data.updatedAt);
+            }
             if(data.driverName||data.driverPhone) setDriverInfo(prev=>({...prev,name:data.driverName||prev?.name,phone:data.driverPhone||prev?.phone}));
             if(data.status&&trackStageMap[data.status]!==undefined){
               setActiveStage(prev=>Math.max(prev,trackStageMap[data.status]));
