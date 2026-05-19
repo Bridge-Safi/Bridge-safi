@@ -126,7 +126,10 @@ async function forwardToRestaurant(order: typeof ordersTable.$inferSelect) {
         customerName:  order.customerName,
         customerPhone: order.customerPhone,
         deliveryAddress: order.customerAddress,
-        items:         order.items,
+        items: Array.isArray(order.items)
+          ? (order.items as {name:string;qty?:number;quantity?:number;price:number}[])
+              .map(it => ({ name: it.name, quantity: it.quantity ?? it.qty ?? 1, price: it.price }))
+          : order.items,
         totalAmount:   order.total,
         deliveryMode:  order.deliveryMode,
         paymentMethod: order.paymentMethod,
