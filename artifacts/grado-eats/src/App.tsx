@@ -3827,26 +3827,21 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
 
       {/* ── TOP BAR ── */}
 
-      {/* Back to Hub button — TOP CENTER */}
-      <div className="absolute top-3 left-1/2 z-50" style={{transform:'translateX(-50%)'}}>
-        <button onClick={onBack}
-          style={{display:'flex',alignItems:'center',gap:6,background:'rgba(185,28,28,0.15)',border:'1.5px solid rgba(239,68,68,0.35)',borderRadius:20,padding:'6px 16px',cursor:'pointer',backdropFilter:'blur(10px)',transition:'all 0.2s'}}
-          onMouseEnter={e=>(e.currentTarget.style.background='rgba(185,28,28,0.28)')}
-          onMouseLeave={e=>(e.currentTarget.style.background='rgba(185,28,28,0.15)')}>
-          <span style={{fontSize:14}}>{isAR?'→':'←'}</span>
-          <span style={{fontSize:10,fontWeight:900,color:'#fca5a5',letterSpacing:'0.1em'}}>HUB</span>
-        </button>
-      </div>
-
-      {/* Profile button + Bridge ID + Diamonds — LEFT */}
+      {/* Profile button + HUB button + Bridge ID + Diamonds — LEFT */}
       <div className={`absolute top-3 z-50 flex flex-col items-center gap-1 ${isAR?'right-3':'left-3'}`}>
-        <button onClick={()=>setShowProfile(true)}
-          style={{width:40,height:40,borderRadius:'50%',overflow:'hidden',border:'2.5px solid #D9C5A0',background:'#F0EBE1',boxShadow:'0 4px 14px rgba(6,95,70,0.15)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',padding:0}}>
-          {avatarSrc
-            ?<img src={avatarSrc} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
-            :<span style={{fontSize:13,fontWeight:900,color:'#065F46',lineHeight:1}}>{initials}</span>
-          }
-        </button>
+        <div style={{display:'flex',alignItems:'center',gap:8}}>
+          <button onClick={()=>setShowProfile(true)}
+            style={{width:40,height:40,borderRadius:'50%',overflow:'hidden',border:'2.5px solid #D9C5A0',background:'#F0EBE1',boxShadow:'0 4px 14px rgba(6,95,70,0.15)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',padding:0}}>
+            {avatarSrc
+              ?<img src={avatarSrc} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+              :<span style={{fontSize:13,fontWeight:900,color:'#065F46',lineHeight:1}}>{initials}</span>
+            }
+          </button>
+          <button onClick={onBack}
+            style={{width:40,height:40,borderRadius:'50%',background:'rgba(185,28,28,0.18)',border:'2.5px solid rgba(239,68,68,0.4)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 14px rgba(185,28,28,0.2)',flexShrink:0}}>
+            <span style={{fontSize:isAR?12:14,color:'#fca5a5'}}>{isAR?'→':'←'}</span>
+          </button>
+        </div>
         <div style={{background:'rgba(6,95,70,0.12)',border:'1px solid rgba(6,95,70,0.3)',borderRadius:6,padding:'2px 5px'}}>
           <span style={{fontSize:7,fontWeight:900,color:'#065F46',letterSpacing:'0.06em'}}>
             {getBridgeId(profile.phone, profile.name)}
