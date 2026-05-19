@@ -1700,7 +1700,7 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
     <div>
       {/* Hero banner */}
       <section className="relative mx-5 mb-5 rounded-3xl overflow-hidden" style={{boxShadow:'0 8px 32px rgba(6,95,70,0.18)'}}>
-        <img src="/cover-eats.jpeg" alt="Bridge Safi" className="w-full h-40 object-cover" style={{objectPosition:'center 30%'}}/>
+        <img src="/cover-eats.jpeg" alt="Bridge Safi" className="w-full h-28 object-cover" style={{objectPosition:'center 30%'}}/>
         <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.92) 0%,rgba(4,55,38,0.25) 60%,transparent 100%)'}}/>
         <div className="absolute bottom-0 left-0 right-0 p-4">
           <span className="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full inline-block mb-1.5" style={{background:'#D9C5A0',color:'#065F46'}}>SAFI · آسفي · ⵙⴰⴼⵉ</span>
@@ -6398,11 +6398,6 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
 
       {/* ── CENTER CONTENT ── */}
       <div className="flex flex-col items-center w-full max-w-sm mx-auto pt-20 pb-10 px-5 flex-1 justify-center min-h-screen">
-
-        {/* Logo */}
-        <div style={{position:'relative',marginBottom:24,animation:'hubFloat 4s ease-in-out infinite, hubGlow 4s ease-in-out infinite',borderRadius:'50%',overflow:'hidden',width:96,height:96,border:'3px solid #D9C5A0'}}>
-          <img src="/logo_splash_new.png" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.18)'}}/>
-        </div>
 
         {/* BRIDGE title */}
         <div style={{animation:'hubFadeIn 0.5s ease-out 0.2s both',marginBottom:28,textAlign:'center',position:'relative'}}>
