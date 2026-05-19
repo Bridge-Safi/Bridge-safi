@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { db, ordersTable } from "@workspace/db";
-import { eq, desc } from "drizzle-orm";
+import { db, ordersTable, restaurantsTable } from "@workspace/db";
+import { eq, desc, sql as sqlRaw } from "drizzle-orm";
 import { getAuth, verifyToken } from "@clerk/express";
 import { notifyDrivers, notifySpecificDrivers, notifyDriversExcept, notifyRestaurantOwner } from "./push";
 import { getDriverPositions } from "./tracking";
@@ -107,41 +107,49 @@ function getApiBase(): string {
 }
 
 async function forwardToRestaurant(order: typeof ordersTable.$inferSelect) {
-  if (!order.restaurantName) return;
+  if (!order.restaurantName) {
+    logger.info({ ref: order.ref }, "forwardToRestaurant: no restaurantName, skipping");
+    return;
+  }
   try {
-    const { db: dbInst, restaurantsTable: rt } = await import("@workspace/db");
-    const { sql: sqlRaw } = await import("drizzle-orm");
-    const rows = await dbInst.select().from(rt)
-      .where(sqlRaw`lower(${rt.name}) = lower(${order.restaurantName})`);
+    const rows = await db.select().from(restaurantsTable)
+      .where(sqlRaw`lower(${restaurantsTable.name}) = lower(${order.restaurantName})`);
     const resto = rows[0];
-    if (!resto?.webhookUrl) return;
+    if (!resto) {
+      logger.warn({ ref: order.ref, restaurant: order.restaurantName }, "forwardToRestaurant: restaurant not found in DB");
+      return;
+    }
+    if (!resto.webhookUrl) {
+      logger.warn({ ref: order.ref, restaurant: order.restaurantName }, "forwardToRestaurant: no webhookUrl configured");
+      return;
+    }
     const token = resto.webhookToken ?? BRIDGE_INBOUND_SECRET;
     const callbackUrl = `${getApiBase()}/api/callbacks/order-status`;
-    await fetch(resto.webhookUrl, {
+    const body = JSON.stringify({
+      orderNumber:    order.ref,
+      orderId:        order.id,
+      customerName:   order.customerName,
+      customerPhone:  order.customerPhone,
+      deliveryAddress: order.customerAddress,
+      items: Array.isArray(order.items)
+        ? (order.items as {name:string;qty?:number;quantity?:number;price:number}[])
+            .map(it => ({ name: it.name, quantity: it.quantity ?? it.qty ?? 1, price: it.price }))
+        : order.items,
+      totalAmount:    order.total,
+      deliveryMode:   order.deliveryMode,
+      paymentMethod:  order.paymentMethod,
+      callbackUrl,
+    });
+    logger.info({ ref: order.ref, restaurant: order.restaurantName, webhookUrl: resto.webhookUrl }, "Sending webhook to restaurant...");
+    const resp = await fetch(resto.webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-Bridge-Token": token },
-      body: JSON.stringify({
-        orderNumber:   order.ref,
-        orderId:       order.id,
-        customerName:  order.customerName,
-        customerPhone: order.customerPhone,
-        deliveryAddress: order.customerAddress,
-        items: Array.isArray(order.items)
-          ? (order.items as {name:string;qty?:number;quantity?:number;price:number}[])
-              .map(it => ({ name: it.name, quantity: it.quantity ?? it.qty ?? 1, price: it.price }))
-          : order.items,
-        totalAmount:   order.total,
-        deliveryMode:  order.deliveryMode,
-        paymentMethod: order.paymentMethod,
-        restaurantName: order.restaurantName,
-        status:        order.status,
-        createdAt:     order.createdAt,
-        callbackUrl,
-      }),
+      body,
     });
-    logger.info({ ref: order.ref, restaurant: order.restaurantName }, "Order forwarded to restaurant webhook");
+    const respText = await resp.text().catch(() => "");
+    logger.info({ ref: order.ref, restaurant: order.restaurantName, status: resp.status, body: respText }, "Restaurant webhook response");
   } catch (err) {
-    logger.error({ err, restaurant: order.restaurantName }, "Failed to forward order to restaurant webhook");
+    logger.error({ err, ref: order.ref, restaurant: order.restaurantName }, "forwardToRestaurant: fetch failed");
   }
 }
 
@@ -472,9 +480,7 @@ router.get("/orders/by-restaurant", async (req, res) => {
     if (authHeader?.startsWith("Bearer ")) {
       try {
         const payload = await verifyToken(authHeader.slice(7), { secretKey: process.env.CLERK_SECRET_KEY! });
-        const { db: dbInst, restaurantsTable: rt } = await import("@workspace/db");
-        const { eq: eqFn } = await import("drizzle-orm");
-        const rows = await dbInst.select().from(rt).where(eqFn(rt.ownerId, payload.sub));
+        const rows = await db.select().from(restaurantsTable).where(eq(restaurantsTable.ownerId, payload.sub));
         if (rows.length > 0) resolvedName = rows[0].name;
       } catch { /* fall through to PIN */ }
     }
@@ -488,7 +494,6 @@ router.get("/orders/by-restaurant", async (req, res) => {
       resolvedName = name;
     }
 
-    const { sql: sqlRaw } = await import("drizzle-orm");
     const allOrders = await db
       .select()
       .from(ordersTable)
