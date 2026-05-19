@@ -2494,7 +2494,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
           }
         }).catch(()=>{}));
       }
-    }catch(_){/* silent */}
+    }catch(err){console.error('[sendOrderToAPI]', err);}
   };
 
   // Envoie la commande directement au site livreur Bridge Logistique

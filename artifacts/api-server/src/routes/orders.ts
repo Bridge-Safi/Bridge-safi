@@ -329,7 +329,7 @@ router.get("/orders/:id", requireDriverKey, async (req, res) => {
   }
 });
 
-router.post("/orders", requireClerkAuth, async (req, res) => {
+router.post("/orders", async (req, res) => {
   try {
     const { ref, service, customerName, customerPhone, customerAddress, items, total, deliveryMode, paymentMethod, restaurantName } = req.body;
     if (!ref || !service || !customerName || !customerPhone || !customerAddress || !items || total === undefined) {
