@@ -368,10 +368,15 @@ router.post("/orders", async (req, res) => {
       }).catch(() => {});
     }
 
-    // 2️⃣ Instant push to all connected driver panels via SSE
+    // 2️⃣ Forward to restaurant webhook BEFORE driver dispatch
+    //    POST https://restaurant.safi-bridge.ma/api/webhook/orders
+    //    Header: X-Bridge-Token: <restaurant token>
+    await forwardToRestaurant(order).catch(() => {});
+
+    // 3️⃣ Instant push to all connected driver panels via SSE
     broadcastOrder({ type: "NEW_ORDER", orderId: order.id, ref: order.ref });
 
-    // 3️⃣ Smart dispatch: nearby drivers first, then all after 2 min
+    // 4️⃣ Smart dispatch: nearby drivers first, then all after 2 min
     smartDispatch(restaurantName, {
       type: "NEW_ORDER",
       title: "🛵 Nouvelle commande !",
@@ -382,9 +387,6 @@ router.post("/orders", async (req, res) => {
         url: "/",
       },
     }).catch(() => {});
-
-    // Forward to restaurant webhook if configured
-    forwardToRestaurant(order).catch(() => {});
 
     // Notify restaurant via WhatsApp + phone call
     notifyRestaurant(restaurantName, {
