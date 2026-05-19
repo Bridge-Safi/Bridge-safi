@@ -1988,6 +1988,7 @@ function DispatchPage() {
   const [activeEatsOrder, setActiveEatsOrder] = useState<PendingOrder | null>(null);
   const [eatsGPS, setEatsGPS] = useState<'idle' | 'active' | 'denied'>('idle');
   const [eatsCoords, setEatsCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [eatsDriverStep, setEatsDriverStep] = useState<'going_to_restaurant' | 'delivering' | 'done'>('going_to_restaurant');
   const eatsWatchId = useRef<number | null>(null);
   const eatsSeenIds = useRef<Set<number>>(new Set());
   const sseRef = useRef<EventSource | null>(null);
@@ -2105,11 +2106,33 @@ function DispatchPage() {
 
   const acceptEatsOrder = async (order: PendingOrder) => {
     setActiveEatsOrder(order);
+    setEatsDriverStep('going_to_restaurant');
+    // DB: driver accepted, going to restaurant
     await fetch(`/api/orders/${order.id}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'x-driver-key': DKEY },
-      body: JSON.stringify({ status: 'on_the_way', driverName: driverName || 'Livreur' }),
+      body: JSON.stringify({ status: 'accepted', driverName: driverName || 'Livreur' }),
     }).catch(() => {});
+    // Don't override tracking status here — restaurant may have already set 'preparing'
+  };
+
+  const pickupEatsOrder = async () => {
+    if (!activeEatsOrder) return;
+    setEatsDriverStep('delivering');
+    // DB: driver picked up, on the way to client
+    await fetch(`/api/orders/${activeEatsOrder.id}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'x-driver-key': DKEY },
+      body: JSON.stringify({ status: 'on_the_way' }),
+    }).catch(() => {});
+    // Tracking store: on_way → customer sees EN CHEMIN 🛵
+    await fetch(`/api/tracking/${activeEatsOrder.ref}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'on_way', driverName: driverName || 'Livreur' }),
+    }).catch(() => {});
+    // Start GPS
+    startEatsGPS();
   };
 
   const startEatsGPS = () => {
@@ -2132,13 +2155,25 @@ function DispatchPage() {
     );
   };
 
-  const finishEatsDelivery = () => {
+  const finishEatsDelivery = async () => {
     if (eatsWatchId.current != null) navigator.geolocation.clearWatch(eatsWatchId.current);
-    if (activeEatsOrder) fetch(`/api/tracking/${activeEatsOrder.ref}`, { method: 'DELETE' }).catch(() => {});
-    if (activeEatsOrder) fetch(`/api/orders/${activeEatsOrder.id}/status`, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-driver-key': DKEY },
-      body: JSON.stringify({ status: 'delivered' }),
-    }).catch(() => {});
+    const order = activeEatsOrder;
+    if (order) {
+      // Tracking store: delivered → customer sees LIVRÉE ✅
+      await fetch(`/api/tracking/${order.ref}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'delivered' }),
+      }).catch(() => {});
+      // DB: delivered
+      await fetch(`/api/orders/${order.id}/status`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-driver-key': DKEY },
+        body: JSON.stringify({ status: 'delivered' }),
+      }).catch(() => {});
+      // Delete tracking entry after 15s so customer can see LIVRÉE
+      const ref = order.ref;
+      setTimeout(() => { fetch(`/api/tracking/${ref}`, { method: 'DELETE' }).catch(() => {}); }, 15000);
+    }
+    setEatsDriverStep('going_to_restaurant');
     setActiveEatsOrder(null);
     setEatsGPS('idle');
     setEatsCoords(null);
@@ -2388,36 +2423,78 @@ function DispatchPage() {
 
         {isDelivery && activeEatsOrder && (
           <>
-            <div style={{ ...cardStyle, borderColor: '#BBF7D0', borderWidth: 2 }}>
-              <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 8px' }}>COMMANDE ACCEPTÉE</p>
-              <p style={{ fontSize: 18, fontWeight: 900, color: '#059669', margin: '0 0 6px' }}>{activeEatsOrder.ref}</p>
-              <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 2px' }}>👤 {activeEatsOrder.customerName}</p>
-              {activeEatsOrder.restaurantName && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>🥘 Récupérer chez : {activeEatsOrder.restaurantName}</p>}
-              <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 16px' }}>📍 Livrer à : {activeEatsOrder.customerAddress}</p>
+            {/* Order header */}
+            <div style={{ ...cardStyle, borderColor: '#BBF7D0', borderWidth: 2, marginBottom: 10 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 2px' }}>COMMANDE ACCEPTÉE</p>
+                  <p style={{ fontSize: 18, fontWeight: 900, color: '#059669', margin: 0 }}>{activeEatsOrder.ref}</p>
+                </div>
+                <span style={{ background: '#D1FAE5', color: '#065F46', fontSize: 13, fontWeight: 900, borderRadius: 20, padding: '4px 12px' }}>{activeEatsOrder.total} MAD</span>
+              </div>
+              <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '10px 0 2px' }}>👤 {activeEatsOrder.customerName}</p>
+            </div>
 
-              {eatsGPS === 'idle' && (
-                <button onClick={startEatsGPS}
-                  style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#065F46,#059669)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', marginBottom: 10, boxShadow: '0 4px 16px rgba(5,150,105,0.3)' }}>
-                  📡 J'ai la commande — Démarrer GPS
+            {/* GPS indicator (when active) */}
+            {eatsGPS === 'active' && (
+              <div style={{ background: '#D1FAE5', borderRadius: 12, padding: '10px 14px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#059669', display: 'inline-block', animation: 'pulse 1.5s infinite', flexShrink: 0 }}/>
+                <div>
+                  <p style={{ fontSize: 12, fontWeight: 900, color: '#065F46', margin: 0 }}>📡 GPS EN DIRECT — Client vous suit</p>
+                  {eatsCoords && <p style={{ fontSize: 10, color: '#6B7280', margin: '2px 0 0', fontFamily: 'monospace' }}>{eatsCoords.lat.toFixed(5)}, {eatsCoords.lng.toFixed(5)}</p>}
+                </div>
+              </div>
+            )}
+            {eatsGPS === 'denied' && <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 10 }}>❌ GPS refusé — activez la localisation dans les paramètres</p>}
+
+            {/* ÉTAPE 1 : Aller au restaurant */}
+            <div style={{ ...cardStyle, borderColor: eatsDriverStep === 'going_to_restaurant' ? '#FDE68A' : '#BBF7D0', borderWidth: 2, marginBottom: 10, opacity: eatsDriverStep === 'done' ? 0.5 : 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: eatsDriverStep !== 'going_to_restaurant' ? '#059669' : '#FEF3C7', border: `2px solid ${eatsDriverStep !== 'going_to_restaurant' ? '#059669' : '#F59E0B'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span style={{ fontSize: 12, color: eatsDriverStep !== 'going_to_restaurant' ? '#fff' : '#B45309', fontWeight: 900 }}>{eatsDriverStep !== 'going_to_restaurant' ? '✓' : '1'}</span>
+                </div>
+                <div>
+                  <p style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: 0 }}>POINT DE COLLECTE · ÉTAPE 1</p>
+                  <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: 0 }}>{activeEatsOrder.restaurantName || 'Restaurant'}</p>
+                </div>
+              </div>
+              {activeEatsOrder.restaurantName && (
+                <a href={`https://maps.google.com/?q=${encodeURIComponent(activeEatsOrder.restaurantName + ' Safi Maroc')}`} target="_blank" rel="noopener noreferrer"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#F3F4F6', borderRadius: 10, padding: '7px 12px', fontSize: 12, fontWeight: 700, color: '#3B82F6', textDecoration: 'none', marginBottom: eatsDriverStep === 'going_to_restaurant' ? 10 : 0 }}>
+                  ✈️ Naviguer → Restaurant
+                </a>
+              )}
+              {eatsDriverStep === 'going_to_restaurant' && (
+                <button onClick={pickupEatsOrder}
+                  style={{ width: '100%', padding: '15px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#B45309,#F59E0B)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(180,83,9,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                  <span style={{ fontSize: 20 }}>☑️</span> J'ai récupéré la commande
                 </button>
               )}
+            </div>
 
-              {eatsGPS === 'active' && (
-                <div style={{ background: '#D1FAE5', borderRadius: 12, padding: '12px 14px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#059669', display: 'inline-block', animation: 'pulse 1.5s infinite' }}/>
-                  <div>
-                    <p style={{ fontSize: 12, fontWeight: 900, color: '#065F46', margin: 0 }}>GPS EN DIRECT — Client vous suit</p>
-                    {eatsCoords && <p style={{ fontSize: 10, color: '#6B7280', margin: '2px 0 0', fontFamily: 'monospace' }}>{eatsCoords.lat.toFixed(5)}, {eatsCoords.lng.toFixed(5)}</p>}
-                  </div>
+            {/* ÉTAPE 2 : Livrer au client */}
+            <div style={{ ...cardStyle, borderColor: eatsDriverStep === 'delivering' ? '#93C5FD' : '#E5E7EB', borderWidth: 2, opacity: eatsDriverStep === 'going_to_restaurant' ? 0.5 : 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: eatsDriverStep === 'done' ? '#059669' : eatsDriverStep === 'delivering' ? '#EFF6FF' : '#F3F4F6', border: `2px solid ${eatsDriverStep === 'done' ? '#059669' : eatsDriverStep === 'delivering' ? '#3B82F6' : '#E5E7EB'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span style={{ fontSize: 12, color: eatsDriverStep === 'done' ? '#fff' : eatsDriverStep === 'delivering' ? '#1D4ED8' : '#9CA3AF', fontWeight: 900 }}>{eatsDriverStep === 'done' ? '✓' : '2'}</span>
                 </div>
+                <div>
+                  <p style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: 0 }}>DESTINATION</p>
+                  <p style={{ fontSize: 13, fontWeight: 800, color: eatsDriverStep === 'going_to_restaurant' ? '#9CA3AF' : '#111', margin: 0 }}>{activeEatsOrder.customerAddress}</p>
+                </div>
+              </div>
+              {eatsDriverStep === 'delivering' && (
+                <>
+                  <a href={`https://maps.google.com/?q=${encodeURIComponent(activeEatsOrder.customerAddress)}`} target="_blank" rel="noopener noreferrer"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#EFF6FF', borderRadius: 10, padding: '7px 12px', fontSize: 12, fontWeight: 700, color: '#3B82F6', textDecoration: 'none', marginBottom: 10 }}>
+                    ✈️ Naviguer → Client
+                  </a>
+                  <button onClick={finishEatsDelivery}
+                    style={{ width: '100%', padding: '15px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#065F46,#059669)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(5,150,105,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                    <span style={{ fontSize: 20 }}>✅</span> J'ai livré au client
+                  </button>
+                </>
               )}
-
-              {eatsGPS === 'denied' && <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 10 }}>❌ GPS refusé — activez la localisation</p>}
-
-              <button onClick={finishEatsDelivery}
-                style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#1D4ED8,#3B82F6)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer' }}>
-                ✅ Livraison terminée
-              </button>
             </div>
             <style>{`@keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:1;transform:scale(1.3);}}`}</style>
           </>
@@ -2840,6 +2917,13 @@ function RestaurantOwnerPage() {
       body: JSON.stringify({ status, restaurantName: restoName }),
     });
     setOrders(prev => prev.map(o => o.ref === ref ? {...o, status} : o));
+    // Sync tracking store → customer sees the change in real-time
+    if (status === 'preparing' || status === 'accepted') {
+      fetch(`/api/tracking/${ref}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'preparing' }),
+      }).catch(() => {});
+    }
   };
 
   const logout = async () => {

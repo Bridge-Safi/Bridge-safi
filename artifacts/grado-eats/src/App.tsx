@@ -3205,21 +3205,40 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
   const isAR=lang==='ar'; const fClass=fontClass(lang);
   const displayRef=orderRef||t.orderNum;
 
-  // Poll real GPS position + status every 3 seconds
+  // Poll GPS tracking store + DB status every 3 seconds
   useEffect(()=>{
     if(!orderRef) return;
+    const trackStageMap:{[k:string]:number}={received:0,preparing:1,on_way:2,delivered:3};
+    const dbStageMap:{[k:string]:number}={
+      pending:0,pending_payment:0,accepted:0,
+      preparing:1,ready:1,
+      on_the_way:2,on_way:2,
+      delivered:3,completed:3,
+    };
     const poll=async()=>{
       try{
+        // Primary: GPS tracking store (real-time driver updates)
         const res=await fetch(`/api/tracking/${orderRef}`,{cache:'no-store'});
         if(res.ok){
           const data=await res.json();
           if(data.found){
             setRealPos({lat:data.lat,lng:data.lng});
             setLastSeen(data.updatedAt);
-            // Map driver status to stage number
-            const stageMap:{[k:string]:number}={received:0,preparing:1,on_way:2,delivered:3};
-            if(data.status&&stageMap[data.status]!==undefined) setActiveStage(stageMap[data.status]);
-          } else setRealPos(null);
+            if(data.status&&trackStageMap[data.status]!==undefined){
+              setActiveStage(prev=>Math.max(prev,trackStageMap[data.status]));
+              return; // tracking store has status, no need to check DB
+            }
+          } else {
+            setRealPos(null);
+          }
+        }
+        // Fallback: DB status (restaurant validation visible even before driver opens GPS)
+        const dbRes=await fetch(`/api/orders/status/${orderRef}`,{cache:'no-store'});
+        if(dbRes.ok){
+          const dbData=await dbRes.json();
+          if(dbData.status&&dbStageMap[dbData.status]!==undefined){
+            setActiveStage(prev=>Math.max(prev,dbStageMap[dbData.status]));
+          }
         }
       }catch(_){}
     };
