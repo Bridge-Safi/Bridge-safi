@@ -3226,13 +3226,13 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
             setLastSeen(data.updatedAt);
             if(data.status&&trackStageMap[data.status]!==undefined){
               setActiveStage(prev=>Math.max(prev,trackStageMap[data.status]));
-              return; // tracking store has status, no need to check DB
             }
           } else {
             setRealPos(null);
           }
         }
-        // Fallback: DB status (restaurant validation visible even before driver opens GPS)
+        // Always check DB too — takes priority if driver is ahead of tracking store
+        // (e.g. tracking store stuck at 'preparing' but DB already 'on_the_way')
         const dbRes=await fetch(`/api/orders/status/${orderRef}`,{cache:'no-store'});
         if(dbRes.ok){
           const dbData=await dbRes.json();
