@@ -6382,11 +6382,6 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
       {/* ── CENTER CONTENT ── */}
       <div className="flex flex-col items-center w-full max-w-sm mx-auto pt-20 pb-10 px-5 flex-1 justify-center min-h-screen">
 
-        {/* BRIDGE title */}
-        <div style={{animation:'hubFadeIn 0.5s ease-out 0.2s both',marginBottom:28,textAlign:'center',position:'relative'}}>
-          <h1 style={{fontSize:'1.6rem',fontWeight:800,letterSpacing:'0.18em',background:'linear-gradient(135deg,#34d399 0%,#059669 40%,#b45309 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text',margin:0,lineHeight:1,position:'relative',fontStyle:'italic'}}>bridge</h1>
-        </div>
-
         {/* ── 2 BIG BUTTONS ── */}
         <div style={{display:'flex',flexDirection:'column',gap:18,width:'100%',animation:'hubFadeIn 0.5s ease-out 0.4s both'}}>
 
