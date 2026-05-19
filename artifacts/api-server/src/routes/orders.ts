@@ -278,6 +278,23 @@ router.post("/orders/inbound", async (req, res) => {
   }
 });
 
+// ── Public status endpoint — customer polls their own order (no auth needed) ─
+router.get("/orders/status/:ref", async (req, res) => {
+  try {
+    const ref = String(req.params.ref);
+    const [order] = await db.select({
+      ref: ordersTable.ref,
+      status: ordersTable.status,
+      updatedAt: ordersTable.updatedAt,
+      service: ordersTable.service,
+    }).from(ordersTable).where(eq(ordersTable.ref, ref));
+    if (!order) { res.status(404).json({ error: "Commande introuvable" }); return; }
+    res.json({ ref: order.ref, status: order.status, updatedAt: order.updatedAt, service: order.service });
+  } catch (err) {
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+});
+
 router.get("/orders", requireDriverKey, async (req, res) => {
   try {
     const { status, service } = req.query;

@@ -2990,6 +2990,214 @@ function MapPanner({center}:{center:[number,number]}) {
   return null;
 }
 
+// ─── SIMPLE TRACKING PAGE (Tabac / Fleurs / Pharmacie — no GPS map) ──────────
+function SimpleTrackingPage({orderRef,lang,onNewOrder}:{orderRef:string;lang:Lang;onNewOrder:()=>void}) {
+  const t=T[lang]; const isAR=lang==='ar'; const fClass=fontClass(lang);
+
+  const PREP_SECS = 15*60;   // 15 min once driver accepts
+  const ARRIVE_SECS = 10*60; // 10 min once driver is on the way
+
+  const [status,setStatus]=useState('pending');
+  const [acceptedAt,setAcceptedAt]=useState<number|null>(null);
+  const [onWayAt,setOnWayAt]=useState<number|null>(null);
+  const [cd1,setCd1]=useState(PREP_SECS);
+  const [cd2,setCd2]=useState(ARRIVE_SECS);
+  const prevStatus=useRef('pending');
+
+  // Poll order status every 5 s
+  useEffect(()=>{
+    if(!orderRef) return;
+    const poll=async()=>{
+      try{
+        const res=await fetch(`/api/orders/status/${orderRef}`,{cache:'no-store'});
+        if(res.ok){
+          const data=await res.json() as {status:string};
+          const s=data.status;
+          const prev=prevStatus.current;
+          if(prev!==s){
+            if((prev==='pending'||prev==='pending_payment')&&(s==='accepted'||s==='preparing')){
+              setAcceptedAt(Date.now());
+            }
+            if(s==='on_the_way'&&prev!=='on_the_way'){
+              setOnWayAt(Date.now());
+            }
+            prevStatus.current=s;
+          }
+          setStatus(s);
+        }
+      }catch(_){}
+    };
+    poll();
+    const iv=setInterval(poll,5000);
+    return()=>clearInterval(iv);
+  },[orderRef]);
+
+  // Countdown 1: preparation (starts on accepted/preparing)
+  useEffect(()=>{
+    if(!acceptedAt) return;
+    const iv=setInterval(()=>{
+      const elapsed=Math.floor((Date.now()-acceptedAt)/1000);
+      setCd1(Math.max(0,PREP_SECS-elapsed));
+    },1000);
+    return()=>clearInterval(iv);
+  },[acceptedAt]);
+
+  // Countdown 2: arrival (starts on on_the_way)
+  useEffect(()=>{
+    if(!onWayAt) return;
+    const iv=setInterval(()=>{
+      const elapsed=Math.floor((Date.now()-onWayAt)/1000);
+      setCd2(Math.max(0,ARRIVE_SECS-elapsed));
+    },1000);
+    return()=>clearInterval(iv);
+  },[onWayAt]);
+
+  const fmt=(s:number)=>{const m=Math.floor(s/60);const sec=s%60;return `${m}:${String(sec).padStart(2,'0')}`;};
+
+  // Stage mapping
+  const stageIndex=(s:string)=>{
+    if(s==='delivered'||s==='completed') return 3;
+    if(s==='on_the_way') return 2;
+    if(s==='accepted'||s==='preparing'||s==='ready') return 1;
+    return 0;
+  };
+  const stage=stageIndex(status);
+  const isDelivered=stage===3;
+  const isOnWay=stage>=2;
+  const isAccepted=stage>=1;
+
+  const STAGES=[
+    {icon:'📋',label:lang==='ar'?'استلمنا طلبك':lang==='amz'?'ⵜⴰⵖⵓⵍⵜ':'Commande reçue',sub:lang==='ar'?'في انتظار التأكيد':lang==='amz'?'ⵔⴰ ⵉⵜⵜⵡⴰⵙⵙⴰⵏ':'En attente de confirmation'},
+    {icon:'🛵',label:lang==='ar'?'السائق في الطريق إليك':lang==='amz'?'ⴰⴼⵓⴳⵍⵓ ⴰⵔ ⵉⵎⵛⵛⵉ':lang==='en'?'Driver accepted':'Livreur en route'},
+    {icon:'📍',label:lang==='ar'?'السائق قادم':lang==='amz'?'ⴰⴼⵓⴳⵍⵓ ⵉⵇⵇⴰⵏⴼ':lang==='en'?'On the way to you':'En route vers vous',sub:lang==='ar'?'يقترب منك':lang==='amz'?'ⵢⵓⵙⴷ':'Il arrive bientôt'},
+    {icon:'✅',label:lang==='ar'?'تم التوصيل':lang==='amz'?'ⵉⵡⵙⵉ':lang==='en'?'Delivered':'Livré !'},
+  ];
+
+  return (
+    <div className={`px-5 ${isAR?'rtl':''}`}>
+
+      {/* Order ref badge */}
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{background:'#F0FDF4',border:'1.5px solid #BBF7D0'}}>
+          <span className="w-2 h-2 rounded-full animate-pulse" style={{background:isDelivered?'#10B981':'#F59E0B'}}/>
+          <span className="text-xs font-black" style={{color:'#065F46'}}>{orderRef}</span>
+        </div>
+        <span className="text-xs font-bold px-2 py-1 rounded-full" style={{background:isDelivered?'#D1FAE5':isOnWay?'#DBEAFE':isAccepted?'#FEF3C7':'#F3F4F6',color:isDelivered?'#065F46':isOnWay?'#1E40AF':isAccepted?'#B45309':'#6B7280'}}>
+          {isDelivered?'✅ Livré':isOnWay?'📍 En route':isAccepted?'🛵 Acceptée':'⏳ En attente'}
+        </span>
+      </div>
+
+      {/* Progress steps */}
+      <div className="rounded-3xl p-5 mb-5" style={{background:'var(--c-bg)',border:'1.5px solid var(--c-border)',boxShadow:'0 2px 16px rgba(0,0,0,0.06)'}}>
+        <div className="relative mb-6">
+          <div className="absolute top-5 h-0.5" style={{left:isAR?'auto':'10%',right:isAR?'10%':'auto',width:'80%',background:'var(--c-border)'}}/>
+          <div className="absolute top-5 h-0.5 transition-all duration-700"
+            style={{left:isAR?'auto':'10%',right:isAR?'10%':'auto',width:`${(stage/3)*80}%`,background:'linear-gradient(to right,#065F46,#10B981)'}}/>
+          <div className={`flex justify-between relative ${isAR?'flex-row-reverse':''}`}>
+            {STAGES.map((s,i)=>(
+              <div key={i} className="flex flex-col items-center" style={{width:'25%'}}>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center text-lg transition-all duration-500"
+                  style={{
+                    background:i<stage?'#10B981':i===stage?'#065F46':'#E5E1D8',
+                    border:i===stage?'3px solid #D9C5A0':'3px solid transparent',
+                    boxShadow:i===stage?'0 4px 16px rgba(6,95,70,0.35)':'none',
+                    transform:i===stage?'scale(1.15)':'scale(1)',
+                    zIndex:1,
+                  }}>
+                  {i<stage?'✓':s.icon}
+                </div>
+                <p className={`text-[9px] font-black uppercase mt-2 text-center leading-tight ${fClass}`}
+                  style={{color:i<=stage?'#065F46':'#9CA3AF'}}>{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Current stage description */}
+        <div className="rounded-2xl p-3 flex items-center gap-3" style={{background:'#F0FDF4',border:'1px solid #BBF7D0'}}>
+          <span className="text-2xl">{STAGES[stage]?.icon}</span>
+          <div>
+            <p className={`text-sm font-black ${fClass}`} style={{color:'#065F46'}}>{STAGES[stage]?.label}</p>
+            {STAGES[stage]?.sub&&<p className="text-xs mt-0.5" style={{color:'#6B7280'}}>{STAGES[stage].sub}</p>}
+          </div>
+        </div>
+      </div>
+
+      {/* Countdown 1: preparation — shown when driver accepted, until on_the_way */}
+      {isAccepted&&!isOnWay&&!isDelivered&&(
+        <div className="rounded-3xl p-5 mb-5 text-center" style={{background:'linear-gradient(135deg,#FEF9EE,#FEF3C7)',border:'1.5px solid #FDE68A',boxShadow:'0 4px 20px rgba(180,83,9,0.1)'}}>
+          <p className="text-xs font-black uppercase tracking-wider mb-3" style={{color:'#B45309'}}>
+            {lang==='ar'?'⏱️ وقت التحضير':lang==='en'?'⏱️ Preparation time':'⏱️ Temps de préparation'}
+          </p>
+          <div className="text-5xl font-black tabular-nums" style={{color:'#92400E',letterSpacing:'-1px',fontVariantNumeric:'tabular-nums'}}>
+            {fmt(cd1)}
+          </div>
+          <p className="text-xs mt-2" style={{color:'#B45309'}}>
+            {lang==='ar'?'سيصل الليفرور قريباً':lang==='en'?'Driver is heading to you':'Le livreur se prépare et arrive'}
+          </p>
+        </div>
+      )}
+
+      {/* Countdown 2: arrival — shown when on_the_way */}
+      {isOnWay&&!isDelivered&&(
+        <div className="rounded-3xl p-5 mb-5 text-center" style={{background:'linear-gradient(135deg,#EFF6FF,#DBEAFE)',border:'1.5px solid #93C5FD',boxShadow:'0 4px 20px rgba(30,64,175,0.1)'}}>
+          <p className="text-xs font-black uppercase tracking-wider mb-3" style={{color:'#1E40AF'}}>
+            {lang==='ar'?'📍 وقت الوصول':lang==='en'?'📍 Arrival time':'📍 Arrivée estimée'}
+          </p>
+          <div className="text-5xl font-black tabular-nums" style={{color:'#1E3A8A',letterSpacing:'-1px',fontVariantNumeric:'tabular-nums'}}>
+            {fmt(cd2)}
+          </div>
+          <p className="text-xs mt-2" style={{color:'#1E40AF'}}>
+            {lang==='ar'?'السائق في طريقه إليك 🛵':lang==='en'?'Driver is on the way 🛵':'Le livreur arrive chez vous 🛵'}
+          </p>
+        </div>
+      )}
+
+      {/* Waiting for driver */}
+      {!isAccepted&&!isDelivered&&(
+        <div className="rounded-3xl p-5 mb-5 flex items-center gap-4" style={{background:'var(--c-bg)',border:'1.5px solid var(--c-border)'}}>
+          <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl flex-shrink-0 animate-pulse" style={{background:'#F3F4F6'}}>🛵</div>
+          <div>
+            <p className={`text-sm font-black ${fClass}`} style={{color:'var(--c-text)'}}>
+              {lang==='ar'?'في انتظار قبول الليفرور':lang==='en'?'Waiting for driver':'En attente d\'un livreur…'}
+            </p>
+            <p className="text-xs mt-1" style={{color:'#9CA3AF'}}>
+              {lang==='ar'?'سيتم إعلامك تلقائياً':lang==='en'?'You\'ll be notified automatically':'Vous serez notifié automatiquement'}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Delivered state */}
+      {isDelivered&&(
+        <div className="rounded-3xl p-6 mb-5 text-center" style={{background:'linear-gradient(135deg,#F0FDF4,#DCFCE7)',border:'1.5px solid #86EFAC',boxShadow:'0 4px 20px rgba(5,150,105,0.12)'}}>
+          <div className="text-5xl mb-3">✅</div>
+          <p className={`text-lg font-black ${fClass}`} style={{color:'#065F46'}}>
+            {lang==='ar'?'تم التوصيل بنجاح!':lang==='en'?'Delivered successfully!':'Livraison effectuée !'}
+          </p>
+          <p className="text-xs mt-1 mb-4" style={{color:'#059669'}}>
+            {lang==='ar'?'شكراً لكم':lang==='en'?'Thank you!':'Merci pour votre commande 🙏'}
+          </p>
+          <button onClick={onNewOrder}
+            className="px-6 py-2.5 rounded-2xl font-black text-sm text-white transition-all active:scale-95"
+            style={{background:'linear-gradient(135deg,#065F46,#059669)',border:'none',cursor:'pointer'}}>
+            {lang==='ar'?'طلب جديد':lang==='en'?'New order':'Nouvelle commande'}
+          </button>
+        </div>
+      )}
+
+      {/* Contact footer */}
+      <div className="rounded-2xl p-3 flex items-center gap-3" style={{background:'var(--c-input)',border:'1px solid var(--c-border)'}}>
+        <span className="text-lg">📞</span>
+        <p className="text-xs" style={{color:'#6B7280'}}>
+          {lang==='ar'?'مشكلة؟ اتصل بنا':lang==='en'?'Issue? Call us':'Un problème ? Appelez-nous'}
+          {' '}<a href="tel:+212764794856" style={{color:'#065F46',fontWeight:900}}>+212 7 64 79 48 56</a>
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string}) {
   const [activeStage,setActiveStage]=useState(0);
   const [realPos,setRealPos]=useState<{lat:number;lng:number}|null>(null);
@@ -5289,7 +5497,7 @@ function SplashScreen() {
 
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
 
-type Page = 'home'|'restaurant'|'tracking'|'contact';
+type Page = 'home'|'restaurant'|'tracking'|'simple-tracking'|'contact';
 const LANG_CYCLE:Lang[]=['fr','en','ar','amz'];
 const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
 
@@ -6531,7 +6739,10 @@ export default function App() {
 
   // ── Stable dark context value (must be before any conditional return) ──
   const dv = useMemo(() => ({ dark: isDark, toggle: toggleDark }), [isDark, toggleDark]);
+  // Eats delivery → GPS tracking page
   const handleOrderSuccess=(ref:string)=>{setLastOrderRef(ref);setService('none');setPage('tracking');};
+  // Tabac / Fleurs / Pharmacie → simple countdown tracking (no GPS map)
+  const handleSimpleOrderSuccess=(ref:string)=>{setLastOrderRef(ref);setService('none');setPage('simple-tracking');};
 
   // App is open to all — only block during initial animated splash (1.5s)
   // No sign-in wall: guests and signed-in users both access the app freely
@@ -6558,9 +6769,9 @@ export default function App() {
   if(service==='taxi-select') return <DarkModeCtx.Provider value={dv}><TaxiVehicleSelectPage onBack={()=>setService('none')} onSelect={v=>setService(v)} lang={lang} cycleLang={cycleLang}/></DarkModeCtx.Provider>;
   if(service==='taxi') return <DarkModeCtx.Provider value={dv}><TaxiPage onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
   if(service==='moto') return <DarkModeCtx.Provider value={dv}><MotoTaxiPage onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
-  if(service==='tabac') return <DarkModeCtx.Provider value={dv}><TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
-  if(service==='fleurs') return <DarkModeCtx.Provider value={dv}><FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
-  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
+  if(service==='tabac') return <DarkModeCtx.Provider value={dv}><TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
+  if(service==='fleurs') return <DarkModeCtx.Provider value={dv}><FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
+  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={
@@ -6619,6 +6830,7 @@ export default function App() {
           <RestaurantPage restaurant={selectedRestaurant} lang={lang} t={t} onBack={handleBack} onAddToCart={addToCart}/>
         )}
         {page==='tracking'&&<TrackingPage lang={lang} t={t} orderRef={lastOrderRef}/>}
+        {page==='simple-tracking'&&<SimpleTrackingPage orderRef={lastOrderRef} lang={lang} onNewOrder={()=>{setPage('home');setService('none');setMode('services');}}/>}
         {page==='contact'&&<ContactPage lang={lang} t={t}/>}
       </main>
 
