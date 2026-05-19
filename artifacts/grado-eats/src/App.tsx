@@ -6379,23 +6379,6 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
         @keyframes hubShimmer{0%{background-position:200% center;}100%{background-position:-200% center;}}
       `}</style>
 
-      {/* Ambient blobs */}
-      {dark&&<>
-        <div style={{position:'fixed',top:'8%',left:'5%',width:260,height:260,borderRadius:'50%',background:'radial-gradient(circle,rgba(6,95,70,0.16) 0%,transparent 70%)',filter:'blur(48px)',pointerEvents:'none'}}/>
-        <div style={{position:'fixed',bottom:'15%',right:'5%',width:220,height:220,borderRadius:'50%',background:'radial-gradient(circle,rgba(217,197,160,0.1) 0%,transparent 70%)',filter:'blur(55px)',pointerEvents:'none'}}/>
-        <div style={{position:'fixed',top:'50%',left:'50%',transform:'translate(-50%,-50%)',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle,rgba(74,222,128,0.04) 0%,transparent 70%)',filter:'blur(60px)',pointerEvents:'none'}}/>
-      </>}
-
-      {/* Star particles (dark only) */}
-      {dark&&[[7,'12%','15%',0],[4,'88%','22%',0.5],[5,'18%','78%',0.9],[4,'80%','75%',0.3],[6,'50%','8%',0.7]].map(([s,l,tp,d],i)=>(
-        <div key={i} style={{position:'fixed',left:l as string,top:tp as string,width:s as number,height:s as number,borderRadius:'50%',background:'rgba(255,255,255,0.65)',animation:`hubStarPulse ${1.5+Number(d)}s ease-in-out ${d}s infinite`,pointerEvents:'none'}}/>
-      ))}
-
-      {/* ── Floating gem accent ── */}
-      <div style={{position:'fixed',top:18,left:'50%',transform:'translateX(-50%)',zIndex:50,pointerEvents:'none',animation:'hubFloat 3s ease-in-out infinite'}}>
-        <div style={{width:8,height:8,borderRadius:'50%',background:'linear-gradient(135deg,#34d399,#059669)',boxShadow:'0 0 12px rgba(52,211,153,0.7)',opacity:0.85}}/>
-      </div>
-
       {/* ── CENTER CONTENT ── */}
       <div className="flex flex-col items-center w-full max-w-sm mx-auto pt-20 pb-10 px-5 flex-1 justify-center min-h-screen">
 
