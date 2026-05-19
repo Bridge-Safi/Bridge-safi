@@ -402,20 +402,23 @@ router.post("/orders", async (req, res) => {
     //    Header: X-Bridge-Token: <restaurant token>
     await forwardToRestaurant(order).catch(() => {});
 
-    // 3️⃣ Instant push to all connected driver panels via SSE
-    broadcastOrder({ type: "NEW_ORDER", orderId: order.id, ref: order.ref });
+    // 3️⃣ Dispatch aux livreurs SEULEMENT si livraison (pas click & collect / retrait)
+    const isCollect = order.deliveryMode === "collect" || order.deliveryMode === "retrait";
+    if (!isCollect) {
+      broadcastOrder({ type: "NEW_ORDER", orderId: order.id, ref: order.ref });
 
-    // 4️⃣ Smart dispatch: nearby drivers first, then all after 2 min
-    smartDispatch(restaurantName, {
-      type: "NEW_ORDER",
-      title: "🛵 Nouvelle commande !",
-      body: `${customerName} · ${Number(total)} MAD${restaurantName ? ` · ${restaurantName}` : ""}`,
-      data: {
-        orderId: order.id,
-        ref: order.ref,
-        url: "/",
-      },
-    }).catch(() => {});
+      // 4️⃣ Smart dispatch: nearby drivers first, then all after 2 min
+      smartDispatch(restaurantName, {
+        type: "NEW_ORDER",
+        title: "🛵 Nouvelle commande !",
+        body: `${customerName} · ${Number(total)} MAD${restaurantName ? ` · ${restaurantName}` : ""}`,
+        data: {
+          orderId: order.id,
+          ref: order.ref,
+          url: "/",
+        },
+      }).catch(() => {});
+    }
 
     // Notify restaurant via WhatsApp + phone call
     notifyRestaurant(restaurantName, {
@@ -461,14 +464,17 @@ router.post("/orders/:ref/confirm-payment", requireClerkAuth, async (req, res) =
       paymentMethod: order.paymentMethod ?? "qr",
     }).catch(() => {});
 
-    // 2️⃣ Ensuite dispatch aux livreurs
-    broadcastOrder({ type: "NEW_ORDER", orderId: order.id, ref: order.ref });
-    smartDispatch(order.restaurantName, {
-      type: "NEW_ORDER",
-      title: "🛵 Nouvelle commande (paiement confirmé) !",
-      body: `${order.customerName} · ${order.total} MAD${order.restaurantName ? ` · ${order.restaurantName}` : ""}`,
-      data: { orderId: order.id, ref: order.ref, url: "/" },
-    }).catch(() => {});
+    // 2️⃣ Dispatch aux livreurs SEULEMENT si livraison (pas click & collect / retrait)
+    const isCollect = order.deliveryMode === "collect" || order.deliveryMode === "retrait";
+    if (!isCollect) {
+      broadcastOrder({ type: "NEW_ORDER", orderId: order.id, ref: order.ref });
+      smartDispatch(order.restaurantName, {
+        type: "NEW_ORDER",
+        title: "🛵 Nouvelle commande (paiement confirmé) !",
+        body: `${order.customerName} · ${order.total} MAD${order.restaurantName ? ` · ${order.restaurantName}` : ""}`,
+        data: { orderId: order.id, ref: order.ref, url: "/" },
+      }).catch(() => {});
+    }
   } catch (err) {
     req.log.error({ err }, "confirm-payment failed");
     res.status(500).json({ error: "Erreur serveur" });

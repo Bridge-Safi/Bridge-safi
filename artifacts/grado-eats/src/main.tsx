@@ -2093,7 +2093,10 @@ function DispatchPage() {
       const res = await fetch('/api/orders?status=pending', { cache: 'no-store', headers: { 'x-driver-key': DKEY } });
       if (!res.ok) return;
       const data = await res.json();
-      const orders: PendingOrder[] = (data.orders || []).filter((o: any) => o.service === 'delivery' || o.service === 'eats');
+      const orders: PendingOrder[] = (data.orders || []).filter((o: any) =>
+        (o.service === 'delivery' || o.service === 'eats') &&
+        o.deliveryMode !== 'collect' && o.deliveryMode !== 'retrait'
+      );
       setEatsOrders(orders);
       // Ring alarm for new unseen orders
       const newOnes = orders.filter(o => !eatsSeenIds.current.has(o.id));
