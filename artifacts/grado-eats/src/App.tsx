@@ -3827,7 +3827,16 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
 
       {/* ── TOP BAR ── */}
 
-      {/* Profile button + HUB button + Bridge ID + Diamonds — LEFT */}
+      {/* Hub button — TOP CENTER */}
+      <div className="absolute top-4 left-1/2 z-50" style={{transform:'translateX(-50%)'}}>
+        <button onClick={onBack}
+          style={{display:'flex',alignItems:'center',gap:5,background:'rgba(255,255,255,0.12)',border:'1px solid rgba(255,255,255,0.22)',borderRadius:20,padding:'7px 16px',cursor:'pointer',backdropFilter:'blur(12px)',boxShadow:'0 2px 12px rgba(0,0,0,0.1)'}}>
+          <span style={{fontSize:12,color:'rgba(255,255,255,0.75)'}}>{isAR?'→':'←'}</span>
+          <span style={{fontSize:10,fontWeight:800,color:'rgba(255,255,255,0.75)',letterSpacing:'0.12em'}}>HUB</span>
+        </button>
+      </div>
+
+      {/* Profile button + Bridge ID + Diamonds — LEFT */}
       <div className={`absolute top-3 z-50 flex flex-col items-center gap-1 ${isAR?'right-3':'left-3'}`}>
         <div style={{display:'flex',alignItems:'center',gap:8}}>
           <button onClick={()=>setShowProfile(true)}
@@ -3836,10 +3845,6 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
               ?<img src={avatarSrc} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
               :<span style={{fontSize:13,fontWeight:900,color:'#065F46',lineHeight:1}}>{initials}</span>
             }
-          </button>
-          <button onClick={onBack}
-            style={{width:40,height:40,borderRadius:'50%',background:'rgba(185,28,28,0.18)',border:'2.5px solid rgba(239,68,68,0.4)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 14px rgba(185,28,28,0.2)',flexShrink:0}}>
-            <span style={{fontSize:isAR?12:14,color:'#fca5a5'}}>{isAR?'→':'←'}</span>
           </button>
         </div>
         <div style={{background:'rgba(6,95,70,0.12)',border:'1px solid rgba(6,95,70,0.3)',borderRadius:6,padding:'2px 5px'}}>
@@ -3864,19 +3869,6 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
       </div>
 
       <div className="relative flex flex-col items-center w-full max-w-sm mx-auto pt-20 pb-8 px-2">
-        {/* Title — Glassmorphism moderne */}
-        <div style={{position:'relative',textAlign:'center',marginBottom:8}}>
-          {/* Glow derrière le titre */}
-          <div style={{position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)',width:220,height:60,background:'radial-gradient(ellipse,rgba(5,150,105,0.28) 0%,transparent 70%)',filter:'blur(18px)',pointerEvents:'none'}}/>
-          <h1 style={{
-            fontSize:'2.6rem',fontWeight:900,letterSpacing:'0.45em',
-            background:'linear-gradient(160deg,#059669 0%,#065F46 55%,#044434 100%)',
-            WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',
-            backgroundClip:'text',
-            filter:'drop-shadow(0 2px 14px rgba(5,150,105,0.4))',
-            margin:0,lineHeight:1.1,position:'relative',
-          }}>BRIDGE</h1>
-        </div>
         {/* Badge localisation style glass */}
         <div style={{
           display:'inline-flex',alignItems:'center',gap:6,
