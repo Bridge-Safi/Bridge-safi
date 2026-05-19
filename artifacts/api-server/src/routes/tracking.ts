@@ -11,8 +11,7 @@ interface TrackPos {
   speed?: number;
   eta?: number;
   updatedAt: number;
-  // Taxi-specific
-  status?: 'waiting' | 'accepted' | 'arrived' | 'completed';
+  status?: string;
   clientLat?: number;
   clientLng?: number;
   clientAddress?: string;
@@ -27,6 +26,22 @@ interface TrackPos {
 // In-memory store: orderRef → position  (auto-expires after 3h)
 const positions = new Map<string, TrackPos>();
 const TTL_MS = 3 * 60 * 60 * 1000;
+
+/**
+ * Update (or create) the tracking status for an order ref.
+ * Used server-side by other routes (restaurant callback, by-ref status update)
+ * to keep the tracking store in sync with the DB so the customer sees real-time changes.
+ */
+export function syncTrackingStatus(ref: string, status: string): void {
+  const existing = positions.get(ref);
+  positions.set(ref, {
+    lat: existing?.lat ?? 0,
+    lng: existing?.lng ?? 0,
+    ...existing,
+    status,
+    updatedAt: Date.now(),
+  });
+}
 
 function cleanup() {
   const now = Date.now();

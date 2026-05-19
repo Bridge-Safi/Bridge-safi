@@ -3,7 +3,7 @@ import { db, ordersTable, restaurantsTable } from "@workspace/db";
 import { eq, desc, sql as sqlRaw } from "drizzle-orm";
 import { getAuth, verifyToken } from "@clerk/express";
 import { notifyDrivers, notifySpecificDrivers, notifyDriversExcept, notifyRestaurantOwner } from "./push";
-import { getDriverPositions } from "./tracking";
+import { getDriverPositions, syncTrackingStatus } from "./tracking";
 import { addSSEClient, removeSSEClient, broadcastOrder } from "../lib/sse";
 import { logger } from "../lib/logger";
 import { notifyRestaurant } from "../lib/notify-restaurant";
@@ -201,6 +201,18 @@ router.post("/callbacks/order-status", async (req, res) => {
     }, "Order status updated via restaurant callback");
 
     res.json({ ok: true, ref: updated.ref, status: internalStatus });
+
+    // Sync in-memory tracking store → customer sees the change in real-time
+    const trackMap: Record<string, string> = {
+      accepted:  "preparing",
+      preparing: "preparing",
+      ready:     "preparing",
+      on_the_way:"on_way",
+      delivered: "delivered",
+    };
+    if (trackMap[internalStatus]) {
+      syncTrackingStatus(updated.ref, trackMap[internalStatus]);
+    }
   } catch (err) {
     res.status(500).json({ error: "Erreur serveur" });
   }
@@ -557,6 +569,18 @@ router.patch("/orders/by-ref/:ref/status", async (req, res) => {
       .returning();
     if (!order) { res.status(404).json({ error: "Not found" }); return; }
     res.json({ order });
+
+    // Sync in-memory tracking store → customer TrackingPage updates in real-time
+    const trackMap: Record<string, string> = {
+      accepted:  "preparing",
+      preparing: "preparing",
+      ready:     "preparing",
+      on_the_way:"on_way",
+      delivered: "delivered",
+    };
+    if (trackMap[status]) {
+      syncTrackingStatus(order.ref, trackMap[status]);
+    }
   } catch (err) {
     res.status(500).json({ error: "Failed to update" });
   }
