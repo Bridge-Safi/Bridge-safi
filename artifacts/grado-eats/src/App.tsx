@@ -6391,23 +6391,9 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
         <div key={i} style={{position:'fixed',left:l as string,top:tp as string,width:s as number,height:s as number,borderRadius:'50%',background:'rgba(255,255,255,0.65)',animation:`hubStarPulse ${1.5+Number(d)}s ease-in-out ${d}s infinite`,pointerEvents:'none'}}/>
       ))}
 
-      {/* ── TOP BAR ── */}
-      <div className={`fixed top-4 z-50 ${isAR?'right-4':'left-4'}`}>
-        <button onClick={()=>setShowProfileModal(true)}
-          style={{width:42,height:42,borderRadius:'50%',overflow:'hidden',border:'2.5px solid #D9C5A0',background:'#F0EBE1',boxShadow:'0 4px 14px rgba(6,95,70,0.18)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',padding:0}}>
-          {avatarSrc
-            ?<img src={avatarSrc} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
-            :<span style={{fontSize:14,fontWeight:900,color:'#065F46'}}>{initials}</span>
-          }
-        </button>
-      </div>
-      <div className={`fixed top-4 z-50 flex items-center gap-2 ${isAR?'left-4':'right-4'}`}>
-        <DarkToggle size={38}/>
-        <button onClick={cycleLang}
-          className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 px-3 ${lang==='amz'?'font-tifinagh':''}`}
-          style={{background:'var(--c-card)',border:'2.5px solid #D9C5A0',color:'#065F46',boxShadow:'0 4px 20px rgba(6,95,70,0.15)',height:'38px',fontSize:'13px'}}>
-          {LANG_LABELS[lang]}
-        </button>
+      {/* ── Floating gem accent ── */}
+      <div style={{position:'fixed',top:18,left:'50%',transform:'translateX(-50%)',zIndex:50,pointerEvents:'none',animation:'hubFloat 3s ease-in-out infinite'}}>
+        <div style={{width:8,height:8,borderRadius:'50%',background:'linear-gradient(135deg,#34d399,#059669)',boxShadow:'0 0 12px rgba(52,211,153,0.7)',opacity:0.85}}/>
       </div>
 
       {/* ── CENTER CONTENT ── */}
