@@ -3202,6 +3202,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
   const [activeStage,setActiveStage]=useState(0);
   const [realPos,setRealPos]=useState<{lat:number;lng:number}|null>(null);
   const [lastSeen,setLastSeen]=useState<number|null>(null);
+  const [driverInfo,setDriverInfo]=useState<{name?:string;phone?:string}|null>(null);
   const isAR=lang==='ar'; const fClass=fontClass(lang);
   const displayRef=orderRef||t.orderNum;
 
@@ -3224,6 +3225,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
           if(data.found){
             setRealPos({lat:data.lat,lng:data.lng});
             setLastSeen(data.updatedAt);
+            if(data.driverName||data.driverPhone) setDriverInfo(prev=>({...prev,name:data.driverName||prev?.name,phone:data.driverPhone||prev?.phone}));
             if(data.status&&trackStageMap[data.status]!==undefined){
               setActiveStage(prev=>Math.max(prev,trackStageMap[data.status]));
             }
@@ -3247,7 +3249,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
     return()=>clearInterval(iv);
   },[orderRef]);
 
-  const isLive=realPos&&lastSeen&&(Date.now()-lastSeen<15000); // stale after 15s
+  const isLive=realPos&&lastSeen&&(Date.now()-lastSeen<30000); // stale after 30s
   // Static center of Safi when no real GPS yet
   const SAFI_CENTER:[number,number]=[32.2994,-9.2372];
   const courierPos:[number,number]=realPos?[realPos.lat,realPos.lng]:SAFI_CENTER;
@@ -3334,22 +3336,47 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
             <MapPanner center={mapCenter}/>
           </MapContainer>
         </div>
-        <div className="px-4 py-3 flex items-center justify-between" style={{background:'var(--c-bg)'}}>
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm" style={{background:isLive?'#D1FAE5':'#F3F4F6'}}>🛵</div>
-            <div>
-              <p className="text-xs font-bold" style={{color:'#065F46'}}>{t.courierName}</p>
-              <p className="text-[10px]" style={{color:'#9CA3AF'}}>
+        <div className="px-4 py-3" style={{background:'var(--c-bg)'}}>
+          <div className="flex items-center gap-3">
+            {/* Avatar with initials or scooter */}
+            <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-black text-lg"
+              style={{background:'linear-gradient(135deg,#065F46,#059669)',border:'2px solid #D9C5A0',color:'#fff',fontSize:driverInfo?.name?18:22}}>
+              {driverInfo?.name?driverInfo.name.trim().charAt(0).toUpperCase():'🛵'}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <p className="text-sm font-black truncate" style={{color:'var(--c-text)'}}>{driverInfo?.name||t.courierName}</p>
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0" style={{background:'#FEF9EE',border:'1px solid #FDE68A',color:'#92400E'}}>⭐ 4.9</span>
+              </div>
+              <p className="text-[10px]" style={{color:isLive?'#059669':'#9CA3AF'}}>
                 {isLive?'📡 GPS en direct':realPos?'⚠️ Signal perdu':t.trackZone}
               </p>
+              {driverInfo?.phone&&<p className="text-[10px] font-semibold mt-0.5" style={{color:'#6B7280'}}>{driverInfo.phone}</p>}
+            </div>
+            {/* Action buttons */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {driverInfo?.phone&&(
+                <a href={`tel:${driverInfo.phone}`}
+                  className="w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-90"
+                  style={{background:'#D1FAE5',border:'1.5px solid #6EE7B7',textDecoration:'none'}}>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="#065F46"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+                </a>
+              )}
+              {driverInfo?.phone&&(
+                <a href={`https://wa.me/${driverInfo.phone.replace(/\D/g,'')}`} target="_blank" rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-90"
+                  style={{background:'#DCFCE7',border:'1.5px solid #86EFAC',textDecoration:'none'}}>
+                  <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#25D366" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path fill="#25D366" d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.007-1.374l-.359-.214-3.728.977 1-3.647-.234-.374A9.818 9.818 0 112 12c0-5.422 4.396-9.818 9.818-9.818 5.421 0 9.818 4.396 9.818 9.818 0 5.421-4.397 9.818-9.818 9.818z"/></svg>
+                </a>
+              )}
+              {!driverInfo?.phone&&isLive&&(
+                <div className="flex items-center gap-1 px-2 py-1 rounded-full" style={{background:'#F0FDF4'}}>
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"/>
+                  <span className="text-[10px] font-black" style={{color:'#065F46'}}>EN DIRECT</span>
+                </div>
+              )}
             </div>
           </div>
-          {isLive&&(
-            <div className="flex items-center gap-1 px-2 py-1 rounded-full" style={{background:'#F0FDF4'}}>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"/>
-              <span className="text-[10px] font-black" style={{color:'#065F46'}}>EN DIRECT</span>
-            </div>
-          )}
         </div>
       </div>
 

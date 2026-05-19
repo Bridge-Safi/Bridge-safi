@@ -1980,6 +1980,7 @@ function DispatchPage() {
   const [, navigate] = useLocation();
   const [role, setRole] = useState<DispatchRole>('choose');
   const [driverName, setDriverName] = useState(() => { try { return localStorage.getItem('bridge_driver_name') || ''; } catch { return ''; } });
+  const [driverPhone, setDriverPhone] = useState(() => { try { return localStorage.getItem('bridge_driver_phone') || ''; } catch { return ''; } });
   const [pushOk, setPushOk] = useState(false);
   const [pushLoading, setPushLoading] = useState(false);
 
@@ -2021,6 +2022,7 @@ function DispatchPage() {
     const defaultNames = { livreur: 'Livreur de Repas', taxi: 'Taxi Confort', moto: 'Bridge Moto Taxi' };
     const name = driverName.trim() || defaultNames[r];
     localStorage.setItem('bridge_driver_name', name);
+    if (driverPhone.trim()) localStorage.setItem('bridge_driver_phone', driverPhone.trim());
     setRole(r);
     setPushLoading(true);
     const ok = await registerPush(name);
@@ -2132,7 +2134,7 @@ function DispatchPage() {
     await fetch(`/api/tracking/${activeEatsOrder.ref}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: 'on_way', driverName: driverName || 'Livreur' }),
+      body: JSON.stringify({ status: 'on_way', driverName: driverName || 'Livreur', driverPhone: driverPhone || undefined }),
     }).catch(() => {});
     // Start GPS
     startEatsGPS();
@@ -2150,7 +2152,7 @@ function DispatchPage() {
         fetch(`/api/tracking/${ref}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ lat, lng, status: 'on_way', driverName: driverName || 'Livreur' }),
+          body: JSON.stringify({ lat, lng, status: 'on_way', driverName: driverName || 'Livreur', driverPhone: driverPhone || undefined }),
         }).catch(() => {});
       },
       () => setEatsGPS('denied'),
@@ -2332,6 +2334,13 @@ function DispatchPage() {
           value={driverName}
           onChange={e => setDriverName(e.target.value)}
           placeholder="Votre prénom (ex: Youssef)"
+          style={{ width: '100%', maxWidth: 340, padding: '12px 16px', borderRadius: 14, border: '1px solid rgba(74,222,128,0.3)', background: 'rgba(255,255,255,0.06)', color: '#fff', fontSize: 14, marginBottom: 10, outline: 'none', boxSizing: 'border-box' }}
+        />
+        <input
+          value={driverPhone}
+          onChange={e => setDriverPhone(e.target.value)}
+          placeholder="Votre téléphone (ex: 0600000000)"
+          type="tel"
           style={{ width: '100%', maxWidth: 340, padding: '12px 16px', borderRadius: 14, border: '1px solid rgba(74,222,128,0.3)', background: 'rgba(255,255,255,0.06)', color: '#fff', fontSize: 14, marginBottom: 20, outline: 'none', boxSizing: 'border-box' }}
         />
 
