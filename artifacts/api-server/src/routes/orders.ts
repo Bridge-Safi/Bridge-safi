@@ -495,6 +495,18 @@ router.patch("/orders/:id/status", requireDriverKey, async (req, res) => {
       .returning();
     if (!order) { res.status(404).json({ error: "Not found" }); return; }
     res.json({ order });
+
+    // Sync tracking store → customer voit EN CHEMIN dès que livreur part
+    const trackMap: Record<string, string> = {
+      accepted:   "preparing",
+      preparing:  "preparing",
+      ready:      "preparing",
+      on_the_way: "on_way",
+      delivered:  "delivered",
+    };
+    if (trackMap[status]) {
+      syncTrackingStatus(order.ref, trackMap[status]);
+    }
   } catch (err) {
     res.status(500).json({ error: "Failed to update order" });
   }
