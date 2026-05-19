@@ -3275,7 +3275,7 @@ function MedItem({med,qty,isNight,nightSurcharge,effectivePrice,onAdd,onRem}:{me
   );
 }
 
-function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile}:{onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void}) {
+function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void;onOrderSuccess?:(ref:string)=>void}) {
   const fClass=fontClass(lang); const isAR=lang==='ar';
   const [,navigatePharm]=useLocation();
 
@@ -3378,9 +3378,13 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile}:{onBack:()=>v
       }).catch(()=>{});
     }finally{setSending(false);}
     if(pharmGemMAD>0){getAuthHeadersPharm().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:pharmGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${pharmUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
+    await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ref:orderRef,service:delivMode,customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:'Bridge Pharmacie'}),
+    }).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
     try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'pharmacie',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
+    onOrderSuccess?.(orderRef);
   };
 
   return(
@@ -5292,24 +5296,22 @@ const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
 const NAV_KEY='bridge_nav_state';
 // ─── FLEURS PAGE ──────────────────────────────────────────────────────────────
 
-const FLEURS_CATALOG = [
-  {id:'f1', img:'/fleurs/fl_01.png', emoji:'🌹', names:{fr:'Bouquet Roses Mixtes',en:'Mixed Roses Bouquet',ar:'باقة ورود مشكلة',amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵉⴳⵍⴰⴷ'},          price:0, cat:'bouquet'},
-  {id:'f2', img:'/fleurs/fl_02.png', emoji:'🤍', names:{fr:'Bouquet Blanc & Rose',en:'White & Pink Bouquet',ar:'باقة بيضاء وردية',amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵎⵍⵍⴰⵍ'},         price:0, cat:'bouquet'},
-  {id:'f3', img:'/fleurs/fl_03.png', emoji:'🌸', names:{fr:'Bouquet Roses Roses',en:'Pink Roses Bouquet',ar:'باقة ورود وردية',amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵉⴳⵍⴰⴷ ⵉⵡⵔⵉⵖⵏ'},   price:0, cat:'bouquet'},
-  {id:'f4', img:'/fleurs/fl_05.png', emoji:'💐', names:{fr:'Grand Bouquet Luxe',en:'Luxury Large Bouquet',ar:'باقة فاخرة كبيرة',amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵎⵇⵔⴰⵏ'},         price:0, cat:'bouquet'},
-  {id:'f5', img:'/fleurs/fl_08.png', emoji:'🌷', names:{fr:'Bouquet Lavande & Blanc',en:'Lavender & White Bouquet',ar:'باقة بنفسجية بيضاء',amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵣⴳⵣⴰⵡ'},price:0, cat:'bouquet'},
-  {id:'f6', img:'/fleurs/fl_09.png', emoji:'🌹', names:{fr:'Bouquet Roses Bordeaux',en:'Dark Red Roses Bouquet',ar:'باقة ورود عنابية',amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵣⴳⴳⴰⵖ'},      price:0, cat:'bouquet'},
-  {id:'f7', img:'/fleurs/fl_07.png', emoji:'❤️', names:{fr:'Coffret Cœur Roses',en:'Heart Rose Box',ar:'علبة قلب ورود',amz:'ⴰⵙⴷⴰⵙ ⵏ ⵓⵍ'},                    price:0, cat:'coffret'},
-  {id:'f8', img:'/fleurs/fl_11.png', emoji:'🎁', names:{fr:'Box Roses Élégance',en:'Roses Elegance Box',ar:'علبة ورود أناقة',amz:'ⴰⵙⴷⴰⵙ ⵏ ⵉⴳⵍⴰⴷ'},              price:0, cat:'coffret'},
-  {id:'f9', img:'/fleurs/fl_12.png', emoji:'🎀', names:{fr:'Box Prestige Nœud Or',en:'Gold Bow Prestige Box',ar:'علبة فاخرة بنيفة ذهبية',amz:'ⴰⵙⴷⴰⵙ ⵏ ⵓⵔ'},    price:0, cat:'coffret'},
-  {id:'f10',img:'/fleurs/fl_04.png', emoji:'🍫', names:{fr:'Arrangement Ferrero & Roses',en:'Ferrero & Roses Arrangement',ar:'تنسيق فريرو وورود',amz:'ⴰⵔⴰⵜⵉⴱ ⵏ ⵉⴳⵍⴰⴷ'}, price:0, cat:'arrangement'},
-  {id:'f11',img:'/fleurs/fl_06.png', emoji:'🍫', names:{fr:'Bouquet Ferrero Rocher',en:'Ferrero Rocher Bouquet',ar:'باقة فريرو روشيه',amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵉⵡⵙⴽⵉⵡⵏ'},   price:0, cat:'arrangement'},
-  {id:'f12',img:'/fleurs/fl_10.png', emoji:'💙', names:{fr:'Arrangement Roses Bleues',en:'Blue Roses Arrangement',ar:'تنسيق ورود زرقاء',amz:'ⴰⵔⴰⵜⵉⴱ ⵏ ⵉⴳⵍⴰⴷ ⵉⵣⵣⴳⴳⴰⵏ'},price:0,cat:'arrangement'},
-];
-const FLEURS_CATS=[
-  {id:'bouquet',    label:{fr:'Bouquets',en:'Bouquets',ar:'باقات',amz:'ⵉⵥⴰⵡⴰⵏⵏ'}},
-  {id:'coffret',    label:{fr:'Coffrets',en:'Boxes',ar:'صناديق',amz:'ⵉⵙⴷⴰⵙⵏ'}},
-  {id:'arrangement',label:{fr:'Arrangements',en:'Arrangements',ar:'تنسيقات',amz:'ⵉⵔⴰⵜⵉⴱⵏ'}},
+type FleurItem={id:string;img:string;emoji:string;names:Record<Lang,string>;price:number;florist:'nour'|'amina'};
+const FLEURS_CATALOG:FleurItem[]=[
+  // ── Nour Fleurs ── bouquets & coffrets
+  {id:'n1',img:'/fleurs/fl_01.png',emoji:'🌹',florist:'nour',price:80,  names:{fr:'Bouquet Roses Mixtes',      en:'Mixed Roses Bouquet',       ar:'باقة ورود مشكلة',          amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵉⴳⵍⴰⴷ'}},
+  {id:'n2',img:'/fleurs/fl_02.png',emoji:'🤍',florist:'nour',price:90,  names:{fr:'Bouquet Blanc & Rose',       en:'White & Pink Bouquet',       ar:'باقة بيضاء وردية',         amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵎⵍⵍⴰⵍ'}},
+  {id:'n3',img:'/fleurs/fl_03.png',emoji:'🌸',florist:'nour',price:75,  names:{fr:'Bouquet Roses Tendres',      en:'Soft Pink Roses',            ar:'باقة ورود وردية',          amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵉⴳⵍⴰⴷ ⵉⵡⵔⵉⵖⵏ'}},
+  {id:'n4',img:'/fleurs/fl_05.png',emoji:'💐',florist:'nour',price:150, names:{fr:'Grand Bouquet Luxe',          en:'Luxury Large Bouquet',       ar:'باقة فاخرة كبيرة',         amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵎⵇⵔⴰⵏ'}},
+  {id:'n5',img:'/fleurs/fl_07.png',emoji:'❤️',florist:'nour',price:120, names:{fr:'Coffret Cœur Roses',         en:'Heart Rose Box',             ar:'علبة قلب ورود',            amz:'ⴰⵙⴷⴰⵙ ⵏ ⵓⵍ'}},
+  {id:'n6',img:'/fleurs/fl_11.png',emoji:'🎁',florist:'nour',price:130, names:{fr:'Box Roses Élégance',          en:'Elegance Rose Box',          ar:'علبة ورود أناقة',          amz:'ⴰⵙⴷⴰⵙ ⵏ ⵉⴳⵍⴰⴷ'}},
+  {id:'n7',img:'/fleurs/fl_12.png',emoji:'🎀',florist:'nour',price:180, names:{fr:'Box Prestige Nœud Or',        en:'Gold Bow Prestige Box',      ar:'علبة فاخرة ذهبية',         amz:'ⴰⵙⴷⴰⵙ ⵏ ⵓⵔ'}},
+  // ── Amina Blooms ── arrangements créatifs
+  {id:'a1',img:'/fleurs/fl_08.png',emoji:'🌷',florist:'amina',price:85, names:{fr:'Bouquet Lavande & Blanc',     en:'Lavender & White',           ar:'باقة بنفسجية بيضاء',       amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵣⴳⵣⴰⵡ'}},
+  {id:'a2',img:'/fleurs/fl_09.png',emoji:'🌹',florist:'amina',price:80, names:{fr:'Bouquet Bordeaux Profond',    en:'Deep Bordeaux Roses',        ar:'باقة ورود عنابية',         amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵣⴳⴳⴰⵖ'}},
+  {id:'a3',img:'/fleurs/fl_06.png',emoji:'🍫',florist:'amina',price:140,names:{fr:'Bouquet Ferrero Rocher',       en:'Ferrero Rocher Bouquet',     ar:'باقة فريرو روشيه',         amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵉⵡⵙⴽⵉⵡⵏ'}},
+  {id:'a4',img:'/fleurs/fl_04.png',emoji:'🍫',florist:'amina',price:160,names:{fr:'Arrangement Ferrero & Roses',  en:'Ferrero & Roses Arrangement',ar:'تنسيق فريرو وورود',         amz:'ⴰⵔⴰⵜⵉⴱ ⵏ ⵉⴳⵍⴰⴷ'}},
+  {id:'a5',img:'/fleurs/fl_10.png',emoji:'💙',florist:'amina',price:110,names:{fr:'Arrangement Roses Bleues',     en:'Blue Roses Arrangement',     ar:'تنسيق ورود زرقاء',         amz:'ⴰⵔⴰⵜⵉⴱ ⵏ ⵉⴳⵍⴰⴷ ⵉⵣⵣⴳⴳⴰⵏ'}},
 ];
 
 function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
@@ -5318,224 +5320,209 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   onOrderSuccess?:(ref:string)=>void;
 }) {
   const [,navigateFleur]=useLocation();
-  const [showProfile,setShowProfile]=useState(false);
-  const [activeCat,setActiveCat]=useState('bouquet');
+  const [activeFlorist,setActiveFlorist]=useState<'nour'|'amina'|null>(null);
   const [cart,setCart]=useState<{id:string;qty:number}[]>([]);
-  const [showCheckout,setShowCheckout]=useState(false);
-  const [tab,setTab]=useState<'home'|'shop'|'track'>('home');
+  const [step,setStep]=useState<'florist'|'catalog'|'checkout'|'track'>('florist');
   const [lastRef,setLastRef]=useState<string>(()=>localStorage.getItem('bridge_fleurs_last_ref')||'');
   const [trackStage,setTrackStage]=useState(0);
-  const [fleursLastSeen,setFleursLastSeen]=useState<number|null>(null);
-  const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
+  const [sending,setSending]=useState(false);
+  const [orderRef]=useState(()=>`FL-${Math.floor(1000+Math.random()*9000)}`);
+  const [resName,setResName]=useState(profile.name||'');
+  const [resPhone,setResPhone]=useState(profile.phone||'');
+  const [resAddr,setResAddr]=useState(profile.address||'');
+  const [resDate,setResDate]=useState('');
+  const [resTime,setResTime]=useState('');
+  const [resMode,setResMode]=useState<'retrait'|'livraison'>('retrait');
+  const [err,setErr]=useState('');
+  const isAR=lang==='ar'; const fClass=fontClass(lang);
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
-  const pillStyle:React.CSSProperties={
-    background:'var(--c-card)',border:'2.5px solid #D9C5A0',color:'#065F46',
-    boxShadow:'0 4px 20px rgba(6,95,70,0.15)',height:'44px',minWidth:'44px',
-  };
+
+  const catalogItems=activeFlorist?FLEURS_CATALOG.filter(f=>f.florist===activeFlorist):[];
   const addItem=(id:string)=>setCart(c=>{const ex=c.find(x=>x.id===id);return ex?c.map(x=>x.id===id?{...x,qty:x.qty+1}:x):[...c,{id,qty:1}];});
   const removeItem=(id:string)=>setCart(c=>{const ex=c.find(x=>x.id===id);if(!ex)return c;if(ex.qty===1)return c.filter(x=>x.id!==id);return c.map(x=>x.id===id?{...x,qty:x.qty-1}:x);});
   const cartTotal=cart.reduce((s,ci)=>{const p=FLEURS_CATALOG.find(f=>f.id===ci.id);return s+(p?p.price*ci.qty:0);},0);
   const cartCount=cart.reduce((s,ci)=>s+ci.qty,0);
-  const visibleItems=FLEURS_CATALOG.filter(f=>f.cat===activeCat);
 
-  const drawerCart:CartItem[]=cart.map(ci=>{
-    const p=FLEURS_CATALOG.find(f=>f.id===ci.id)!;
-    return {
-      cartId:ci.id,restaurantId:'rayhana-fleurs',restaurantName:'Rayhana Fleurs',
-      item:{id:ci.id,names:p.names,price:p.price,photo:'',safi:false,options:[]},
-      qty:ci.qty,extraPrice:0,totalPerUnit:p.price,selectedOptions:{},
-    };
-  });
-  const handleQty=(cartId:string,delta:number)=>{ if(delta>0) addItem(cartId); else removeItem(cartId); };
-
-  const trackStages=lang==='ar'
-    ?['تم تأكيد الطلب','جاري التحضير','في الطريق إليك','تم التسليم']
-    :lang==='en'
-    ?['Order confirmed','Preparing your order','On the way','Delivered']
-    :['Commande confirmée','Préparation en cours','En route','Livré 🌹'];
-
-  // Poll tracking status for Fleurs orders every 4 seconds
   useEffect(()=>{
     if(!lastRef) return;
-    const poll=async()=>{
-      try{
-        const res=await fetch(`/api/tracking/${lastRef}`,{cache:'no-store'});
-        if(res.ok){
-          const data=await res.json();
-          if(data.found){
-            setFleursLastSeen(data.updatedAt);
-            const stageMap:{[k:string]:number}={received:0,preparing:1,on_way:2,delivered:3};
-            if(data.status&&stageMap[data.status]!==undefined) setTrackStage(stageMap[data.status]);
-          }
-        }
-      }catch(_){}
-    };
-    poll();
-    const iv=setInterval(poll,4000);
-    return()=>clearInterval(iv);
+    const poll=async()=>{try{const r=await fetch(`/api/tracking/${lastRef}`,{cache:'no-store'});if(r.ok){const d=await r.json();if(d.found){const m:{[k:string]:number}={received:0,preparing:1,on_way:2,delivered:3};if(d.status&&m[d.status]!==undefined)setTrackStage(m[d.status]);}}}catch(_){}};
+    poll();const iv=setInterval(poll,4000);return()=>clearInterval(iv);
   },[lastRef]);
 
-  const pinkGrad='linear-gradient(135deg,#9D174D,#DB2777)';
-  const pinkGlow='0 4px 16px rgba(219,39,119,0.35)';
+  const minDate=()=>{const d=new Date();d.setDate(d.getDate()+1);return d.toISOString().split('T')[0];};
+
+  const handleReserve=async()=>{
+    if(!resName.trim()||!resPhone.trim()||!resDate||!resTime||(resMode==='livraison'&&!resAddr.trim())){setErr('*');return;}
+    setSending(true);
+    const items=cart.map(ci=>{const p=FLEURS_CATALOG.find(f=>f.id===ci.id)!;return{name:p.names.fr,qty:ci.qty,price:p.price};});
+    const floristName=activeFlorist==='nour'?'Nour Fleurs':'Amina Blooms';
+    const delivAddr=resMode==='retrait'?`${floristName} — Retrait sur place`:`${resAddr.trim()}, Safi, Maroc`;
+    try{
+      await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({ref:orderRef,service:'reservation',customerName:resName.trim(),customerPhone:resPhone.trim(),customerAddress:delivAddr,items,total:cartTotal,deliveryMode:resMode,paymentMethod:'cash',restaurantName:`Bridge Fleurs — ${floristName}`,notes:`📅 ${resDate} · ⏰ ${resTime}`}),
+      }).catch(()=>{});
+    }finally{setSending(false);}
+    setLastRef(orderRef);
+    try{localStorage.setItem('bridge_fleurs_last_ref',orderRef);}catch{}
+    setTrackStage(0);setStep('track');
+    onOrderSuccess?.(orderRef);
+  };
+
+  const nourGrad='linear-gradient(135deg,#BE185D,#EC4899)';
+  const aminaGrad='linear-gradient(135deg,#7C3AED,#A855F7)';
+  const activeGrad=activeFlorist==='nour'?nourGrad:aminaGrad;
+  const activeDark=activeFlorist==='nour'?'#BE185D':'#7C3AED';
+  const activeBg=activeFlorist==='nour'?'#FFF0F6':'#F5F3FF';
+  const activeBorder=activeFlorist==='nour'?'#FCE7F3':'#EDE9FE';
+
+  const trackStages=lang==='ar'
+    ?['تم تأكيد الحجز','جاري التحضير','في الطريق إليك','تم التسليم']
+    :lang==='en'?['Reservation confirmed','Preparing your order','On the way','Delivered']
+    :['Réservation confirmée','Préparation en cours','En route','Livré 🌹'];
+
+  const goBack=()=>{
+    if(step==='checkout') setStep('catalog');
+    else if(step==='catalog') {setStep('florist');setActiveFlorist(null);}
+    else onBack();
+  };
 
   return(
-    <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`} style={{background:'#FFF5F7',color:'var(--c-text)'}}>
-      <div className="fixed inset-0 pointer-events-none" style={{background:'radial-gradient(ellipse at 50% 0%,rgba(219,39,119,0.07) 0%,transparent 60%)'}}/>
+    <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`}
+      style={{background:'linear-gradient(160deg,#FDF4FF 0%,#FAF5FF 50%,#FFF1F2 100%)',minHeight:'100dvh'}}>
+      <div className="fixed inset-0 pointer-events-none" style={{background:'radial-gradient(ellipse at 15% 15%,rgba(168,85,247,0.07) 0%,transparent 50%),radial-gradient(ellipse at 85% 85%,rgba(236,72,153,0.07) 0%,transparent 50%)'}}/>
 
       {/* Top nav */}
       <div style={{position:'fixed',top:16,left:isAR?'auto':16,right:isAR?16:'auto',zIndex:50}}>
-        <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(219,39,119,0.15)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#9D174D',fontSize:18}}>←</button>
+        <button onClick={goBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(124,58,237,0.12)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#7C3AED',fontSize:18}}>←</button>
       </div>
       <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
-        <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(219,39,119,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#9D174D',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
+        <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(124,58,237,0.15)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#7C3AED',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
         <SharkDiamondWidget onNavigate={()=>navigateFleur('/game')} profile={profile}/>
       </div>
 
-      {/* ── TAB CONTENT ────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto pb-32">
+      <div className="flex-1 overflow-y-auto pb-36">
 
-        {/* ── HOME TAB ── */}
-        {tab==='home'&&(
-          <div>
-            {/* Header */}
-            <div className="pt-20 px-5 pb-4 text-center">
-              <div className="flex items-center justify-center gap-3 mb-1">
-                <span className="text-4xl">🌹</span>
-                <div>
-                  <h1 className="font-black tracking-[0.3em] text-xl" style={{color:'#9D174D'}}>BRIDGE</h1>
-                  <p className="font-black text-sm tracking-[0.2em]" style={{color:'#DB2777'}}>FLEURS</p>
+        {/* ── STEP 1: CHOIX FLEURISTE ── */}
+        {step==='florist'&&(
+          <div className="px-5 pt-20">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-3 mb-2">
+                <span style={{fontSize:40}}>🌸</span>
+                <div className="text-left">
+                  <h1 className="font-black text-2xl tracking-tight" style={{background:'linear-gradient(135deg,#BE185D,#7C3AED)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Bridge Fleurs</h1>
+                  <p className="text-[10px] font-black tracking-widest" style={{color:'#A855F7'}}>RÉSERVATION · سافي · SAFI</p>
                 </div>
               </div>
-              <div className="flex items-center justify-center gap-2 mt-2 mb-1">
-                <div className="w-8 h-px" style={{background:'#FBCFE8'}}/>
-                <div className="w-1.5 h-1.5 rotate-45" style={{background:'#F9A8D4'}}/>
-                <div className="w-8 h-px" style={{background:'#FBCFE8'}}/>
-              </div>
-              <p className={`text-[10px] font-black tracking-widest uppercase ${fClass}`} style={{color:'#EC4899'}}>
-                {lang==='ar'?'ورود وهدايا · سافي':lang==='en'?'Flowers & Gifts · Safi':lang==='amz'?'ⵉⵣⵓⵍⴰⵏ · ⵙⴰⴼⵉ':'Fleurs & Cadeaux · Safi'}
+              <p className={`text-sm font-semibold mt-1 ${fClass}`} style={{color:'#6B7280'}}>
+                {lang==='ar'?'اختر محل الزهور':lang==='en'?'Choose your florist':'Choisissez votre fleuriste'}
               </p>
             </div>
-            {/* Boutique badge */}
-            <div className="flex flex-col items-center mx-5 mb-5">
-              {/* Logo cercle */}
-              <div style={{
-                width:88,height:88,borderRadius:'50%',
-                background:'linear-gradient(135deg,#FCE7F3,#FBCFE8)',
-                border:'3px solid #F9A8D4',
-                boxShadow:'0 0 0 6px rgba(249,168,212,0.18), 0 8px 32px rgba(219,39,119,0.22)',
-                overflow:'hidden',display:'flex',alignItems:'center',justifyContent:'center',
-                marginBottom:10,
-              }}>
-                <img src="/logo_splash_new.png" alt="Rayhana Fleurs"
-                  style={{width:'100%',height:'100%',objectFit:'cover',
-                    filter:'sepia(0.3) saturate(1.2) hue-rotate(280deg) brightness(1.05)'}}/>
-              </div>
-              {/* Nom boutique */}
-              <p className="font-black text-base tracking-wide" style={{color:'#9D174D',marginBottom:2}}>Rayhana Fleurs</p>
-              <div className="flex items-center gap-2 mb-1">
-                <div style={{width:28,height:1,background:'linear-gradient(to right,transparent,#F9A8D4)'}}/>
-                <span style={{fontSize:7,fontWeight:900,letterSpacing:'0.18em',color:'#EC4899'}}>SAFI · آسفي · ⵙⴰⴼⵉ</span>
-                <div style={{width:28,height:1,background:'linear-gradient(to left,transparent,#F9A8D4)'}}/>
-              </div>
-              <span style={{
-                background:'linear-gradient(135deg,#9D174D,#DB2777)',
-                borderRadius:20,padding:'3px 14px',
-                color:'#fff',fontSize:9,fontWeight:900,letterSpacing:'0.15em',
-                boxShadow:'0 4px 12px rgba(219,39,119,0.3)',
-              }}>🌹 Partenaire Bridge Officiel</span>
-            </div>
-            {/* Quick CTA cards */}
-            <div className="grid grid-cols-2 gap-3 px-5 mb-5">
-              <button onClick={()=>setTab('shop')}
-                className="rounded-2xl p-4 flex flex-col items-center gap-2 transition-all active:scale-95"
-                style={{background:pinkGrad,boxShadow:pinkGlow}}>
-                <span style={{fontSize:28}}>🛍️</span>
-                <span className="text-white font-black text-[11px] tracking-wide">{lang==='ar'?'تصفح المتجر':lang==='en'?'Shop Now':'Commander'}</span>
-              </button>
-              <button onClick={()=>setTab('track')}
-                className="rounded-2xl p-4 flex flex-col items-center gap-2 transition-all active:scale-95"
-                style={{background:'var(--c-card)',border:'1.5px solid #FBCFE8',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
-                <span style={{fontSize:28}}>📦</span>
-                <span className="font-black text-[11px] tracking-wide" style={{color:'#9D174D'}}>{lang==='ar'?'تتبع طلبي':lang==='en'?'Track Order':'Suivi commande'}</span>
-              </button>
-            </div>
-            {/* Featured items */}
-            <div className="px-5">
-              <p className="font-black text-[11px] tracking-widest uppercase mb-3" style={{color:'#9D174D'}}>
-                {lang==='ar'?'⭐ المميزة':lang==='en'?'⭐ Featured':'⭐ En vedette'}
-              </p>
-              <div className="flex gap-3 overflow-x-auto pb-2" style={{scrollbarWidth:'none'}}>
-                {FLEURS_CATALOG.slice(0,4).map(item=>(
-                  <div key={item.id} className="flex-shrink-0 rounded-2xl overflow-hidden"
-                    style={{width:130,background:'var(--c-card)',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 14px rgba(219,39,119,0.07)'}}>
-                    <div className="flex items-center justify-center overflow-hidden" style={{height:90,background:'linear-gradient(135deg,#FDF2F8,#FCE7F3)'}}>
-                      {item.img
-                        ? <img src={item.img} alt={item.names.fr} style={{width:'100%',height:'100%',objectFit:'contain'}}/>
-                        : <span style={{fontSize:36}}>{item.emoji}</span>}
-                    </div>
-                    <div className="p-2">
-                      <p className="font-black text-[10px] leading-tight mb-1" style={{color:'#831843'}}>{item.names[lang]}</p>
-                      <p className="font-black text-xs" style={{color:'#DB2777'}}>{item.price>0?`${item.price} MAD`:lang==='ar'?'السعر عند الطلب':'Sur demande'}</p>
-                    </div>
+
+            <div className="flex flex-col gap-5 mb-6">
+              {/* Nour Fleurs */}
+              <button onClick={()=>{setActiveFlorist('nour');setCart([]);setStep('catalog');}}
+                className="rounded-3xl overflow-hidden text-left transition-all active:scale-[0.97]"
+                style={{boxShadow:'0 12px 40px rgba(190,24,93,0.22),0 0 0 2px rgba(236,72,153,0.25)',background:'white'}}>
+                <div style={{background:nourGrad,padding:'22px 20px 16px',position:'relative',overflow:'hidden'}}>
+                  <div style={{position:'absolute',top:-30,right:-30,width:120,height:120,borderRadius:'50%',background:'rgba(255,255,255,0.1)'}}/>
+                  <div style={{position:'absolute',top:12,right:12,width:70,height:70,borderRadius:'50%',background:'rgba(255,255,255,0.07)'}}/>
+                  <span style={{fontSize:44,display:'block',position:'relative'}}>🌹</span>
+                  <p className="font-black text-2xl text-white mt-1" style={{position:'relative'}}>Nour Fleurs</p>
+                  <p style={{color:'rgba(255,255,255,0.8)',fontSize:11,fontWeight:700,position:'relative'}}>
+                    {lang==='ar'?'بوكيهات وصناديق · سافي':lang==='en'?'Bouquets & Boxes · Safi':'Bouquets & Coffrets · Safi'}
+                  </p>
+                </div>
+                <div className="px-5 py-3 flex items-center justify-between">
+                  <div className="flex gap-1.5">
+                    {FLEURS_CATALOG.filter(f=>f.florist==='nour').slice(0,4).map(f=>(
+                      <img key={f.id} src={f.img} alt="" style={{width:34,height:34,objectFit:'contain',borderRadius:8,background:'#FFF0F6',border:'1.5px solid #FCE7F3'}}/>
+                    ))}
+                    <div style={{width:34,height:34,borderRadius:8,background:'#FCE7F3',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,fontWeight:900,color:'#BE185D'}}>+{FLEURS_CATALOG.filter(f=>f.florist==='nour').length-4}</div>
                   </div>
-                ))}
-              </div>
+                  <div style={{width:32,height:32,borderRadius:'50%',background:nourGrad,display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16,boxShadow:'0 4px 12px rgba(190,24,93,0.4)'}}>→</div>
+                </div>
+              </button>
+
+              {/* Amina Blooms */}
+              <button onClick={()=>{setActiveFlorist('amina');setCart([]);setStep('catalog');}}
+                className="rounded-3xl overflow-hidden text-left transition-all active:scale-[0.97]"
+                style={{boxShadow:'0 12px 40px rgba(124,58,237,0.22),0 0 0 2px rgba(168,85,247,0.25)',background:'white'}}>
+                <div style={{background:aminaGrad,padding:'22px 20px 16px',position:'relative',overflow:'hidden'}}>
+                  <div style={{position:'absolute',top:-30,right:-30,width:120,height:120,borderRadius:'50%',background:'rgba(255,255,255,0.1)'}}/>
+                  <div style={{position:'absolute',top:12,right:12,width:70,height:70,borderRadius:'50%',background:'rgba(255,255,255,0.07)'}}/>
+                  <span style={{fontSize:44,display:'block',position:'relative'}}>💐</span>
+                  <p className="font-black text-2xl text-white mt-1" style={{position:'relative'}}>Amina Blooms</p>
+                  <p style={{color:'rgba(255,255,255,0.8)',fontSize:11,fontWeight:700,position:'relative'}}>
+                    {lang==='ar'?'تنسيقات إبداعية · سافي':lang==='en'?'Creative Arrangements · Safi':'Arrangements créatifs · Safi'}
+                  </p>
+                </div>
+                <div className="px-5 py-3 flex items-center justify-between">
+                  <div className="flex gap-1.5">
+                    {FLEURS_CATALOG.filter(f=>f.florist==='amina').slice(0,4).map(f=>(
+                      <img key={f.id} src={f.img} alt="" style={{width:34,height:34,objectFit:'contain',borderRadius:8,background:'#F5F3FF',border:'1.5px solid #EDE9FE'}}/>
+                    ))}
+                  </div>
+                  <div style={{width:32,height:32,borderRadius:'50%',background:aminaGrad,display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16,boxShadow:'0 4px 12px rgba(124,58,237,0.4)'}}>→</div>
+                </div>
+              </button>
             </div>
+
+            {lastRef&&(
+              <button onClick={()=>setStep('track')}
+                className="w-full rounded-2xl p-4 flex items-center justify-between transition-all active:scale-95"
+                style={{background:'white',boxShadow:'0 4px 20px rgba(0,0,0,0.07)',border:'1.5px solid #EDE9FE'}}>
+                <div className="flex items-center gap-3">
+                  <span style={{fontSize:26}}>📦</span>
+                  <div className="text-left">
+                    <p className="font-black text-sm" style={{color:'#7C3AED'}}>
+                      {lang==='ar'?'تتبع حجزي':lang==='en'?'Track My Reservation':'Suivre ma réservation'}
+                    </p>
+                    <p className="text-[10px]" style={{color:'#9CA3AF'}}>#{lastRef}</p>
+                  </div>
+                </div>
+                <span style={{color:'#A855F7',fontSize:20}}>→</span>
+              </button>
+            )}
           </div>
         )}
 
-        {/* ── SHOP TAB ── */}
-        {tab==='shop'&&(
+        {/* ── STEP 2: CATALOGUE ── */}
+        {step==='catalog'&&activeFlorist&&(
           <div>
             <div className="pt-20 px-5 pb-3">
-              <p className="font-black text-base tracking-wide" style={{color:'#9D174D'}}>🌹 Bridge Fleurs · {lang==='ar'?'آسفي':lang==='en'?'Safi':'Safi'}</p>
-              <p className="text-[10px] font-semibold" style={{color:'#EC4899',marginTop:1}}>by Rayhana Fleurs</p>
+              <div className="flex items-center gap-2">
+                <span style={{fontSize:24}}>{activeFlorist==='nour'?'🌹':'💐'}</span>
+                <div>
+                  <h2 className="font-black text-xl" style={{color:activeDark}}>{activeFlorist==='nour'?'Nour Fleurs':'Amina Blooms'}</h2>
+                  <p className="text-[11px] font-semibold" style={{color:'#9CA3AF'}}>{catalogItems.length} {lang==='ar'?'منتج':lang==='en'?'products':'produits'}</p>
+                </div>
+              </div>
             </div>
-            {/* Category tabs */}
-            <div className={`flex gap-2 px-5 mb-4 ${isAR?'flex-row-reverse':''}`}>
-              {FLEURS_CATS.map(cat=>(
-                <button key={cat.id} onClick={()=>setActiveCat(cat.id)}
-                  className="flex-1 py-2 rounded-2xl font-black text-[11px] transition-all active:scale-95"
-                  style={{
-                    background:activeCat===cat.id?pinkGrad:'white',
-                    color:activeCat===cat.id?'white':'#9D174D',
-                    border:`1.5px solid ${activeCat===cat.id?'transparent':'#FBCFE8'}`,
-                    boxShadow:activeCat===cat.id?pinkGlow:'none',
-                  }}>
-                  {cat.label[lang]}
-                </button>
-              ))}
-            </div>
-            {/* Product grid */}
             <div className="px-5">
               <div className="grid grid-cols-2 gap-3">
-                {visibleItems.map(item=>{
+                {catalogItems.map(item=>{
                   const inCart=cart.find(c=>c.id===item.id);
                   return(
-                    <div key={item.id} className="rounded-2xl overflow-hidden" style={{background:'var(--c-card)',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
-                      <div className="flex items-center justify-center overflow-hidden" style={{height:110,background:'linear-gradient(135deg,#FDF2F8,#FCE7F3)'}}>
-                        {item.img
-                          ? <img src={item.img} alt={item.names.fr} style={{width:'100%',height:'100%',objectFit:'contain'}}/>
-                          : <span style={{fontSize:44}}>{item.emoji}</span>}
+                    <div key={item.id} className="rounded-2xl overflow-hidden"
+                      style={{background:'white',border:`1.5px solid ${activeBorder}`,boxShadow:'0 4px 16px rgba(0,0,0,0.06)'}}>
+                      <div className="flex items-center justify-center overflow-hidden"
+                        style={{height:120,background:`linear-gradient(135deg,${activeBg},white)`}}>
+                        <img src={item.img} alt={item.names.fr} style={{width:'100%',height:'100%',objectFit:'contain'}}/>
                       </div>
                       <div className="p-3">
-                        <p className={`font-black text-[11px] leading-tight mb-1 ${fClass}`} style={{color:'#831843'}}>{item.names[lang]}</p>
-                        <p className="font-black text-sm" style={{color:'#DB2777'}}>{item.price>0?`${item.price} MAD`:lang==='ar'?'السعر عند الطلب':'Sur demande'}</p>
+                        <p className={`font-black text-[11px] leading-tight mb-0.5 ${fClass}`} style={{color:activeDark==='#BE185D'?'#831843':'#4C1D95'}}>{item.names[lang]}</p>
+                        <p className="font-black text-base mb-2" style={{color:activeDark}}>{item.price} MAD</p>
                         {!inCart?(
                           <button onClick={()=>addItem(item.id)}
-                            className="w-full mt-2 py-1.5 rounded-xl font-black text-[11px] text-white transition-all active:scale-95"
-                            style={{background:pinkGrad,boxShadow:pinkGlow}}>
-                            + Ajouter
+                            className="w-full py-2 rounded-xl font-black text-[11px] text-white transition-all active:scale-95"
+                            style={{background:activeGrad}}>
+                            {lang==='ar'?'+ أضف':lang==='en'?'+ Add':'+ Ajouter'}
                           </button>
                         ):(
-                          <div className="flex items-center justify-between mt-2">
-                            <button onClick={()=>removeItem(item.id)}
-                              className="w-8 h-8 rounded-full font-black text-lg flex items-center justify-center transition-all active:scale-90"
-                              style={{background:'#FCE7F3',color:'#DB2777'}}>−</button>
-                            <span className="font-black text-sm" style={{color:'#9D174D'}}>{inCart.qty}</span>
-                            <button onClick={()=>addItem(item.id)}
-                              className="w-8 h-8 rounded-full font-black text-lg flex items-center justify-center text-white transition-all active:scale-90"
-                              style={{background:pinkGrad}}>+</button>
+                          <div className="flex items-center justify-between">
+                            <button onClick={()=>removeItem(item.id)} className="w-8 h-8 rounded-full font-black text-xl flex items-center justify-center transition-all active:scale-90" style={{background:activeBg,color:activeDark,border:'none',cursor:'pointer'}}>−</button>
+                            <span className="font-black text-sm" style={{color:activeDark}}>{inCart.qty}</span>
+                            <button onClick={()=>addItem(item.id)} className="w-8 h-8 rounded-full font-black text-xl flex items-center justify-center text-white transition-all active:scale-90" style={{background:activeGrad,border:'none',cursor:'pointer'}}>+</button>
                           </div>
                         )}
                       </div>
@@ -5547,127 +5534,141 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           </div>
         )}
 
-        {/* ── TRACK TAB ── */}
-        {tab==='track'&&(
-          <div className="pt-20 px-5">
-            <p className="font-black text-base tracking-wide mb-5" style={{color:'#9D174D'}}>📦 {lang==='ar'?'تتبع الطلب':lang==='en'?'Order Tracking':'Suivi de commande'}</p>
+        {/* ── STEP 3: RÉSERVATION ── */}
+        {step==='checkout'&&(
+          <div className="px-5 pt-20 max-w-sm mx-auto">
+            <h2 className="font-black text-2xl mb-0.5" style={{background:activeGrad,WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>
+              {lang==='ar'?'تأكيد الحجز':lang==='en'?'Reserve Now':'Réserver'}
+            </h2>
+            <p className="text-[12px] font-semibold mb-5" style={{color:'#9CA3AF'}}>{cartCount} article(s) · {cartTotal} MAD · {activeFlorist==='nour'?'Nour Fleurs':'Amina Blooms'}</p>
+
+            {/* Résumé panier */}
+            <div className="rounded-2xl p-4 mb-4" style={{background:'white',boxShadow:'0 4px 16px rgba(0,0,0,0.06)',border:`1.5px solid ${activeBorder}`}}>
+              {cart.map(ci=>{const p=FLEURS_CATALOG.find(f=>f.id===ci.id)!;return(
+                <div key={ci.id} className="flex items-center justify-between py-1.5">
+                  <span className={`text-[12px] font-semibold flex-1 ${fClass}`} style={{color:'#374151'}}>{p.emoji} {p.names[lang]} ×{ci.qty}</span>
+                  <span className="font-black text-[12px] ml-2" style={{color:activeDark}}>{p.price*ci.qty} MAD</span>
+                </div>
+              );})}
+              <div className="mt-2 pt-2 flex justify-between" style={{borderTop:`1.5px solid ${activeBorder}`}}>
+                <span className="font-black text-sm" style={{color:'#374151'}}>Total</span>
+                <span className="font-black text-sm" style={{color:activeDark}}>{cartTotal} MAD</span>
+              </div>
+            </div>
+
+            {/* Mode */}
+            <div className="flex gap-2 mb-4">
+              {([{k:'retrait',emoji:'🏪',label:{fr:'Retrait',en:'Pickup',ar:'استلام',amz:'ⴰⵙⵉⵔⵎ'}},{k:'livraison',emoji:'🛵',label:{fr:'Livraison',en:'Delivery',ar:'توصيل',amz:'ⴰⵙⵏⵙⴰⵢ'}}] as {k:'retrait'|'livraison';emoji:string;label:Record<Lang,string>}[]).map(opt=>(
+                <button key={opt.k} onClick={()=>{setResMode(opt.k);setErr('');}}
+                  className="flex-1 rounded-2xl p-3 font-black text-[12px] transition-all active:scale-95"
+                  style={{background:resMode===opt.k?activeGrad:'white',color:resMode===opt.k?'white':'#6B7280',border:`2px solid ${resMode===opt.k?'transparent':'#E5E7EB'}`,boxShadow:resMode===opt.k?`0 4px 16px rgba(0,0,0,0.2)`:'none',cursor:'pointer'}}>
+                  {opt.emoji} {opt.label[lang]}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest mb-1.5" style={{color:'#6B7280'}}>👤 {lang==='ar'?'الاسم':lang==='en'?'Name':'Nom'}</p>
+                <input className="w-full px-4 py-3 rounded-xl text-sm font-medium outline-none" style={{background:'white',border:`1.5px solid ${err&&!resName.trim()?'#EF4444':'#E5E7EB'}`,color:'#111'}} placeholder={lang==='ar'?'اسمك…':lang==='en'?'Your name…':'Votre nom…'} value={resName} onChange={e=>{setResName(e.target.value);setErr('');}}/>
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest mb-1.5" style={{color:'#6B7280'}}>📞 {lang==='ar'?'الهاتف':lang==='en'?'Phone':'Téléphone'}</p>
+                <input className="w-full px-4 py-3 rounded-xl text-sm font-medium outline-none" style={{background:'white',border:`1.5px solid ${err&&!resPhone.trim()?'#EF4444':'#E5E7EB'}`,color:'#111'}} placeholder="06XXXXXXXX" type="tel" value={resPhone} onChange={e=>{setResPhone(e.target.value);setErr('');}}/>
+              </div>
+              {resMode==='livraison'&&(
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest mb-1.5" style={{color:'#6B7280'}}>📍 {lang==='ar'?'العنوان':lang==='en'?'Address':'Adresse'}</p>
+                  <input className="w-full px-4 py-3 rounded-xl text-sm font-medium outline-none" style={{background:'white',border:`1.5px solid ${err&&!resAddr.trim()?'#EF4444':'#E5E7EB'}`,color:'#111'}} placeholder={lang==='ar'?'عنوانك بسافي…':'Votre adresse à Safi…'} value={resAddr} onChange={e=>{setResAddr(e.target.value);setErr('');}}/>
+                </div>
+              )}
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest mb-1.5" style={{color:'#6B7280'}}>📅 {lang==='ar'?'تاريخ الاستلام':lang==='en'?'Date':'Date de réservation'}</p>
+                <input type="date" min={minDate()} className="w-full px-4 py-3 rounded-xl text-sm font-medium outline-none" style={{background:'white',border:`1.5px solid ${err&&!resDate?'#EF4444':'#E5E7EB'}`,color:'#111'}} value={resDate} onChange={e=>{setResDate(e.target.value);setErr('');}}/>
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest mb-1.5" style={{color:'#6B7280'}}>⏰ {lang==='ar'?'الوقت':lang==='en'?'Time Slot':'Créneau horaire'}</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {['9h – 12h','12h – 15h','15h – 18h','18h – 21h'].map(slot=>(
+                    <button key={slot} onClick={()=>{setResTime(slot);setErr('');}}
+                      className="py-2.5 rounded-xl font-black text-[11px] transition-all active:scale-95"
+                      style={{background:resTime===slot?activeGrad:'white',color:resTime===slot?'white':'#6B7280',border:`1.5px solid ${err&&!resTime?'#EF4444':resTime===slot?'transparent':'#E5E7EB'}`,cursor:'pointer'}}>
+                      {slot}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {err&&<p className="text-xs font-bold" style={{color:'#EF4444'}}>⚠️ {lang==='ar'?'يرجى ملء جميع الحقول':lang==='en'?'Please fill all fields':'Veuillez remplir tous les champs'}</p>}
+            </div>
+          </div>
+        )}
+
+        {/* ── STEP 4: TRACKING ── */}
+        {step==='track'&&(
+          <div className="px-5 pt-20">
+            <p className="font-black text-xl mb-6" style={{background:'linear-gradient(135deg,#7C3AED,#A855F7)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>📦 {lang==='ar'?'تتبع حجزي':lang==='en'?'Track Reservation':'Suivi réservation'}</p>
             {!lastRef?(
-              <div className="rounded-3xl p-8 text-center" style={{background:'var(--c-card)',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 20px rgba(219,39,119,0.08)'}}>
-                <span style={{fontSize:48}}>🌸</span>
-                <p className="font-black text-sm mt-3 mb-1" style={{color:'#9D174D'}}>
-                  {lang==='ar'?'لا توجد طلبات بعد':lang==='en'?'No orders yet':'Aucune commande en cours'}
-                </p>
-                <p className="text-[11px]" style={{color:'#9CA3AF'}}>
-                  {lang==='ar'?'اطلب الآن وتابع هنا':lang==='en'?'Order now and track here':'Passez une commande pour la suivre ici'}
-                </p>
-                <button onClick={()=>setTab('shop')}
-                  className="mt-4 px-6 py-2.5 rounded-2xl font-black text-sm text-white transition-all active:scale-95"
-                  style={{background:pinkGrad,boxShadow:pinkGlow}}>
-                  {lang==='ar'?'تسوق الآن':lang==='en'?'Shop Now':'Commander maintenant'}
+              <div className="rounded-3xl p-8 text-center" style={{background:'white',boxShadow:'0 8px 32px rgba(0,0,0,0.07)',border:'1.5px solid #EDE9FE'}}>
+                <span style={{fontSize:52}}>🌸</span>
+                <p className="font-black text-sm mt-3 mb-1" style={{color:'#7C3AED'}}>{lang==='ar'?'لا توجد حجوزات بعد':lang==='en'?'No reservations yet':'Aucune réservation'}</p>
+                <button onClick={()=>setStep('florist')} className="mt-4 px-6 py-2.5 rounded-2xl font-black text-sm text-white" style={{background:aminaGrad,border:'none',cursor:'pointer'}}>
+                  {lang==='ar'?'احجز الآن':lang==='en'?'Reserve Now':'Réserver maintenant'}
                 </button>
               </div>
             ):(
               <div>
-                {/* Ref badge */}
-                <div className="rounded-2xl p-4 mb-4 flex items-center justify-between" style={{background:'var(--c-card)',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
+                <div className="rounded-2xl p-4 mb-4 flex items-center justify-between" style={{background:'white',boxShadow:'0 4px 16px rgba(0,0,0,0.06)',border:'1.5px solid #EDE9FE'}}>
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest" style={{color:'#9CA3AF'}}>
-                      {lang==='ar'?'رقم الطلب':lang==='en'?'Order ref':'Référence'}
-                    </p>
-                    <p className="font-black text-sm mt-0.5" style={{color:'#9D174D'}}>#{lastRef}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest" style={{color:'#9CA3AF'}}>{lang==='ar'?'رقم الحجز':lang==='en'?'Reservation':'Référence'}</p>
+                    <p className="font-black text-sm mt-0.5" style={{color:'#7C3AED'}}>#{lastRef}</p>
                   </div>
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{background:'linear-gradient(135deg,#FCE7F3,#FBCFE8)'}}>
-                    <span style={{fontSize:20}}>🌹</span>
-                  </div>
+                  <span style={{fontSize:32}}>🌹</span>
                 </div>
-                {/* Stages */}
-                <div className="rounded-2xl p-4 mb-4" style={{background:'var(--c-card)',border:'1.5px solid #FCE7F3',boxShadow:'0 4px 16px rgba(219,39,119,0.08)'}}>
-                  <p className="font-black text-[10px] uppercase tracking-widest mb-4" style={{color:'#9CA3AF'}}>
-                    {lang==='ar'?'حالة الطلب':lang==='en'?'Order status':'Statut de la commande'}
-                  </p>
+                <div className="rounded-2xl p-4 mb-4" style={{background:'white',boxShadow:'0 4px 16px rgba(0,0,0,0.06)',border:'1.5px solid #EDE9FE'}}>
                   {trackStages.map((stage,i)=>(
                     <div key={i} className="flex items-center gap-3 mb-3">
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-black text-sm transition-all"
-                        style={{
-                          background:i<=trackStage?pinkGrad:'#F3F4F6',
-                          color:i<=trackStage?'white':'#9CA3AF',
-                          boxShadow:i===trackStage?pinkGlow:'none',
-                        }}>
+                      <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 font-black text-sm"
+                        style={{background:i<=trackStage?aminaGrad:'#F3F4F6',color:i<=trackStage?'white':'#9CA3AF',boxShadow:i===trackStage?'0 4px 14px rgba(124,58,237,0.4)':'none'}}>
                         {i<trackStage?'✓':['📋','💐','🛵','✅'][i]}
                       </div>
-                      <div className="flex-1">
-                        <p className={`text-[11px] font-black ${fClass}`} style={{color:i<=trackStage?'#9D174D':'#9CA3AF'}}>{stage}</p>
-                        {i===trackStage&&<p className="text-[9px]" style={{color:'#EC4899'}}>● En cours…</p>}
+                      <div>
+                        <p className={`text-[12px] font-black ${fClass}`} style={{color:i<=trackStage?'#7C3AED':'#9CA3AF'}}>{stage}</p>
+                        {i===trackStage&&<p className="text-[10px] font-semibold" style={{color:'#A855F7'}}>● En cours…</p>}
                       </div>
                     </div>
                   ))}
                 </div>
-                {/* ETA card */}
-                <div className="rounded-2xl p-4 flex items-center gap-3" style={{background:'linear-gradient(135deg,#FDF2F8,#FCE7F3)',border:'1px solid #FBCFE8'}}>
-                  <span style={{fontSize:24}}>⏱️</span>
-                  <div>
-                    <p className="font-black text-sm" style={{color:'#9D174D'}}>
-                      {lang==='ar'?'وقت التسليم المتوقع':lang==='en'?'Estimated delivery':'Livraison estimée'}
-                    </p>
-                    <p className="text-[11px]" style={{color:'#DB2777'}}>{lang==='ar'?'جاري التتبع…':lang==='en'?'Tracking in progress…':'Suivi en cours…'}</p>
-                  </div>
-                </div>
+                <button onClick={()=>setStep('florist')} className="w-full py-3 rounded-2xl font-black text-sm text-white transition-all active:scale-95" style={{background:nourGrad,border:'none',cursor:'pointer'}}>
+                  {lang==='ar'?'+ حجز جديد':lang==='en'?'+ New Reservation':'+ Nouvelle réservation'}
+                </button>
               </div>
             )}
           </div>
         )}
       </div>
 
-      {/* Cart bar (shop tab only) */}
-      {cartCount>0&&tab==='shop'&&(
-        <div className="fixed bottom-20 left-0 right-0 px-5 z-40">
-          <button onClick={()=>setShowCheckout(true)}
+      {/* Cart bar — catalog step */}
+      {cartCount>0&&step==='catalog'&&(
+        <div className="fixed bottom-0 left-0 right-0 p-5 z-40" style={{background:'linear-gradient(to top,rgba(253,244,255,0.98) 60%,transparent)'}}>
+          <button onClick={()=>setStep('checkout')}
             className="w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-between px-5 transition-all active:scale-95"
-            style={{background:pinkGrad,boxShadow:'0 8px 24px rgba(219,39,119,0.4)'}}>
+            style={{background:activeGrad,boxShadow:'0 8px 28px rgba(124,58,237,0.4)'}}>
             <span className="bg-white/20 rounded-full px-2.5 py-0.5 text-xs font-black">{cartCount}</span>
-            <span>{lang==='ar'?'عرض السلة':lang==='en'?'View Cart':'Voir le panier'}</span>
+            <span>{lang==='ar'?'متابعة الحجز':lang==='en'?'Continue':'Continuer'}</span>
             <span>{cartTotal} MAD</span>
           </button>
         </div>
       )}
 
-      {/* Bottom tab bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 flex" style={{background:'var(--c-card)',borderTop:'1.5px solid #FCE7F3',boxShadow:'0 -4px 20px rgba(219,39,119,0.08)'}}>
-        {([
-          {id:'home',emoji:'🏠',label:{fr:'Accueil',en:'Home',ar:'الرئيسية',amz:'ⴰⵡⵡⵓⵔ'}},
-          {id:'shop',emoji:'🌹',label:{fr:'Boutique',en:'Shop',ar:'المتجر',amz:'ⴰⵙⵡⵉⵔ'}},
-          {id:'track',emoji:'📦',label:{fr:'Suivi',en:'Track',ar:'تتبع',amz:'ⴰⵙⴽⵍⵙ'}},
-        ] as {id:'home'|'shop'|'track';emoji:string;label:Record<Lang,string>}[]).map(t=>(
-          <button key={t.id} onClick={()=>setTab(t.id)}
-            className="flex-1 py-3 flex flex-col items-center gap-0.5 transition-all"
-            style={{background:'none',border:'none',cursor:'pointer'}}>
-            <span style={{fontSize:20,filter:tab===t.id?'none':'grayscale(1) opacity(0.5)'}}>{t.emoji}</span>
-            <span className="text-[9px] font-black tracking-wide"
-              style={{color:tab===t.id?'#DB2777':'#9CA3AF'}}>{t.label[lang]}</span>
-            {tab===t.id&&<div className="w-4 h-0.5 rounded-full mt-0.5" style={{background:pinkGrad}}/>}
+      {/* Confirm reservation — checkout step */}
+      {step==='checkout'&&(
+        <div className="fixed bottom-0 left-0 right-0 p-5 z-40" style={{background:'linear-gradient(to top,rgba(253,244,255,0.98) 60%,transparent)'}}>
+          <button onClick={handleReserve} disabled={sending}
+            className="w-full py-4 rounded-2xl font-black text-base text-white transition-all active:scale-95"
+            style={{background:sending?'#9CA3AF':activeGrad,boxShadow:sending?'none':'0 8px 28px rgba(124,58,237,0.4)',border:'none',cursor:sending?'not-allowed':'pointer'}}>
+            {sending?(lang==='ar'?'جاري الإرسال…':'Envoi en cours…'):(lang==='ar'?'✓ تأكيد الحجز':lang==='en'?'✓ Confirm Reservation':'✓ Confirmer la réservation')}
           </button>
-        ))}
-      </div>
-
-      {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={p=>{saveProfile(p);setShowCheckout(false);}} onClose={()=>setShowProfile(false)}/>}
-      {showCheckout&&(
-        <CheckoutDrawer
-          cart={drawerCart} lang={lang}
-          onClose={()=>setShowCheckout(false)}
-          onQty={handleQty}
-          profile={profile}
-          saveProfile={saveProfile}
-          onClearCart={()=>{setCart([]);setShowCheckout(false);}}
-          restaurantName="Rayhana Fleurs"
-          serviceFeeThreshold={40} serviceFeeAmount={6.5}
-          onOrderSuccess={ref=>{
-            setCart([]);setShowCheckout(false);
-            setLastRef(ref);
-            try{localStorage.setItem('bridge_fleurs_last_ref',ref);}catch{}
-            setTrackStage(0);setTab('track');
-            onOrderSuccess?.(ref);
-          }}
-        />
+        </div>
       )}
     </div>
   );
@@ -6559,7 +6560,7 @@ export default function App() {
   if(service==='moto') return <DarkModeCtx.Provider value={dv}><MotoTaxiPage onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
   if(service==='tabac') return <DarkModeCtx.Provider value={dv}><TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
   if(service==='fleurs') return <DarkModeCtx.Provider value={dv}><FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
-  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
+  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleOrderSuccess}/></DarkModeCtx.Provider>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={
