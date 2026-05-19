@@ -2150,7 +2150,7 @@ function DispatchPage() {
         fetch(`/api/tracking/${ref}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ lat, lng, driverName: driverName || 'Livreur' }),
+          body: JSON.stringify({ lat, lng, status: 'on_way', driverName: driverName || 'Livreur' }),
         }).catch(() => {});
       },
       () => setEatsGPS('denied'),
