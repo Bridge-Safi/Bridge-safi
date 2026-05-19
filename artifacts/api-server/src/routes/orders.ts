@@ -250,17 +250,7 @@ router.post("/orders/inbound", async (req, res) => {
 
     res.status(201).json({ ok: true, orderId: order.id, ref: order.ref });
 
-    // Diffusion instantanée aux livreurs connectés
-    broadcastOrder({ type: "NEW_ORDER", orderId: order.id, ref: order.ref, source });
-
-    smartDispatch(restaurantLabel, {
-      type: "NEW_ORDER",
-      title: `🛵 Commande ${source ? `[${source}]` : "externe"} !`,
-      body: `${customerName} · ${Number(total)} MAD · ${deliveryAddress}`,
-      data: { orderId: order.id, ref: order.ref, url: "/" },
-    }).catch(() => {});
-
-    // Notify restaurant via WhatsApp + phone call
+    // 1️⃣ Notify restaurant via WhatsApp + phone call EN PREMIER
     notifyRestaurant(restaurantLabel, {
       ref: order.ref,
       customerName: order.customerName,
@@ -270,6 +260,16 @@ router.post("/orders/inbound", async (req, res) => {
       total: order.total,
       deliveryMode: order.deliveryMode ?? "delivery",
       paymentMethod: order.paymentMethod ?? "cash",
+    }).catch(() => {});
+
+    // 2️⃣ Ensuite diffusion aux livreurs
+    broadcastOrder({ type: "NEW_ORDER", orderId: order.id, ref: order.ref, source });
+
+    smartDispatch(restaurantLabel, {
+      type: "NEW_ORDER",
+      title: `🛵 Commande ${source ? `[${source}]` : "externe"} !`,
+      body: `${customerName} · ${Number(total)} MAD · ${deliveryAddress}`,
+      data: { orderId: order.id, ref: order.ref, url: "/" },
     }).catch(() => {});
 
   } catch (err) {
@@ -436,15 +436,8 @@ router.post("/orders/:ref/confirm-payment", requireClerkAuth, async (req, res) =
     if (!order) { res.status(404).json({ error: "Commande introuvable" }); return; }
     res.json({ ok: true, order });
 
-    // Now dispatch to drivers + restaurant
-    broadcastOrder({ type: "NEW_ORDER", orderId: order.id, ref: order.ref });
-    smartDispatch(order.restaurantName, {
-      type: "NEW_ORDER",
-      title: "🛵 Nouvelle commande (paiement confirmé) !",
-      body: `${order.customerName} · ${order.total} MAD${order.restaurantName ? ` · ${order.restaurantName}` : ""}`,
-      data: { orderId: order.id, ref: order.ref, url: "/" },
-    }).catch(() => {});
-    forwardToRestaurant(order).catch(() => {});
+    // 1️⃣ Restaurant reçoit la commande EN PREMIER (webhook + WhatsApp)
+    await forwardToRestaurant(order).catch(() => {});
     notifyRestaurant(order.restaurantName, {
       ref: order.ref,
       customerName: order.customerName,
@@ -454,6 +447,15 @@ router.post("/orders/:ref/confirm-payment", requireClerkAuth, async (req, res) =
       total: order.total,
       deliveryMode: order.deliveryMode ?? "delivery",
       paymentMethod: order.paymentMethod ?? "qr",
+    }).catch(() => {});
+
+    // 2️⃣ Ensuite dispatch aux livreurs
+    broadcastOrder({ type: "NEW_ORDER", orderId: order.id, ref: order.ref });
+    smartDispatch(order.restaurantName, {
+      type: "NEW_ORDER",
+      title: "🛵 Nouvelle commande (paiement confirmé) !",
+      body: `${order.customerName} · ${order.total} MAD${order.restaurantName ? ` · ${order.restaurantName}` : ""}`,
+      data: { orderId: order.id, ref: order.ref, url: "/" },
     }).catch(() => {});
   } catch (err) {
     req.log.error({ err }, "confirm-payment failed");
