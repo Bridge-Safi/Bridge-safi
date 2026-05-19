@@ -3210,8 +3210,8 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
     if(!orderRef) return;
     const trackStageMap:{[k:string]:number}={received:0,preparing:1,on_way:2,delivered:3};
     const dbStageMap:{[k:string]:number}={
-      pending:0,pending_payment:0,accepted:0,
-      preparing:1,ready:1,
+      pending:0,pending_payment:0,
+      accepted:1,preparing:1,ready:1,
       on_the_way:2,on_way:2,
       delivered:3,completed:3,
     };
