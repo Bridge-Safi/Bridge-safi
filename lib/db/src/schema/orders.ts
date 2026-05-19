@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, real, timestamp, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -10,7 +10,7 @@ export const ordersTable = pgTable("orders", {
   customerPhone: text("customer_phone").notNull(),
   customerAddress: text("customer_address").notNull(),
   items: jsonb("items").notNull(),
-  total: integer("total").notNull(),
+  total: real("total").notNull(),
   deliveryMode: text("delivery_mode").notNull().default("delivery"),
   paymentMethod: text("payment_method").notNull().default("cash"),
   restaurantName: text("restaurant_name"),
