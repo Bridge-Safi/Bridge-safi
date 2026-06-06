@@ -20,10 +20,15 @@
  */
 
 import { createProxyMiddleware } from "http-proxy-middleware";
-import type { RequestHandler } from "express";
+import type { Request, RequestHandler } from "express";
 
 const CLERK_FAPI = "https://frontend-api.clerk.dev";
 export const CLERK_PROXY_PATH = "/api/__clerk";
+
+/** Returns the canonical host for this request (used by publishableKeyFromHost). */
+export function getClerkProxyHost(req: Request): string | undefined {
+  return (req.headers.host as string) || undefined;
+}
 
 export function clerkProxyMiddleware(): RequestHandler {
   // Only run proxy in production — Clerk proxying doesn't work for dev instances
