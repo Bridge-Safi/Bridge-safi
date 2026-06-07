@@ -4950,7 +4950,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
   const handleMotoBook=async(payLabel?:string)=>{
     if(!name.trim()||!phone.trim()||!destination.trim()){setFormErr('*');return;}
     setSending(true);setFormErr('');
-    const prefix=isTaxi?'TX':'MT';
+    const prefix=isTaxi?'TC':'MT';
     const ref=prefix+'-'+Math.floor(1000+Math.random()*9000);
     const driverTrackUrl=`${window.location.origin}/driver/${ref}`;
     const pickup=clientAddress||'Safi, Maroc';
