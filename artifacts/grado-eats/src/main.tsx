@@ -1313,6 +1313,88 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
   );
 }
 
+// ─── PWA Install Banner (pages hors Bridge Eats) ──────────────────────────────
+function PWAInstallBannerSimple({ appName = 'Bridge Safi' }: { appName?: string }) {
+  const [show, setShow] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [showIOSGuide, setShowIOSGuide] = useState(false);
+  const deferredPrompt = useRef<any>(null);
+
+  useEffect(() => {
+    if (window.matchMedia('(display-mode: standalone)').matches) return;
+    if (localStorage.getItem('bridge_pwa_banner_dismissed')) return;
+    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) && !(window as any).MSStream;
+    setIsIOS(ios);
+    if (ios) { const t = setTimeout(() => setShow(true), 3500); return () => clearTimeout(t); }
+    const handler = (e: Event) => {
+      e.preventDefault();
+      deferredPrompt.current = e;
+      const t = setTimeout(() => setShow(true), 3500);
+      return () => clearTimeout(t);
+    };
+    window.addEventListener('beforeinstallprompt', handler as EventListener);
+    return () => window.removeEventListener('beforeinstallprompt', handler as EventListener);
+  }, []);
+
+  const dismiss = () => {
+    setShow(false);
+    try { localStorage.setItem('bridge_pwa_banner_dismissed', '1'); } catch {}
+  };
+
+  const install = async () => {
+    if (isIOS) { setShowIOSGuide(true); return; }
+    if (!deferredPrompt.current) return;
+    deferredPrompt.current.prompt();
+    const { outcome } = await deferredPrompt.current.userChoice;
+    if (outcome === 'accepted') dismiss();
+    deferredPrompt.current = null;
+  };
+
+  if (!show) return null;
+
+  return (
+    <div style={{position:'fixed',inset:0,zIndex:9999,display:'flex',alignItems:'flex-end',justifyContent:'center',pointerEvents:'none'}}>
+      <div style={{width:'100%',maxWidth:480,pointerEvents:'auto',background:'linear-gradient(160deg,#064E3B 0%,#065F46 60%,#047857 100%)',boxShadow:'0 -16px 60px rgba(6,95,70,0.55)',border:'1.5px solid rgba(52,211,153,0.35)',borderBottom:'none',borderRadius:'24px 24px 0 0',overflow:'hidden'}}>
+        <div style={{display:'flex',justifyContent:'center',padding:'10px 0 4px'}}>
+          <div style={{width:36,height:4,borderRadius:9,background:'rgba(255,255,255,0.25)'}}/>
+        </div>
+        <div style={{padding:'4px 20px 28px'}}>
+          {!showIOSGuide ? (
+            <div style={{display:'flex',alignItems:'center',gap:14}}>
+              <div style={{width:52,height:52,borderRadius:14,overflow:'hidden',flexShrink:0,border:'2px solid rgba(217,197,160,0.5)',boxShadow:'0 4px 16px rgba(0,0,0,0.3)'}}>
+                <img src="/logo_bridge_512.png" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+              </div>
+              <div style={{flex:1,minWidth:0}}>
+                <p style={{fontWeight:900,color:'white',fontSize:14,margin:'0 0 2px',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>Installer {appName}</p>
+                <p style={{color:'rgba(255,255,255,0.7)',fontSize:12,margin:0}}>Accès rapide depuis l'écran d'accueil</p>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
+                <button onClick={install} style={{fontWeight:900,fontSize:12,padding:'8px 16px',borderRadius:20,border:'none',cursor:'pointer',background:'#D9C5A0',color:'#065F46',boxShadow:'0 4px 14px rgba(0,0,0,0.2)'}}>
+                  Installer
+                </button>
+                <button onClick={dismiss} style={{fontWeight:900,fontSize:12,padding:'8px 12px',borderRadius:20,border:'none',cursor:'pointer',background:'rgba(255,255,255,0.12)',color:'rgba(255,255,255,0.7)'}}>
+                  ✕
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div style={{textAlign:'center',padding:'4px 0'}}>
+              <p style={{color:'white',fontWeight:900,fontSize:13,margin:'0 0 10px'}}>Installer {appName}</p>
+              <p style={{color:'rgba(255,255,255,0.8)',fontSize:12,margin:'0 0 12px'}}>
+                Appuyez sur <span style={{fontSize:20}}>⎋</span> puis <strong>"Sur l'écran d'accueil"</strong>
+              </p>
+              <div style={{fontSize:28,marginBottom:12}}>➕</div>
+              <button onClick={dismiss} style={{fontWeight:700,fontSize:12,padding:'8px 20px',borderRadius:16,border:'none',cursor:'pointer',background:'rgba(255,255,255,0.15)',color:'rgba(255,255,255,0.8)'}}>
+                Plus tard
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function GamePage() {
   const { isLoaded, isSignedIn, user } = useUser();
   const [, navigate] = useLocation();
@@ -1358,7 +1440,7 @@ function GamePage() {
   }
 
   // Signed in — fetch game token then show Safi Runner
-  return <GameIframe userId={user.id} lang={lang} isAR={isAR} />;
+  return <><GameIframe userId={user.id} lang={lang} isAR={isAR} /><PWAInstallBannerSimple appName="Bridge Game" /></>;
 }
 
 /** Fetches a verified phone token then loads the game iframe */
@@ -2673,6 +2755,7 @@ function DispatchPage() {
         )}
 
       </div>
+      <PWAInstallBannerSimple appName="Bridge Livreur" />
     </div>
   );
 }
@@ -3353,6 +3436,7 @@ function RestaurantOwnerPage() {
           </button>
         </div>
       )}
+      <PWAInstallBannerSimple appName="Bridge Restaurant" />
     </div>
   );
 }
@@ -4337,6 +4421,7 @@ function AdminAuthPage() {
       )}
       <AdminStatsPanel adminKey={adminKey} />
       <AdminCouponsPanel adminKey={adminKey} />
+      <PWAInstallBannerSimple appName="Bridge Manager" />
     </AuthPageWrapper>
   );
 }
