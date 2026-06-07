@@ -4397,8 +4397,8 @@ function TaxiVehicleSelectPage({onBack,onSelect,lang,cycleLang}:{
               <span style={{background:'rgba(249,115,22,0.2)',border:'1px solid rgba(249,115,22,0.5)',borderRadius:8,padding:'3px 10px',fontSize:11,fontWeight:700,color:'#FED7AA'}}>
                 👤 1 {lang==='en'?'seat':isAR?'مقعد':'place'}
               </span>
-              <span style={{background:'rgba(249,115,22,0.2)',border:'1px solid rgba(249,115,22,0.5)',borderRadius:8,padding:'4px 12px',fontSize:13,fontWeight:900,color:'#FED7AA'}}>
-                💰 7 DH {lang==='en'?'flat rate':isAR?'سعر ثابت':'prix fixe'}
+              <span style={{background:'rgba(249,115,22,0.2)',border:'1px solid rgba(249,115,22,0.5)',borderRadius:8,padding:'3px 10px',fontSize:11,fontWeight:700,color:'#FED7AA'}}>
+                📍 {lang==='en'?'Trip price':isAR?'سعر حسب الرحلة':'Prix selon trajet'}
               </span>
             </div>
           </div>
@@ -4854,11 +4854,20 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
 }
 
 // ─── MOTO TAXI PAGE ────────────────────────────────────────────────────────────
-function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
+function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='moto'}:{
   onBack:()=>void; lang:Lang; cycleLang:()=>void;
   profile:UserProfile; saveProfile:(p:UserProfile)=>void;
+  vehicleType?:'taxi'|'moto';
 }) {
-  const MOTO_PRICE=7;
+  const isTaxi=vehicleType==='taxi';
+  const vEmoji=isTaxi?'🚖':'🛵';
+  const vAccent=isTaxi?'#FDE68A':'#FED7AA';
+  const vAccentDark=isTaxi?'#78350F':'#9A3412';
+  const vGrad=isTaxi?'linear-gradient(135deg,#78350F,#F59E0B)':'linear-gradient(135deg,#9A3412,#F97316)';
+  const vBorder=isTaxi?'rgba(245,158,11,0.15)':'rgba(154,52,18,0.15)';
+  const vDriverWord=(l:Lang)=>isTaxi?({fr:'Chauffeur',en:'Driver',ar:'السائق',amz:'ⴰⵙⵔⴰⵜⵏ'}[l]):({fr:'Motard',en:'Rider',ar:'السائق',amz:'ⴰⵙⵔⴰⵜⵏ'}[l]);
+  const vServiceName=isTaxi?'Bridge Taxi Confort':'Bridge Moto Taxi';
+  const vLocalKey=isTaxi?'bridge_taxi_ref':'bridge_moto_ref';
   const [showProfile,setShowProfile]=useState(false);
   const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
@@ -4870,7 +4879,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   const [clientAddress,setClientAddress]=useState(profile.address??'');
   const [gettingGPS,setGettingGPS]=useState(false);
   const [sending,setSending]=useState(false);
-  const [bookingRef,setBookingRef]=useState<string>(()=>{try{return localStorage.getItem('bridge_moto_ref')||'';}catch{return '';}});
+  const [bookingRef,setBookingRef]=useState<string>(()=>{try{return localStorage.getItem(vLocalKey)||'';}catch{return '';}});
   const [formErr,setFormErr]=useState('');
   const [motoPayMethod,setMotoPayMethod]=useState<PayMethodType>(null);
   const [showMotoQR,setShowMotoQR]=useState(false);
@@ -4879,7 +4888,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   const [,navigateMoto]=useLocation();
   const [motoGems,setMotoGems]=useState(0);
   const [motoGemMAD,setMotoGemMAD]=useState(0);
-  const maxMotoGemMAD=Math.min(Math.floor(motoGems/200),MOTO_PRICE);
+  const maxMotoGemMAD=Math.floor(motoGems/200);
   useEffect(()=>{
     if(!motoUser?.id) return;
     getAuthHeaders().then(h=>fetch('/api/game/diamonds',{credentials:'include',headers:h})
@@ -4893,10 +4902,10 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   const [prixProposeMoto,setPrixProposeMoto]=useState('');
   const [acceptedDriverOfferMoto,setAcceptedDriverOfferMoto]=useState(false);
   const [fakeVehiclesMoto,setFakeVehiclesMoto]=useState([
-    {lat:32.2990,lng:-9.2360,id:1,emoji:'🛵'},
-    {lat:32.3040,lng:-9.2410,id:2,emoji:'🛵'},
-    {lat:32.2950,lng:-9.2300,id:3,emoji:'🛵'},
-    {lat:32.3070,lng:-9.2450,id:4,emoji:'🛵'},
+    {lat:32.2990,lng:-9.2360,id:1,emoji:vEmoji},
+    {lat:32.3040,lng:-9.2410,id:2,emoji:vEmoji},
+    {lat:32.2950,lng:-9.2300,id:3,emoji:vEmoji},
+    {lat:32.3070,lng:-9.2450,id:4,emoji:vEmoji},
   ]);
   const fvMotoDir=useRef([
     {dlat:0.0004,dlng:0.0002},{dlat:-0.0003,dlng:0.0005},{dlat:0.0002,dlng:-0.0004},
@@ -4923,8 +4932,9 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
     const methods=type==='apple'
       ?[{supportedMethods:'https://apple.com/apple-pay',data:{version:3,merchantIdentifier:'merchant.ma.safi-bridge',merchantCapabilities:['supports3DS'],supportedNetworks:['visa','masterCard'],countryCode:'MA'}}]
       :[{supportedMethods:'https://google.com/pay',data:{apiVersion:2,apiVersionMinor:0,merchantInfo:{merchantName:'Bridge Safi'},allowedPaymentMethods:[{type:'CARD',parameters:{allowedAuthMethods:['PAN_ONLY','CRYPTOGRAM_3DS'],allowedCardNetworks:['MASTERCARD','VISA']},tokenizationSpecification:{type:'PAYMENT_GATEWAY',parameters:{gateway:'example',gatewayMerchantId:'bridge-safi'}}}]}}];
-    const finalPrice=MOTO_PRICE-motoGemMAD;
-    const details={total:{label:'Bridge Moto Taxi · Safi',amount:{currency:'MAD',value:String(finalPrice)}}};
+    const offeredPrice=parseFloat(prixProposeMoto)||0;
+    const finalPrice=Math.max(0,offeredPrice-motoGemMAD);
+    const details={total:{label:`${vServiceName} · Safi`,amount:{currency:'MAD',value:String(finalPrice||1)}}};
     try{
       if(typeof PaymentRequest==='undefined') throw new Error('unsupported');
       const pr=new PaymentRequest(methods,details);
@@ -4940,24 +4950,26 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   const handleMotoBook=async(payLabel?:string)=>{
     if(!name.trim()||!phone.trim()||!destination.trim()){setFormErr('*');return;}
     setSending(true);setFormErr('');
-    const ref='MT-'+Math.floor(1000+Math.random()*9000);
+    const prefix=isTaxi?'TX':'MT';
+    const ref=prefix+'-'+Math.floor(1000+Math.random()*9000);
     const driverTrackUrl=`${window.location.origin}/driver/${ref}`;
     const pickup=clientAddress||'Safi, Maroc';
-    const finalPrice=MOTO_PRICE-motoGemMAD;
+    const offeredPrice=parseFloat(prixProposeMoto)||0;
+    const finalPrice=Math.max(0,offeredPrice-motoGemMAD);
     const payInfoMoto=motoPayMethod==='qr'?'QR Code':motoPayMethod==='cash'?'Espèces':motoPayMethod==='apple'?'Apple Pay':motoPayMethod==='google'?'Google Pay':'Espèces';
     try{
       await fetch(`/api/tracking/${ref}`,{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({clientLat:clientPos?.lat,clientLng:clientPos?.lng,clientAddress:pickup,destination:destination.trim(),customerName:name.trim(),customerPhone:phone.trim(),vehicleType:'moto',motoPrice:finalPrice,passengers:1,clientPrice:parseFloat(prixProposeMoto)||undefined}),
+        body:JSON.stringify({clientLat:clientPos?.lat,clientLng:clientPos?.lng,clientAddress:pickup,destination:destination.trim(),customerName:name.trim(),customerPhone:phone.trim(),vehicleType,passengers:isTaxi?undefined:1,clientPrice:offeredPrice||undefined}),
       }).catch(()=>{});
       await fetch(`${DRIVER_APP_URL}/api/trips`,{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({trackingNumber:ref,passengerName:name.trim(),passengerPhone:phone.trim(),pickupAddress:pickup,dropoffAddress:destination.trim(),vehicleType:'moto',passengers:1,fare:finalPrice,paymentMethod:payInfoMoto,driverTrackUrl,status:'scheduled'}),
+        body:JSON.stringify({trackingNumber:ref,passengerName:name.trim(),passengerPhone:phone.trim(),pickupAddress:pickup,dropoffAddress:destination.trim(),vehicleType,passengers:isTaxi?undefined:1,fare:finalPrice||undefined,paymentMethod:payInfoMoto,driverTrackUrl,status:'scheduled'}),
       }).catch(()=>{});
     }finally{setSending(false);}
     if(motoGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:motoGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${motoUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
-    localStorage.setItem('bridge_moto_ref',ref);
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref,type:'moto',date:new Date().toISOString(),destination:destination.trim(),address:clientAddress||'Safi',total:finalPrice,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    localStorage.setItem(vLocalKey,ref);
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref,type:vehicleType,date:new Date().toISOString(),destination:destination.trim(),address:clientAddress||'Safi',total:finalPrice||undefined,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setBookingRef(ref);
     if(motoPayMethod==='qr') setShowMotoQR(true);
   };
@@ -4992,10 +5004,11 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   const mapClientPos=trackData?.clientLat&&trackData?.clientLng?{lat:trackData.clientLat,lng:trackData.clientLng}:clientPos;
   const [motoRating,setMotoRating]=useState(0);
   const statusColor={waiting:'#F59E0B',accepted:'#10B981',arrived:'#3B82F6',completed:'#059669'}[trackData?.status||'waiting']||'#9CA3AF';
+  const vWord=vDriverWord(lang);
   const statusLabel={
-    waiting:{fr:'En attente d\'un motard…',en:'Waiting for a rider…',ar:'بانتظار سائق موتو…',amz:'ⵔⴰⴷ ⵢⴰⵙ ⵓⵙⵔⴰⵜⵏ…'},
-    accepted:{fr:'Motard en route 🛵',en:'Rider on the way 🛵',ar:'السائق في الطريق 🛵',amz:'ⴰⵎⴰⵏ ⵖ ⵓⵣⵣⵓⵍ 🛵'},
-    arrived:{fr:'Votre motard est arrivé ! 🎉',en:'Your rider has arrived! 🎉',ar:'وصل سائقك! 🎉',amz:'ⵢⵓⵙ ⵓⵙⵔⴰⵜⵏ ⵉⵏⴽ! 🎉'},
+    waiting:{fr:`En attente d'un ${vWord.toLowerCase()}…`,en:`Waiting for a ${vWord.toLowerCase()}…`,ar:`بانتظار ${vWord}…`,amz:'ⵔⴰⴷ ⵢⴰⵙ ⵓⵙⵔⴰⵜⵏ…'},
+    accepted:{fr:`${vWord} en route ${vEmoji}`,en:`${vWord} on the way ${vEmoji}`,ar:`${vWord} في الطريق ${vEmoji}`,amz:`ⴰⵎⴰⵏ ⵖ ⵓⵣⵣⵓⵍ ${vEmoji}`},
+    arrived:{fr:`Votre ${vWord.toLowerCase()} est arrivé ! 🎉`,en:`Your ${vWord.toLowerCase()} has arrived! 🎉`,ar:`وصل ${vWord}! 🎉`,amz:`ⵢⵓⵙ ⵓⵙⵔⴰⵜⵏ ⵉⵏⴽ! 🎉`},
     completed:{fr:'Course terminée ! ✅',en:'Ride completed! ✅',ar:'انتهت الرحلة! ✅',amz:'ⵉⵙⵙⵓⴼⵖ! ✅'},
   }[trackData?.status||'']?.[lang]||'';
 
@@ -5008,8 +5021,8 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
         <div style={{display:'flex',alignItems:'center',gap:10,padding:'14px 16px 0'}}>
           <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.12)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:18,flexShrink:0}}>←</button>
           <div style={{flex:1,textAlign:'center'}}>
-            <p style={{color:'#FED7AA',fontWeight:900,fontSize:14,letterSpacing:'0.12em',margin:0}}>🛵 BRIDGE MOTO TAXI</p>
-            <p style={{color:'rgba(254,215,170,0.5)',fontSize:9,letterSpacing:'0.18em',margin:0}}>RAPIDE · SAFI · آسفي</p>
+            <p style={{color:vAccent,fontWeight:900,fontSize:14,letterSpacing:'0.12em',margin:0}}>{vEmoji} {isTaxi?'BRIDGE TAXI CONFORT':'BRIDGE MOTO TAXI'}</p>
+            <p style={{color:`rgba(${isTaxi?'253,230,138':'254,215,170'},0.5)`,fontSize:9,letterSpacing:'0.18em',margin:0}}>{isTaxi?'CONFORT · SAFI · آسفي':'RAPIDE · SAFI · آسفي'}</p>
           </div>
           <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.12)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:11,fontWeight:900,flexShrink:0}}>{LANG_LABELS[lang]}</button>
         </div>
@@ -5025,17 +5038,11 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
           <div style={{display:'flex',justifyContent:'center',padding:'12px 0 4px',flexShrink:0}}>
             <div style={{width:36,height:4,borderRadius:2,background:'rgba(154,52,18,0.22)'}}/>
           </div>
-          <div style={{padding:'4px 20px 12px',borderBottom:'1px solid var(--c-border)',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'space-between',gap:10}}>
-            <div>
-              <p style={{fontWeight:900,fontSize:18,color:'var(--c-text)',margin:0}}>
-                {lang==='ar'?'📍 إلى أين؟':lang==='en'?'📍 Where to?':lang==='amz'?'📍 ⵖⴰⵜ ⵔⴰⴷ?':'📍 Votre course ?'}
-              </p>
-              <p style={{fontSize:11,color:'#9CA3AF',margin:'2px 0 0'}}>Moto Taxi · Safi</p>
-            </div>
-            <div style={{background:'linear-gradient(135deg,#EA580C,#F97316)',borderRadius:12,padding:'6px 14px',flexShrink:0}}>
-              <p style={{color:'white',fontWeight:900,fontSize:18,margin:0,lineHeight:1}}>7 DH</p>
-              <p style={{color:'rgba(255,255,255,0.8)',fontSize:9,fontWeight:700,margin:0,textAlign:'center' as const}}>PRIX FIXE</p>
-            </div>
+          <div style={{padding:'4px 20px 12px',borderBottom:'1px solid var(--c-border)',flexShrink:0}}>
+            <p style={{fontWeight:900,fontSize:18,color:'var(--c-text)',margin:0}}>
+              {lang==='ar'?'📍 إلى أين؟':lang==='en'?'📍 Where to?':lang==='amz'?'📍 ⵖⴰⵜ ⵔⴰⴷ?':'📍 Votre course ?'}
+            </p>
+            <p style={{fontSize:11,color:'#9CA3AF',margin:'2px 0 0'}}>{isTaxi?'Taxi Confort':'Moto Taxi'} · Safi · Prix selon trajet</p>
           </div>
           <div style={{overflowY:'auto',flex:1,padding:'16px 20px 36px',display:'flex',flexDirection:'column',gap:14}}>
             <div>
@@ -5077,7 +5084,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
                 <span style={{fontWeight:900,color:'var(--c-text)',fontSize:14,whiteSpace:'nowrap' as const}}>DH</span>
               </div>
               <p style={{fontSize:10,color:'#9CA3AF',margin:'4px 0 0'}}>
-                {lang==='ar'?'المرسال يرى سعرك':lang==='en'?'Driver sees your offer':'Le motard voit votre offre et peut counter-proposer'}
+                {lang==='ar'?'المرسال يرى سعرك':lang==='en'?`${vDriverWord('en')} sees your offer`:`${vDriverWord('fr')} voit votre offre et peut counter-proposer`}
               </p>
             </div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
@@ -5102,16 +5109,16 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
               {motoGems>0?(
                 <>
                   <p style={{fontSize:10,color:'rgba(255,255,255,0.6)',margin:'0 0 8px'}}>
-                    {motoGems.toLocaleString()} 💎 → max {maxMotoGemMAD} MAD / {MOTO_PRICE} DH
+                    {motoGems.toLocaleString()} 💎 → max {maxMotoGemMAD} MAD {lang==='en'?'discount':'de réduction'}
                   </p>
                   {motoGemMAD>0?(
                     <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                      <span style={{fontSize:10,fontWeight:700,color:'#4ADE80'}}>✓ -{motoGemMAD} MAD → {MOTO_PRICE-motoGemMAD} DH {lang==='en'?'applied':'appliqué'}</span>
+                      <span style={{fontSize:10,fontWeight:700,color:'#4ADE80'}}>✓ -{motoGemMAD} MAD {lang==='en'?'applied':'appliqué'}</span>
                       <button onClick={()=>setMotoGemMAD(0)} style={{fontSize:9,fontWeight:700,padding:'2px 8px',borderRadius:8,background:'rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.5)',border:'none',cursor:'pointer'}}>✕</button>
                     </div>
                   ):(
                     <div style={{display:'flex',gap:8,flexWrap:'wrap' as const}}>
-                      {[1,2,3,4,5,6,7,maxMotoGemMAD].filter((v,i,a)=>v>0&&v<=MOTO_PRICE&&v<=maxMotoGemMAD&&a.indexOf(v)===i).slice(0,5).map(mad=>(
+                      {[1,2,3,4,5,maxMotoGemMAD].filter((v,i,a)=>v>0&&v<=maxMotoGemMAD&&a.indexOf(v)===i).slice(0,5).map(mad=>(
                         <button key={mad} onClick={()=>setMotoGemMAD(mad)}
                           style={{padding:'4px 12px',borderRadius:12,fontWeight:900,fontSize:10,color:'#4ADE80',background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.5)',cursor:'pointer'}}>
                           -{mad} MAD
@@ -5135,17 +5142,19 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
               </p>
               <SharedPaymentOptions lang={lang} selected={motoPayMethod} onSelect={setMotoPayMethod} showCash showCard={false} onWalletPay={handleMotoWalletPay}/>
             </div>
-            <div style={{borderRadius:14,padding:'12px 16px',background:'linear-gradient(135deg,rgba(234,88,12,0.12),rgba(249,115,22,0.06))',border:'1px solid rgba(234,88,12,0.3)',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-              <span style={{fontSize:12,fontWeight:700,color:'var(--c-text)'}}>🛵 {lang==='en'?'Total':lang==='ar'?'المجموع':'Total à payer'}</span>
-              <div style={{textAlign:'right' as const}}>
-                <span style={{fontSize:22,fontWeight:900,color:'#EA580C'}}>{MOTO_PRICE-motoGemMAD} DH</span>
-                {motoGemMAD>0&&<p style={{fontSize:10,color:'#4ADE80',margin:0}}>-{motoGemMAD} MAD 💎</p>}
+            {prixProposeMoto&&(
+              <div style={{borderRadius:14,padding:'12px 16px',background:`linear-gradient(135deg,${isTaxi?'rgba(180,83,9,0.12),rgba(245,158,11,0.06)':'rgba(234,88,12,0.12),rgba(249,115,22,0.06)'})`,border:`1px solid ${isTaxi?'rgba(180,83,9,0.3)':'rgba(234,88,12,0.3)'}`,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                <span style={{fontSize:12,fontWeight:700,color:'var(--c-text)'}}>{vEmoji} {lang==='en'?'Your offer':lang==='ar'?'عرضك':'Votre offre'}</span>
+                <div style={{textAlign:'right' as const}}>
+                  <span style={{fontSize:22,fontWeight:900,color:isTaxi?'#D97706':'#EA580C'}}>{Math.max(0,parseFloat(prixProposeMoto||'0')-motoGemMAD)} DH</span>
+                  {motoGemMAD>0&&<p style={{fontSize:10,color:'#4ADE80',margin:0}}>-{motoGemMAD} MAD 💎</p>}
+                </div>
               </div>
-            </div>
+            )}
             <button onClick={()=>{if(!motoPayMethod){setFormErr('*pay');return;}handleMotoBook();}} disabled={sending}
-              style={{width:'100%',padding:'16px',borderRadius:18,border:'none',background:sending?'#9CA3AF':'linear-gradient(135deg,#9A3412 0%,#F97316 100%)',color:'white',fontWeight:900,fontSize:15,boxShadow:sending?'none':'0 8px 28px rgba(234,88,12,0.45)',cursor:sending?'wait':'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
+              style={{width:'100%',padding:'16px',borderRadius:18,border:'none',background:sending?'#9CA3AF':vGrad,color:'white',fontWeight:900,fontSize:15,boxShadow:sending?'none':`0 8px 28px ${isTaxi?'rgba(180,83,9,0.45)':'rgba(234,88,12,0.45)'}`,cursor:sending?'wait':'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
               {sending?<>⏳ {lang==='ar'?'جاري الإرسال…':lang==='en'?'Sending…':'Envoi en cours…'}</>
-                :<>🛵 {lang==='ar'?'احجز الآن':lang==='amz'?'ⵙⵖⵏ':lang==='en'?'Book Now':'Réserver maintenant'}</>}
+                :<>{vEmoji} {lang==='ar'?'احجز الآن':lang==='amz'?'ⵙⵖⵏ':lang==='en'?'Book Now':'Réserver maintenant'}</>}
             </button>
           </div>
         </div>
@@ -5163,10 +5172,10 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
             {trackData?.eta&&<span style={{fontSize:13,fontWeight:900,color:'#F97316',flexShrink:0}}>⏱ {trackData.eta} min</span>}
           </div>
           <div style={{display:'flex',alignItems:'center',gap:10,padding:'10px 14px',borderRadius:14,background:'var(--c-bg)',border:'1px solid var(--c-border)',marginBottom:12}}>
-            <span style={{fontSize:24}}>🛵</span>
+            <span style={{fontSize:24}}>{vEmoji}</span>
             <div style={{flex:1}}>
-              <p style={{fontSize:13,fontWeight:700,color:'var(--c-text)',margin:'0 0 1px'}}>{trackData?.driverName||'Bridge Moto Taxi'}</p>
-              <p style={{fontSize:10,color:'#9CA3AF',margin:0}}>Réf: <strong style={{color:'var(--c-text)'}}>{bookingRef}</strong> · 7 DH prix fixe</p>
+              <p style={{fontSize:13,fontWeight:700,color:'var(--c-text)',margin:'0 0 1px'}}>{trackData?.driverName||vServiceName}</p>
+              <p style={{fontSize:10,color:'#9CA3AF',margin:0}}>Réf: <strong style={{color:'var(--c-text)'}}>{bookingRef}</strong></p>
             </div>
             {trackData?.status==='arrived'&&<span style={{fontSize:20}}>🎉</span>}
           </div>
@@ -5176,7 +5185,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
             </div>
           )}
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
-            <button onClick={()=>{setBookingRef('');localStorage.removeItem('bridge_moto_ref');setTrackData(null);}}
+            <button onClick={()=>{setBookingRef('');localStorage.removeItem(vLocalKey);setTrackData(null);}}
               style={{padding:'11px',borderRadius:14,border:'none',background:'#FEE2E2',color:'#DC2626',fontWeight:900,fontSize:13,cursor:'pointer'}}>
               ✕ {lang==='ar'?'إلغاء':lang==='en'?'Cancel':'Annuler'}
             </button>
@@ -5220,12 +5229,12 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
             {lang==='ar'?'وصلت بسلامة !':lang==='en'?'You arrived safely!':lang==='amz'?'ⵜⴰⵍⴰ ⵢⵓⵙ !':'Vous êtes arrivé(e) !'}
           </h2>
           <p style={{color:'rgba(255,255,255,0.5)',fontSize:13,textAlign:'center',margin:'0 0 28px',maxWidth:260}}>
-            {lang==='en'?'Thank you for choosing Bridge Moto Taxi':lang==='ar'?'شكراً لاختيارك Bridge Moto':'Merci d\'avoir choisi Bridge Moto Taxi'}
+            {lang==='en'?`Thank you for choosing ${vServiceName}`:lang==='ar'?`شكراً لاختيارك ${vServiceName}`:`Merci d'avoir choisi ${vServiceName}`}
           </p>
-          <div style={{background:'rgba(255,255,255,0.06)',borderRadius:20,padding:'18px 28px',width:'100%',maxWidth:300,marginBottom:24,textAlign:'center',border:'1px solid rgba(249,115,22,0.15)'}}>
+          <div style={{background:'rgba(255,255,255,0.06)',borderRadius:20,padding:'18px 28px',width:'100%',maxWidth:300,marginBottom:24,textAlign:'center',border:`1px solid ${isTaxi?'rgba(245,158,11,0.15)':'rgba(249,115,22,0.15)'}`}}>
             <p style={{color:'rgba(255,255,255,0.35)',fontSize:10,fontWeight:700,letterSpacing:'0.18em',margin:'0 0 5px'}}>RÉFÉRENCE DE COURSE</p>
-            <p style={{color:'#F97316',fontWeight:900,fontSize:22,margin:'0 0 8px'}}>{bookingRef}</p>
-            {trackData?.driverName&&<p style={{color:'rgba(255,255,255,0.6)',fontSize:13,margin:0}}>🛵 {trackData.driverName}</p>}
+            <p style={{color:isTaxi?'#F59E0B':'#F97316',fontWeight:900,fontSize:22,margin:'0 0 8px'}}>{bookingRef}</p>
+            {trackData?.driverName&&<p style={{color:'rgba(255,255,255,0.6)',fontSize:13,margin:0}}>{vEmoji} {trackData.driverName}</p>}
           </div>
           <div style={{marginBottom:28,textAlign:'center'}}>
             <p style={{color:'rgba(255,255,255,0.35)',fontSize:10,letterSpacing:'0.15em',marginBottom:10}}>
@@ -5237,9 +5246,9 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
               ))}
             </div>
           </div>
-          <button onClick={()=>{setBookingRef('');localStorage.removeItem('bridge_moto_ref');setTrackData(null);setMotoRating(0);}}
-            style={{width:'100%',maxWidth:300,padding:'16px',borderRadius:18,border:'none',background:'linear-gradient(135deg,#9A3412,#F97316)',color:'white',fontWeight:900,fontSize:15,cursor:'pointer',boxShadow:'0 8px 28px rgba(249,115,22,0.45)'}}>
-            🛵 {lang==='en'?'New ride':lang==='ar'?'رحلة جديدة':'Nouvelle course'}
+          <button onClick={()=>{setBookingRef('');localStorage.removeItem(vLocalKey);setTrackData(null);setMotoRating(0);}}
+            style={{width:'100%',maxWidth:300,padding:'16px',borderRadius:18,border:'none',background:vGrad,color:'white',fontWeight:900,fontSize:15,cursor:'pointer',boxShadow:`0 8px 28px ${isTaxi?'rgba(245,158,11,0.45)':'rgba(249,115,22,0.45)'}`}}>
+            {vEmoji} {lang==='en'?'New ride':lang==='ar'?'رحلة جديدة':'Nouvelle course'}
           </button>
         </div>
       )}
@@ -6764,8 +6773,8 @@ export default function App() {
   const backToHub=()=>{setMode('hub');setService('none');};
   if(service==='none') return <DarkModeCtx.Provider value={dv}><ServiceSelectPage onSelect={s=>{if(s==='taxi')setService('taxi-select');else setService(s);}} onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/></DarkModeCtx.Provider>;
   if(service==='taxi-select') return <DarkModeCtx.Provider value={dv}><TaxiVehicleSelectPage onBack={()=>setService('none')} onSelect={v=>setService(v)} lang={lang} cycleLang={cycleLang}/></DarkModeCtx.Provider>;
-  if(service==='taxi') return <DarkModeCtx.Provider value={dv}><TaxiPage onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
-  if(service==='moto') return <DarkModeCtx.Provider value={dv}><MotoTaxiPage onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
+  if(service==='taxi') return <DarkModeCtx.Provider value={dv}><MotoTaxiPage vehicleType='taxi' onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
+  if(service==='moto') return <DarkModeCtx.Provider value={dv}><MotoTaxiPage vehicleType='moto' onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
   if(service==='tabac') return <DarkModeCtx.Provider value={dv}><TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
   if(service==='fleurs') return <DarkModeCtx.Provider value={dv}><FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
   if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
