@@ -11,6 +11,7 @@ import adminRouter from "./admin";
 import couponsRouter from "./coupons";
 import visitsRouter from "./visits";
 import missionsRouter from "./missions";
+import managerRouter from "./manager";
 
 const router: IRouter = Router();
 
@@ -26,5 +27,6 @@ router.use(adminRouter);
 router.use(couponsRouter);
 router.use(visitsRouter);
 router.use(missionsRouter);
+router.use(managerRouter);
 
 export default router;

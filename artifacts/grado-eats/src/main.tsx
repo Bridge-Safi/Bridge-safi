@@ -1661,6 +1661,15 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
             boxShadow:'0 2px 12px rgba(0,0,0,0.5)',lineHeight:1}}>
           ←
         </button>
+        {/* Leaderboard button */}
+        <button onClick={()=>navigate('/classement')}
+          style={{width:36,height:36,borderRadius:'50%',border:'1.5px solid rgba(255,215,0,0.5)',
+            background:'rgba(4,17,10,0.75)',backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',
+            color:'#FFD700',fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',
+            boxShadow:'0 2px 12px rgba(0,0,0,0.5)',lineHeight:1}}
+          title="Classement">
+          🏆
+        </button>
         {/* Avatar */}
         {avatarSrc
           ? <img src={avatarSrc} alt="Profil" style={{width:36,height:36,borderRadius:'50%',objectFit:'cover',
@@ -4700,6 +4709,139 @@ function FloatingAssistantWidget() {
   );
 }
 
+// ── Leaderboard Page — classement synchronisé avec le Manager ─────────────────
+interface ManagerPlayer { id:number; pseudo:string; phone:string; diamonds:number; score:number; gamesPlayed:number; menuCost:number; missing:number; amountMAD:number; }
+
+function LeaderboardPage() {
+  const [, navigate] = useLocation();
+  const { user } = useUser();
+  const [players, setPlayers] = React.useState<ManagerPlayer[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [userPhone, setUserPhone] = React.useState<string>('');
+  const { getToken } = useAuth();
+
+  React.useEffect(() => {
+    fetch('/api/manager/leaderboard')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.players) setPlayers(data.players); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  React.useEffect(() => {
+    if (!user) return;
+    getToken().then(token => {
+      const h: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+      return fetch('/api/profile', { credentials: 'include', headers: h });
+    }).then(r => r?.ok ? r.json() : null).then(data => {
+      if (data?.phone) setUserPhone(data.phone);
+    }).catch(() => {});
+  }, [user]);
+
+  const GAME_TARGET = 60000;
+  const myPlayer = players.find(p => p.phone === userPhone);
+  const myRank = myPlayer ? players.findIndex(p => p.phone === userPhone) + 1 : null;
+
+  const medalEmoji = (i: number) => i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`;
+  const progressPct = (d: number) => Math.min(100, Math.round((d / GAME_TARGET) * 100));
+
+  return (
+    <div style={{minHeight:'100vh',background:'linear-gradient(180deg,#04110A 0%,#071C11 60%,#050F08 100%)',color:'white'}}>
+      {/* Header */}
+      <div style={{background:'rgba(0,0,0,0.4)',backdropFilter:'blur(12px)',padding:'14px 20px',display:'flex',alignItems:'center',gap:12,borderBottom:'1px solid rgba(74,222,128,0.15)',position:'sticky',top:0,zIndex:10}}>
+        <button onClick={()=>navigate('/game')} style={{background:'none',border:'none',color:'#4ADE80',fontSize:20,cursor:'pointer',padding:'4px',lineHeight:1}}>←</button>
+        <div>
+          <div style={{fontSize:'17px',fontWeight:900,letterSpacing:'0.05em'}}>🏆 Classement Safi Runner</div>
+          <div style={{fontSize:'11px',color:'rgba(255,255,255,0.4)',marginTop:'1px'}}>Synchronisé avec le Manager · Objectif : {GAME_TARGET.toLocaleString()} 💎</div>
+        </div>
+      </div>
+
+      {/* My rank card */}
+      {myPlayer && (
+        <div style={{margin:'16px 16px 0',background:'linear-gradient(135deg,rgba(74,222,128,0.12),rgba(5,150,105,0.08))',border:'1px solid rgba(74,222,128,0.3)',borderRadius:'16px',padding:'14px 16px'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+            <div>
+              <div style={{fontSize:12,color:'#4ADE80',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.08em'}}>Ma position</div>
+              <div style={{fontSize:24,fontWeight:900,marginTop:2}}>#{myRank} {myPlayer.pseudo}</div>
+            </div>
+            <div style={{textAlign:'right'}}>
+              <div style={{fontSize:22,fontWeight:900,color:'#4ADE80'}}>{(myPlayer.diamonds||0).toLocaleString()} 💎</div>
+              <div style={{fontSize:11,color:'rgba(255,255,255,0.5)',marginTop:2}}>{progressPct(myPlayer.diamonds||0)}% de l'objectif</div>
+            </div>
+          </div>
+          {/* Progress bar */}
+          <div style={{background:'rgba(255,255,255,0.1)',borderRadius:'999px',height:8,overflow:'hidden'}}>
+            <div style={{height:'100%',borderRadius:'999px',background:'linear-gradient(90deg,#059669,#4ADE80)',width:`${progressPct(myPlayer.diamonds||0)}%`,transition:'width 0.5s ease'}}/>
+          </div>
+          <div style={{display:'flex',justifyContent:'space-between',marginTop:6,fontSize:11,color:'rgba(255,255,255,0.4)'}}>
+            <span>{(myPlayer.diamonds||0).toLocaleString()} 💎 gagnés</span>
+            <span>{((myPlayer.missing||0)).toLocaleString()} 💎 manquants</span>
+          </div>
+          {(myPlayer.missing||0) > 0 && (
+            <div style={{marginTop:8,padding:'8px 10px',background:'rgba(239,68,68,0.12)',borderRadius:'8px',border:'1px solid rgba(239,68,68,0.2)',fontSize:12,color:'#FCA5A5'}}>
+              ⚠️ Il manque {(myPlayer.missing||0).toLocaleString()} 💎 → pénalité estimée : <strong>{myPlayer.amountMAD} DH</strong>
+            </div>
+          )}
+          {(myPlayer.missing||0) <= 0 && (
+            <div style={{marginTop:8,padding:'8px 10px',background:'rgba(74,222,128,0.1)',borderRadius:'8px',border:'1px solid rgba(74,222,128,0.2)',fontSize:12,color:'#4ADE80'}}>
+              🎉 Objectif atteint ! Prochaine livraison <strong>GRATUITE</strong> 🎁
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Rules reminder */}
+      <div style={{margin:'12px 16px 0',background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'10px 14px',fontSize:12,color:'rgba(255,255,255,0.5)',lineHeight:1.6}}>
+        📜 <strong style={{color:'rgba(255,255,255,0.7)'}}>Règles :</strong> 3 jours × 2h/jour · 6 000 💎 par heure · Objectif : 60 000 💎 · Manque 10 000 💎 = 5 DH de pénalité
+      </div>
+
+      {/* Player list */}
+      <div style={{padding:'12px 16px 40px'}}>
+        {loading && (
+          <div style={{textAlign:'center',padding:'60px 20px',color:'rgba(255,255,255,0.35)'}}>
+            <div style={{width:36,height:36,border:'3px solid rgba(74,222,128,0.2)',borderTop:'3px solid #4ADE80',borderRadius:'50%',animation:'spin 0.9s linear infinite',margin:'0 auto 12px'}}/>
+            <p style={{fontSize:13}}>Chargement du classement...</p>
+            <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+          </div>
+        )}
+        {!loading && players.length === 0 && (
+          <div style={{textAlign:'center',padding:'60px 20px',color:'rgba(255,255,255,0.35)'}}>
+            <div style={{fontSize:48,marginBottom:12}}>🏆</div>
+            <p>Aucun joueur enregistré</p>
+          </div>
+        )}
+        {!loading && players.map((p, i) => {
+          const isMe = p.phone === userPhone;
+          const pct = progressPct(p.diamonds || 0);
+          return (
+            <div key={p.id} style={{background:isMe?'rgba(74,222,128,0.08)':'rgba(255,255,255,0.03)',border:`1px solid ${isMe?'rgba(74,222,128,0.3)':'rgba(255,255,255,0.06)'}`,borderRadius:'14px',padding:'12px 14px',marginBottom:'8px'}}>
+              <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:8}}>
+                <span style={{fontSize:18,minWidth:28,fontWeight:900,color:i<3?['#FFD700','#C0C0C0','#CD7F32'][i]:'rgba(255,255,255,0.4)'}}>{medalEmoji(i)}</span>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontWeight:700,fontSize:14,display:'flex',alignItems:'center',gap:6}}>
+                    {p.pseudo || p.phone}
+                    {isMe && <span style={{fontSize:10,background:'#059669',color:'#fff',padding:'1px 6px',borderRadius:'999px',fontWeight:700}}>Moi</span>}
+                  </div>
+                  <div style={{fontSize:11,color:'rgba(255,255,255,0.4)',marginTop:1}}>{p.gamesPlayed} parties jouées</div>
+                </div>
+                <div style={{textAlign:'right',flexShrink:0}}>
+                  <div style={{fontWeight:900,fontSize:15,color:pct>=100?'#4ADE80':'white'}}>{(p.diamonds||0).toLocaleString()} 💎</div>
+                  <div style={{fontSize:10,color:pct>=100?'#4ADE80':p.missing>0?'#FCA5A5':'rgba(255,255,255,0.4)',marginTop:1}}>
+                    {pct>=100 ? '✅ Objectif atteint' : `−${(p.missing||0).toLocaleString()} 💎`}
+                  </div>
+                </div>
+              </div>
+              <div style={{background:'rgba(255,255,255,0.08)',borderRadius:'999px',height:5,overflow:'hidden'}}>
+                <div style={{height:'100%',borderRadius:'999px',background:pct>=100?'#4ADE80':'linear-gradient(90deg,#059669,#4ADE80)',width:`${pct}%`,transition:'width 0.5s ease'}}/>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ── Store Owner Page (Tabac / Pharmacie / Fleurs) ─────────────────────────────
 type StoreType = 'tabac' | 'pharmacie' | 'fleurs';
 interface StoreOrder {
@@ -4889,6 +5031,7 @@ function ClerkProviderWithRoutes() {
           <Route path="/dispatch" component={DispatchPage} />
           <Route path="/driver/:ref" component={DriverTrackerPage} />
           <Route path="/resto" component={RestaurantOwnerPage} />
+          <Route path="/classement" component={LeaderboardPage} />
           <Route path="/boutique/:type" component={StoreOwnerPage} />
           <Route path="/admin-auth" component={AdminAuthPage} />
           <Route path="/manager" component={AdminAuthPage} />

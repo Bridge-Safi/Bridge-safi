@@ -170,8 +170,35 @@ router.post("/game/diamonds", async (req, res) => {
       })
       .returning();
 
-    logger.info({ userId, diamonds }, "Game diamonds updated");
+    const finalDiamonds = rows[0]?.diamonds ?? diamonds;
+    logger.info({ userId, diamonds: finalDiamonds }, "Game diamonds updated");
     res.json(rows[0]);
+
+    // Fire-and-forget: sync to Manager (order-dispatcher.replit.app) in background
+    db.select().from(userProfilesTable).where(eq(userProfilesTable.userId, userId)).limit(1)
+      .then(profiles => {
+        const p = profiles[0];
+        if (!p?.phone) return;
+        const MANAGER_URL = "https://order-dispatcher.replit.app";
+        return fetch(`${MANAGER_URL}/api/players`).then(r => r.ok ? r.json() : null).then(async (players: Array<{id:number;phone:string;diamonds:number}>|null) => {
+          if (!players) return;
+          const existing = players.find(pl => pl.phone === p.phone);
+          if (existing) {
+            if (finalDiamonds > (existing.diamonds || 0)) {
+              await fetch(`${MANAGER_URL}/api/players/${existing.id}`, {
+                method: "PATCH", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ diamonds: finalDiamonds }),
+              });
+            }
+          } else {
+            await fetch(`${MANAGER_URL}/api/players`, {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ phone: p.phone, pseudo: p.name || p.phone, diamonds: finalDiamonds }),
+            });
+          }
+          logger.info({ userId, phone: p.phone, diamonds: finalDiamonds }, "Synced diamonds to Manager");
+        });
+      }).catch(() => {}); // non-blocking — never crash the request
   } catch (err) {
     req.log.error({ err }, "Failed to update game diamonds");
     res.status(500).json({ error: "Erreur serveur" });
