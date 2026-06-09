@@ -3,9 +3,6 @@ builder = "nixpacks"
 buildCommand = "pnpm install --frozen-lockfile && pnpm run build:railway"
 
 [deploy]
-startCommand = "node --enable-source-maps ./artifacts/api-server/dist/index.mjs"
+startCommand = "NODE_ENV=production node --enable-source-maps ./artifacts/api-server/dist/index.mjs"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 5
-
-[[services]]
-name = "bridge-safi"
