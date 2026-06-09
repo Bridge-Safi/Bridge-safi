@@ -604,4 +604,75 @@ router.patch("/orders/by-ref/:ref/status", async (req, res) => {
   }
 });
 
+// ── Store owner routes (Tabac, Pharmacie, Fleurs) ─────────────────────────────
+const STORE_CODES: Record<string, string> = {
+  tabac:     process.env.TABAC_OWNER_CODE     || "TABAC-2025",
+  pharmacie: process.env.PHARMACIE_OWNER_CODE || "PHARMA-2025",
+  fleurs:    process.env.FLEURS_OWNER_CODE    || "FLEURS-2025",
+};
+
+// GET /api/orders/by-store?type=tabac&code=TABAC-2025
+router.get("/orders/by-store", async (req, res) => {
+  try {
+    const type = (req.query.type as string || "").toLowerCase().trim();
+    const code = (req.query.code as string || "").trim();
+    if (!type || !STORE_CODES[type]) {
+      res.status(400).json({ error: "type requis: tabac|pharmacie|fleurs" });
+      return;
+    }
+    if (code !== STORE_CODES[type]) {
+      res.status(401).json({ error: "Code incorrect" });
+      return;
+    }
+    const storeService = type; // 'tabac' | 'pharmacie' | 'fleurs'
+    const nameKeyword = type === "tabac" ? "Bridge Tabac" : type === "pharmacie" ? "Bridge Pharmacie" : "Bridge Fleurs";
+
+    const allOrders = await db
+      .select()
+      .from(ordersTable)
+      .orderBy(desc(ordersTable.createdAt))
+      .limit(200);
+
+    const filtered = allOrders.filter(o => {
+      const matchService = o.service === storeService;
+      const matchName = o.restaurantName ? o.restaurantName.toLowerCase().includes(nameKeyword.toLowerCase().split(" ")[1]) : false;
+      return (matchService || matchName) && o.status !== "pending_payment";
+    }).slice(0, 50);
+
+    res.json({ orders: filtered });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch orders" });
+  }
+});
+
+// PATCH /api/orders/by-ref/:ref/store-status — update status from store owner
+router.patch("/orders/by-ref/:ref/store-status", async (req, res) => {
+  try {
+    const ref = String(req.params.ref);
+    const { status, type, code } = req.body as { status: string; type: string; code: string };
+    const allowed = ["accepted", "preparing", "ready", "delivered", "cancelled"];
+    if (!allowed.includes(status)) { res.status(400).json({ error: "Invalid status" }); return; }
+    if (!type || !STORE_CODES[type]) { res.status(400).json({ error: "type requis" }); return; }
+    if (code !== STORE_CODES[type]) { res.status(401).json({ error: "Code incorrect" }); return; }
+
+    const { eq: eqFn } = await import("drizzle-orm");
+    const [order] = await db
+      .update(ordersTable)
+      .set({ status, updatedAt: new Date() })
+      .where(eqFn(ordersTable.ref, ref))
+      .returning();
+    if (!order) { res.status(404).json({ error: "Not found" }); return; }
+
+    const trackMap: Record<string, string> = {
+      accepted: "preparing", preparing: "preparing", ready: "preparing",
+      on_the_way: "on_way", delivered: "delivered",
+    };
+    if (trackMap[status]) syncTrackingStatus(order.ref, trackMap[status]);
+
+    res.json({ order });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update" });
+  }
+});
+
 export default router;

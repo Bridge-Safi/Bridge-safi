@@ -3638,7 +3638,7 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
     }finally{setSending(false);}
     if(pharmGemMAD>0){getAuthHeadersPharm().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:pharmGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${pharmUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ref:orderRef,service:delivMode,customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:'Bridge Pharmacie'}),
+      body:JSON.stringify({ref:orderRef,service:'pharmacie',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:'Bridge Pharmacie'}),
     }).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
     try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'pharmacie',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
@@ -5614,7 +5614,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
     const delivAddr=resMode==='retrait'?`${floristName} — Retrait sur place`:`${resAddr.trim()}, Safi, Maroc`;
     try{
       await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({ref:orderRef,service:'reservation',customerName:resName.trim(),customerPhone:resPhone.trim(),customerAddress:delivAddr,items,total:cartTotal,deliveryMode:resMode,paymentMethod:'cash',restaurantName:`Bridge Fleurs — ${floristName}`,notes:`📅 ${resDate} · ⏰ ${resTime}`}),
+        body:JSON.stringify({ref:orderRef,service:'fleurs',customerName:resName.trim(),customerPhone:resPhone.trim(),customerAddress:delivAddr,items,total:cartTotal,deliveryMode:resMode,paymentMethod:'cash',restaurantName:`Bridge Fleurs — ${floristName}`,notes:`📅 ${resDate} · ⏰ ${resTime}`}),
       }).catch(()=>{});
     }finally{setSending(false);}
     setLastRef(orderRef);
@@ -6113,6 +6113,9 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
       }).catch(()=>{});
     }finally{setSending(false);}
     if(tabacGemMAD>0){getAuthHeadersTabac().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:tabacGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${tabacUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
+    await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ref:orderRef,service:'tabac',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:'Bridge Tabac'}),
+    }).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
     try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'tabac',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);

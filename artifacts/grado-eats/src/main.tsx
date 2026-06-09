@@ -4700,6 +4700,171 @@ function FloatingAssistantWidget() {
   );
 }
 
+// ── Store Owner Page (Tabac / Pharmacie / Fleurs) ─────────────────────────────
+type StoreType = 'tabac' | 'pharmacie' | 'fleurs';
+interface StoreOrder {
+  id: number; ref: string; customerName: string; customerPhone: string;
+  customerAddress: string; items: Array<{name:string;qty:number;price:number}>;
+  total: number; status: string; deliveryMode: string; paymentMethod: string; createdAt: string;
+}
+const STORE_INFO: Record<StoreType, {name:string;emoji:string;accent:string}> = {
+  tabac:     { name:'Bridge Tabac',     emoji:'🚬', accent:'#e94560' },
+  pharmacie: { name:'Bridge Pharmacie', emoji:'💊', accent:'#8B5CF6' },
+  fleurs:    { name:'Bridge Fleurs',    emoji:'🌸', accent:'#EC4899' },
+};
+function StoreOwnerPage({ params }: { params?: { type?: string } }) {
+  const storeType = (params?.type || '') as StoreType;
+  const info = STORE_INFO[storeType];
+  const [code, setCode] = React.useState('');
+  const [authed, setAuthed] = React.useState(() => {
+    try { return localStorage.getItem(`bridge_store_auth_${storeType}`) === 'ok'; } catch { return false; }
+  });
+  const [authErr, setAuthErr] = React.useState('');
+  const [authLoading, setAuthLoading] = React.useState(false);
+  const [orders, setOrders] = React.useState<StoreOrder[]>([]);
+  const seenRefs = React.useRef<Set<string>>(new Set());
+  const pollRef = React.useRef<number|null>(null);
+
+  if (!info) return <div style={{minHeight:'100vh',background:'#0a0a1a',color:'white',display:'flex',alignItems:'center',justifyContent:'center'}}>Type invalide. Utilisez /boutique/tabac, /boutique/pharmacie ou /boutique/fleurs</div>;
+
+  const playAlert = () => { try { const ctx=new AudioContext();const osc=ctx.createOscillator();const g=ctx.createGain();osc.connect(g);g.connect(ctx.destination);osc.frequency.value=880;g.gain.setValueAtTime(0.3,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.6);osc.start();osc.stop(ctx.currentTime+0.6); } catch {} };
+
+  const fetchOrders = React.useCallback(async () => {
+    try {
+      const savedCode = localStorage.getItem(`bridge_store_code_${storeType}`) || '';
+      const r = await fetch(`/api/orders/by-store?type=${storeType}&code=${encodeURIComponent(savedCode)}`);
+      if (r.status === 401) { localStorage.removeItem(`bridge_store_auth_${storeType}`); setAuthed(false); return; }
+      if (!r.ok) return;
+      const data = await r.json();
+      const newOrders: StoreOrder[] = data.orders || [];
+      const newPending = newOrders.filter(o => o.status === 'pending' && !seenRefs.current.has(o.ref));
+      if (newPending.length > 0) { playAlert(); newPending.forEach(o => seenRefs.current.add(o.ref)); }
+      newOrders.forEach(o => seenRefs.current.add(o.ref));
+      setOrders(newOrders);
+    } catch {}
+  }, [storeType]);
+
+  React.useEffect(() => {
+    if (!authed) return;
+    fetchOrders();
+    pollRef.current = window.setInterval(fetchOrders, 5000);
+    return () => { if (pollRef.current) clearInterval(pollRef.current); };
+  }, [authed, fetchOrders]);
+
+  const handleLogin = async () => {
+    setAuthErr(''); setAuthLoading(true);
+    try {
+      const r = await fetch(`/api/orders/by-store?type=${storeType}&code=${encodeURIComponent(code)}`);
+      if (r.ok) {
+        localStorage.setItem(`bridge_store_auth_${storeType}`, 'ok');
+        localStorage.setItem(`bridge_store_code_${storeType}`, code);
+        setAuthed(true);
+      } else { setAuthErr('Code incorrect'); }
+    } catch { setAuthErr('Erreur de connexion'); }
+    setAuthLoading(false);
+  };
+
+  const updateStatus = async (ref: string, status: string) => {
+    const savedCode = localStorage.getItem(`bridge_store_code_${storeType}`) || '';
+    await fetch(`/api/orders/by-ref/${ref}/store-status`, {
+      method:'PATCH', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ status, type: storeType, code: savedCode }),
+    }).catch(() => {});
+    setOrders(prev => prev.map(o => o.ref === ref ? {...o, status} : o));
+    if (['preparing','accepted'].includes(status)) {
+      fetch(`/api/tracking/${ref}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({status:'preparing'}) }).catch(() => {});
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem(`bridge_store_auth_${storeType}`);
+    localStorage.removeItem(`bridge_store_code_${storeType}`);
+    setAuthed(false); setCode(''); setOrders([]);
+  };
+
+  if (!authed) {
+    return (
+      <div style={{minHeight:'100vh',background:'#0a0a1a',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px'}}>
+        <div style={{background:'#161630',borderRadius:'20px',padding:'40px 32px',maxWidth:'360px',width:'100%',textAlign:'center'}}>
+          <div style={{fontSize:'52px',marginBottom:'12px'}}>{info.emoji}</div>
+          <h1 style={{color:'white',fontSize:'22px',fontWeight:'700',marginBottom:'4px'}}>{info.name}</h1>
+          <p style={{color:'rgba(255,255,255,0.45)',fontSize:'13px',marginBottom:'32px'}}>Espace propriétaire</p>
+          <input type="password" placeholder="Code d'accès" value={code}
+            onChange={e => setCode(e.target.value)}
+            onKeyDown={e => e.key==='Enter' && handleLogin()}
+            style={{width:'100%',padding:'14px 16px',borderRadius:'12px',border:`2px solid ${authErr?'#ef4444':'rgba(255,255,255,0.1)'}`,background:'rgba(255,255,255,0.06)',color:'white',fontSize:'18px',boxSizing:'border-box',textAlign:'center',letterSpacing:'6px',outline:'none'}}
+          />
+          {authErr && <p style={{color:'#ef4444',fontSize:'13px',marginTop:'8px'}}>{authErr}</p>}
+          <button onClick={handleLogin} disabled={authLoading || !code}
+            style={{marginTop:'16px',width:'100%',padding:'14px',borderRadius:'12px',border:'none',background:info.accent,color:'white',fontSize:'15px',fontWeight:'600',cursor:authLoading||!code?'not-allowed':'pointer',opacity:authLoading||!code?0.55:1,transition:'opacity 0.2s'}}>
+            {authLoading ? 'Vérification...' : 'Accéder →'}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const statusLabel: Record<string,string> = { pending:'⏳ En attente', accepted:'✅ Accepté', preparing:'👨‍🍳 En préparation', ready:'📦 Prêt', delivered:'🎉 Livré', cancelled:'❌ Annulé' };
+  const formatTime = (s: string) => { try { return new Date(s).toLocaleTimeString('fr-MA',{hour:'2-digit',minute:'2-digit'}); } catch { return ''; } };
+  const pending = orders.filter(o => o.status==='pending');
+  const active  = orders.filter(o => ['accepted','preparing','ready'].includes(o.status));
+  const done    = orders.filter(o => ['delivered','cancelled'].includes(o.status)).slice(0,10);
+
+  const OrderCard = ({ order }: { order: StoreOrder }) => (
+    <div style={{background:'rgba(255,255,255,0.05)',borderRadius:'16px',padding:'16px',marginBottom:'12px',border:`2px solid ${order.status==='pending'?info.accent:'rgba(255,255,255,0.05)'}`}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'8px'}}>
+        <span style={{color:info.accent,fontWeight:'700',fontSize:'14px'}}>#{order.ref}</span>
+        <span style={{color:'rgba(255,255,255,0.45)',fontSize:'12px'}}>{formatTime(order.createdAt)}</span>
+      </div>
+      <p style={{color:'white',fontWeight:'600',fontSize:'15px',margin:'0 0 3px'}}>{order.customerName}</p>
+      <p style={{color:'rgba(255,255,255,0.55)',fontSize:'13px',margin:'0 0 3px'}}>📞 {order.customerPhone}</p>
+      <p style={{color:'rgba(255,255,255,0.55)',fontSize:'13px',margin:'0 0 10px'}}>📍 {order.customerAddress}</p>
+      {Array.isArray(order.items) && order.items.length > 0 && (
+        <div style={{background:'rgba(0,0,0,0.3)',borderRadius:'10px',padding:'10px',marginBottom:'10px'}}>
+          {order.items.map((item,i) => (
+            <div key={i} style={{display:'flex',justifyContent:'space-between',fontSize:'13px',color:'rgba(255,255,255,0.8)',marginBottom:'3px'}}>
+              <span>{item.name} ×{item.qty}</span><span>{(item.price*item.qty).toFixed(0)} DH</span>
+            </div>
+          ))}
+          <div style={{borderTop:'1px solid rgba(255,255,255,0.1)',marginTop:'7px',paddingTop:'7px',display:'flex',justifyContent:'space-between',fontWeight:'700',color:'white',fontSize:'14px'}}>
+            <span>Total</span><span>{order.total} DH</span>
+          </div>
+        </div>
+      )}
+      <p style={{color:'rgba(255,255,255,0.4)',fontSize:'12px',margin:'0 0 10px'}}>💳 {order.paymentMethod} · {statusLabel[order.status]||order.status}</p>
+      <div style={{display:'flex',gap:'8px',flexWrap:'wrap'}}>
+        {order.status==='pending' && <>
+          <button onClick={()=>updateStatus(order.ref,'accepted')} style={{flex:1,padding:'9px 12px',borderRadius:'8px',border:'none',background:'#22c55e',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>✅ Accepter</button>
+          <button onClick={()=>updateStatus(order.ref,'cancelled')} style={{padding:'9px 14px',borderRadius:'8px',border:'none',background:'#ef4444',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>✕</button>
+        </>}
+        {order.status==='accepted' && <button onClick={()=>updateStatus(order.ref,'preparing')} style={{flex:1,padding:'9px',borderRadius:'8px',border:'none',background:'#f59e0b',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>👨‍🍳 En préparation</button>}
+        {order.status==='preparing' && <button onClick={()=>updateStatus(order.ref,'ready')} style={{flex:1,padding:'9px',borderRadius:'8px',border:'none',background:'#8B5CF6',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>📦 Prêt pour livraison</button>}
+        {order.status==='ready' && <button onClick={()=>updateStatus(order.ref,'delivered')} style={{flex:1,padding:'9px',borderRadius:'8px',border:'none',background:'#06b6d4',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>🎉 Marqué livré</button>}
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{minHeight:'100vh',background:'#0a0a1a',color:'white'}}>
+      <div style={{background:'#161630',padding:'14px 20px',display:'flex',justifyContent:'space-between',alignItems:'center',borderBottom:'1px solid rgba(255,255,255,0.08)',position:'sticky',top:0,zIndex:10}}>
+        <div>
+          <div style={{fontSize:'18px',fontWeight:'700'}}>{info.emoji} {info.name}</div>
+          <div style={{fontSize:'12px',marginTop:'2px'}}>
+            {pending.length>0 ? <span style={{color:'#ef4444',fontWeight:'600'}}>🔴 {pending.length} nouvelle{pending.length>1?'s':''} commande{pending.length>1?'s':''}</span> : <span style={{color:'rgba(255,255,255,0.4)'}}>Aucune commande en attente</span>}
+          </div>
+        </div>
+        <button onClick={logout} style={{padding:'7px 13px',borderRadius:'9px',border:'1px solid rgba(255,255,255,0.15)',background:'transparent',color:'rgba(255,255,255,0.6)',fontSize:'12px',cursor:'pointer'}}>Déconnexion</button>
+      </div>
+      <div style={{padding:'16px',maxWidth:'580px',margin:'0 auto'}}>
+        {pending.length>0 && <div style={{marginBottom:'24px'}}><h2 style={{color:'#ef4444',fontSize:'14px',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'0.5px'}}>⚡ Nouvelles commandes ({pending.length})</h2>{pending.map(o=><OrderCard key={o.ref} order={o}/>)}</div>}
+        {active.length>0 && <div style={{marginBottom:'24px'}}><h2 style={{color:'#f59e0b',fontSize:'14px',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'0.5px'}}>🔄 En cours ({active.length})</h2>{active.map(o=><OrderCard key={o.ref} order={o}/>)}</div>}
+        {done.length>0 && <div><h2 style={{color:'rgba(255,255,255,0.35)',fontSize:'14px',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'0.5px'}}>Terminées</h2>{done.map(o=><OrderCard key={o.ref} order={o}/>)}</div>}
+        {orders.length===0 && <div style={{textAlign:'center',padding:'70px 20px',color:'rgba(255,255,255,0.35)'}}><div style={{fontSize:'52px',marginBottom:'14px'}}>{info.emoji}</div><p style={{fontSize:'16px'}}>Aucune commande pour l'instant</p><p style={{fontSize:'13px',marginTop:'6px'}}>Les nouvelles commandes apparaîtront automatiquement</p></div>}
+      </div>
+    </div>
+  );
+}
+
 function ClerkProviderWithRoutes() {
   const [, setLocation] = useLocation();
 
@@ -4724,6 +4889,7 @@ function ClerkProviderWithRoutes() {
           <Route path="/dispatch" component={DispatchPage} />
           <Route path="/driver/:ref" component={DriverTrackerPage} />
           <Route path="/resto" component={RestaurantOwnerPage} />
+          <Route path="/boutique/:type" component={StoreOwnerPage} />
           <Route path="/admin-auth" component={AdminAuthPage} />
           <Route path="/manager" component={AdminAuthPage} />
           <Route component={typeof window !== 'undefined' && window.location.hostname.startsWith('manager.') ? AdminAuthPage : App} />
