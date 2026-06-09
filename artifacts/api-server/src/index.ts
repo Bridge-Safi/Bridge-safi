@@ -158,9 +158,11 @@ async function startServer(): Promise<void> {
   });
 }
 
-migrate()
-  .then(() => ensurePortFree(port))
+// Start the server FIRST so the health check responds immediately,
+// then run migration in the background.
+ensurePortFree(port)
   .then(() => startServer())
+  .then(() => migrate())
   .catch((err) => {
     logger.error({ err }, "Server failed to start");
     process.exit(1);
