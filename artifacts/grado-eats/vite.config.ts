@@ -16,9 +16,6 @@ const port = Number(rawPort ?? "3000");
 if (!isBuild && (Number.isNaN(port) || port <= 0)) {
 throw new Error(`Invalid PORT value: "${rawPort}"`);
 
- vite.config.ts:19:4: ERROR: Expected ";" but found "..."
-19 |    3.....
-    .3
 }
 
 const basePath = process.env.BASE_PATH;
