@@ -3,7 +3,11 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
+   [phases.install]
+cmds = ["npm install -g pnpm@10 --quiet", "pnpm install --no-frozen-lockfile"]
+
+[phases.build]
+cmds = ["pnpm run build"]
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "build:railway": "NODE_ENV=production pnpm --filter @workspace/grado-eats exec vite build && pnpm --filter @workspace/api-server run build",
     "typecheck:libs": "tsc --build",
