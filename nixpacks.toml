@@ -1,8 +1,11 @@
 [variables]
-NODE_VERSION = "22"
+NODE_VERSION = "20"
+
+[phases.setup]
+nixPkgs = ["nodejs_20"]
 
 [phases.install]
-cmds = ["npx --yes pnpm@10 install --no-frozen-lockfile"]
+cmds = ["npm install -g pnpm@10", "pnpm install --no-frozen-lockfile"]
 
 [phases.build]
-cmds = ["npx --yes pnpm@10 run build:railway"]
+cmds = ["pnpm run build:railway"]px --yes pnpm@10 run build:railway"]
