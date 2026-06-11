@@ -3,10 +3,11 @@ import OpenAI from "openai";
 
 const router = Router();
 
-const openai = new OpenAI({
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-});
+function getOpenAI() {
+  const apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+  const baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
+  return new OpenAI({ apiKey, ...(baseURL ? { baseURL } : {}) });
+}
 
 const BRIDGE_SYSTEM_PROMPT = `Tu es l'assistant IA de Bridge Safi, un service premium de livraison à domicile basé à Safi, Maroc.
 Bridge Safi propose 4 services : Bridge Eats 🛵 (livraison repas), Bridge Taxi 🚖 (transport), Bridge Tabac 🚬 (cigarettes & boissons), Bridge Fleurs 🌹 (fleurs & cadeaux).
