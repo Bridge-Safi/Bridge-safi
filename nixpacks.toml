@@ -2,7 +2,7 @@
 NODE_VERSION = "20"
 
 [phases.install]
-cmds = ["npm install -g pnpm@10", "node /root/.npm-global/bin/pnpm install --no-frozen-lockfile"]
+cmds = ["npm install -g pnpm@10", "find / -name 'pnpm' 2>/dev/null || echo 'not found'", "npx pnpm@10 install --no-frozen-lockfile"]
 
 [phases.build]
-cmds = ["node /root/.npm-global/bin/pnpm run build:railway"]
+cmds = ["npx pnpm@10 run build:railway"]
