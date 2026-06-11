@@ -8,4 +8,4 @@ nixPkgs = ["nodejs_20"]
 cmds = ["npm install -g pnpm@10", "pnpm install --no-frozen-lockfile"]
 
 [phases.build]
-cmds = ["pnpm run build:railway"]px --yes pnpm@10 run build:railway"]
+cmds = ["pnpm run build:railway"]
