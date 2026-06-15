@@ -1,4 +1,4 @@
-const CACHE = 'bridge-safi-v5';
+const CACHE = 'bridge-safi-v6';
 const ASSETS = ['/', '/manifest.json', '/logo.jpeg', '/logo_splash.jpeg', '/logo_delivery.jpeg', '/logo_taxi.jpeg'];
 
 self.addEventListener('install', e => {
@@ -21,7 +21,11 @@ self.addEventListener('fetch', e => {
           caches.open(CACHE).then(c => c.put(e.request, clone));
         }
         return res;
-      }).catch(() => cached);
+    }).catch(() => cached || new Response('Service indisponible hors-ligne', {
+        status: 503,
+        statusText: 'Service Unavailable',
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      }));
       return cached || net;
     })
   );
