@@ -5,5 +5,4 @@ NODE_VERSION = "20"
 cmds = ["npm install -g pnpm@10", "find / -name 'pnpm' 2>/dev/null || echo 'not found'", "npx pnpm@10 install --no-frozen-lockfile"]
 
 [phases.build]
-cmds = ["npx pnpm@10 run build:railway"]
 cmds = ["VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY VITE_CLERK_PROXY_URL=$VITE_CLERK_PROXY_URL npx pnpm@10 run build:railway"]
