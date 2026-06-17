@@ -1,8 +1,6 @@
-[variables]
-NODE_VERSION = "20"
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm install -g pnpm@10 && npx pnpm@10 install --no-frozen-lockfile && VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY VITE_CLERK_PROXY_URL=$VITE_CLERK_PROXY_URL npx pnpm@10 run build:railway"
 
-[phases.install]
-cmds = ["npm install -g pnpm@10", "find / -name 'pnpm' 2>/dev/null || echo 'not found'", "npx pnpm@10 install --no-frozen-lockfile"]
-
-[phases.build]
-cmds = ["VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY VITE_CLERK_PROXY_URL=$VITE_CLERK_PROXY_URL npx pnpm@10 run build:railway"]
+[deploy]
+startCommand = "npx pnpm@10 run start"
