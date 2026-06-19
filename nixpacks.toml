@@ -6,3 +6,4 @@ cmds = ["npm install -g pnpm@10", "npx pnpm@10 install --no-frozen-lockfile"]
 
 [phases.build]
 cmds = ["VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY VITE_CLERK_PROXY_URL=$VITE_CLERK_PROXY_URL npx pnpm@10 run build:railway"]
+# rebuild-2026-06-19
