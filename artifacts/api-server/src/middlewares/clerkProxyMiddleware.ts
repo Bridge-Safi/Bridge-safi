@@ -47,9 +47,7 @@ export function clerkProxyMiddleware(): RequestHandler {
     pathRewrite: (path: string) =>
       path.replace(new RegExp(`^${CLERK_PROXY_PATH}`), ""),
     on: {
-      proxyReq: (proxyReq, req) => {
-
-        proxyReq.setHeader("Clerk-Secret-Key", secretKey);
+      proxyReq: (proxyReq, 
 
         const xff = req.headers["x-forwarded-for"];
         const clientIp =
