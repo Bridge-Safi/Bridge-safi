@@ -79,6 +79,18 @@ async function migrate() {
       diamonds_awarded INTEGER NOT NULL,
       completed_at TIMESTAMP NOT NULL DEFAULT NOW()
     );
+
+    CREATE TABLE IF NOT EXISTS site_visits (
+      id SERIAL PRIMARY KEY,
+      session_id TEXT NOT NULL,
+      path TEXT,
+      referrer TEXT,
+      user_agent TEXT,
+      ip TEXT,
+      created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS site_visits_session_idx ON site_visits (session_id);
+    CREATE INDEX IF NOT EXISTS site_visits_created_idx ON site_visits (created_at);
   `);
   logger.info("Database schema ready");
 }
@@ -167,14 +179,3 @@ ensurePortFree(port)
     logger.error({ err }, "Server failed to start");
     process.exit(1);
   });
-    CREATE TABLE IF NOT EXISTS site_visits (
-      id SERIAL PRIMARY KEY,
-      session_id TEXT NOT NULL,
-      path TEXT,
-      referrer TEXT,
-      user_agent TEXT,
-      ip TEXT,
-      created_at TIMESTAMP NOT NULL DEFAULT NOW()
-    );
-    CREATE INDEX IF NOT EXISTS site_visits_session_idx ON site_visits (session_id);
-    CREATE INDEX IF NOT EXISTS site_visits_created_idx ON site_visits (created_at);
