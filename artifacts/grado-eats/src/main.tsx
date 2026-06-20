@@ -7,7 +7,7 @@ import App, { HistoryPageRoute } from "./App";
 import "./index.css";
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
+const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL || "https://www.safi-bridge.ma/api/__clerk";
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 const queryClient = new QueryClient();
