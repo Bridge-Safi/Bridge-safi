@@ -25,6 +25,7 @@ async function buildAll() {
     external: [
       "http-proxy-middleware",
       "http-proxy-middleware",
+      "http-proxy-middleware",
       "*.node",
       "sharp",
       "better-sqlite3",
