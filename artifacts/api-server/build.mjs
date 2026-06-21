@@ -24,6 +24,7 @@ async function buildAll() {
     logLevel: "info",
     external: [
       "http-proxy-middleware",
+      "http-proxy-middleware",
       "*.node",
       "sharp",
       "better-sqlite3",
