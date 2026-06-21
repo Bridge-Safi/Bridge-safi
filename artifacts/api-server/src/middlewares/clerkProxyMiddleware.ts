@@ -1,37 +1,24 @@
 /**
  * Clerk Frontend API Proxy Middleware
  *
- * Proxies Clerk Frontend API requests through your domain, enabling Clerk
- * authentication on custom domains and .replit.app deployments without
- * requiring CNAME DNS configuration.
- *
- * AUTH CONFIGURATION: To manage users, enable/disable login providers
- * (Google, GitHub, etc.), change app branding, or configure OAuth credentials,
- * use the Auth pane in the workspace toolbar. There is no external Clerk
- * dashboard — all auth configuration is done through the Auth pane.
- *
- * IMPORTANT:
- * - Only active in production (Clerk proxying doesn't work for dev instances)
- * - Must be mounted BEFORE express.json() middleware
+ * Proxies Clerk Frontend API requests through our domain to Clerk's FAPI endpoint.
+ * Uses native Node.js http/https -- no external dependencies.
+ * Only active in production.
  *
  * Usage in app.ts:
  *   import { CLERK_PROXY_PATH, clerkProxyMiddleware } from "./middlewares/clerkProxyMiddleware";
  *   app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
  */
 
-import { createProxyMiddleware } from "http-proxy-middleware";
-import type { Request, RequestHandler } from "express";
+import type { RequestHandler } from "express";
+import https from "node:https";
+import http from "node:http";
+import { URL } from "node:url";
 
 const CLERK_FAPI = process.env.CLERK_FAPI_URL || "https://frontend-api.clerk.dev";
 export const CLERK_PROXY_PATH = "/api/__clerk";
 
-/** Returns the canonical host for this request (used by publishableKeyFromHost). */
-export function getClerkProxyHost(req: Request): string | undefined {
-  return (req.headers.host as string) || undefined;
-}
-
 export function clerkProxyMiddleware(): RequestHandler {
-  // Only run proxy in production — Clerk proxying doesn't work for dev instances
   if (process.env.NODE_ENV !== "production") {
     return (_req, _res, next) => next();
   }
@@ -41,23 +28,54 @@ export function clerkProxyMiddleware(): RequestHandler {
     return (_req, _res, next) => next();
   }
 
-  return createProxyMiddleware({
-    target: CLERK_FAPI,
-    changeOrigin: true,
-    pathRewrite: (path: string) =>
-      path.replace(new RegExp(`^${CLERK_PROXY_PATH}`), ""),
-    on: {
-      proxyReq: (proxyReq, 
+  const targetBase = new URL(CLERK_FAPI);
+  const lib = targetBase.protocol === "https:" ? https : http;
 
-        const xff = req.headers["x-forwarded-for"];
-        const clientIp =
-          (Array.isArray(xff) ? xff[0] : xff)?.split(",")[0]?.trim() ||
-          req.socket?.remoteAddress ||
-          "";
-        if (clientIp) {
-          proxyReq.setHeader("X-Forwarded-For", clientIp);
-        }
+  return (req, res) => {
+    const strippedPath = req.path.replace(CLERK_PROXY_PATH, "") || "/";
+    const search = req.url.includes("?") ? req.url.slice(req.url.indexOf("?")) : "";
+    const targetPath = strippedPath + search;
+
+    const xff = req.headers["x-forwarded-for"];
+    const clientIp =
+      (Array.isArray(xff) ? xff[0] : xff)?.split(",")[0]?.trim() ||
+      req.socket?.remoteAddress ||
+      "";
+    const protocol = (req.headers["x-forwarded-proto"] as string) || "https";
+    const host = req.headers.host || "";
+    const proxyUrl = `${protocol}://${host}${CLERK_PROXY_PATH}`;
+
+    const forwardHeaders: Record<string, string> = {};
+    for (const [key, value] of Object.entries(req.headers)) {
+      if (key === "host" || key === "connection") continue;
+      forwardHeaders[key] = Array.isArray(value) ? value.join(", ") : (value ?? "");
+    }
+    forwardHeaders["host"] = targetBase.host;
+    forwardHeaders["Clerk-Proxy-Url"] = proxyUrl;
+    forwardHeaders["Clerk-Secret-Key"] = secretKey;
+    if (clientIp) forwardHeaders["X-Forwarded-For"] = clientIp;
+
+    const proxyReq = lib.request(
+      {
+        hostname: targetBase.hostname,
+        port: targetBase.port || (targetBase.protocol === "https:" ? 443 : 80),
+        path: targetPath,
+        method: req.method,
+        headers: forwardHeaders,
       },
-    },
-  }) as RequestHandler;
+      (proxyRes) => {
+        res.writeHead(proxyRes.statusCode ?? 502, proxyRes.headers as Record<string, string>);
+        proxyRes.pipe(res);
+      }
+    );
+
+    proxyReq.on("error", (err) => {
+      console.error("[clerk-proxy] error:", err.message);
+      if (!res.headersSent) {
+        res.status(502).json({ error: "Clerk proxy error" });
+      }
+    });
+
+    req.pipe(proxyReq);
+  };
 }
