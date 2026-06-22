@@ -3,7 +3,8 @@ import * as https from 'https';
 import { URL } from 'url';
 
 const CLERK_FAPI = 'https://clerk.safi-bridge.ma';
-const PROXY_PREFIX = '/api/__clerk';
+export const CLERK_PROXY_PATH = '/api/__clerk';
+const PROXY_PREFIX = CLERK_PROXY_PATH;
 
 export function clerkProxyMiddleware(req: Request, res: Response, next: NextFunction): void {
   if (!req.path.startsWith(PROXY_PREFIX)) return next();
