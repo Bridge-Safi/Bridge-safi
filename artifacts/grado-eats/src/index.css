@@ -81,13 +81,7 @@ html.dark textarea::placeholder {
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* ── Smart TV / Large Screen optimizations (≥1280px) ────────────────────────
-   Smart TVs (Samsung Tizen, LG WebOS, Android TV) open the PWA in a browser.
-   These rules make the layout look great on a 55"+ screen and add visible
-   keyboard/remote-control focus rings so users can navigate with arrow keys.
-──────────────────────────────────────────────────────────────────────────── */
-
-/* Focus ring — visible on TV remote / keyboard navigation */
+/* ── Focus ring ─────────────────────────────────────────────────────────────── */
 @media (any-hover: none) and (min-width: 1280px),
        (min-width: 1280px) {
   :focus-visible {
@@ -98,57 +92,56 @@ html.dark textarea::placeholder {
   }
 }
 
-/* TV layout — wider viewport uses a centered column with max-width */
+/* ── Desktop / laptop — centre l'app comme une colonne mobile ─────────────── */
+@media (min-width: 640px) and (max-width: 1279px) {
+  #root > div {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+}
+
+/* ── TV layout — wider viewport uses a centered column with max-width ──────── */
 @media (min-width: 1280px) {
   body {
     font-size: 18px;
   }
 
-  /* Center the whole app in a TV-friendly column */
   #root > div {
     max-width: 900px;
     margin: 0 auto;
   }
 
-  /* Bigger tap targets for remote control */
   button, a, [role="button"] {
     min-height: 52px;
   }
 
-  /* Hero images taller on big screens */
   .tv-hero {
     height: 320px !important;
   }
 
-  /* Restaurant cards — 3 columns on TV */
   .tv-grid {
     grid-template-columns: repeat(3, 1fr) !important;
   }
 
-  /* Scale up card text */
   .tv-card-title {
     font-size: 1.1rem !important;
   }
 
-  /* Bottom nav hidden on TV — use keyboard instead */
   .tv-hide-on-tv {
     display: none !important;
   }
 
-  /* Service select grid — 3 columns on TV */
   .tv-service-grid {
     grid-template-columns: repeat(3, 1fr) !important;
     max-width: 860px !important;
     gap: 20px !important;
   }
 
-  /* Bigger logo on TV splash */
   .tv-logo {
     width: 180px !important;
     height: 180px !important;
   }
 
-  /* Scrollable filter row larger on TV */
   .tv-filter-chip {
     font-size: 1rem !important;
     padding: 10px 20px !important;
