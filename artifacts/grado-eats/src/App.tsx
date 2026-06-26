@@ -27,7 +27,7 @@ const restaurantIcon = L.divIcon({
 const DARK_KEY = 'bridge_dark';
 interface DarkCtxValue { dark: boolean; toggle: () => void }
 const DarkModeCtx = createContext<DarkCtxValue>({ dark: false, toggle: () => {} });
-export function useDark() { return useContext(DarkModeCtx); } function goToSignIn(){window.history.pushState({},'','/sign-in');window.dispatchEvent(new PopStateEvent('popstate'));} function goToSignIn(){window.history.pushState({},'','/sign-in');window.dispatchEvent(new PopStateEvent('popstate'));}
+export function useDark() { return useContext(DarkModeCtx); } function goToSignIn(){window.history.pushState({},'','/sign-in');window.dispatchEvent(new PopStateEvent('popstate'));}
 
 function useAuthHeaders() {
   const { getToken } = useAuth();
