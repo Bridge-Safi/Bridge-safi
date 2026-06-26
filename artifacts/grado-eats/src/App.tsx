@@ -1807,7 +1807,7 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
   };
   const { signOut } = useClerk();
   const [, navigate] = useLocation();
-  const { user } = useUser();
+  const { user } = useUser(); const { isSignedIn } = useAuth();
   const [errs,setErrs]=useState<Record<string,boolean>>({});
   const [phoneTaken,setPhoneTaken]=useState(false);
   const [payTab,setPayTab]=useState<'card'|'paypal'>(profile.paymentMethod==='paypal'?'paypal':'card');
@@ -3851,7 +3851,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
   const [pressed,setPressed]=useState<'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'|null>(null);
   const [showProfile,setShowProfile]=useState(false);
   const [,navigate]=useLocation();
-  const { user } = useUser();
+  const { user } = useUser(); const { isSignedIn } = useAuth();
   const getAuthHeaders=useAuthHeaders();
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
@@ -3896,7 +3896,7 @@ useEffect(()=>{
         </button>
       </div>
 
-      {/* Profile button + Bridge ID + Diamonds — LEFT */}{user && (
+      {/* Profile button + Bridge ID + Diamonds — LEFT */}{isSignedIn && (
       <div className={`absolute top-3 z-50 flex flex-col items-center gap-1 ${isAR?'right-3':'left-3'}`}>
         <div style={{display:'flex',alignItems:'center',gap:8}}>
           <button onClick={()=>setShowProfile(true)}
