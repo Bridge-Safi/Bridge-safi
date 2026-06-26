@@ -3860,13 +3860,17 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
   const avatarSrc=profile.avatar||user?.imageUrl||null;
   const initials=(profile.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   // Diamonds fetch
-  const [diamonds,setDiamonds]=useState(0);
-  useEffect(()=>{
-    if(!user?.id) return;
-    getAuthHeaders().then(h=>fetch('/api/game/diamonds',{credentials:'include',headers:h})
-      .then(r=>r.ok?r.json():null)
-      .then(d=>{if(d&&typeof d.diamonds==='number')setDiamonds(d.diamonds);})
-      .catch(()=>{}));
+const [diamonds, setDiamonds] = useState(0);
+useEffect(()=>{
+  const phone = profile?.phone;
+  if(!phone) return;
+  fetch(`https://workspaceapi-server-production-12a5.up.railway.app/api/diamonds?phone=${encodeURIComponent(phone)}`,{
+    headers:{'x-api-key':'bridge-safi-2026'}
+  })
+    .then(r=>r.ok?r.json():null)
+    .then(d=>{if(d&&d.found)setDiamonds(d.diamonds??0)})
+    .catch(()=>{});
+}, [profile?.phone]);
   },[user?.id,getAuthHeaders]);
   return(
     <div className={`fixed inset-0 flex flex-col z-40 ${isAR?'rtl':'ltr'}`}
