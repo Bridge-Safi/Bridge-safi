@@ -6836,7 +6836,7 @@ export default function App() {
           {profile.name&&<span className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{background:'#10B981'}}/>}
         </button>
         ) : (
-  <button onClick={() => openSignIn()}
+  <button onClick={() => window.location.href='/sign-in'}
     className="text-xs font-black px-3 py-1.5 rounded-full"
     style={{background:'#065F46',color:'white',border:'1px solid #D9C5A0'}}>
     {lang==='ar'?'تسجيل الدخول':lang==='amz'?'ⴰⴽⵛⵎ':'Se connecter'}
