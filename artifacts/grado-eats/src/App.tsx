@@ -6825,7 +6825,7 @@ export default function App() {
 
       {/* ── Top-right: Profile + Language ── */}
       <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
-        <button onClick={()=>setShowProfile(true)}
+        <button onClick={()=>setShowProfile(true)}{user ? (
           className="rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 relative"
           style={{...pillStyle,width:'44px',padding:0,overflow:'hidden'}}>
           {profile.avatar
@@ -6834,6 +6834,13 @@ export default function App() {
           }
           {profile.name&&<span className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{background:'#10B981'}}/>}
         </button>
+        ) : (
+  <button onClick={() => openSignIn()}
+    className="text-xs font-black px-3 py-1.5 rounded-full"
+    style={{background:'#065F46',color:'white',border:'1px solid #D9C5A0'}}>
+    {lang==='ar'?'تسجيل الدخول':lang==='amz'?'ⴰⴽⵛⵎ':'Se connecter'}
+  </button>
+)}
         <button onClick={cycleLang}
           className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 px-3 ${isAMZ?'font-tifinagh':''}`}
           style={{...pillStyle,fontSize:'13px'}}>
