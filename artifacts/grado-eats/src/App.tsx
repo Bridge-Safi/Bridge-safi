@@ -3870,6 +3870,10 @@ useEffect(()=>{
     .then(r=>r.ok?r.json():null)
     .then(d=>{if(d&&d.found)setDiamonds(d.diamonds??0)})
     .catch(()=>{});
+},[profile?.phone]);
+    .then(r=>r.ok?r.json():null)
+    .then(d=>{if(d&&d.found)setDiamonds(d.diamonds??0)})
+    .catch(()=>{});
 }, [profile?.phone]);
   },[user?.id,getAuthHeaders]);
   return(
