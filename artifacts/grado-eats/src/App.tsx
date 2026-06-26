@@ -3919,7 +3919,7 @@ useEffect(()=>{
     </div>    
     )}              
       
-   {!isSignedIn && (
+   )}{!isSignedIn && (
   <div className={`absolute top-3 z-50 ${isAR?'right-3':'left-3'}`}>
     <button
     onClick={() => window.location.href = '/sign-in'}
