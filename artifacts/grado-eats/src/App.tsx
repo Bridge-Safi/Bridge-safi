@@ -6825,7 +6825,8 @@ export default function App() {
 
       {/* ── Top-right: Profile + Language ── */}
       <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
-        <button onClick={()=>setShowProfile(true)}{user ? (
+       {user ? ( 
+    <button onClick={()=>setShowProfile(true)}
           className="rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 relative"
           style={{...pillStyle,width:'44px',padding:0,overflow:'hidden'}}>
           {profile.avatar
