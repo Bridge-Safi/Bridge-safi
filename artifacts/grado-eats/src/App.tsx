@@ -1818,17 +1818,21 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
   // Diamond points from server (anti-cheat)
   const [gamePoints, setGamePoints] = useState(0);
   const [gameTotalEarned, setGameTotalEarned] = useState(0);
-  useEffect(() => {
-    if (!user?.id) return;
-    getAuthHeaders().then(h=>fetch('/api/game/diamonds', { credentials: 'include', headers: h })
-      .then(r => r.ok ? r.json() : null)
-      .then(d => {
-        if (d && typeof d.diamonds === 'number') setGamePoints(d.diamonds);
-        if (d && typeof d.totalEarned === 'number') setGameTotalEarned(d.totalEarned);
-      })
-      .catch(() => {}));
-  }, [user?.id, getAuthHeaders]);
-
+useEffect(() => {
+  const phone = profile?.phone;
+  if (!phone) return;
+  fetch(`https://workspaceapi-server-production-12a5.up.railway.app/api/diamonds?phone=${encodeURIComponent(phone)}`, {
+    headers: { 'x-api-key': 'bridge-safi-2026' }
+  })
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      if (d && d.found) {
+        setGamePoints(d.diamonds ?? 0);
+        setGameTotalEarned(d.menus_earned ?? 0);
+      }
+    })
+    .catch(() => {});
+}, [profile?.phone]);
   // ── Validation helpers ──────────────────────────────────────────────────────
   const validateName=(v:string)=>v.trim().length>=3&&/\s/.test(v.trim());
   const validatePhone=(v:string)=>{const d=v.replace(/\D/g,'');return (d.length===9&&/^[67]/.test(d))||(d.length===10&&/^0[67]/.test(d))||(d.length===12&&/^212[67]/.test(d));};
