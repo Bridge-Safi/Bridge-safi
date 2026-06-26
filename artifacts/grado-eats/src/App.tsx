@@ -3895,7 +3895,7 @@ useEffect(()=>{
         </button>
       </div>
 
-      {/* Profile button + Bridge ID + Diamonds — LEFT */}
+      {/* Profile button + Bridge ID + Diamonds — LEFT */}{user && (
       <div className={`absolute top-3 z-50 flex flex-col items-center gap-1 ${isAR?'right-3':'left-3'}`}>
         <div style={{display:'flex',alignItems:'center',gap:8}}>
           <button onClick={()=>setShowProfile(true)}
