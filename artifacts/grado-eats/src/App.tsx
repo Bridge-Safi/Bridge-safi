@@ -3872,8 +3872,7 @@ useEffect(()=>{
     .catch(()=>{});
 },[profile?.phone]);
  
-}, [profile?.phone]);
-  },[user?.id,getAuthHeaders]);
+
   return(
     <div className={`fixed inset-0 flex flex-col z-40 ${isAR?'rtl':'ltr'}`}
       style={{background:'var(--c-bg)',overflowY:'auto'}}>
