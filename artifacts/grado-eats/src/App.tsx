@@ -3922,7 +3922,7 @@ useEffect(()=>{
    {!user && (
   <div className={`absolute top-3 z-50 ${isAR?'right-3':'left-3'}`}>
     <button
-      onClick={() => window.location.href = '/'}
+    onClick={() => window.location.href = '/sign-in'}
       className="text-xs font-black px-3 py-1.5 rounded-full"
       style={{background:'#065F46', color:'white', border:'1px solid #D9C5A0', boxShadow:'0 2px 8px rgba(6,95,70,0.3)'}}
     >
