@@ -3919,6 +3919,18 @@ useEffect(()=>{
     </div>    
     )}              
       
+   {!user && (
+  <div className={`absolute top-3 z-50 ${isAR?'right-3':'left-3'}`}>
+    <button
+      onClick={() => window.location.href = '/'}
+      className="text-xs font-black px-3 py-1.5 rounded-full"
+      style={{background:'#065F46', color:'white', border:'1px solid #D9C5A0', boxShadow:'0 2px 8px rgba(6,95,70,0.3)'}}
+    >
+      {lang==='ar'?'تسجيل الدخول':lang==='amz'?'ⴰⴽⵛⵎ':'Se connecter'}
+    </button>
+  </div>
+)}  
+      
       {/* Language + Dark toggle — RIGHT */}
       <div className={`absolute top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
         <DarkToggle size={38}/>
