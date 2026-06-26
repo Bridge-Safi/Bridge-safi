@@ -3916,8 +3916,9 @@ useEffect(()=>{
           <span style={{fontSize:10}}>💎</span>
           <span style={{fontSize:8,fontWeight:900,color:'#92400E'}}>{diamonds.toLocaleString()}</span>
         </div>
-      </div>
-
+    </div>    
+    )}              
+      
       {/* Language + Dark toggle — RIGHT */}
       <div className={`absolute top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
         <DarkToggle size={38}/>
