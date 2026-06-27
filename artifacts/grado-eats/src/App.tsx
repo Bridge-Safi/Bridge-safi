@@ -3883,9 +3883,7 @@ useEffect(()=>{
         @keyframes svcPulseRed{0%,100%{box-shadow:0 8px 32px rgba(185,28,28,0.35);}50%{box-shadow:0 8px 48px rgba(185,28,28,0.7);}}
       `}</style>
       {/* Background watermark */}
-      <div className="fixed inset-0 opacity-[0.04] pointer-events-none" style={{backgroundImage:'url(/image_1.png)',backgroundSize:'cover',backgroundPosition:'center'}}/>
-
-      {/* ── TOP BAR ── */}
+     
 
       {/* Hub button — TOP CENTER */}
       <div className="absolute top-4 left-1/2 z-50" style={{transform:'translateX(-50%)'}}>
