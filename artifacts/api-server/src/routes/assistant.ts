@@ -52,7 +52,7 @@ router.post("/assistant/chat", async (req, res) => {
             ? "Réponds en français (amazigh non disponible en IA)."
             : "Réponds en français.";
 
-    const completion = await openai.chat.completions.create({
+    const completion = await OpenAI.chat.completions.create({
       model: "gpt-4o-mini",
       max_tokens: 512,
       messages: [
