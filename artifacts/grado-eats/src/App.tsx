@@ -3882,8 +3882,25 @@ useEffect(()=>{
         @keyframes svcShine{0%{left:-100%;}100%{left:200%;}}
         @keyframes svcPulseRed{0%,100%{box-shadow:0 8px 32px rgba(185,28,28,0.35);}50%{box-shadow:0 8px 48px rgba(185,28,28,0.7);}}
       `}</style>
-      {/* Background watermark */}
-     
+    
+     {/* Background watermark */}
+      {/* ✨ Desktop ambient — masqué sur mobile */}
+      <div className="hidden lg:block pointer-events-none select-none" style={{position:'absolute',inset:0,overflow:'hidden',zIndex:1}}>
+        <div style={{position:'absolute',left:'-10%',top:'5%',width:450,height:450,background:'radial-gradient(circle,rgba(6,95,70,0.28) 0%,transparent 70%)',borderRadius:'50%',filter:'blur(70px)',animation:'svcFloat 9s ease-in-out infinite'}}/>
+        <div style={{position:'absolute',right:'-8%',top:'25%',width:400,height:400,background:'radial-gradient(circle,rgba(16,185,129,0.2) 0%,transparent 70%)',borderRadius:'50%',filter:'blur(60px)',animation:'svcFloat 8s ease-in-out infinite 2s'}}/>
+        <div style={{position:'absolute',left:'5%',bottom:'10%',width:320,height:320,background:'radial-gradient(circle,rgba(217,197,160,0.12) 0%,transparent 70%)',borderRadius:'50%',filter:'blur(50px)',animation:'svcFloat 11s ease-in-out infinite 1s'}}/>
+        <div style={{position:'absolute',right:'5%',bottom:'20%',width:280,height:280,background:'radial-gradient(circle,rgba(99,102,241,0.15) 0%,transparent 70%)',borderRadius:'50%',filter:'blur(45px)',animation:'svcFloat 10s ease-in-out infinite 3s'}}/>
+        <span style={{position:'absolute',left:'6%',top:'18%',fontSize:64,opacity:0.2,animation:'svcFloat 4s ease-in-out infinite',filter:'drop-shadow(0 0 24px rgba(6,95,70,0.7))'}}>🍕</span>
+        <span style={{position:'absolute',left:'3%',top:'42%',fontSize:52,opacity:0.18,animation:'svcFloat 5.5s ease-in-out infinite 1.5s',filter:'drop-shadow(0 0 18px rgba(6,95,70,0.5))'}}>🍔</span>
+        <span style={{position:'absolute',left:'9%',top:'65%',fontSize:58,opacity:0.17,animation:'svcFloat 4.8s ease-in-out infinite 0.8s',filter:'drop-shadow(0 0 20px rgba(6,95,70,0.5))'}}>🥗</span>
+        <span style={{position:'absolute',left:'2%',top:'82%',fontSize:44,opacity:0.13,animation:'svcFloat 6.2s ease-in-out infinite 2.2s'}}>🌮</span>
+        <span style={{position:'absolute',left:'13%',top:'6%',fontSize:38,opacity:0.1,animation:'svcFloat 7.5s ease-in-out infinite 3.5s'}}>🥙</span>
+        <span style={{position:'absolute',right:'7%',top:'22%',fontSize:60,opacity:0.2,animation:'svcFloat 4.5s ease-in-out infinite 0.5s',filter:'drop-shadow(0 0 22px rgba(244,63,94,0.5))'}}>🌹</span>
+        <span style={{position:'absolute',right:'4%',top:'48%',fontSize:50,opacity:0.15,animation:'svcFloat 5s ease-in-out infinite 1.2s'}}>💊</span>
+        <span style={{position:'absolute',right:'10%',top:'68%',fontSize:54,opacity:0.17,animation:'svcFloat 4.2s ease-in-out infinite 0.3s'}}>🚕</span>
+        <span style={{position:'absolute',right:'3%',top:'85%',fontSize:42,opacity:0.12,animation:'svcFloat 6.5s ease-in-out infinite 1.8s'}}>💎</span>
+        <span style={{position:'absolute',right:'13%',top:'8%',fontSize:38,opacity:0.1,animation:'svcFloat 8.5s ease-in-out infinite 2.8s'}}>🏍️</span>
+      </div>
 
       {/* Hub button — TOP CENTER */}
       <div className="absolute top-4 left-1/2 z-50" style={{transform:'translateX(-50%)'}}>
