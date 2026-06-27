@@ -2,7 +2,8 @@
   "name": "workspace",
   "version": "0.0.0",   
   "license": "MIT",
-  "scripts": {
+  "scripts": { 
+    "start": "pnpm --filter @workspace/api-server run start",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "build:railway": "NODE_ENV=production pnpm --filter @workspace/grado-eats exec vite build && pnpm --filter @workspace/api-server run build",
     "typecheck:libs": "tsc --build",
