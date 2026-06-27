@@ -1,7 +1,11 @@
-[build]
-builder = "nixpacks"
+[variables]
+NODE_VERSION = "20"
 
-[deploy]
-startCommand = "NODE_ENV=production node --enable-source-maps ./artifacts/api-server/dist/index.mjs"
-restartPolicyType = "on_failure"
-restartPolicyMaxRetries = 5
+[phases.install]
+cmds = ["npm install -g pnpm@10", "npx pnpm@10 install --no-frozen-lockfile"]
+
+[phases.build]
+cmds = ["VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY VITE_CLERK_PROXY_URL=$VITE_CLERK_PROXY_URL npx pnpm@10 run build:railway"]
+
+[start]
+cmd = "npx serve artifacts/bridge-finance/dist/public --listen $PORT"
