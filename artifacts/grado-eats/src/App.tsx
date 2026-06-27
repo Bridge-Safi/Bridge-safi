@@ -4036,7 +4036,7 @@ useEffect(()=>{
             );
           };
           return(
-            <div style={{display:'flex',flexDirection:'column',gap:'16px',width:'100%',maxWidth:320,padding:'0 4px'}}>
+            <div style={{display:'flex',flexDirection:'column',gap:'16px',width:'100%',maxWidth:'100%',padding:'0 4px'}}>
               {/* Row 1: Eats + Taxi */}
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
                 {topItems.map(renderCard)}
