@@ -3875,7 +3875,7 @@ useEffect(()=>{
 
   return(
     <div className={`fixed inset-0 flex flex-col z-40 ${isAR?'rtl':'ltr'}`}
-      style={{background:'var(--c-bg)',overflowY:'auto'}}>
+      style={{background:'#07090E',overflowY:'auto'}}>
       <style>{`
         @keyframes svcFloat{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-9px) rotate(4deg);}}
         @keyframes svcFadeUp{0%{opacity:0;transform:translateY(22px) scale(0.96);}100%{opacity:1;transform:translateY(0) scale(1);}}
