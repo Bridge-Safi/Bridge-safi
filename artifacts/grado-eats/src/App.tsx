@@ -3665,7 +3665,7 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
       </div>
 
       {/* Content */}
-      <div className={`flex flex-col items-center px-5 pt-20 pb-12 max-w-sm mx-auto w-full gap-4 ${fClass}`}>
+      <div className={`flex flex-col items-center px-5 pt-20 pb-12 max-w-2xl mx-auto w-full gap-4 ${fClass}`}>
 
         {/* Title */}
         <div className="text-center">
