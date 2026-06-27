@@ -3939,7 +3939,7 @@ useEffect(()=>{
         </button>
       </div>
 
-      <div className="relative flex flex-col items-center w-full max-w-sm mx-auto pt-20 pb-8 px-2">
+      <div className="relative flex flex-col items-center w-full max-w-2xl mx-auto pt-20 pb-8 px-4">
         {/* Badge localisation style glass */}
         <div style={{
           display:'inline-flex',alignItems:'center',gap:6,
