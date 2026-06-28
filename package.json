@@ -3,7 +3,7 @@
   "version": "0.0.0",   
   "license": "MIT",
   "scripts": { 
-    "start": "pnpm --filter @workspace/api-server run start",
+   "start": "node --enable-source-maps artifacts/api-server/dist/index.mjs"
     "build": "pnpm -r --if-present run build",
     "build:railway": "NODE_ENV=production pnpm --filter @workspace/grado-eats exec vite build && pnpm --filter @workspace/api-server run build",
     "typecheck:libs": "tsc --build",
