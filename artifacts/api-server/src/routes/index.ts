@@ -12,9 +12,11 @@ import couponsRouter from "./coupons";
 import visitsRouter from "./visits";
 import missionsRouter from "./missions";
 import managerRouter from "./manager";
+import authRouter from "./auth";
 
 const router: IRouter = Router();
 
+router.use(authRouter);
 router.use(healthRouter);
 router.use(ordersRouter);
 router.use(pushRouter);
