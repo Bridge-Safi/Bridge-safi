@@ -3669,7 +3669,7 @@ function RestaurantPage({restaurant,lang,t,onBack,onAddToCart}:{
           <div className="flex items-center gap-3 mb-2">
             <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
               style={{background:'rgba(253,252,249,0.95)',backdropFilter:'blur(8px)'}}>
-              {restaurant.logo}
+              {_ue(restaurant.logo)}
             </div>
             <div>
               <h2 className="font-black text-white text-lg leading-tight">{restaurant.name}</h2>
