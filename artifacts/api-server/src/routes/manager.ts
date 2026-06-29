@@ -1,3 +1,4 @@
+import { pool } from '@workspace/db';
 import { Router } from "express";
 import { logger } from "../lib/logger";
 
@@ -22,18 +23,22 @@ interface ManagerPlayer {
 // GET /api/manager/leaderboard — proxy Manager players sorted by diamonds desc
 router.get("/manager/leaderboard", async (req, res) => {
   try {
-    const result = await pool.query(`
-      SELECT gd.user_id AS "userId", gd.diamonds, gd.total_earned AS "totalEarned",
+    const r = await pool.query(`
+      SELECT gd.user_id AS "userId",
+             gd.diamonds,
+             gd.total_earned AS "totalEarned",
              COALESCE(u.name, up.name, 'Joueur') AS name,
              COALESCE(u.phone, up.phone) AS phone
       FROM game_diamonds gd
       LEFT JOIN users u ON u.id = gd.user_id
       LEFT JOIN user_profiles up ON up.user_id = gd.user_id
-      ORDER BY gd.diamonds DESC LIMIT 200
+      ORDER BY gd.diamonds DESC
+      LIMIT 200
     `);
-    res.json(result.rows);
+    res.json(r.rows);
   } catch (err) {
-    res.status(500).json({ error: "Erreur classement" });
+    console.error('leaderboard error', err);
+    res.status(500).json({ error: 'Erreur classement' });
   }
 });
 
