@@ -20,16 +20,20 @@ interface ManagerPlayer {
 }
 
 // GET /api/manager/leaderboard — proxy Manager players sorted by diamonds desc
-router.get("/manager/leaderboard", async (_req, res) => {
+router.get("/manager/leaderboard", async (req, res) => {
   try {
-    const r = await fetch(`${MANAGER_URL}/api/players`);
-    if (!r.ok) { res.status(502).json({ error: "Manager indisponible" }); return; }
-    const players = (await r.json()) as ManagerPlayer[];
-    const sorted = [...players].sort((a, b) => (b.diamonds || 0) - (a.diamonds || 0));
-    res.json({ players: sorted, total: sorted.length });
+    const result = await pool.query(`
+      SELECT gd.user_id AS "userId", gd.diamonds, gd.total_earned AS "totalEarned",
+             COALESCE(u.name, up.name, 'Joueur') AS name,
+             COALESCE(u.phone, up.phone) AS phone
+      FROM game_diamonds gd
+      LEFT JOIN users u ON u.id = gd.user_id
+      LEFT JOIN user_profiles up ON up.user_id = gd.user_id
+      ORDER BY gd.diamonds DESC LIMIT 200
+    `);
+    res.json(result.rows);
   } catch (err) {
-    logger.error({ err }, "Failed to fetch manager leaderboard");
-    res.status(500).json({ error: "Erreur serveur" });
+    res.status(500).json({ error: "Erreur classement" });
   }
 });
 
