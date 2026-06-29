@@ -3683,7 +3683,7 @@ function RestaurantPage({restaurant,lang,t,onBack,onAddToCart}:{
             </div>
             <div className="flex items-center gap-1 px-2 py-1 rounded-full" style={{background:'rgba(253,252,249,0.15)'}}>
               <span className="text-white text-xs">⏱</span>
-              <span className="text-white text-xs font-black">{restaurant.deliveryTime} min</span>
+              <span className="text-white text-xs font-black">{_ue(restaurant.deliveryTime)} min</span>
             </div>
             <div className="flex items-center gap-1 px-2 py-1 rounded-full" style={{background:'rgba(253,252,249,0.15)'}}>
               <span className="text-white text-xs font-black">{t.minOrder} {restaurant.minOrder} MAD</span>
