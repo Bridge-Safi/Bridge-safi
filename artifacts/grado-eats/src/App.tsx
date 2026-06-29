@@ -3442,7 +3442,7 @@ function RestaurantCard({r,lang,t,onClick,compact=false}:{r:Restaurant;lang:Lang
           <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.9) 0%,rgba(4,55,38,0.05) 60%,transparent 100%)'}}/>
           <div className="absolute top-2 left-2 w-8 h-8 rounded-xl flex items-center justify-center text-lg"
             style={{background:'rgba(253,252,249,0.95)',backdropFilter:'blur(8px)',boxShadow:'0 2px 8px rgba(0,0,0,0.15)'}}>
-            {r.logo}
+            {_ue(r.logo)}
           </div>
           {isFeatured&&(
             <div className="absolute top-2 right-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full" style={{background:'#D9C5A0'}}>
@@ -3479,7 +3479,7 @@ function RestaurantCard({r,lang,t,onClick,compact=false}:{r:Restaurant;lang:Lang
         <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.85) 0%,rgba(4,55,38,0.1) 55%,transparent 100%)'}}/>
         <div className="absolute top-3 left-3 w-12 h-12 rounded-2xl flex items-center justify-center text-3xl"
           style={{background:'rgba(253,252,249,0.95)',backdropFilter:'blur(8px)',boxShadow:'0 4px 12px rgba(0,0,0,0.15)'}}>
-          {r.logo}
+          {_ue(r.logo)}
         </div>
         <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
           {isFeatured&&(
