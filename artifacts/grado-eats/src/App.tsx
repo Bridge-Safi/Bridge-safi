@@ -3698,7 +3698,7 @@ function RestaurantPage({restaurant,lang,t,onBack,onAddToCart}:{
           <button key={cat.id} onClick={()=>setActiveCategory(cat.id)}
             className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-2xl font-black text-[11px] transition-all active:scale-95 ${fClass}`}
             style={{background:active?'#065F46':'#FDFCF9',color:active?'#FDFCF9':'#065F46',border:`2px solid ${active?'#065F46':'#D9C5A0'}`,boxShadow:active?'0 4px 14px rgba(6,95,70,0.25)':'none'}}>
-            <span>{cat.emoji}</span><span>{cat.names[lang]}</span>
+            <span>{_ue(cat.emoji)}</span><span>{cat.names[lang]}</span>
           </button>
         );})}
       </div>
