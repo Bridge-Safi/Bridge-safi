@@ -71,7 +71,7 @@ function AuthPageWrapper({ children }: { children: React.ReactNode }) {
           color: '#D9C5A0', fontSize: '0.62rem', letterSpacing: '0.2em',
           fontWeight: 700, margin: '4px 0 0', opacity: 0.9,
         }}>
-          SAFI Â· MAROC Â· Ø¢Ø³ÙÙ Â· âµâ´°â´¼âµ
+          SAFI · MAROC · آسفي · ⵙⴰⴼⵉ
         </p>
 
         {/* Gold bar */}
@@ -81,7 +81,7 @@ function AuthPageWrapper({ children }: { children: React.ReactNode }) {
           <div style={{ width: 36, height: 1, background: 'linear-gradient(to left, transparent, #D9C5A0)' }} />
         </div>
         <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.62rem', letterSpacing: '0.18em', marginTop: 4 }}>
-          Bienvenue Â· Welcome Â· Ø£ÙÙØ§Ù ÙØ³ÙÙØ§Ù
+          Bienvenue · Welcome · أهلاً وسهلاً
         </p>
       </div>
 
@@ -111,7 +111,7 @@ function AuthPageWrapper({ children }: { children: React.ReactNode }) {
         marginTop: '1.5rem', letterSpacing: '0.15em', textAlign: 'center',
         position: 'relative', zIndex: 1,
       }}>
-        Â© 2026 BRIDGE SAFI Â· safi-bridge.ma Â· ð SÃ©curisÃ©
+        © 2026 BRIDGE SAFI · safi-bridge.ma · 🔒 Sécurisé
       </p>
     </div>
   );
@@ -126,7 +126,7 @@ function AuthCardHeader({ title, sub }: { title: string; sub: string }) {
   );
 }
 
-// âââ SHARED FORM STYLES âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── SHARED FORM STYLES ───────────────────────────────────────────────────────
 
 const inp: React.CSSProperties = {
   width: '100%', padding: '0.75rem 1rem', borderRadius: 14,
@@ -167,30 +167,30 @@ function FocusInput({ label: labelText, type = 'text', value, onChange, placehol
   );
 }
 
-// âââ SIGN-IN PAGE (custom â email/phone + password, single screen) âââââââââ
+// ─── SIGN-IN PAGE (custom — email/phone + password, single screen) ─────────
 
-// âââ FORGOT PASSWORD PAGE âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── FORGOT PASSWORD PAGE ─────────────────────────────────────────────────────
 
 function ForgotPasswordPage() {
   const [, navigate] = useLocation();
   return (
     <AuthPageWrapper>
-      <AuthCardHeader title="Mot de passe oubliÃ©" sub="Contactez le support Bridge" />
+      <AuthCardHeader title="Mot de passe oublié" sub="Contactez le support Bridge" />
       <div style={{textAlign:'center',padding:'1rem 0'}}>
         <p style={{fontSize:'0.85rem',color:'#374151',marginBottom:'1.5rem',lineHeight:1.6}}>
-          Envoyez un message WhatsApp avec votre numÃ©ro pour rÃ©initialiser votre mot de passe.
+          Envoyez un message WhatsApp avec votre numéro pour réinitialiser votre mot de passe.
         </p>
         <a href="https://wa.me/212600000000?text=Mot+de+passe+oubli%C3%A9" target="_blank" rel="noopener noreferrer"
           style={{display:'block',width:'100%',padding:'0.875rem',borderRadius:14,border:'none',
             background:'#25D366',color:'white',fontWeight:900,fontSize:'0.875rem',
             textDecoration:'none',textAlign:'center',boxShadow:'0 6px 20px rgba(37,211,102,0.3)'}}>
-          ð¬ Contacter le support WhatsApp
+          💬 Contacter le support WhatsApp
         </a>
       </div>
       <div style={{textAlign:'center',marginTop:'0.5rem',paddingTop:'1rem',borderTop:'1px solid #E5E1D8'}}>
         <button onClick={()=>navigate('/sign-in')}
           style={{background:'none',border:'none',color:'#065F46',fontWeight:700,fontSize:'0.75rem',cursor:'pointer'}}>
-          â Retour Ã  la connexion
+          ← Retour à la connexion
         </button>
       </div>
     </AuthPageWrapper>
@@ -215,7 +215,7 @@ function SignInPage() {
   useEffect(()=>{if(isLoaded&&isSignedIn) navigate(basePath||'/');},[isLoaded,isSignedIn]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); if(loading) return;
-    if(!identifier.trim()){setError('NumÃ©ro ou email requis.');return;}
+    if(!identifier.trim()){setError('Numéro ou email requis.');return;}
     if(!password){setError('Mot de passe requis.');return;}
     setLoading(true); setError('');
     try{await signIn(identifier.trim(),password); navigate(basePath||'/');}
@@ -224,45 +224,45 @@ function SignInPage() {
   };
   return (
     <AuthPageWrapper>
-      <AuthCardHeader title="Connexion Â· Sign in" sub="TÃ©lÃ©phone ou email Â· Mot de passe" />
+      <AuthCardHeader title="Connexion · Sign in" sub="Téléphone ou email · Mot de passe" />
       <div style={{marginBottom:'1rem',paddingBottom:'1rem',borderBottom:'1px dashed #E5E1D8',textAlign:'center'}}>
         <button type="button"
           onClick={()=>{localStorage.setItem('bridge_guest_mode','1');window.location.href=(basePath||'')+'/';}}
           style={{width:'100%',padding:'14px 0',borderRadius:14,border:'none',cursor:'pointer',
             background:'linear-gradient(135deg,#059669 0%,#4ADE80 50%,#059669 100%)',
             color:'#fff',fontSize:'0.95rem',fontWeight:900}}>
-          ð Commander sans compte
+          🛒 Commander sans compte
         </button>
       </div>
       <form onSubmit={handleSubmit} style={{display:'flex',flexDirection:'column'}}>
-        <FocusInput label="TÃ©lÃ©phone ou email" value={identifier} onChange={setIdentifier}
+        <FocusInput label="Téléphone ou email" value={identifier} onChange={setIdentifier}
           placeholder={isEmailId?'vous@example.com':'+212 6XX XXX XXX'}
           autoComplete="username" type={isEmailId?'email':'tel'} />
         <FocusInput label="Mot de passe" type="password" value={password} onChange={setPassword}
-          placeholder="â¢â¢â¢â¢â¢â¢â¢â¢" autoComplete="current-password" />
+          placeholder="••••••••" autoComplete="current-password" />
         {error && <div style={errStyle}>{error}</div>}
         <button type="submit" style={{...btn,opacity:loading?0.7:1,marginTop:14}} disabled={loading}>
-          {loading?'Connexion...':'Connexion â'}
+          {loading?'Connexion...':'Connexion →'}
         </button>
       </form>
       <div style={{textAlign:'center',marginTop:'1rem'}}>
         <button onClick={()=>navigate('/forgot-password')}
           style={{background:'none',border:'none',color:'#9CA3AF',fontSize:'0.72rem',cursor:'pointer',textDecoration:'underline'}}>
-          Mot de passe oubliÃ© ?
+          Mot de passe oublié ?
         </button>
       </div>
       <div style={{textAlign:'center',marginTop:'0.75rem',paddingTop:'0.75rem',borderTop:'1px solid #E5E1D8'}}>
         <span style={{fontSize:'0.75rem',color:'#9CA3AF'}}>Pas encore de compte ? </span>
         <button onClick={()=>navigate('/sign-up')}
           style={{background:'none',border:'none',color:'#065F46',fontWeight:700,fontSize:'0.75rem',cursor:'pointer'}}>
-          CrÃ©er un compte
+          Créer un compte
         </button>
       </div>
     </AuthPageWrapper>
   );
 }
 
-// âââ SIGN-UP PAGE (custom â name + email/phone + password, then OTP) ââââââ
+// ─── SIGN-UP PAGE (custom — name + email/phone + password, then OTP) ──────
 
 const SIGNUP_LANGS = ['fr','en','ar','amz'] as const;
 type SignUpLang = typeof SIGNUP_LANGS[number];
@@ -277,60 +277,60 @@ const SIGNUP_T: Record<SignUpLang, {
   loadMsgs: string[];
 }> = {
   fr: {
-    title:'CrÃ©er un compte Â· Sign up', sub:'Email ou tÃ©lÃ©phone + mot de passe',
-    emailLabel:'EMAIL OU NUMÃRO DE TÃLÃPHONE *', emailPh:'+212 6XX XXX XXX ou email@...',
-    passLabel:'MOT DE PASSE * (8 CARACTÃRES MIN.)', passPh:'â¢â¢â¢â¢â¢â¢â¢â¢',
-    btnCreate:'CrÃ©er mon compte â', btnCreating:'CrÃ©ation en cours...',
-    errEmail:'Email invalide ou dÃ©jÃ  utilisÃ©.', errPhone:'NumÃ©ro invalide ou dÃ©jÃ  utilisÃ©.',
-    errPass:'Mot de passe trop faible (8 caractÃ¨res min.).', errId:'Email ou tÃ©lÃ©phone requis.',
-    alreadyHave:'DÃ©jÃ  un compte ?', login:'Se connecter',
-    verifyTitle:'VÃ©rification Â· Verify', verifySub:(id)=>`Code envoyÃ© Ã  ${id}`,
-    verifyLabel:'CODE DE VÃRIFICATION (6 CHIFFRES)', btnVerify:'VÃ©rifier â', btnVerifying:'VÃ©rification...',
-    errCode:'Code incorrect ou expirÃ©.', back:'â Retour',
-    loadMsgs:['Bienvenue chez Bridge Safi ð²ð¦','CrÃ©ation de votre compte...','PrÃ©paration de vos services...','Presque prÃªt â¨','Connexion sÃ©curisÃ©e ð'],
+    title:'Créer un compte · Sign up', sub:'Email ou téléphone + mot de passe',
+    emailLabel:'EMAIL OU NUMÉRO DE TÉLÉPHONE *', emailPh:'+212 6XX XXX XXX ou email@...',
+    passLabel:'MOT DE PASSE * (8 CARACTÈRES MIN.)', passPh:'••••••••',
+    btnCreate:'Créer mon compte →', btnCreating:'Création en cours...',
+    errEmail:'Email invalide ou déjà utilisé.', errPhone:'Numéro invalide ou déjà utilisé.',
+    errPass:'Mot de passe trop faible (8 caractères min.).', errId:'Email ou téléphone requis.',
+    alreadyHave:'Déjà un compte ?', login:'Se connecter',
+    verifyTitle:'Vérification · Verify', verifySub:(id)=>`Code envoyé à ${id}`,
+    verifyLabel:'CODE DE VÉRIFICATION (6 CHIFFRES)', btnVerify:'Vérifier →', btnVerifying:'Vérification...',
+    errCode:'Code incorrect ou expiré.', back:'← Retour',
+    loadMsgs:['Bienvenue chez Bridge Safi 🇲🇦','Création de votre compte...','Préparation de vos services...','Presque prêt ✨','Connexion sécurisée 🔒'],
   },
   en: {
-    title:'Create account Â· CrÃ©er un compte', sub:'Email or phone + password',
+    title:'Create account · Créer un compte', sub:'Email or phone + password',
     emailLabel:'EMAIL OR PHONE NUMBER *', emailPh:'+212 6XX XXX XXX or email@...',
-    passLabel:'PASSWORD * (MIN. 8 CHARACTERS)', passPh:'â¢â¢â¢â¢â¢â¢â¢â¢',
-    btnCreate:'Create my account â', btnCreating:'Creating account...',
+    passLabel:'PASSWORD * (MIN. 8 CHARACTERS)', passPh:'••••••••',
+    btnCreate:'Create my account →', btnCreating:'Creating account...',
     errEmail:'Invalid or already used email.', errPhone:'Invalid or already used number.',
     errPass:'Password too weak (min. 8 characters).', errId:'Email or phone required.',
     alreadyHave:'Already have an account?', login:'Sign in',
-    verifyTitle:'Verification Â· VÃ©rification', verifySub:(id)=>`Code sent to ${id}`,
-    verifyLabel:'VERIFICATION CODE (6 DIGITS)', btnVerify:'Verify â', btnVerifying:'Verifying...',
-    errCode:'Wrong or expired code.', back:'â Back',
-    loadMsgs:['Welcome to Bridge Safi ð²ð¦','Creating your account...','Setting up your services...','Almost ready â¨','Securing your connection ð'],
+    verifyTitle:'Verification · Vérification', verifySub:(id)=>`Code sent to ${id}`,
+    verifyLabel:'VERIFICATION CODE (6 DIGITS)', btnVerify:'Verify →', btnVerifying:'Verifying...',
+    errCode:'Wrong or expired code.', back:'← Back',
+    loadMsgs:['Welcome to Bridge Safi 🇲🇦','Creating your account...','Setting up your services...','Almost ready ✨','Securing your connection 🔒'],
   },
   ar: {
-    title:'Ø¥ÙØ´Ø§Ø¡ Ø­Ø³Ø§Ø¨ Â· Sign up', sub:'Ø§ÙØ¨Ø±ÙØ¯ Ø£Ù Ø§ÙÙØ§ØªÙ + ÙÙÙØ© Ø§ÙÙØ±ÙØ±',
-    emailLabel:'Ø§ÙØ¨Ø±ÙØ¯ Ø§ÙØ¥ÙÙØªØ±ÙÙÙ Ø£Ù Ø±ÙÙ Ø§ÙÙØ§ØªÙ *', emailPh:'+212 6XX XXX XXX Ø£Ù email@...',
-    passLabel:'ÙÙÙØ© Ø§ÙÙØ±ÙØ± * (8 Ø£Ø­Ø±Ù Ø¹ÙÙ Ø§ÙØ£ÙÙ)', passPh:'â¢â¢â¢â¢â¢â¢â¢â¢',
-    btnCreate:'Ø¥ÙØ´Ø§Ø¡ Ø­Ø³Ø§Ø¨Ù â', btnCreating:'Ø¬Ø§Ø±Ù Ø§ÙØ¥ÙØ´Ø§Ø¡...',
-    errEmail:'Ø§ÙØ¨Ø±ÙØ¯ ØºÙØ± ØµØ§ÙØ­ Ø£Ù ÙØ³ØªØ®Ø¯Ù ÙØ³Ø¨ÙØ§Ù.', errPhone:'Ø§ÙØ±ÙÙ ØºÙØ± ØµØ§ÙØ­ Ø£Ù ÙØ³ØªØ®Ø¯Ù ÙØ³Ø¨ÙØ§Ù.',
-    errPass:'ÙÙÙØ© Ø§ÙÙØ±ÙØ± Ø¶Ø¹ÙÙØ© (8 Ø£Ø­Ø±Ù Ø¹ÙÙ Ø§ÙØ£ÙÙ).', errId:'Ø§ÙØ¨Ø±ÙØ¯ Ø£Ù Ø§ÙÙØ§ØªÙ ÙØ·ÙÙØ¨.',
-    alreadyHave:'ÙØ¯ÙÙ Ø­Ø³Ø§Ø¨Ø', login:'ØªØ³Ø¬ÙÙ Ø§ÙØ¯Ø®ÙÙ',
-    verifyTitle:'Ø§ÙØªØ­ÙÙ Â· Verify', verifySub:(id)=>`ØªÙ Ø¥Ø±Ø³Ø§Ù Ø§ÙØ±ÙØ² Ø¥ÙÙ ${id}`,
-    verifyLabel:'Ø±ÙØ² Ø§ÙØªØ­ÙÙ (6 Ø£Ø±ÙØ§Ù)', btnVerify:'ØªØ­ÙÙ â', btnVerifying:'Ø¬Ø§Ø±Ù Ø§ÙØªØ­ÙÙ...',
-    errCode:'Ø§ÙØ±ÙØ² Ø®Ø§Ø·Ø¦ Ø£Ù ÙÙØªÙÙ Ø§ÙØµÙØ§Ø­ÙØ©.', back:'Ø±Ø¬ÙØ¹ â',
-    loadMsgs:['Ø£ÙÙØ§Ù Ø¨Ù ÙÙ Bridge Safi ð²ð¦','Ø¬Ø§Ø±Ù Ø¥ÙØ´Ø§Ø¡ Ø­Ø³Ø§Ø¨Ù...','ØªØ¬ÙÙØ² Ø®Ø¯ÙØ§ØªÙ...','ØªÙØ±ÙØ¨Ø§Ù Ø¬Ø§ÙØ² â¨','ØªØ£ÙÙÙ Ø§ØªØµØ§ÙÙ ð'],
+    title:'إنشاء حساب · Sign up', sub:'البريد أو الهاتف + كلمة المرور',
+    emailLabel:'البريد الإلكتروني أو رقم الهاتف *', emailPh:'+212 6XX XXX XXX أو email@...',
+    passLabel:'كلمة المرور * (8 أحرف على الأقل)', passPh:'••••••••',
+    btnCreate:'إنشاء حسابي ←', btnCreating:'جارٍ الإنشاء...',
+    errEmail:'البريد غير صالح أو مستخدم مسبقاً.', errPhone:'الرقم غير صالح أو مستخدم مسبقاً.',
+    errPass:'كلمة المرور ضعيفة (8 أحرف على الأقل).', errId:'البريد أو الهاتف مطلوب.',
+    alreadyHave:'لديك حساب؟', login:'تسجيل الدخول',
+    verifyTitle:'التحقق · Verify', verifySub:(id)=>`تم إرسال الرمز إلى ${id}`,
+    verifyLabel:'رمز التحقق (6 أرقام)', btnVerify:'تحقق ←', btnVerifying:'جارٍ التحقق...',
+    errCode:'الرمز خاطئ أو منتهي الصلاحية.', back:'رجوع →',
+    loadMsgs:['أهلاً بك في Bridge Safi 🇲🇦','جارٍ إنشاء حسابك...','تجهيز خدماتك...','تقريباً جاهز ✨','تأمين اتصالك 🔒'],
   },
   amz: {
-    title:'â´°âµâµâ´¼â´°âµ Â· Sign up', sub:'â´°âµâ´»âµ¢âµ âµâµ âµâµâµâµâµ + âµâ´°â´±âµâ´°âµ',
-    emailLabel:'â´°âµâ´»âµ¢âµ âµâµ âµâµâµâµâµ *', emailPh:'+212 6XX XXX XXX âµâµ email@...',
-    passLabel:'âµâ´°â´±âµâ´°âµ * (8 âµâµâ´½â´½âµâµâ´»âµ)', passPh:'â¢â¢â¢â¢â¢â¢â¢â¢',
-    btnCreate:'â´°âµâµâ´¼â´°âµ âµ âµâµâµâµ â', btnCreating:'âµâµâ´½â´½â´°...',
-    errEmail:'â´°âµâ´»âµ¢âµ âµâµ âµ¢âµâ´·â´¼â´»âµ.', errPhone:'âµâµâµâµâµ âµâµ âµ¢âµâ´·â´¼â´»âµ.',
-    errPass:'âµâ´°â´±âµâ´°âµ âµâ´°âµâµ¥âµ¥âµ¢â´°âµâµ (8).', errId:'â´°âµâ´»âµ¢âµ âµâµ âµâµâµâµâµ âµâµâ´°âµ.',
-    alreadyHave:'âµâ´°âµ âµâµâµâ´° âµâµâµâµ?', login:'â´½âµâµ',
-    verifyTitle:'â´°âµâµâµâ´¼ Â· Verify', verifySub:(id)=>`â´°âµâµâµâ´¼ âµâµâµâµâµâ´½â´°âµ ${id}`,
-    verifyLabel:'âµâµâµâµâµ âµ âµâµâµâµâ´¼ (6)', btnVerify:'âµâµâµâ´¼ â', btnVerifying:'âµâµâ´½â´½â´°...',
-    errCode:'âµâµâµâµâµ âµâµ âµ¢âµâ´·â´¼â´»âµ.', back:'â â´°âµ£âµ£âµâµ',
-    loadMsgs:['â´°âµ£âµâµ Bridge Safi ð²ð¦','âµâµâ´½â´½â´° âµâµâµâµ...','âµâµâ´·â´·âµâµ âµ âµâµâµâ´½â´°âµâµâµ...','â´°â´½â´½â´°â´¹ âµ¢âµâµâ´° â¨','âµâµâµâµâµâ´° ð'],
+    title:'ⴰⵙⵏⴼⴰⵔ · Sign up', sub:'ⴰⵎⴻⵢⵍ ⵏⵖ ⵓⵟⵟⵓⵏ + ⵜⴰⴱⵔⴰⵜ',
+    emailLabel:'ⴰⵎⴻⵢⵍ ⵏⵖ ⵓⵟⵟⵓⵏ *', emailPh:'+212 6XX XXX XXX ⵏⵖ email@...',
+    passLabel:'ⵜⴰⴱⵔⴰⵜ * (8 ⵉⵙⴽⴽⵉⵏⴻⵏ)', passPh:'••••••••',
+    btnCreate:'ⴰⵙⵏⴼⴰⵔ ⵏ ⵓⵎⵓⵔ ←', btnCreating:'ⵉⵙⴽⴽⴰ...',
+    errEmail:'ⴰⵎⴻⵢⵍ ⵓⵔ ⵢⵓⴷⴼⴻⵏ.', errPhone:'ⵓⵟⵟⵓⵏ ⵓⵔ ⵢⵓⴷⴼⴻⵏ.',
+    errPass:'ⵜⴰⴱⵔⴰⵜ ⵜⴰⵎⵥⵥⵢⴰⵏⵜ (8).', errId:'ⴰⵎⴻⵢⵍ ⵏⵖ ⵓⵟⵟⵓⵏ ⵉⵍⴰⵔ.',
+    alreadyHave:'ⵎⴰⵛ ⵉⵍⵍⴰ ⵓⵎⵓⵔ?', login:'ⴽⵛⵎ',
+    verifyTitle:'ⴰⵙⵉⵏⴼ · Verify', verifySub:(id)=>`ⴰⵙⵉⵏⴼ ⵉⵜⵜⵓⵙⴽⴰⵔ ${id}`,
+    verifyLabel:'ⵓⵟⵟⵓⵏ ⵏ ⵓⵙⵉⵏⴼ (6)', btnVerify:'ⵙⵉⵏⴼ ←', btnVerifying:'ⵉⵙⴽⴽⴰ...',
+    errCode:'ⵓⵟⵟⵓⵏ ⵓⵔ ⵢⵓⴷⴼⴻⵏ.', back:'← ⴰⵣⵣⵓⵍ',
+    loadMsgs:['ⴰⵣⵓⵍ Bridge Safi 🇲🇦','ⵉⵙⴽⴽⴰ ⵓⵎⵓⵔ...','ⵜⵓⴷⴷⵓⵜ ⵏ ⵜⵎⵙⴽⴰⵔⵉⵏ...','ⴰⴽⴽⴰⴹ ⵢⵓⵙⴰ ✨','ⵜⵓⵜⵜⵔⴰ 🔒'],
   },
 };
 
-const LANG_FLAGS: Record<SignUpLang, string> = { fr:'ð«ð·', en:'ð¬ð§', ar:'ð²ð¦', amz:'âµ£' };
+const LANG_FLAGS: Record<SignUpLang, string> = { fr:'🇫🇷', en:'🇬🇧', ar:'🇲🇦', amz:'ⵣ' };
 
 function SignUpLoadingOverlay({ msgs, lang }: { msgs: string[]; lang: SignUpLang }) {
   const [msgIdx, setMsgIdx] = useState(0);
@@ -401,10 +401,10 @@ function SignUpLoadingOverlay({ msgs, lang }: { msgs: string[]; lang: SignUpLang
           {msgs[msgIdx]}
         </p>
         <p style={{ color:'rgba(255,255,255,0.45)', fontSize:'0.62rem', marginTop:6, letterSpacing:'0.08em', fontWeight:600 }}>
-          {lang==='ar'?'ÙØ¯ ÙØ³ØªØºØ±Ù 5â15 Ø«Ø§ÙÙØ©â¦':lang==='en'?'May take 5â15 s on slow networksâ¦':'Peut prendre 5â15 s selon le rÃ©seauâ¦'}
+          {lang==='ar'?'قد يستغرق 5–15 ثانية…':lang==='en'?'May take 5–15 s on slow networks…':'Peut prendre 5–15 s selon le réseau…'}
         </p>
         <p style={{ color:'rgba(255,255,255,0.2)', fontSize:'0.58rem', marginTop:4, letterSpacing:'0.15em' }}>
-          BRIDGE SAFI Â· Ø¢Ø³ÙÙ Â· âµâ´°â´¼âµ
+          BRIDGE SAFI · آسفي · ⵙⴰⴼⵉ
         </p>
       </div>
 
@@ -426,30 +426,30 @@ function SignUpPage() {
   useEffect(()=>{if(isLoaded&&isSignedIn) navigate(basePath||'/');},[isLoaded,isSignedIn]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); if(loading) return;
-    if(!identifier.trim()){setError('NumÃ©ro ou email requis.');return;}
+    if(!identifier.trim()){setError('Numéro ou email requis.');return;}
     if(password.length<8){setError('Mot de passe trop faible (8 car. min.).');return;}
     setLoading(true); setError('');
     try{await signUp(identifier.trim(),password,name.trim()); navigate(basePath||'/');}
-    catch(err:any){setError(err.message||'Erreur lors de la crÃ©ation du compte.');}
+    catch(err:any){setError(err.message||'Erreur lors de la création du compte.');}
     setLoading(false);
   };
-  if(loading) return <SignUpLoadingOverlay msgs={['Bienvenue chez Bridge Safi ð²ð¦','CrÃ©ation de votre compte...','Presque prÃªt â¨']} lang="fr" />;
+  if(loading) return <SignUpLoadingOverlay msgs={['Bienvenue chez Bridge Safi 🇲🇦','Création de votre compte...','Presque prêt ✨']} lang="fr" />;
   return (
     <AuthPageWrapper>
-      <AuthCardHeader title="CrÃ©er un compte Â· Sign up" sub="TÃ©lÃ©phone ou email + mot de passe" />
+      <AuthCardHeader title="Créer un compte · Sign up" sub="Téléphone ou email + mot de passe" />
       <form onSubmit={handleSubmit} style={{display:'flex',flexDirection:'column'}}>
-        <FocusInput label="TÃ©lÃ©phone ou email *" value={identifier} onChange={setIdentifier}
+        <FocusInput label="Téléphone ou email *" value={identifier} onChange={setIdentifier}
           placeholder={isEmailId?'vous@example.com':'+212 6XX XXX XXX'}
           autoComplete="username" type={isEmailId?'email':'tel'} />
         <FocusInput label="Nom (optionnel)" value={name} onChange={setName}
-          placeholder="Votre prÃ©nom" autoComplete="name" />
+          placeholder="Votre prénom" autoComplete="name" />
         <FocusInput label="Mot de passe * (8 car. min.)" type="password" value={password} onChange={setPassword}
-          placeholder="â¢â¢â¢â¢â¢â¢â¢â¢" autoComplete="new-password" />
+          placeholder="••••••••" autoComplete="new-password" />
         {error && <div style={errStyle}>{error}</div>}
-        <button type="submit" style={{...btn}}>CrÃ©er mon compte â</button>
+        <button type="submit" style={{...btn}}>Créer mon compte →</button>
       </form>
       <div style={{textAlign:'center',marginTop:'1.25rem',paddingTop:'1rem',borderTop:'1px solid #E5E1D8'}}>
-        <span style={{fontSize:'0.75rem',color:'#9CA3AF'}}>DÃ©jÃ  un compte ? </span>
+        <span style={{fontSize:'0.75rem',color:'#9CA3AF'}}>Déjà un compte ? </span>
         <button onClick={()=>navigate('/sign-in')}
           style={{background:'none',border:'none',color:'#065F46',fontWeight:700,fontSize:'0.75rem',cursor:'pointer'}}>
           Se connecter
@@ -460,274 +460,274 @@ function SignUpPage() {
 }
 
 
-// ââ Session keep-alive: renews the Clerk JWT every 4 min when
-//    the user chose "Rester connectÃ©", preventing inactivity sign-out ââââââââââ
+// ── Session keep-alive: renews the Clerk JWT every 4 min when
+//    the user chose "Rester connecté", preventing inactivity sign-out ──────────
 
-// âââ GAME PAGE PLACEHOLDER ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── GAME PAGE PLACEHOLDER ────────────────────────────────────────────────────
 
 const GAME_LANGS = ['fr','en','ar','amz'] as const;
 type GameLang = typeof GAME_LANGS[number];
-const GAME_LANG_LABELS: Record<GameLang,string> = {fr:'FR',en:'EN',ar:'AR',amz:'â´°âµâµ£'};
+const GAME_LANG_LABELS: Record<GameLang,string> = {fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
 const GAME_URL = 'https://game.safi-bridge.ma';
 const GAME_TARGET = 60000;
 const GAME_T = {
   fr:{
-    back:'â Retour', playerId:'ID JOUEUR', diamonds:'MES DIAMANTS', playBtn:'ð® JOUER MAINTENANT',
-    rulesBtn:'ð RÃ¨gles du jeu', target:'OBJECTIF', progress:'PROGRESSION',
-    days:'3 jours Â· 3h/jour', pts:'pts',
-    howTitle:'ð COMMENT GAGNER ?',
-    sec1Title:'â±ï¸ DURÃE DE JEU',
-    sec1:'Jouez 3h/jour pendant 3 jours Â· DurÃ©e totale : 9h Â· Plus vous jouez, plus vous gagnez de ð !',
-    sec2Title:'ð DIAMANTS Ã RÃCOLTER',
-    sec2:'Objectif : 60 000 ð en 3 jours Â· Rythme : 6 000 ð/heure (3h Ã 3j = 54 000 ð) Â· +2 000 ð/jour bonus (1h en plus) = 60 000 ð = livraison gratuite',
-    sec3Title:'ð DIAMANTS MANQUANTS',
-    sec3:'Objectif atteint â tout est offert ð Â· Manque 10 000 ð â vous payez 5 DH Â· Calcul : diamants manquants Ã· 10 000 Ã 5 DH',
-    bonusTitle:'ð BONUS â LIVRAISON GRATUITE',
-    bonusDesc:'Jouez 4h/jour (1h bonus) â +2 000 ð/jour â 60 000 ð = livraison 100% GRATUITE ð Â· Sinon le jeu s\'arrÃªte net Ã  3h, revenez le lendemain',
+    back:'← Retour', playerId:'ID JOUEUR', diamonds:'MES DIAMANTS', playBtn:'🎮 JOUER MAINTENANT',
+    rulesBtn:'📜 Règles du jeu', target:'OBJECTIF', progress:'PROGRESSION',
+    days:'3 jours · 3h/jour', pts:'pts',
+    howTitle:'🏆 COMMENT GAGNER ?',
+    sec1Title:'⏱️ DURÉE DE JEU',
+    sec1:'Jouez 3h/jour pendant 3 jours · Durée totale : 9h · Plus vous jouez, plus vous gagnez de 💎 !',
+    sec2Title:'💎 DIAMANTS À RÉCOLTER',
+    sec2:'Objectif : 60 000 💎 en 3 jours · Rythme : 6 000 💎/heure (3h × 3j = 54 000 💎) · +2 000 💎/jour bonus (1h en plus) = 60 000 💎 = livraison gratuite',
+    sec3Title:'🐝 DIAMANTS MANQUANTS',
+    sec3:'Objectif atteint → tout est offert 🎉 · Manque 10 000 💎 → vous payez 5 DH · Calcul : diamants manquants ÷ 10 000 × 5 DH',
+    bonusTitle:'🎁 BONUS — LIVRAISON GRATUITE',
+    bonusDesc:'Jouez 4h/jour (1h bonus) → +2 000 💎/jour → 60 000 💎 = livraison 100% GRATUITE 🎁 · Sinon le jeu s\'arrête net à 3h, revenez le lendemain',
   },
   en:{
-    back:'â Back', playerId:'PLAYER ID', diamonds:'MY DIAMONDS', playBtn:'ð® PLAY NOW',
-    rulesBtn:'ð Game Rules', target:'TARGET', progress:'PROGRESS',
-    days:'3 days Â· 3h/day', pts:'pts',
-    howTitle:'ð HOW TO WIN?',
-    sec1Title:'â±ï¸ PLAY TIME',
-    sec1:'Play 3h/day for 3 days Â· Total: 9h Â· The more you play, the more ð you earn!',
-    sec2Title:'ð DIAMONDS TO COLLECT',
-    sec2:'Goal: 60,000 ð in 3 days Â· Rate: 6,000 ð/hour (3h Ã 3j = 54,000 ð) Â· +2,000 ð/day bonus (1 extra hour) = 60,000 ð = free delivery',
-    sec3Title:'ð MISSING DIAMONDS',
-    sec3:'Goal reached â everything is free ð Â· Missing 10,000 ð â you pay 5 DH Â· Formula: missing Ã· 10,000 Ã 5 DH',
-    bonusTitle:'ð BONUS â FREE DELIVERY',
-    bonusDesc:'Play 4h/day (1 bonus hour) â +2,000 ð/day â 60,000 ð = 100% FREE delivery ð Â· Otherwise the game stops at 3h, come back tomorrow',
+    back:'← Back', playerId:'PLAYER ID', diamonds:'MY DIAMONDS', playBtn:'🎮 PLAY NOW',
+    rulesBtn:'📜 Game Rules', target:'TARGET', progress:'PROGRESS',
+    days:'3 days · 3h/day', pts:'pts',
+    howTitle:'🏆 HOW TO WIN?',
+    sec1Title:'⏱️ PLAY TIME',
+    sec1:'Play 3h/day for 3 days · Total: 9h · The more you play, the more 💎 you earn!',
+    sec2Title:'💎 DIAMONDS TO COLLECT',
+    sec2:'Goal: 60,000 💎 in 3 days · Rate: 6,000 💎/hour (3h × 3j = 54,000 💎) · +2,000 💎/day bonus (1 extra hour) = 60,000 💎 = free delivery',
+    sec3Title:'🐝 MISSING DIAMONDS',
+    sec3:'Goal reached → everything is free 🎉 · Missing 10,000 💎 → you pay 5 DH · Formula: missing ÷ 10,000 × 5 DH',
+    bonusTitle:'🎁 BONUS — FREE DELIVERY',
+    bonusDesc:'Play 4h/day (1 bonus hour) → +2,000 💎/day → 60,000 💎 = 100% FREE delivery 🎁 · Otherwise the game stops at 3h, come back tomorrow',
   },
   ar:{
-    back:'â Ø±Ø¬ÙØ¹', playerId:'ÙØ¹Ø±ÙÙ Ø§ÙÙØ§Ø¹Ø¨', diamonds:'ÙØ§Ø³Ø§ØªÙ', playBtn:'ð® Ø§ÙØ¹Ø¨ Ø§ÙØ¢Ù',
-    rulesBtn:'ð ÙÙØ§Ø¹Ø¯ Ø§ÙÙØ¹Ø¨Ø©', target:'Ø§ÙÙØ¯Ù', progress:'Ø§ÙØªÙØ¯Ù',
-    days:'3 Ø£ÙØ§Ù Â· 3 Ø³Ø§Ø¹Ø§Øª/ÙÙÙ', pts:'ÙÙØ·Ø©',
-    howTitle:'ð ÙÙÙ ØªÙÙØ²Ø',
-    sec1Title:'â±ï¸ ÙØ¯Ø© Ø§ÙÙØ¹Ø¨',
-    sec1:'Ø§ÙØ¹Ø¨ 3 Ø³Ø§Ø¹Ø§Øª/ÙÙÙ ÙÙØ¯Ø© 3 Ø£ÙØ§Ù Â· Ø§ÙÙØ¬ÙÙØ¹: 9 Ø³Ø§Ø¹Ø§Øª Â· ÙÙÙØ§ ÙØ¹Ø¨Øª Ø£ÙØ«Ø±Ø ÙØ³Ø¨Øª ð Ø£ÙØ«Ø±!',
-    sec2Title:'ð Ø§ÙÙØ§Ø³Ø§Øª Ø§ÙÙØ·ÙÙØ¨Ø©',
-    sec2:'Ø§ÙÙØ¯Ù: 60 000 ð ÙÙ 3 Ø£ÙØ§Ù Â· 6 000 ð/Ø³Ø§Ø¹Ø© (3Ø³ Ã 3Ø£ = 54 000 ð) Â· +2 000 ð/ÙÙÙ ÙÙØ§ÙØ£Ø© (Ø³Ø§Ø¹Ø© Ø¥Ø¶Ø§ÙÙØ©) = 60 000 ð = ØªÙØµÙÙ ÙØ¬Ø§ÙÙ',
-    sec3Title:'ð Ø§ÙÙØ§Ø³Ø§Øª Ø§ÙÙØ§ÙØµØ©',
-    sec3:'ÙØµÙØª ÙÙÙØ¯Ù â ÙÙ Ø´ÙØ¡ ÙØ¬Ø§ÙÙ ð Â· ÙÙØµ 10 000 ð â ØªØ¯ÙØ¹ 5 Ø¯Ø±Ø§ÙÙ Â· Ø§ÙØ­Ø³Ø§Ø¨: Ø§ÙÙØ§ÙØµ Ã· 10 000 Ã 5 = Ø¯Ø±Ø§ÙÙ',
-    bonusTitle:'ð ÙÙØ§ÙØ£Ø© â ØªÙØµÙÙ ÙØ¬Ø§ÙÙ',
-    bonusDesc:'Ø§ÙØ¹Ø¨ 4 Ø³Ø§Ø¹Ø§Øª/ÙÙÙ (Ø³Ø§Ø¹Ø© Ø¥Ø¶Ø§ÙÙØ©) â +2 000 ð/ÙÙÙ â 60 000 ð = ØªÙØµÙÙ ÙØ¬Ø§ÙÙ 100% ð Â· ÙØ¥ÙØ§ ØªÙÙÙ Ø§ÙÙØ¹Ø¨Ø© Ø¹ÙØ¯ 3 Ø³Ø§Ø¹Ø§ØªØ Ø¹Ø¯ ØºØ¯Ø§Ù',
+    back:'→ رجوع', playerId:'معرّف اللاعب', diamonds:'ماساتي', playBtn:'🎮 العب الآن',
+    rulesBtn:'📜 قواعد اللعبة', target:'الهدف', progress:'التقدم',
+    days:'3 أيام · 3 ساعات/يوم', pts:'نقطة',
+    howTitle:'🏆 كيف تفوز؟',
+    sec1Title:'⏱️ مدة اللعب',
+    sec1:'العب 3 ساعات/يوم لمدة 3 أيام · المجموع: 9 ساعات · كلما لعبت أكثر، كسبت 💎 أكثر!',
+    sec2Title:'💎 الماسات المطلوبة',
+    sec2:'الهدف: 60 000 💎 في 3 أيام · 6 000 💎/ساعة (3س × 3أ = 54 000 💎) · +2 000 💎/يوم مكافأة (ساعة إضافية) = 60 000 💎 = توصيل مجاني',
+    sec3Title:'🐝 الماسات الناقصة',
+    sec3:'وصلت للهدف → كل شيء مجاني 🎉 · نقص 10 000 💎 → تدفع 5 دراهم · الحساب: الناقص ÷ 10 000 × 5 = دراهم',
+    bonusTitle:'🎁 مكافأة — توصيل مجاني',
+    bonusDesc:'العب 4 ساعات/يوم (ساعة إضافية) → +2 000 💎/يوم → 60 000 💎 = توصيل مجاني 100% 🎁 · وإلا توقف اللعبة عند 3 ساعات، عد غداً',
   },
   amz:{
-    back:'â â´°âµ£âµ£âµâµ', playerId:'â´°âµâ´³âµâ´°âµ¡', diamonds:'âµâ´·âµ¢â´°âµâ´°âµ âµâµâµ', playBtn:'ð® âµâµâµ â´·â´°âµâµ',
-    rulesBtn:'ð âµâµâµâµâµ', target:'â´°âµâµâµâµâµ', progress:'â´°âµâµâµâµ¡â´¹',
-    days:'3 âµ¡â´°âµâµâ´°âµâµ Â· 3 âµâµâµâµâµâµâµâµ/â´°âµâµ', pts:'âµâµâµâµâµâ´°âµ',
-    howTitle:'ð âµâ´°âµâ´½ â´°â´· âµâ´½âµâµ?',
-    sec1Title:'â±ï¸ â´°âµ£âµâµ£ âµ âµâµ£âµâ´°âµ',
-    sec1:'âµ£âµ 3 âµâµâµâµâµâµâµâµ/â´°âµâµ Â· 3 âµ¡â´°âµâµâ´°âµâµ Â· â´°âµâµâ´°âµ: 9 âµâµâµâµâµâµâµâµ',
-    sec2Title:'ð âµâ´·âµ¢â´°âµâ´°âµ â´°â´· âµâ´½âµâµâ´·',
-    sec2:'â´°âµâµâµâµâµ: 60 000 ð Â· 6 000 ð/âµâµâµâµâµâµ Â· +2 000 ð/â´°âµâµ â´±âµâµâµâµ = â´°âµ£âµâµâµ£ âµâµ¥âµâµ',
-    sec3Title:'ð âµâ´·âµ¢â´°âµâ´°âµ âµâµâµâµâµ',
-    sec3:'âµ¡â´°âµâµâ´° â´°âµâµâµâµâµ â â´½âµâµâµâµ âµâµ¥âµâµ ð Â· 10 000 ð âµâµâµâµ â 5 â´·âµâµâµ Â· âµâµ: âµâµâµâµâµ Ã· 10 000 Ã 5 = â´·âµâµâµ',
-    bonusTitle:'ð â´±âµâµâµâµ â â´°âµ£âµâµâµ£ âµâµ¥âµâµ',
-    bonusDesc:'âµ£âµ 4 âµâµâµâµâµâµâµâµ/â´°âµâµ â +2 000 ð â 60 000 ð = â´°âµ£âµâµâµ£ âµâµ¥âµâµ 100% ð',
+    back:'← ⴰⵣⵣⵓⵍ', playerId:'ⴰⵏⴳⵔⴰⵡ', diamonds:'ⵉⴷⵢⴰⵎⴰⵏ ⵉⵏⵓ', playBtn:'🎮 ⵙⵖⵔ ⴷⴰⵖⵉ',
+    rulesBtn:'📜 ⵜⵉⵖⵔⵉ', target:'ⴰⵎⵓⵟⵟⵓ', progress:'ⴰⵎⵙⵉⵡⴹ',
+    days:'3 ⵡⴰⵙⵙⴰⵜⵏ · 3 ⵜⵉⵙⵙⵓⵜⵉⵏ/ⴰⵙⵙ', pts:'ⵜⵉⵏⵎⵍⴰⵏ',
+    howTitle:'🏆 ⵎⴰⵎⴽ ⴰⴷ ⵜⴽⵙⵎ?',
+    sec1Title:'⏱️ ⴰⵣⵎⵣ ⵏ ⵓⵣⵔⴰⵔ',
+    sec1:'ⵣⵔ 3 ⵜⵉⵙⵙⵓⵜⵉⵏ/ⴰⵙⵙ · 3 ⵡⴰⵙⵙⴰⵜⵏ · ⴰⵎⵎⴰⵙ: 9 ⵜⵉⵙⵙⵓⵜⵉⵏ',
+    sec2Title:'💎 ⵉⴷⵢⴰⵎⴰⵏ ⴰⴷ ⵜⴽⵛⵎⴷ',
+    sec2:'ⴰⵎⵓⵟⵟⵓ: 60 000 💎 · 6 000 💎/ⵜⵉⵙⵙⵓⵜ · +2 000 💎/ⴰⵙⵙ ⴱⵓⵏⵓⵙ = ⴰⵣⵏⵏⵣ ⵉⵥⵍⵉ',
+    sec3Title:'🐝 ⵉⴷⵢⴰⵎⴰⵏ ⵉⵔⵓⵔⵏ',
+    sec3:'ⵡⴰⵅⵅⴰ ⴰⵎⵓⵟⵟⵓ → ⴽⵓⵍⵍⵓ ⵉⵥⵍⵉ 🎉 · 10 000 💎 ⵉⵔⵓⵔ → 5 ⴷⵔⵀⵎ · ⵓⵔ: ⵉⵔⵓⵔⵏ ÷ 10 000 × 5 = ⴷⵔⵀⵎ',
+    bonusTitle:'🎁 ⴱⵓⵏⵓⵙ — ⴰⵣⵏⵏⵣ ⵉⵥⵍⵉ',
+    bonusDesc:'ⵣⵔ 4 ⵜⵉⵙⵙⵓⵜⵉⵏ/ⴰⵙⵙ → +2 000 💎 → 60 000 💎 = ⴰⵣⵏⵏⵣ ⵉⵥⵍⵉ 100% 🎁',
   },
 };
 
-// âââ BRIDGE GAME RULES MODAL ââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── BRIDGE GAME RULES MODAL ──────────────────────────────────────────────────
 
 function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void }) {
   const isAR = lang === 'ar';
   const rules = {
     fr: {
-      title: 'ð RÃ¨gles du Jeu',
-      subtitle: 'Bridge Shark â Comment gagner ?',
+      title: '📜 Règles du Jeu',
+      subtitle: 'Bridge Shark — Comment gagner ?',
       sections: [
         {
-          icon: 'â±ï¸', title: 'DurÃ©e de jeu',
+          icon: '⏱️', title: 'Durée de jeu',
           points: [
-            'Jouez autant que vous voulez, Ã  votre rythme',
-            'Objectif total : atteindre 60 000 ð',
-            'ð Plus vous jouez, plus vous gagnez de ð !',
+            'Jouez autant que vous voulez, à votre rythme',
+            'Objectif total : atteindre 60 000 💎',
+            '🎁 Plus vous jouez, plus vous gagnez de 💎 !',
           ]
         },
         {
-          icon: 'ð', title: 'Diamants Ã  rÃ©colter',
+          icon: '💎', title: 'Diamants à récolter',
           points: [
-            'Objectif : rÃ©colter 60 000 ð',
-            '200 ð = 1 MAD de rÃ©duction sur votre commande',
-            '60 000 ð = 300 MAD offerts !',
+            'Objectif : récolter 60 000 💎',
+            '200 💎 = 1 MAD de réduction sur votre commande',
+            '60 000 💎 = 300 MAD offerts !',
           ]
         },
         {
-          icon: 'ð¸', title: 'Diamants manquants',
+          icon: '💸', title: 'Diamants manquants',
           points: [
-            'Si vous atteignez 60 000 ð â tout est offert ! ð',
-            'S\'il manque 10 000 ð â vous payez 5 DH',
-            'S\'il manque 30 000 ð â vous payez 15 DH',
-            'Calcul : diamants manquants Ã· 10 000 Ã 5 DH',
+            'Si vous atteignez 60 000 💎 → tout est offert ! 🎉',
+            'S\'il manque 10 000 💎 → vous payez 5 DH',
+            'S\'il manque 30 000 💎 → vous payez 15 DH',
+            'Calcul : diamants manquants ÷ 10 000 × 5 DH',
           ]
         },
         {
-          icon: 'ð´', title: 'BONUS â Livraison gratuite',
+          icon: '🚴', title: 'BONUS — Livraison gratuite',
           points: [
-            'Atteignez 60 000 ð â prochaine livraison 100% GRATUITE ð',
-            'Chaque commande jouÃ©e booste vos diamants !',
+            'Atteignez 60 000 💎 → prochaine livraison 100% GRATUITE 🎁',
+            'Chaque commande jouée booste vos diamants !',
           ]
         },
         {
-          icon: 'ð', title: 'Comment utiliser vos gains',
+          icon: '🎁', title: 'Comment utiliser vos gains',
           points: [
-            'ðµ Un menu depuis Bridge Eats',
-            'ð¬ Un paquet de cigarettes via Bridge Tabac',
-            'ð¹ Une coupe de fleurs via Bridge Fleurs',
-            'Ãchangez directement dans l\'application !',
+            '🛵 Un menu depuis Bridge Eats',
+            '🚬 Un paquet de cigarettes via Bridge Tabac',
+            '🌹 Une coupe de fleurs via Bridge Fleurs',
+            'Échangez directement dans l\'application !',
           ]
         },
       ],
-      example: 'ð¡ Exemple : vous avez 50 000 ð au lieu de 60 000 â il manque 10 000 ð â vous payez seulement 5 DH.',
-      close: 'J\'ai compris ! ð¦',
+      example: '💡 Exemple : vous avez 50 000 💎 au lieu de 60 000 → il manque 10 000 💎 → vous payez seulement 5 DH.',
+      close: 'J\'ai compris ! 🦈',
     },
     en: {
-      title: 'ð Game Rules',
-      subtitle: 'Bridge Shark â How to win?',
+      title: '📜 Game Rules',
+      subtitle: 'Bridge Shark — How to win?',
       sections: [
         {
-          icon: 'â±ï¸', title: 'Playing time',
+          icon: '⏱️', title: 'Playing time',
           points: [
             'Play at your own pace, whenever you want',
-            'Total goal: reach 60,000 ð',
-            'ð The more you play, the more ð you earn!',
+            'Total goal: reach 60,000 💎',
+            '🎁 The more you play, the more 💎 you earn!',
           ]
         },
         {
-          icon: 'ð', title: 'Diamonds to collect',
+          icon: '💎', title: 'Diamonds to collect',
           points: [
-            'Goal: collect 60,000 ð',
-            '200 ð = 1 MAD discount on your order',
-            '60,000 ð = 300 MAD off!',
+            'Goal: collect 60,000 💎',
+            '200 💎 = 1 MAD discount on your order',
+            '60,000 💎 = 300 MAD off!',
           ]
         },
         {
-          icon: 'ð¸', title: 'Missing diamonds',
+          icon: '💸', title: 'Missing diamonds',
           points: [
-            'Reach 60,000 ð â everything is free! ð',
-            'Missing 10,000 ð â you pay 5 DH',
-            'Missing 30,000 ð â you pay 15 DH',
-            'Formula: missing diamonds Ã· 10,000 Ã 5 DH',
+            'Reach 60,000 💎 → everything is free! 🎉',
+            'Missing 10,000 💎 → you pay 5 DH',
+            'Missing 30,000 💎 → you pay 15 DH',
+            'Formula: missing diamonds ÷ 10,000 × 5 DH',
           ]
         },
         {
-          icon: 'ð´', title: 'BONUS â Free delivery',
+          icon: '🚴', title: 'BONUS — Free delivery',
           points: [
-            'Reach 60,000 ð â next delivery 100% FREE ð',
+            'Reach 60,000 💎 → next delivery 100% FREE 🎁',
             'Every order played boosts your diamonds!',
           ]
         },
         {
-          icon: 'ð', title: 'How to use your winnings',
+          icon: '🎁', title: 'How to use your winnings',
           points: [
-            'ðµ A meal from Bridge Eats',
-            'ð¬ A pack of cigarettes from Bridge Tabac',
-            'ð¹ A bunch of flowers from Bridge Fleurs',
+            '🛵 A meal from Bridge Eats',
+            '🚬 A pack of cigarettes from Bridge Tabac',
+            '🌹 A bunch of flowers from Bridge Fleurs',
             'Redeem directly in the app!',
           ]
         },
       ],
-      example: 'ð¡ Example: you have 50,000 ð instead of 60,000 â missing 10,000 ð â you pay only 5 DH.',
-      close: 'Got it! ð¦',
+      example: '💡 Example: you have 50,000 💎 instead of 60,000 → missing 10,000 💎 → you pay only 5 DH.',
+      close: 'Got it! 🦈',
     },
     ar: {
-      title: 'ð ÙÙØ§Ø¹Ø¯ Ø§ÙÙØ¹Ø¨Ø©',
-      subtitle: 'Bridge Shark â ÙÙÙ ØªÙÙØ²Ø',
+      title: '📜 قواعد اللعبة',
+      subtitle: 'Bridge Shark — كيف تفوز؟',
       sections: [
         {
-          icon: 'â±ï¸', title: 'ÙÙØª Ø§ÙÙØ¹Ø¨',
+          icon: '⏱️', title: 'وقت اللعب',
           points: [
-            'Ø§ÙØ¹Ø¨ Ø¨Ø§ÙÙØªÙØ±Ø© Ø§ÙØªÙ ØªØ±ÙØ¯ÙØ§Ø ÙØªÙ Ø´Ø¦Øª',
-            'Ø§ÙÙØ¯Ù Ø§ÙÙÙÙ : Ø§ÙÙØµÙÙ Ø¥ÙÙ 60 000 ð',
-            'ð ÙÙÙØ§ ÙØ¹Ø¨Øª Ø£ÙØ«Ø±Ø ÙØ³Ø¨Øª ÙØ§Ø³Ø§Øª Ø£ÙØ«Ø±!',
+            'العب بالوتيرة التي تريدها، متى شئت',
+            'الهدف الكلي : الوصول إلى 60 000 💎',
+            '🎁 كلما لعبت أكثر، كسبت ماسات أكثر!',
           ]
         },
         {
-          icon: 'ð', title: 'Ø§ÙÙØ§Ø³Ø§Øª Ø§ÙÙØ·ÙÙØ¨Ø©',
+          icon: '💎', title: 'الماسات المطلوبة',
           points: [
-            'Ø§ÙÙØ¯Ù : Ø¬ÙØ¹ 60 000 ð',
-            '200 ð = 1 Ø¯Ø±ÙÙ Ø®ØµÙ Ø¹ÙÙ Ø·ÙØ¨Ù',
-            '60 000 ð = 300 Ø¯Ø±ÙÙ ÙØ¬Ø§ÙØ§Ù!',
+            'الهدف : جمع 60 000 💎',
+            '200 💎 = 1 درهم خصم على طلبك',
+            '60 000 💎 = 300 درهم مجاناً!',
           ]
         },
         {
-          icon: 'ð¸', title: 'Ø§ÙÙØ§Ø³Ø§Øª Ø§ÙÙØ§ÙØµØ©',
+          icon: '💸', title: 'الماسات الناقصة',
           points: [
-            'Ø­ÙÙØª 60 000 ð â ÙÙ Ø´ÙØ¡ ÙØ¬Ø§ÙÙ! ð',
-            'ÙØ§ÙØµ 10 000 ð â ØªØ¯ÙØ¹ 5 Ø¯Ø±Ø§ÙÙ',
-            'ÙØ§ÙØµ 30 000 ð â ØªØ¯ÙØ¹ 15 Ø¯Ø±ÙÙ',
-            'Ø§ÙØ­Ø³Ø§Ø¨ : Ø§ÙÙØ§ÙØµ Ã· 10 000 Ã 5 = Ø¯Ø±Ø§ÙÙ',
+            'حققت 60 000 💎 → كل شيء مجاني! 🎉',
+            'ناقص 10 000 💎 → تدفع 5 دراهم',
+            'ناقص 30 000 💎 → تدفع 15 درهم',
+            'الحساب : الناقص ÷ 10 000 × 5 = دراهم',
           ]
         },
         {
-          icon: 'ð´', title: 'ÙÙØ§ÙØ£Ø© â ØªÙØµÙÙ ÙØ¬Ø§ÙÙ',
+          icon: '🚴', title: 'مكافأة — توصيل مجاني',
           points: [
-            'Ø§Ø¬ÙØ¹ 60 000 ð â ØªÙØµÙÙÙ Ø§ÙØªØ§ÙÙ ÙØ¬Ø§ÙÙ 100% ð',
-            'ÙÙ Ø·ÙØ¨ ÙÙØ¹Ø¨Ù ÙØ±ÙØ¹ Ø±ØµÙØ¯Ù ÙÙ Ø§ÙÙØ§Ø³Ø§Øª!',
+            'اجمع 60 000 💎 → توصيلك التالي مجاني 100% 🎁',
+            'كل طلب يلعبه يرفع رصيدك من الماسات!',
           ]
         },
         {
-          icon: 'ð', title: 'ÙÙÙ ØªØ³ØªØ®Ø¯Ù ÙÙØ§Ø³Ø¨Ù',
+          icon: '🎁', title: 'كيف تستخدم مكاسبك',
           points: [
-            'ðµ ÙØ¬Ø¨Ø© ÙÙ Bridge Eats',
-            'ð¬ Ø¹ÙØ¨Ø© Ø³Ø¬Ø§Ø¦Ø± ÙÙ Bridge Tabac',
-            'ð¹ Ø¨Ø§ÙØ© ÙØ±Ø¯ ÙÙ Bridge Fleurs',
-            'Ø§Ø³ØªØ¨Ø¯Ù ÙØ¨Ø§Ø´Ø±Ø© ÙÙ Ø§ÙØªØ·Ø¨ÙÙ!',
+            '🛵 وجبة من Bridge Eats',
+            '🚬 علبة سجائر من Bridge Tabac',
+            '🌹 باقة ورد من Bridge Fleurs',
+            'استبدل مباشرة من التطبيق!',
           ]
         },
       ],
-      example: 'ð¡ ÙØ«Ø§Ù : ÙØ¯ÙÙ 50 000 ð Ø¨Ø¯ÙØ§Ù ÙÙ 60 000 â ÙØ§ÙØµ 10 000 ð â ØªØ¯ÙØ¹ 5 Ø¯Ø±Ø§ÙÙ ÙÙØ·.',
-      close: 'ÙÙÙØª! ð¦',
+      example: '💡 مثال : لديك 50 000 💎 بدلاً من 60 000 → ناقص 10 000 💎 → تدفع 5 دراهم فقط.',
+      close: 'فهمت! 🦈',
     },
     amz: {
-      title: 'ð âµâµâµâµâµ âµ âµâµâ´½âµâ´°âµ¡',
+      title: '📜 ⵜⵉⵖⵔⵉ ⵏ ⵓⵎⴽⵙⴰⵡ',
       subtitle: 'Bridge Shark',
       sections: [
         {
-          icon: 'â±ï¸', title: 'â´°âµ£âµâµ£ âµ âµâµâ´½âµâ´°âµ¡',
+          icon: '⏱️', title: 'ⴰⵣⵎⵣ ⵏ ⵓⵎⴽⵙⴰⵡ',
           points: [
-            'âµâµâµ âµâ´°âµâ´½ âµâµâµâ´·, â´°âµâµâ´°âµ âµâµâµâ´·',
-            'â´°âµâµâµâµâµ : 60 000 ð',
-            'ð â´½âµâµâµâµ âµâµâµâµâ´°âµ â âµâµâµâµâ´°âµ âµâµâµ ð!',
+            'ⵙⵖⵔ ⵎⴰⵎⴽ ⵜⵔⵉⴷ, ⴰⵎⵎⴰⵙ ⵜⵔⵉⴷ',
+            'ⴰⵎⵓⵟⵟⵓ : 60 000 💎',
+            '🎁 ⴽⵓⵍⵍⵓ ⵉⵍⵎⵎⴰⵏ → ⵉⵍⵎⵎⴰⵏ ⵉⵏⵙ 💎!',
           ]
         },
         {
-          icon: 'ð', title: 'âµâ´·âµ¢â´°âµâ´°âµ âµâµâ´°âµâµâ´°âµ',
+          icon: '💎', title: 'ⵉⴷⵢⴰⵎⴰⵏ ⵉⵍⴰⵎⵎⴰⵏ',
           points: [
-            'â´°âµâµâµâµâµ : 60 000 ð',
-            '200 ð = 1 â´·âµâµâµ âµ âµâ´¼â´°â´·â´°',
-            '60 000 ð = 300 â´·âµâµâµ âµâµâµ âµâµâ´°âµâ´½!',
+            'ⴰⵎⵓⵟⵟⵓ : 60 000 💎',
+            '200 💎 = 1 ⴷⵔⵀⵎ ⵙ ⵜⴼⴰⴷⴰ',
+            '60 000 💎 = 300 ⴷⵔⵀⵎ ⵉⵍⵉ ⵖⵔⴰⵜⴽ!',
           ]
         },
         {
-          icon: 'ð¸', title: 'âµâ´·âµ¢â´°âµâ´°âµ âµâµâµâ´°âµ',
+          icon: '💸', title: 'ⵉⴷⵢⴰⵎⴰⵏ ⵉⵍⵍⴰⵏ',
           points: [
-            '60 000 ð â â´½âµâµâµâµ âµ¢âµâµâµ âµâµâ´°âµâ´½! ð',
-            'âµ¢âµâµâ´° 10 000 ð â 5 â´·âµâµâµ',
-            'âµ¢âµâµâ´° 30 000 ð â 15 â´·âµâµâµ',
-            'âµâµ: âµâµâµâµâµ Ã· 10 000 Ã 5 = â´·âµâµâµ',
+            '60 000 💎 → ⴽⵓⵍⵍⵓ ⵢⵉⵍⵉ ⵖⵔⴰⵜⴽ! 🎉',
+            'ⵢⵍⵍⴰ 10 000 💎 → 5 ⴷⵔⵀⵎ',
+            'ⵢⵍⵍⴰ 30 000 💎 → 15 ⴷⵔⵀⵎ',
+            'ⵓⵔ: ⵉⵔⵓⵔⵏ ÷ 10 000 × 5 = ⴷⵔⵀⵎ',
           ]
         },
         {
-          icon: 'ð´', title: 'â´±âµâµâµâµ â â´°âµ£âµâµâµ£ â´±âµâ´° â´°âµ£âµâ´¼',
+          icon: '🚴', title: 'ⴱⵓⵏⵓⵙ — ⴰⵣⵏⵏⵣ ⴱⵍⴰ ⴰⵣⵔⴼ',
           points: [
-            '60 000 ð â â´°âµ£âµâµâµ£ âµ¢âµâµâµ âµâµâ´°âµâ´½ 100% ð',
-            'â´½âµâµâµâµ â´°âµâµ âµâµâµâµâ´¼âµ ð âµâµ¢â´°â´¹âµâµâµ!',
+            '60 000 💎 → ⴰⵣⵏⵏⵣ ⵢⵉⵍⵉ ⵖⵔⴰⵜⴽ 100% 🎁',
+            'ⴽⵓⵍⵍⵓ ⴰⵎⵔ ⵉⵙⵙⵓⴼⵖ 💎 ⵉⵢⴰⴹⵏⵉⵏ!',
           ]
         },
         {
-          icon: 'ð', title: 'âµâ´°âµâ´½ âµâµâµâµâµâ´· âµâµâµâµâµâµ âµâµâ´½',
+          icon: '🎁', title: 'ⵎⴰⵎⴽ ⵜⵙⵖⵔⵙⴷ ⵉⵔⵏⵓⵜⵏ ⵏⵏⴽ',
           points: [
-            'ðµ â´°âµâµâµâµ âµ Bridge Eats',
-            'ð¬ âµâ´°â´±â´°âµâµâµâµ âµ Bridge Tabac',
-            'ð¹ âµâµ£âµâµâ´°âµ âµ Bridge Fleurs',
+            '🛵 ⴰⵎⵏⵙⵉ ⵙ Bridge Eats',
+            '🚬 ⵜⴰⴱⴰⵖⵓⵔⵜ ⵙ Bridge Tabac',
+            '🌹 ⵉⵣⵓⵍⴰⵏ ⵙ Bridge Fleurs',
           ]
         },
       ],
-      example: 'ð¡ 50 000 ð â´·â´³ 60 000 â âµ¢âµâµâ´° 10 000 â 5 â´·âµâµâµ.',
-      close: 'âµâµâµâµâµ! ð¦',
+      example: '💡 50 000 💎 ⴷⴳ 60 000 → ⵢⵍⵍⴰ 10 000 → 5 ⴷⵔⵀⵎ.',
+      close: 'ⵙⵙⵉⵏⵖ! 🦈',
     },
   };
 
@@ -782,7 +782,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
   );
 }
 
-// âââ PWA Install Banner (pages hors Bridge Eats) ââââââââââââââââââââââââââââââ
+// ─── PWA Install Banner (pages hors Bridge Eats) ──────────────────────────────
 function PWAInstallBannerSimple({ appName = 'Bridge Safi' }: { appName?: string }) {
   const [show, setShow] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
@@ -835,14 +835,14 @@ function PWAInstallBannerSimple({ appName = 'Bridge Safi' }: { appName?: string 
               </div>
               <div style={{flex:1,minWidth:0}}>
                 <p style={{fontWeight:900,color:'white',fontSize:14,margin:'0 0 2px',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>Installer {appName}</p>
-                <p style={{color:'rgba(255,255,255,0.7)',fontSize:12,margin:0}}>AccÃ¨s rapide depuis l'Ã©cran d'accueil</p>
+                <p style={{color:'rgba(255,255,255,0.7)',fontSize:12,margin:0}}>Accès rapide depuis l'écran d'accueil</p>
               </div>
               <div style={{display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
                 <button onClick={install} style={{fontWeight:900,fontSize:12,padding:'8px 16px',borderRadius:20,border:'none',cursor:'pointer',background:'#D9C5A0',color:'#065F46',boxShadow:'0 4px 14px rgba(0,0,0,0.2)'}}>
                   Installer
                 </button>
                 <button onClick={dismiss} style={{fontWeight:900,fontSize:12,padding:'8px 12px',borderRadius:20,border:'none',cursor:'pointer',background:'rgba(255,255,255,0.12)',color:'rgba(255,255,255,0.7)'}}>
-                  â
+                  ✕
                 </button>
               </div>
             </div>
@@ -850,9 +850,9 @@ function PWAInstallBannerSimple({ appName = 'Bridge Safi' }: { appName?: string 
             <div style={{textAlign:'center',padding:'4px 0'}}>
               <p style={{color:'white',fontWeight:900,fontSize:13,margin:'0 0 10px'}}>Installer {appName}</p>
               <p style={{color:'rgba(255,255,255,0.8)',fontSize:12,margin:'0 0 12px'}}>
-                Appuyez sur <span style={{fontSize:20}}>â</span> puis <strong>"Sur l'Ã©cran d'accueil"</strong>
+                Appuyez sur <span style={{fontSize:20}}>⎋</span> puis <strong>"Sur l'écran d'accueil"</strong>
               </p>
-              <div style={{fontSize:28,marginBottom:12}}>â</div>
+              <div style={{fontSize:28,marginBottom:12}}>➕</div>
               <button onClick={dismiss} style={{fontWeight:700,fontSize:12,padding:'8px 20px',borderRadius:16,border:'none',cursor:'pointer',background:'rgba(255,255,255,0.15)',color:'rgba(255,255,255,0.8)'}}>
                 Plus tard
               </button>
@@ -880,22 +880,22 @@ function GamePage() {
 
   if (!isLoaded) return null;
 
-  // Not signed in â show lock screen (Bridge Eats login REQUIRED, no phone bypass)
+  // Not signed in — show lock screen (Bridge Eats login REQUIRED, no phone bypass)
   if (!isSignedIn) {
     const lockT = {
-      fr: { title: 'CONNEXION BRIDGE EATS REQUISE', game: 'SAFI RUNNER', desc: 'Pour jouer, connecte-toi d\'abord sur Bridge Eats avec ton email et ton numÃ©ro. Tu seras automatiquement reconnu sur le jeu et tes diamants seront synchronisÃ©s.', connectBtn: 'ðµ ME CONNECTER SUR BRIDGE EATS', note: 'ð Bridge Eats gÃ¨re la connexion. Tes ð sont liÃ©s Ã  ton compte\nâ joue depuis n\'importe quel appareil avec le mÃªme email.', signUpLink: 'Pas encore inscrit ? CrÃ©er un compte' },
-      en: { title: 'BRIDGE EATS LOGIN REQUIRED', game: 'SAFI RUNNER', desc: 'To play, sign in to Bridge Eats first with your email and number. You\'ll be automatically recognized and your diamonds will sync.', connectBtn: 'ðµ SIGN IN ON BRIDGE EATS', note: 'ð Bridge Eats manages the login. Your ð are linked to your account\nâ play from any device with the same email.', signUpLink: 'Not registered yet? Create an account' },
-      ar: { title: 'ØªØ³Ø¬ÙÙ Ø§ÙØ¯Ø®ÙÙ ÙØ·ÙÙØ¨', game: 'SAFI RUNNER', desc: 'ÙÙØ¹Ø¨Ø Ø³Ø¬ÙÙ Ø¯Ø®ÙÙÙ Ø£ÙÙØ§Ù Ø¹ÙÙ Bridge Eats. Ø³ÙØªÙ Ø§ÙØªØ¹Ø±Ù Ø¹ÙÙÙ ØªÙÙØ§Ø¦ÙØ§Ù ÙØ³ØªØªØ²Ø§ÙÙ ÙØ§Ø³Ø§ØªÙ.', connectBtn: 'ðµ ØªØ³Ø¬ÙÙ Ø§ÙØ¯Ø®ÙÙ Ø¹Ø¨Ø± Bridge Eats', note: 'ð Bridge Eats ÙØ¯ÙØ± Ø§ÙØ§ØªØµØ§Ù. ð ÙØ±ØªØ¨Ø·Ø© Ø¨Ø­Ø³Ø§Ø¨Ù.', signUpLink: 'ÙÙØ³ ÙØ¯ÙÙ Ø­Ø³Ø§Ø¨Ø Ø£ÙØ´Ø¦ ÙØ§Ø­Ø¯Ø§Ù' },
-      amz: { title: 'â´°âµâµâµâ´³ BRIDGE EATS', game: 'SAFI RUNNER', desc: 'ð âµâ´±âµâµâµ âµ âµâµâµâ´°â´± âµâµâ´½ âµ Bridge Eats.', connectBtn: 'ðµ â´½âµâµ âµ BRIDGE EATS', note: 'ð Bridge Eats âµâµâµâµâµ¡âµ â´°âµâµâµâ´³.', signUpLink: 'âµâµ âµâµâµâµâ´· â´°âµâ´°? âµâµâ´¼âµ âµâµâµâ´°â´±' },
+      fr: { title: 'CONNEXION BRIDGE EATS REQUISE', game: 'SAFI RUNNER', desc: 'Pour jouer, connecte-toi d\'abord sur Bridge Eats avec ton email et ton numéro. Tu seras automatiquement reconnu sur le jeu et tes diamants seront synchronisés.', connectBtn: '🛵 ME CONNECTER SUR BRIDGE EATS', note: '🔒 Bridge Eats gère la connexion. Tes 💎 sont liés à ton compte\n— joue depuis n\'importe quel appareil avec le même email.', signUpLink: 'Pas encore inscrit ? Créer un compte' },
+      en: { title: 'BRIDGE EATS LOGIN REQUIRED', game: 'SAFI RUNNER', desc: 'To play, sign in to Bridge Eats first with your email and number. You\'ll be automatically recognized and your diamonds will sync.', connectBtn: '🛵 SIGN IN ON BRIDGE EATS', note: '🔒 Bridge Eats manages the login. Your 💎 are linked to your account\n— play from any device with the same email.', signUpLink: 'Not registered yet? Create an account' },
+      ar: { title: 'تسجيل الدخول مطلوب', game: 'SAFI RUNNER', desc: 'للعب، سجّل دخولك أولاً على Bridge Eats. سيتم التعرف عليك تلقائياً وستتزامن ماساتك.', connectBtn: '🛵 تسجيل الدخول عبر Bridge Eats', note: '🔒 Bridge Eats يدير الاتصال. 💎 مرتبطة بحسابك.', signUpLink: 'ليس لديك حساب؟ أنشئ واحداً' },
+      amz: { title: 'ⴰⵙⵉⵔⴳ BRIDGE EATS', game: 'SAFI RUNNER', desc: '💎 ⵔⴱⵓⵏⵜ ⵉ ⵓⵃⵙⴰⴱ ⵏⵏⴽ ⵖ Bridge Eats.', connectBtn: '🛵 ⴽⵛⵎ ⵖ BRIDGE EATS', note: '🔒 Bridge Eats ⵉⵙⵖⵉⵡⵙ ⴰⵙⵉⵔⴳ.', signUpLink: 'ⵓⵔ ⵜⵙⵖⵔⴷ ⴰⵔⴰ? ⵙⵏⴼⵍ ⵓⵃⵙⴰⴱ' },
     }[lang];
     return (
       <div dir={isAR ? 'rtl' : 'ltr'} style={{minHeight:'100dvh',background:'linear-gradient(180deg,#04110A 0%,#071C11 60%,#050F08 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'32px 20px',gap:0}}>
         <div style={{width:'100%',maxWidth:360,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(74,222,128,0.2)',borderRadius:28,padding:'36px 24px 28px',display:'flex',flexDirection:'column',alignItems:'center',gap:16,backdropFilter:'blur(12px)'}}>
-          <div style={{fontSize:52,lineHeight:1}}>ð</div>
+          <div style={{fontSize:52,lineHeight:1}}>🔒</div>
           <p style={{color:'#4ADE80',fontSize:10,fontWeight:900,letterSpacing:'0.18em',margin:0,textAlign:'center',textTransform:'uppercase'}}>{lockT.title}</p>
-          <p style={{color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.12em',margin:0,textAlign:'center'}}>ð¦ {lockT.game}</p>
+          <p style={{color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.12em',margin:0,textAlign:'center'}}>🦈 {lockT.game}</p>
           <p style={{color:'rgba(255,255,255,0.65)',fontSize:13,fontWeight:500,lineHeight:1.6,textAlign:'center',margin:0}}>{lockT.desc}</p>
-          {/* SEUL accÃ¨s : via Bridge Eats â aucune entrÃ©e par numÃ©ro seul */}
+          {/* SEUL accès : via Bridge Eats — aucune entrée par numéro seul */}
           <button onClick={()=>navigate('/sign-in')} style={{width:'100%',padding:'18px 0',borderRadius:18,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669 0%,#4ADE80 50%,#059669 100%)',color:'#fff',fontSize:15,fontWeight:900,letterSpacing:'0.04em',marginTop:4,boxShadow:'0 0 28px rgba(74,222,128,0.4)'}}>
             {lockT.connectBtn}
           </button>
@@ -908,7 +908,7 @@ function GamePage() {
     );
   }
 
-  // Signed in â fetch game token then show Safi Runner
+  // Signed in — fetch game token then show Safi Runner
   return <><GameIframe userId={user.id} lang={lang} isAR={isAR} /><PWAInstallBannerSimple appName="Bridge Game" /></>;
 }
 
@@ -1025,7 +1025,7 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
       const msg = event.data;
       if (!msg) return;
 
-      // Game requests player info â send profile
+      // Game requests player info → send profile
       if (msg.type === 'request_player_info') { sendProfileToGame(); return; }
 
       const rawDiamonds: number | undefined =
@@ -1036,8 +1036,8 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
         undefined;
       if (typeof rawDiamonds !== 'number' || rawDiamonds < 0 || !Number.isInteger(rawDiamonds)) return;
 
-      // If game sends less than the session start, it started from 0 â add to existing balance.
-      // If game sends more than session start, it incorporated our starting value â use directly.
+      // If game sends less than the session start, it started from 0 → add to existing balance.
+      // If game sends more than session start, it incorporated our starting value → use directly.
       const sessionStart = sessionStartDiamonds.current;
       const diamonds = rawDiamonds < sessionStart
         ? sessionStart + rawDiamonds   // game reset to 0, add earned to previous balance
@@ -1064,16 +1064,16 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
   }, [playerName, avatarSrc]);
 
   const noPhoneMsg = {
-    fr: { title: 'NUMÃRO REQUIS', body: 'Pour jouer, tu dois d\'abord enregistrer ton numÃ©ro de tÃ©lÃ©phone dans ton profil Bridge.', btn: 'Aller Ã  mon profil' },
+    fr: { title: 'NUMÉRO REQUIS', body: 'Pour jouer, tu dois d\'abord enregistrer ton numéro de téléphone dans ton profil Bridge.', btn: 'Aller à mon profil' },
     en: { title: 'PHONE REQUIRED', body: 'To play, you must first add your phone number to your Bridge profile.', btn: 'Go to my profile' },
-    ar: { title: 'Ø±ÙÙ Ø§ÙÙØ§ØªÙ ÙØ·ÙÙØ¨', body: 'ÙÙØ¹Ø¨Ø ÙØ¬Ø¨ Ø¹ÙÙÙ Ø£ÙÙØ§Ù Ø¥Ø¶Ø§ÙØ© Ø±ÙÙ ÙØ§ØªÙÙ ÙÙ ÙÙÙÙ Ø§ÙØ´Ø®ØµÙ.', btn: 'Ø§ÙÙÙÙ Ø§ÙØ´Ø®ØµÙ' },
-    amz: { title: 'Aá¹¬ILIFUN ILAQ', body: 'Ad tsÉ£eá¹á¸, ÉemmreÉ£ aá¹­ilifun inek.', btn: 'Aá¸¥sab inek' },
+    ar: { title: 'رقم الهاتف مطلوب', body: 'للعب، يجب عليك أولاً إضافة رقم هاتفك في ملفك الشخصي.', btn: 'الملف الشخصي' },
+    amz: { title: 'AṬILIFUN ILAQ', body: 'Ad tsɣeṛḍ, ɛemmreɣ aṭilifun inek.', btn: 'Aḥsab inek' },
   }[lang];
 
   if (state === 'loading') return (
     <div style={{minHeight:'100dvh',background:'#04110A',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:16}}>
       <div style={{width:44,height:44,border:'3px solid rgba(74,222,128,0.3)',borderTop:'3px solid #4ADE80',borderRadius:'50%',animation:'spin 0.9s linear infinite'}}/>
-      <p style={{color:'rgba(255,255,255,0.4)',fontSize:12,fontWeight:700,letterSpacing:'0.1em'}}>{isAR?'ØªØ­ÙÙÙ...':lang==='en'?'Loading...':'Chargement...'}</p>
+      <p style={{color:'rgba(255,255,255,0.4)',fontSize:12,fontWeight:700,letterSpacing:'0.1em'}}>{isAR?'تحميل...':lang==='en'?'Loading...':'Chargement...'}</p>
       <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
     </div>
   );
@@ -1081,11 +1081,11 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
   if (state === 'no_phone') return (
     <div dir={isAR?'rtl':'ltr'} style={{minHeight:'100dvh',background:'linear-gradient(180deg,#04110A,#071C11)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'32px 20px'}}>
       <div style={{width:'100%',maxWidth:360,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(248,113,113,0.3)',borderRadius:28,padding:'36px 24px',display:'flex',flexDirection:'column',alignItems:'center',gap:14,backdropFilter:'blur(12px)'}}>
-        <div style={{fontSize:48}}>ðµ</div>
+        <div style={{fontSize:48}}>📵</div>
         <p style={{color:'#F87171',fontSize:10,fontWeight:900,letterSpacing:'0.18em',margin:0,textAlign:'center',textTransform:'uppercase'}}>{noPhoneMsg.title}</p>
         <p style={{color:'rgba(255,255,255,0.65)',fontSize:13,fontWeight:500,lineHeight:1.6,textAlign:'center',margin:0}}>{noPhoneMsg.body}</p>
         <button onClick={()=>navigate('/')} style={{width:'100%',padding:'16px 0',borderRadius:16,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669,#4ADE80)',color:'#fff',fontSize:14,fontWeight:900,marginTop:4}}>
-          ð¤ {noPhoneMsg.btn}
+          👤 {noPhoneMsg.btn}
         </button>
       </div>
     </div>
@@ -1093,16 +1093,16 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
 
   if (state === 'error') return (
     <div style={{minHeight:'100dvh',background:'#04110A',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:12}}>
-      <p style={{color:'#F87171',fontSize:13,fontWeight:700}}>{isAR?'Ø®Ø·Ø£ ÙÙ Ø§ÙØªØ­ÙÙÙ':lang==='en'?'Failed to load game':'Erreur de chargement'}</p>
+      <p style={{color:'#F87171',fontSize:13,fontWeight:700}}>{isAR?'خطأ في التحميل':lang==='en'?'Failed to load game':'Erreur de chargement'}</p>
       <button onClick={()=>navigate('/')} style={{padding:'12px 24px',borderRadius:14,border:'none',background:'rgba(74,222,128,0.15)',color:'#4ADE80',fontSize:13,fontWeight:900,cursor:'pointer'}}>
-        â {isAR?'Ø±Ø¬ÙØ¹':lang==='en'?'Back':'Retour'}
+        ← {isAR?'رجوع':lang==='en'?'Back':'Retour'}
       </button>
     </div>
   );
 
   const gameApiBase = window.location.origin;
   const saveUrl = `${gameApiBase}/api/game/diamonds/by-token`;
-  // Use the server-side avatar endpoint â a stable HTTPS URL the game can always fetch.
+  // Use the server-side avatar endpoint — a stable HTTPS URL the game can always fetch.
   // Falls back to Clerk imageUrl if the user hasn't saved a custom photo yet.
   const serverAvatarUrl = `${window.location.origin}/api/profile/avatar/${encodeURIComponent(userId)}`;
   const avatarParam = `&avatarUrl=${encodeURIComponent(serverAvatarUrl)}`;
@@ -1111,7 +1111,7 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
 
   return (
     <div style={{position:'fixed',inset:0,zIndex:9999,background:'#000'}}>
-      {/* Fullscreen iframe â no space stolen */}
+      {/* Fullscreen iframe — no space stolen */}
       <iframe
         ref={iframeRef}
         src={gameSrc}
@@ -1120,7 +1120,7 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
         title="Safi Runner"
         onLoad={sendProfileToGame}
       />
-      {/* Right-side controls â back arrow + avatar stacked, near the game's player circle */}
+      {/* Right-side controls — back arrow + avatar stacked, near the game's player circle */}
       <div style={{position:'absolute',right:10,bottom:120,zIndex:10,display:'flex',flexDirection:'column',alignItems:'center',gap:8,pointerEvents:'auto'}}>
         {/* Back button */}
         <button onClick={()=>navigate('/')}
@@ -1128,7 +1128,7 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
             background:'rgba(4,17,10,0.75)',backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',
             color:'#4ADE80',fontSize:18,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',
             boxShadow:'0 2px 12px rgba(0,0,0,0.5)',lineHeight:1}}>
-          â
+          ←
         </button>
         {/* Leaderboard button */}
         <button onClick={()=>navigate('/classement')}
@@ -1137,7 +1137,7 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
             color:'#FFD700',fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',
             boxShadow:'0 2px 12px rgba(0,0,0,0.5)',lineHeight:1}}
           title="Classement">
-          ð
+          🏆
         </button>
         {/* Avatar */}
         {avatarSrc
@@ -1146,14 +1146,14 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
           : <div style={{width:36,height:36,borderRadius:'50%',background:'rgba(4,17,10,0.75)',
               backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',
               border:'2px solid rgba(74,222,128,0.4)',display:'flex',alignItems:'center',justifyContent:'center',
-              fontSize:16,boxShadow:'0 2px 12px rgba(0,0,0,0.5)',flexShrink:0}}>ð¤</div>
+              fontSize:16,boxShadow:'0 2px 12px rgba(0,0,0,0.5)',flexShrink:0}}>👤</div>
         }
       </div>
     </div>
   );
 }
 
-// âââ DRIVER GPS TRACKER PAGE âââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── DRIVER GPS TRACKER PAGE ─────────────────────────────────────────────────
 // Supports both delivery (ref starts with digit) and taxi (ref starts with TC-)
 
 function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
@@ -1166,20 +1166,20 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
     document.documentElement.classList.toggle('dark', dark);
   }, []);
 
-  // ââ Delivery mode state ââ
+  // ── Delivery mode state ──
   const [status, setStatus] = useState<'asking'|'active'|'error'|'denied'>('asking');
   const [coords, setCoords] = useState<{lat:number;lng:number}|null>(null);
   const [lastSent, setLastSent] = useState<number|null>(null);
   const watchId = useRef<number|null>(null);
 
-  // ââ Taxi mode state ââ
+  // ── Taxi mode state ──
   const [taxiState, setTaxiState] = useState<'loading'|'pending'|'accepted'|'arrived'>('loading');
   const [bookingInfo, setBookingInfo] = useState<{customerName?:string;customerPhone?:string;clientAddress?:string;destination?:string;clientLat?:number;clientLng?:number}|null>(null);
   const [taxiCoords, setTaxiCoords] = useState<{lat:number;lng:number}|null>(null);
   const [taxiLastSent, setTaxiLastSent] = useState<number|null>(null);
   const taxiWatchId = useRef<number|null>(null);
 
-  // ââ Load taxi booking info ââ
+  // ── Load taxi booking info ──
   useEffect(() => {
     if (!isTaxi) return;
     fetch(`/api/tracking/${ref}`)
@@ -1236,7 +1236,7 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
     setTaxiState('arrived');
   };
 
-  // ââ Delivery mode ââ
+  // ── Delivery mode ──
   const [delivStatus, setDelivStatus] = useState<'received'|'preparing'|'on_way'|'delivered'>('received');
 
   const pushPosition = async (lat: number, lng: number) => {
@@ -1290,18 +1290,18 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
   const secsAgo = lastSent ? Math.round((Date.now() - lastSent) / 1000) : null;
   const taxiSecsAgo = taxiLastSent ? Math.round((Date.now() - taxiLastSent) / 1000) : null;
 
-  // ââ TAXI MODE UI ââ
+  // ── TAXI MODE UI ──
   if (isTaxi) {
     return (
       <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg,#78350F 0%,#1A2F23 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'system-ui, sans-serif' }}>
         <div style={{ width: '100%', maxWidth: '360px', background: '#fff', borderRadius: '24px', padding: '28px 24px', boxShadow: '0 8px 40px rgba(0,0,0,0.3)', textAlign: 'center' }}>
-          <div style={{ fontSize: '56px', marginBottom: '8px' }}>ð</div>
+          <div style={{ fontSize: '56px', marginBottom: '8px' }}>🚖</div>
           <h1 style={{ fontSize: '18px', fontWeight: '900', color: '#78350F', margin: '0 0 2px' }}>Bridge Moto Taxi</h1>
           <p style={{ fontSize: '11px', color: '#9CA3AF', margin: '0 0 20px' }}>Course #{ref}</p>
 
           {taxiState === 'loading' && (
             <div style={{ padding: '20px', background: '#FEF3C7', borderRadius: '12px' }}>
-              <p style={{ fontSize: '13px', color: '#B45309', fontWeight: '700' }}>â³ Chargement de la courseâ¦</p>
+              <p style={{ fontSize: '13px', color: '#B45309', fontWeight: '700' }}>⏳ Chargement de la course…</p>
             </div>
           )}
 
@@ -1309,10 +1309,10 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
             <div>
               {/* Booking info card */}
               <div style={{ background: '#FEF3C7', borderRadius: '14px', padding: '14px', marginBottom: '16px', textAlign: 'left' }}>
-                <p style={{ fontSize: '10px', fontWeight: '900', color: '#92400E', letterSpacing: '0.1em', marginBottom: '10px' }}>DÃTAILS DE LA COURSE</p>
+                <p style={{ fontSize: '10px', fontWeight: '900', color: '#92400E', letterSpacing: '0.1em', marginBottom: '10px' }}>DÉTAILS DE LA COURSE</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                    <span style={{ fontSize: '14px' }}>ð¤</span>
+                    <span style={{ fontSize: '14px' }}>👤</span>
                     <div>
                       <p style={{ fontSize: '13px', fontWeight: '800', color: '#1A2F23', margin: 0 }}>{bookingInfo.customerName || 'Client'}</p>
                       {bookingInfo.customerPhone && <a href={`tel:${bookingInfo.customerPhone}`} style={{ fontSize: '12px', color: '#78350F', fontWeight: '700', textDecoration: 'none' }}>{bookingInfo.customerPhone}</a>}
@@ -1320,19 +1320,19 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
                   </div>
                   {bookingInfo.clientAddress && (
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                      <span style={{ fontSize: '14px' }}>ð</span>
+                      <span style={{ fontSize: '14px' }}>📍</span>
                       <div>
-                        <p style={{ fontSize: '10px', color: '#9CA3AF', margin: '0 0 2px', fontWeight: '700' }}>DÃPART</p>
+                        <p style={{ fontSize: '10px', color: '#9CA3AF', margin: '0 0 2px', fontWeight: '700' }}>DÉPART</p>
                         <p style={{ fontSize: '12px', color: '#1A2F23', margin: 0 }}>{bookingInfo.clientAddress}</p>
                         {bookingInfo.clientLat && bookingInfo.clientLng && (
-                          <a href={`https://maps.google.com/?q=${bookingInfo.clientLat},${bookingInfo.clientLng}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#3B82F6', fontWeight: '700' }}>Ouvrir dans Maps â</a>
+                          <a href={`https://maps.google.com/?q=${bookingInfo.clientLat},${bookingInfo.clientLng}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#3B82F6', fontWeight: '700' }}>Ouvrir dans Maps →</a>
                         )}
                       </div>
                     </div>
                   )}
                   {bookingInfo.destination && (
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                      <span style={{ fontSize: '14px' }}>ð</span>
+                      <span style={{ fontSize: '14px' }}>🏁</span>
                       <div>
                         <p style={{ fontSize: '10px', color: '#9CA3AF', margin: '0 0 2px', fontWeight: '700' }}>DESTINATION</p>
                         <p style={{ fontSize: '12px', color: '#1A2F23', margin: 0 }}>{bookingInfo.destination}</p>
@@ -1342,17 +1342,17 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
                 </div>
               </div>
               <button onClick={handleAccept} style={{ width: '100%', padding: '14px', background: 'linear-gradient(135deg,#065F46,#10B981)', color: '#fff', border: 'none', borderRadius: '14px', fontSize: '16px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 4px 16px rgba(16,185,129,0.4)' }}>
-                â Accepter la course
+                ✅ Accepter la course
               </button>
             </div>
           )}
 
           {taxiState === 'pending' && !bookingInfo && (
             <div style={{ padding: '20px', background: '#FEF3C7', borderRadius: '12px' }}>
-              <p style={{ fontSize: '13px', color: '#B45309', fontWeight: '700' }}>ð Course en attente</p>
+              <p style={{ fontSize: '13px', color: '#B45309', fontWeight: '700' }}>📋 Course en attente</p>
               <p style={{ fontSize: '11px', color: '#92400E', marginTop: '4px' }}>Informations client non disponibles</p>
               <button onClick={handleAccept} style={{ marginTop: '12px', width: '100%', padding: '12px', background: '#065F46', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: '900', cursor: 'pointer' }}>
-                â Accepter
+                ✅ Accepter
               </button>
             </div>
           )}
@@ -1366,7 +1366,7 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
               {bookingInfo?.destination && (
                 <div style={{ background: '#EFF6FF', borderRadius: '12px', padding: '10px 14px', marginBottom: '12px', textAlign: 'left' }}>
                   <p style={{ fontSize: '10px', color: '#9CA3AF', fontWeight: '700', marginBottom: '2px' }}>DESTINATION</p>
-                  <p style={{ fontSize: '13px', color: '#1D4ED8', fontWeight: '800', margin: 0 }}>ð {bookingInfo.destination}</p>
+                  <p style={{ fontSize: '13px', color: '#1D4ED8', fontWeight: '800', margin: 0 }}>🏁 {bookingInfo.destination}</p>
                 </div>
               )}
               {taxiCoords && (
@@ -1374,21 +1374,21 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
                   {taxiCoords.lat.toFixed(6)}, {taxiCoords.lng.toFixed(6)}
                 </p>
               )}
-              {taxiSecsAgo !== null && <p style={{ fontSize: '11px', color: '#10B981', marginBottom: '16px' }}>â Mis Ã  jour il y a {taxiSecsAgo}s</p>}
+              {taxiSecsAgo !== null && <p style={{ fontSize: '11px', color: '#10B981', marginBottom: '16px' }}>✓ Mis à jour il y a {taxiSecsAgo}s</p>}
               <button onClick={handleArrived} style={{ width: '100%', padding: '14px', background: 'linear-gradient(135deg,#78350F,#F59E0B)', color: '#fff', border: 'none', borderRadius: '14px', fontSize: '16px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 4px 16px rgba(120,53,15,0.4)' }}>
-                ð¯ Je suis arrivÃ© !
+                🎯 Je suis arrivé !
               </button>
               <div style={{ marginTop: '12px', padding: '10px', background: '#FEF3C7', borderRadius: '10px' }}>
-                <p style={{ fontSize: '11px', color: '#92400E', fontWeight: '700' }}>â ï¸ Ne fermez pas cette page</p>
+                <p style={{ fontSize: '11px', color: '#92400E', fontWeight: '700' }}>⚠️ Ne fermez pas cette page</p>
               </div>
             </div>
           )}
 
           {taxiState === 'arrived' && (
             <div style={{ background: '#EFF6FF', borderRadius: '14px', padding: '20px' }}>
-              <p style={{ fontSize: '36px', marginBottom: '8px' }}>ð</p>
-              <p style={{ fontSize: '16px', fontWeight: '900', color: '#1D4ED8', marginBottom: '4px' }}>Course terminÃ©e !</p>
-              <p style={{ fontSize: '12px', color: '#3B82F6' }}>Le client a Ã©tÃ© notifiÃ© de votre arrivÃ©e.</p>
+              <p style={{ fontSize: '36px', marginBottom: '8px' }}>🎉</p>
+              <p style={{ fontSize: '16px', fontWeight: '900', color: '#1D4ED8', marginBottom: '4px' }}>Course terminée !</p>
+              <p style={{ fontSize: '12px', color: '#3B82F6' }}>Le client a été notifié de votre arrivée.</p>
             </div>
           )}
         </div>
@@ -1397,18 +1397,18 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
     );
   }
 
-  // ââ DELIVERY MODE UI ââ
+  // ── DELIVERY MODE UI ──
   return (
     <div style={{ minHeight: '100vh', background: '#F0FDF4', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'system-ui, sans-serif' }}>
       <div style={{ width: '100%', maxWidth: '360px', background: '#fff', borderRadius: '24px', padding: '32px 24px', boxShadow: '0 8px 40px rgba(0,0,0,0.12)', textAlign: 'center' }}>
-        <div style={{ fontSize: '64px', marginBottom: '16px' }}>ðµ</div>
-        <h1 style={{ fontSize: '20px', fontWeight: '900', color: '#065F46', margin: '0 0 4px' }}>Bridge Safi â GPS Livreur</h1>
+        <div style={{ fontSize: '64px', marginBottom: '16px' }}>🛵</div>
+        <h1 style={{ fontSize: '20px', fontWeight: '900', color: '#065F46', margin: '0 0 4px' }}>Bridge Safi — GPS Livreur</h1>
         <p style={{ fontSize: '12px', color: '#9CA3AF', margin: '0 0 24px' }}>Commande #{ref}</p>
 
         {status === 'asking' && (
           <div style={{ background: '#FEF3C7', borderRadius: '12px', padding: '16px' }}>
-            <p style={{ fontSize: '14px', color: '#B45309', fontWeight: '700' }}>â³ En attente de la localisationâ¦</p>
-            <p style={{ fontSize: '12px', color: '#92400E', marginTop: '4px' }}>Autorisez l'accÃ¨s Ã  votre position GPS</p>
+            <p style={{ fontSize: '14px', color: '#B45309', fontWeight: '700' }}>⏳ En attente de la localisation…</p>
+            <p style={{ fontSize: '12px', color: '#92400E', marginTop: '4px' }}>Autorisez l'accès à votre position GPS</p>
           </div>
         )}
 
@@ -1421,13 +1421,13 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
             </div>
 
             {/* Status buttons */}
-            <p style={{ fontSize: '10px', fontWeight: '900', color: '#9CA3AF', letterSpacing: '0.08em', marginBottom: '10px', textTransform: 'uppercase' }}>Mettre Ã  jour le statut</p>
+            <p style={{ fontSize: '10px', fontWeight: '900', color: '#9CA3AF', letterSpacing: '0.08em', marginBottom: '10px', textTransform: 'uppercase' }}>Mettre à jour le statut</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
               {([
-                { key: 'received',  label: 'ð Commande reÃ§ue',      bg: '#F0FDF4', border: '#86EFAC', color: '#065F46' },
-                { key: 'preparing', label: 'ð¨âð³ En prÃ©paration',       bg: '#FEF3C7', border: '#FDE68A', color: '#92400E' },
-                { key: 'on_way',    label: 'ðµ En chemin vers le client', bg: '#EFF6FF', border: '#93C5FD', color: '#1D4ED8' },
-                { key: 'delivered', label: 'â Livraison effectuÃ©e',  bg: '#065F46', border: '#065F46', color: '#fff'    },
+                { key: 'received',  label: '📋 Commande reçue',      bg: '#F0FDF4', border: '#86EFAC', color: '#065F46' },
+                { key: 'preparing', label: '👨‍🍳 En préparation',       bg: '#FEF3C7', border: '#FDE68A', color: '#92400E' },
+                { key: 'on_way',    label: '🛵 En chemin vers le client', bg: '#EFF6FF', border: '#93C5FD', color: '#1D4ED8' },
+                { key: 'delivered', label: '✅ Livraison effectuée',  bg: '#065F46', border: '#065F46', color: '#fff'    },
               ] as {key:'received'|'preparing'|'on_way'|'delivered';label:string;bg:string;border:string;color:string}[]).map(s=>(
                 <button key={s.key} onClick={()=>updateDelivStatus(s.key)}
                   style={{
@@ -1446,11 +1446,11 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
 
             {coords && (
               <p style={{ fontSize: '10px', fontFamily: 'monospace', color: '#9CA3AF', background: '#F9FAFB', borderRadius: '8px', padding: '6px 8px', marginBottom: '8px' }}>
-                ð {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}
+                📍 {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}
               </p>
             )}
             <div style={{ padding: '10px 12px', background: '#FEF3C7', borderRadius: '10px' }}>
-              <p style={{ fontSize: '11px', color: '#92400E', fontWeight: '700' }}>â ï¸ Ne fermez pas cette page</p>
+              <p style={{ fontSize: '11px', color: '#92400E', fontWeight: '700' }}>⚠️ Ne fermez pas cette page</p>
               <p style={{ fontSize: '10px', color: '#B45309', marginTop: '2px' }}>Laissez-la ouverte pendant toute la livraison</p>
             </div>
           </div>
@@ -1458,23 +1458,23 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
 
         {status === 'active' && delivStatus === 'delivered' && (
           <div style={{ background: '#F0FDF4', borderRadius: '14px', padding: '20px' }}>
-            <p style={{ fontSize: '36px', marginBottom: '8px' }}>ð</p>
-            <p style={{ fontSize: '16px', fontWeight: '900', color: '#065F46', marginBottom: '4px' }}>Livraison terminÃ©e !</p>
-            <p style={{ fontSize: '12px', color: '#6B7280' }}>Le client a Ã©tÃ© notifiÃ©. Merci !</p>
+            <p style={{ fontSize: '36px', marginBottom: '8px' }}>🎉</p>
+            <p style={{ fontSize: '16px', fontWeight: '900', color: '#065F46', marginBottom: '4px' }}>Livraison terminée !</p>
+            <p style={{ fontSize: '12px', color: '#6B7280' }}>Le client a été notifié. Merci !</p>
           </div>
         )}
 
         {status === 'denied' && (
           <div style={{ background: '#FEE2E2', borderRadius: '12px', padding: '16px' }}>
-            <p style={{ fontSize: '14px', color: '#DC2626', fontWeight: '700' }}>â AccÃ¨s GPS refusÃ©</p>
-            <p style={{ fontSize: '12px', color: '#991B1B', marginTop: '4px' }}>Activez la localisation dans les paramÃ¨tres de votre navigateur puis rechargez la page</p>
+            <p style={{ fontSize: '14px', color: '#DC2626', fontWeight: '700' }}>❌ Accès GPS refusé</p>
+            <p style={{ fontSize: '12px', color: '#991B1B', marginTop: '4px' }}>Activez la localisation dans les paramètres de votre navigateur puis rechargez la page</p>
           </div>
         )}
 
         {status === 'error' && (
           <div style={{ background: '#FEE2E2', borderRadius: '12px', padding: '16px' }}>
-            <p style={{ fontSize: '14px', color: '#DC2626', fontWeight: '700' }}>â Lien invalide</p>
-            <p style={{ fontSize: '12px', color: '#991B1B', marginTop: '4px' }}>Utilisez le lien envoyÃ© par le restaurant</p>
+            <p style={{ fontSize: '14px', color: '#DC2626', fontWeight: '700' }}>❌ Lien invalide</p>
+            <p style={{ fontSize: '12px', color: '#991B1B', marginTop: '4px' }}>Utilisez le lien envoyé par le restaurant</p>
           </div>
         )}
       </div>
@@ -1483,7 +1483,7 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
   );
 }
 
-// âââ DISPATCH PAGE (livreur + chauffeur taxi) âââââââââââââââââââââââââââââââââ
+// ─── DISPATCH PAGE (livreur + chauffeur taxi) ─────────────────────────────────
 
 type DispatchRole = 'choose' | 'livreur' | 'taxi' | 'moto';
 
@@ -1572,10 +1572,10 @@ function DispatchPage() {
   // Update page title based on role (affects PWA app name on install)
   useEffect(() => {
     if (role === 'moto') document.title = 'Bridge Moto Taxi';
-    else if (role === 'taxi') document.title = 'Bridge Taxi â Safi';
+    else if (role === 'taxi') document.title = 'Bridge Taxi — Safi';
     else if (role === 'livreur') document.title = 'Bridge Livraison';
     else document.title = 'Bridge Dispatch';
-    return () => { document.title = 'Bridge Safi Â· Livraison & Taxi Ã  Safi, Maroc'; };
+    return () => { document.title = 'Bridge Safi · Livraison & Taxi à Safi, Maroc'; };
   }, [role]);
 
   const handleSetRole = async (r: 'livreur' | 'taxi' | 'moto') => {
@@ -1590,7 +1590,7 @@ function DispatchPage() {
     setPushLoading(false);
   };
 
-  // ââ GPS reporting to server (for smart dispatch proximity) ââ
+  // ── GPS reporting to server (for smart dispatch proximity) ──
   // Reports driver position every 30s so the API knows who is nearby which restaurant
   const gpsReportRef = useRef<number | null>(null);
   const liveGPSRef = useRef<{ lat: number; lng: number } | null>(null);
@@ -1630,7 +1630,7 @@ function DispatchPage() {
     };
   }, [role, driverName]);
 
-  // ââ EATS: SSE stream for new orders ââ
+  // ── EATS: SSE stream for new orders ──
   useEffect(() => {
     if (role !== 'livreur') return;
     const es = new EventSource('/api/orders/stream?driverKey=BRIDGE-DRIVER-2025');
@@ -1678,7 +1678,7 @@ function DispatchPage() {
       headers: { 'Content-Type': 'application/json', 'x-driver-key': DKEY },
       body: JSON.stringify({ status: 'accepted', driverName: driverName || 'Livreur' }),
     }).catch(() => {});
-    // Don't override tracking status here â restaurant may have already set 'preparing'
+    // Don't override tracking status here — restaurant may have already set 'preparing'
   };
 
   const pickupEatsOrder = async () => {
@@ -1690,7 +1690,7 @@ function DispatchPage() {
       headers: { 'Content-Type': 'application/json', 'x-driver-key': DKEY },
       body: JSON.stringify({ status: 'on_the_way' }),
     }).catch(() => {});
-    // Tracking store: on_way â customer sees EN CHEMIN ðµ
+    // Tracking store: on_way → customer sees EN CHEMIN 🛵
     await fetch(`/api/tracking/${activeEatsOrder.ref}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -1724,7 +1724,7 @@ function DispatchPage() {
     if (eatsWatchId.current != null) navigator.geolocation.clearWatch(eatsWatchId.current);
     const order = activeEatsOrder;
     if (order) {
-      // Tracking store: delivered â customer sees LIVRÃE â
+      // Tracking store: delivered → customer sees LIVRÉE ✅
       await fetch(`/api/tracking/${order.ref}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'delivered' }),
@@ -1734,7 +1734,7 @@ function DispatchPage() {
         method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-driver-key': DKEY },
         body: JSON.stringify({ status: 'delivered' }),
       }).catch(() => {});
-      // Delete tracking entry after 15s so customer can see LIVRÃE
+      // Delete tracking entry after 15s so customer can see LIVRÉE
       const ref = order.ref;
       setTimeout(() => { fetch(`/api/tracking/${ref}`, { method: 'DELETE' }).catch(() => {}); }, 15000);
     }
@@ -1745,7 +1745,7 @@ function DispatchPage() {
     fetchEatsOrders();
   };
 
-  // ââ TAXI: poll for pending bookings ââ
+  // ── TAXI: poll for pending bookings ──
   useEffect(() => {
     if (role !== 'taxi') return;
     const poll = async () => {
@@ -1767,7 +1767,7 @@ function DispatchPage() {
     return () => { clearInterval(iv); if (taxiWatchId.current != null) navigator.geolocation.clearWatch(taxiWatchId.current); };
   }, [role]);
 
-  // ââ MOTO: poll for pending moto-taxi bookings ââ
+  // ── MOTO: poll for pending moto-taxi bookings ──
   useEffect(() => {
     if (role !== 'moto') return;
     const poll = async () => {
@@ -1877,7 +1877,7 @@ function DispatchPage() {
     setMotoGPS('idle');
   };
 
-  // ââ UI ââ
+  // ── UI ──
   const cardStyle: React.CSSProperties = { background: '#fff', borderRadius: 20, padding: '18px 16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', marginBottom: 12, border: '1.5px solid #E5E7EB' };
 
   // CHOOSE ROLE
@@ -1893,13 +1893,13 @@ function DispatchPage() {
         <input
           value={driverName}
           onChange={e => setDriverName(e.target.value)}
-          placeholder="Votre prÃ©nom (ex: Youssef)"
+          placeholder="Votre prénom (ex: Youssef)"
           style={{ width: '100%', maxWidth: 340, padding: '12px 16px', borderRadius: 14, border: '1px solid rgba(74,222,128,0.3)', background: 'rgba(255,255,255,0.06)', color: '#fff', fontSize: 14, marginBottom: 10, outline: 'none', boxSizing: 'border-box' }}
         />
         <input
           value={driverPhone}
           onChange={e => setDriverPhone(e.target.value)}
-          placeholder="Votre tÃ©lÃ©phone (ex: 0600000000)"
+          placeholder="Votre téléphone (ex: 0600000000)"
           type="tel"
           style={{ width: '100%', maxWidth: 340, padding: '12px 16px', borderRadius: 14, border: '1px solid rgba(74,222,128,0.3)', background: 'rgba(255,255,255,0.06)', color: '#fff', fontSize: 14, marginBottom: 20, outline: 'none', boxSizing: 'border-box' }}
         />
@@ -1907,7 +1907,7 @@ function DispatchPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 340 }}>
           <button onClick={() => handleSetRole('livreur')}
             style={{ padding: '18px 16px', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#7C3AED,#A78BFA)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 24px rgba(124,58,237,0.35)', display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left' }}>
-            <span style={{ fontSize: 26, flexShrink: 0 }}>ðµ</span>
+            <span style={{ fontSize: 26, flexShrink: 0 }}>🛵</span>
             <div>
               <div style={{ fontSize: 15, fontWeight: 900 }}>Livreur de Repas</div>
               <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85 }}>Livraison de repas et commandes</div>
@@ -1915,22 +1915,22 @@ function DispatchPage() {
           </button>
           <button onClick={() => handleSetRole('taxi')}
             style={{ padding: '18px 16px', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#B45309,#F59E0B)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 24px rgba(245,158,11,0.35)', display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left' }}>
-            <span style={{ fontSize: 26, flexShrink: 0 }}>ð</span>
+            <span style={{ fontSize: 26, flexShrink: 0 }}>🚖</span>
             <div>
               <div style={{ fontSize: 15, fontWeight: 900 }}>Taxi Confort</div>
-              <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85 }}>Courses taxi confort â Safi</div>
+              <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85 }}>Courses taxi confort — Safi</div>
             </div>
           </button>
           <button onClick={() => handleSetRole('moto')}
             style={{ padding: '18px 16px', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#9A3412,#F97316)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 24px rgba(249,115,22,0.35)', display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left' }}>
-            <span style={{ fontSize: 26, flexShrink: 0 }}>ðµ</span>
+            <span style={{ fontSize: 26, flexShrink: 0 }}>🛵</span>
             <div>
               <div style={{ fontSize: 15, fontWeight: 900 }}>Bridge Moto Taxi</div>
-              <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85 }}>Courses moto â Bridge Moto Taxi</div>
+              <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85 }}>Courses moto — Bridge Moto Taxi</div>
             </div>
           </button>
         </div>
-        <button onClick={() => navigate('/')} style={{ marginTop: 24, color: 'rgba(255,255,255,0.4)', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer' }}>â Retour</button>
+        <button onClick={() => navigate('/')} style={{ marginTop: 24, color: 'rgba(255,255,255,0.4)', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer' }}>← Retour</button>
       </div>
     );
   }
@@ -1941,7 +1941,7 @@ function DispatchPage() {
   const accent = role === 'taxi' ? '#F59E0B' : role === 'moto' ? '#F97316' : '#059669';
   const accentLight = role === 'taxi' ? '#FEF3C7' : role === 'moto' ? '#FFEDD5' : '#D1FAE5';
   const accentDark = role === 'taxi' ? '#B45309' : role === 'moto' ? '#9A3412' : '#065F46';
-  const icon = role === 'taxi' ? 'ð' : role === 'moto' ? 'ðµ' : 'ðµ';
+  const icon = role === 'taxi' ? '🚖' : role === 'moto' ? '🛵' : '🛵';
   const label = role === 'taxi' ? 'Taxi Confort' : role === 'moto' ? 'Moto Taxi' : 'Livreur de Repas';
 
   return (
@@ -1953,23 +1953,23 @@ function DispatchPage() {
           <h1 style={{ color: '#fff', fontSize: '1.1rem', fontWeight: 900, margin: 0 }}>{icon} {driverName || label}</h1>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {pushLoading && <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>â³</span>}
-          {pushOk && <span style={{ background: 'rgba(74,222,128,0.2)', border: '1px solid rgba(74,222,128,0.4)', borderRadius: 20, padding: '3px 10px', color: '#4ADE80', fontSize: 10, fontWeight: 900 }}>ð Notifs ON</span>}
+          {pushLoading && <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>⏳</span>}
+          {pushOk && <span style={{ background: 'rgba(74,222,128,0.2)', border: '1px solid rgba(74,222,128,0.4)', borderRadius: 20, padding: '3px 10px', color: '#4ADE80', fontSize: 10, fontWeight: 900 }}>🔔 Notifs ON</span>}
           <button onClick={() => { setRole('choose'); setActiveEatsOrder(null); setActiveTaxi(null); setActiveMoto(null); }}
-            style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', borderRadius: 10, padding: '6px 12px', fontSize: 12, cursor: 'pointer' }}>âµ</button>
+            style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', borderRadius: 10, padding: '6px 12px', fontSize: 12, cursor: 'pointer' }}>⟵</button>
         </div>
       </div>
 
       <div style={{ padding: '20px 16px', maxWidth: 480, margin: '0 auto' }}>
 
-        {/* ââ EATS / SCOOTER MODE ââ */}
+        {/* ── EATS / SCOOTER MODE ── */}
         {isDelivery && !activeEatsOrder && (
           <>
             <p style={{ fontSize: 11, fontWeight: 800, color: '#9CA3AF', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 12 }}>COMMANDES EN ATTENTE ({eatsOrders.length})</p>
             {eatsOrders.length === 0 ? (
               <div style={{ ...cardStyle, textAlign: 'center', padding: '40px 20px' }}>
-                <p style={{ fontSize: 32, margin: '0 0 10px' }}>â³</p>
-                <p style={{ color: '#6B7280', fontSize: 14, fontWeight: 700, margin: 0 }}>En attente de commandesâ¦</p>
+                <p style={{ fontSize: 32, margin: '0 0 10px' }}>⏳</p>
+                <p style={{ color: '#6B7280', fontSize: 14, fontWeight: 700, margin: 0 }}>En attente de commandes…</p>
                 <p style={{ color: '#9CA3AF', fontSize: 11, margin: '4px 0 0' }}>La sonnette retentira automatiquement</p>
               </div>
             ) : eatsOrders.map(order => (
@@ -1981,12 +1981,12 @@ function DispatchPage() {
                   </div>
                   <span style={{ background: '#D1FAE5', color: '#065F46', fontSize: 12, fontWeight: 900, borderRadius: 20, padding: '4px 12px' }}>{order.total} MAD</span>
                 </div>
-                <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 2px' }}>ð¤ {order.customerName}</p>
-                {order.restaurantName && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>ð¥ {order.restaurantName}</p>}
-                <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 12px' }}>ð {order.customerAddress}</p>
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 2px' }}>👤 {order.customerName}</p>
+                {order.restaurantName && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>🥘 {order.restaurantName}</p>}
+                <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 12px' }}>📍 {order.customerAddress}</p>
                 <button onClick={() => acceptEatsOrder(order)}
                   style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#059669,#4ADE80)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(5,150,105,0.3)' }}>
-                  â Accepter cette commande
+                  ✅ Accepter cette commande
                 </button>
               </div>
             ))}
@@ -1999,12 +1999,12 @@ function DispatchPage() {
             <div style={{ ...cardStyle, borderColor: '#BBF7D0', borderWidth: 2, marginBottom: 10 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 2px' }}>COMMANDE ACCEPTÃE</p>
+                  <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 2px' }}>COMMANDE ACCEPTÉE</p>
                   <p style={{ fontSize: 18, fontWeight: 900, color: '#059669', margin: 0 }}>{activeEatsOrder.ref}</p>
                 </div>
                 <span style={{ background: '#D1FAE5', color: '#065F46', fontSize: 13, fontWeight: 900, borderRadius: 20, padding: '4px 12px' }}>{activeEatsOrder.total} MAD</span>
               </div>
-              <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '10px 0 2px' }}>ð¤ {activeEatsOrder.customerName}</p>
+              <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '10px 0 2px' }}>👤 {activeEatsOrder.customerName}</p>
             </div>
 
             {/* GPS indicator (when active) */}
@@ -2012,43 +2012,43 @@ function DispatchPage() {
               <div style={{ background: '#D1FAE5', borderRadius: 12, padding: '10px 14px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#059669', display: 'inline-block', animation: 'pulse 1.5s infinite', flexShrink: 0 }}/>
                 <div>
-                  <p style={{ fontSize: 12, fontWeight: 900, color: '#065F46', margin: 0 }}>ð¡ GPS EN DIRECT â Client vous suit</p>
+                  <p style={{ fontSize: 12, fontWeight: 900, color: '#065F46', margin: 0 }}>📡 GPS EN DIRECT — Client vous suit</p>
                   {eatsCoords && <p style={{ fontSize: 10, color: '#6B7280', margin: '2px 0 0', fontFamily: 'monospace' }}>{eatsCoords.lat.toFixed(5)}, {eatsCoords.lng.toFixed(5)}</p>}
                 </div>
               </div>
             )}
-            {eatsGPS === 'denied' && <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 10 }}>â GPS refusÃ© â activez la localisation dans les paramÃ¨tres</p>}
+            {eatsGPS === 'denied' && <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 10 }}>❌ GPS refusé — activez la localisation dans les paramètres</p>}
 
-            {/* ÃTAPE 1 : Aller au restaurant */}
+            {/* ÉTAPE 1 : Aller au restaurant */}
             <div style={{ ...cardStyle, borderColor: eatsDriverStep === 'going_to_restaurant' ? '#FDE68A' : '#BBF7D0', borderWidth: 2, marginBottom: 10, opacity: eatsDriverStep === 'done' ? 0.5 : 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                 <div style={{ width: 28, height: 28, borderRadius: '50%', background: eatsDriverStep !== 'going_to_restaurant' ? '#059669' : '#FEF3C7', border: `2px solid ${eatsDriverStep !== 'going_to_restaurant' ? '#059669' : '#F59E0B'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <span style={{ fontSize: 12, color: eatsDriverStep !== 'going_to_restaurant' ? '#fff' : '#B45309', fontWeight: 900 }}>{eatsDriverStep !== 'going_to_restaurant' ? 'â' : '1'}</span>
+                  <span style={{ fontSize: 12, color: eatsDriverStep !== 'going_to_restaurant' ? '#fff' : '#B45309', fontWeight: 900 }}>{eatsDriverStep !== 'going_to_restaurant' ? '✓' : '1'}</span>
                 </div>
                 <div>
-                  <p style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: 0 }}>POINT DE COLLECTE Â· ÃTAPE 1</p>
+                  <p style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: 0 }}>POINT DE COLLECTE · ÉTAPE 1</p>
                   <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: 0 }}>{activeEatsOrder.restaurantName || 'Restaurant'}</p>
                 </div>
               </div>
               {activeEatsOrder.restaurantName && (
                 <a href={`https://maps.google.com/?q=${encodeURIComponent(activeEatsOrder.restaurantName + ' Safi Maroc')}`} target="_blank" rel="noopener noreferrer"
                   style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#F3F4F6', borderRadius: 10, padding: '7px 12px', fontSize: 12, fontWeight: 700, color: '#3B82F6', textDecoration: 'none', marginBottom: eatsDriverStep === 'going_to_restaurant' ? 10 : 0 }}>
-                  âï¸ Naviguer â Restaurant
+                  ✈️ Naviguer → Restaurant
                 </a>
               )}
               {eatsDriverStep === 'going_to_restaurant' && (
                 <button onClick={pickupEatsOrder}
                   style={{ width: '100%', padding: '15px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#B45309,#F59E0B)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(180,83,9,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-                  <span style={{ fontSize: 20 }}>âï¸</span> J'ai rÃ©cupÃ©rÃ© la commande
+                  <span style={{ fontSize: 20 }}>☑️</span> J'ai récupéré la commande
                 </button>
               )}
             </div>
 
-            {/* ÃTAPE 2 : Livrer au client */}
+            {/* ÉTAPE 2 : Livrer au client */}
             <div style={{ ...cardStyle, borderColor: eatsDriverStep === 'delivering' ? '#93C5FD' : '#E5E7EB', borderWidth: 2, opacity: eatsDriverStep === 'going_to_restaurant' ? 0.5 : 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                 <div style={{ width: 28, height: 28, borderRadius: '50%', background: eatsDriverStep === 'done' ? '#059669' : eatsDriverStep === 'delivering' ? '#EFF6FF' : '#F3F4F6', border: `2px solid ${eatsDriverStep === 'done' ? '#059669' : eatsDriverStep === 'delivering' ? '#3B82F6' : '#E5E7EB'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <span style={{ fontSize: 12, color: eatsDriverStep === 'done' ? '#fff' : eatsDriverStep === 'delivering' ? '#1D4ED8' : '#9CA3AF', fontWeight: 900 }}>{eatsDriverStep === 'done' ? 'â' : '2'}</span>
+                  <span style={{ fontSize: 12, color: eatsDriverStep === 'done' ? '#fff' : eatsDriverStep === 'delivering' ? '#1D4ED8' : '#9CA3AF', fontWeight: 900 }}>{eatsDriverStep === 'done' ? '✓' : '2'}</span>
                 </div>
                 <div>
                   <p style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: 0 }}>DESTINATION</p>
@@ -2059,11 +2059,11 @@ function DispatchPage() {
                 <>
                   <a href={`https://maps.google.com/?q=${encodeURIComponent(activeEatsOrder.customerAddress)}`} target="_blank" rel="noopener noreferrer"
                     style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#EFF6FF', borderRadius: 10, padding: '7px 12px', fontSize: 12, fontWeight: 700, color: '#3B82F6', textDecoration: 'none', marginBottom: 10 }}>
-                    âï¸ Naviguer â Client
+                    ✈️ Naviguer → Client
                   </a>
                   <button onClick={finishEatsDelivery}
                     style={{ width: '100%', padding: '15px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#065F46,#059669)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(5,150,105,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-                    <span style={{ fontSize: 20 }}>â</span> J'ai livrÃ© au client
+                    <span style={{ fontSize: 20 }}>✅</span> J'ai livré au client
                   </button>
                 </>
               )}
@@ -2072,14 +2072,14 @@ function DispatchPage() {
           </>
         )}
 
-        {/* ââ TAXI MODE ââ */}
+        {/* ── TAXI MODE ── */}
         {role === 'taxi' && !activeTaxi && (
           <>
             <p style={{ fontSize: 11, fontWeight: 800, color: '#9CA3AF', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 12 }}>COURSES EN ATTENTE ({taxiBookings.length})</p>
             {taxiBookings.length === 0 ? (
               <div style={{ ...cardStyle, textAlign: 'center', padding: '40px 20px' }}>
-                <p style={{ fontSize: 32, margin: '0 0 10px' }}>â³</p>
-                <p style={{ color: '#6B7280', fontSize: 14, fontWeight: 700, margin: 0 }}>En attente de coursesâ¦</p>
+                <p style={{ fontSize: 32, margin: '0 0 10px' }}>⏳</p>
+                <p style={{ color: '#6B7280', fontSize: 14, fontWeight: 700, margin: 0 }}>En attente de courses…</p>
                 <p style={{ color: '#9CA3AF', fontSize: 11, margin: '4px 0 0' }}>La sonnette retentira automatiquement</p>
               </div>
             ) : taxiBookings.map(booking => (
@@ -2091,12 +2091,12 @@ function DispatchPage() {
                   </div>
                   <span style={{ background: '#FEF3C7', color: '#B45309', fontSize: 11, fontWeight: 900, borderRadius: 20, padding: '4px 10px' }}>NOUVEAU</span>
                 </div>
-                <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>ð¤ {booking.customerName || 'Client'}</p>
-                {booking.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>ð DÃ©part : {booking.clientAddress}</p>}
-                {booking.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 6px' }}>ð Destination : {booking.destination}</p>}
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>👤 {booking.customerName || 'Client'}</p>
+                {booking.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>📍 Départ : {booking.clientAddress}</p>}
+                {booking.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 6px' }}>🏁 Destination : {booking.destination}</p>}
                 {booking.clientPrice && (
                   <div style={{ background: '#FEF3C7', borderRadius: 10, padding: '8px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: 12, color: '#92400E', fontWeight: 800 }}>ð° Client propose : <strong style={{ fontSize: 15 }}>{booking.clientPrice} DH</strong></span>
+                    <span style={{ fontSize: 12, color: '#92400E', fontWeight: 800 }}>💰 Client propose : <strong style={{ fontSize: 15 }}>{booking.clientPrice} DH</strong></span>
                   </div>
                 )}
                 <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
@@ -2113,12 +2113,12 @@ function DispatchPage() {
                       fetch(`/api/tracking/${booking.ref}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ driverPrice: v }) }).catch(() => {});
                     }}
                     style={{ padding: '9px 14px', borderRadius: 10, border: 'none', background: '#F59E0B', color: '#fff', fontWeight: 900, fontSize: 13, cursor: 'pointer' }}>
-                    ð¨
+                    📨
                   </button>
                 </div>
                 <button onClick={() => acceptTaxi(booking)}
                   style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#B45309,#F59E0B)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(180,83,9,0.3)' }}>
-                  â Accepter la course
+                  ✅ Accepter la course
                 </button>
               </div>
             ))}
@@ -2127,39 +2127,39 @@ function DispatchPage() {
 
         {role === 'taxi' && activeTaxi && (
           <div style={{ ...cardStyle, borderColor: '#FDE68A', borderWidth: 2 }}>
-            <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 8px' }}>COURSE ACCEPTÃE</p>
+            <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 8px' }}>COURSE ACCEPTÉE</p>
             <p style={{ fontSize: 18, fontWeight: 900, color: '#B45309', margin: '0 0 6px' }}>{activeTaxi.ref}</p>
-            <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>ð¤ {activeTaxi.customerName || 'Client'}</p>
-            {activeTaxi.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>ð DÃ©part : {activeTaxi.clientAddress}</p>}
-            {activeTaxi.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 14px' }}>ð Destination : {activeTaxi.destination}</p>}
+            <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>👤 {activeTaxi.customerName || 'Client'}</p>
+            {activeTaxi.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>📍 Départ : {activeTaxi.clientAddress}</p>}
+            {activeTaxi.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 14px' }}>🏁 Destination : {activeTaxi.destination}</p>}
 
             {taxiGPS === 'active' ? (
               <div style={{ background: '#FEF3C7', borderRadius: 12, padding: '12px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#F59E0B', display: 'inline-block', animation: 'pulse 1.5s infinite' }}/>
-                <p style={{ fontSize: 12, fontWeight: 900, color: '#B45309', margin: 0 }}>GPS EN DIRECT â Client vous suit sur la carte</p>
+                <p style={{ fontSize: 12, fontWeight: 900, color: '#B45309', margin: 0 }}>GPS EN DIRECT — Client vous suit sur la carte</p>
               </div>
             ) : taxiGPS === 'denied' ? (
-              <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 12 }}>â GPS refusÃ© â activez la localisation</p>
+              <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 12 }}>❌ GPS refusé — activez la localisation</p>
             ) : (
-              <p style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 12 }}>â³ DÃ©marrage GPSâ¦</p>
+              <p style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 12 }}>⏳ Démarrage GPS…</p>
             )}
 
             <button onClick={finishTaxi}
               style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#059669,#34D399)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(5,150,105,0.4)' }}>
-              â J'ai dÃ©posÃ© le client
+              ✅ J'ai déposé le client
             </button>
             <style>{`@keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:1;transform:scale(1.3);}}`}</style>
           </div>
         )}
 
-        {/* ââ MOTO TAXI MODE ââ */}
+        {/* ── MOTO TAXI MODE ── */}
         {isMoto && !activeMoto && (
           <>
             <p style={{ fontSize: 11, fontWeight: 800, color: '#9CA3AF', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 12 }}>COURSES MOTO EN ATTENTE ({motoBookings.length})</p>
             {motoBookings.length === 0 ? (
               <div style={{ ...cardStyle, textAlign: 'center', padding: '40px 20px' }}>
-                <p style={{ fontSize: 32, margin: '0 0 10px' }}>â³</p>
-                <p style={{ color: '#6B7280', fontSize: 14, fontWeight: 700, margin: 0 }}>En attente de courses motoâ¦</p>
+                <p style={{ fontSize: 32, margin: '0 0 10px' }}>⏳</p>
+                <p style={{ color: '#6B7280', fontSize: 14, fontWeight: 700, margin: 0 }}>En attente de courses moto…</p>
                 <p style={{ color: '#9CA3AF', fontSize: 11, margin: '4px 0 0' }}>La sonnette retentira automatiquement</p>
               </div>
             ) : motoBookings.map(booking => (
@@ -2171,12 +2171,12 @@ function DispatchPage() {
                   </div>
                   <span style={{ background: '#FFEDD5', color: '#9A3412', fontSize: 11, fontWeight: 900, borderRadius: 20, padding: '4px 10px' }}>NOUVEAU</span>
                 </div>
-                <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>ð¤ {booking.customerName || 'Client'}</p>
-                {booking.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>ð DÃ©part : {booking.clientAddress}</p>}
-                {booking.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 6px' }}>ð Destination : {booking.destination}</p>}
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>👤 {booking.customerName || 'Client'}</p>
+                {booking.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>📍 Départ : {booking.clientAddress}</p>}
+                {booking.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 6px' }}>🏁 Destination : {booking.destination}</p>}
                 {booking.clientPrice && (
                   <div style={{ background: '#FFEDD5', borderRadius: 10, padding: '8px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: 12, color: '#7C2D12', fontWeight: 800 }}>ð° Client propose : <strong style={{ fontSize: 15 }}>{booking.clientPrice} DH</strong></span>
+                    <span style={{ fontSize: 12, color: '#7C2D12', fontWeight: 800 }}>💰 Client propose : <strong style={{ fontSize: 15 }}>{booking.clientPrice} DH</strong></span>
                   </div>
                 )}
                 <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
@@ -2193,12 +2193,12 @@ function DispatchPage() {
                       fetch(`/api/tracking/${booking.ref}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ driverPrice: v }) }).catch(() => {});
                     }}
                     style={{ padding: '9px 14px', borderRadius: 10, border: 'none', background: '#F97316', color: '#fff', fontWeight: 900, fontSize: 13, cursor: 'pointer' }}>
-                    ð¨
+                    📨
                   </button>
                 </div>
                 <button onClick={() => acceptMoto(booking)}
                   style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#9A3412,#F97316)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}>
-                  â Accepter la course moto
+                  ✅ Accepter la course moto
                 </button>
               </div>
             ))}
@@ -2207,26 +2207,26 @@ function DispatchPage() {
 
         {isMoto && activeMoto && (
           <div style={{ ...cardStyle, borderColor: '#FED7AA', borderWidth: 2 }}>
-            <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 8px' }}>COURSE MOTO ACCEPTÃE</p>
+            <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 8px' }}>COURSE MOTO ACCEPTÉE</p>
             <p style={{ fontSize: 18, fontWeight: 900, color: '#9A3412', margin: '0 0 6px' }}>{activeMoto.ref}</p>
-            <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>ð¤ {activeMoto.customerName || 'Client'}</p>
-            {activeMoto.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>ð DÃ©part : {activeMoto.clientAddress}</p>}
-            {activeMoto.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 14px' }}>ð Destination : {activeMoto.destination}</p>}
+            <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>👤 {activeMoto.customerName || 'Client'}</p>
+            {activeMoto.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>📍 Départ : {activeMoto.clientAddress}</p>}
+            {activeMoto.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 14px' }}>🏁 Destination : {activeMoto.destination}</p>}
 
             {motoGPS === 'active' ? (
               <div style={{ background: '#FFEDD5', borderRadius: 12, padding: '12px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#F97316', display: 'inline-block', animation: 'pulse 1.5s infinite' }}/>
-                <p style={{ fontSize: 12, fontWeight: 900, color: '#9A3412', margin: 0 }}>GPS EN DIRECT â Client vous suit sur la carte</p>
+                <p style={{ fontSize: 12, fontWeight: 900, color: '#9A3412', margin: 0 }}>GPS EN DIRECT — Client vous suit sur la carte</p>
               </div>
             ) : motoGPS === 'denied' ? (
-              <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 12 }}>â GPS refusÃ© â activez la localisation</p>
+              <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 12 }}>❌ GPS refusé — activez la localisation</p>
             ) : (
-              <p style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 12 }}>â³ DÃ©marrage GPSâ¦</p>
+              <p style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 12 }}>⏳ Démarrage GPS…</p>
             )}
 
             <button onClick={finishMoto}
               style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#059669,#34D399)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(5,150,105,0.4)' }}>
-              â J'ai dÃ©posÃ© le client
+              ✅ J'ai déposé le client
             </button>
             <style>{`@keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:1;transform:scale(1.3);}}`}</style>
           </div>
@@ -2238,7 +2238,7 @@ function DispatchPage() {
   );
 }
 
-// âââ BRIDGE AI ASSISTANT PAGE ââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── BRIDGE AI ASSISTANT PAGE ────────────────────────────────────────────────
 
 type AssistMsg = { role: 'user' | 'assistant'; content: string };
 
@@ -2246,18 +2246,18 @@ const ASSISTANT_T = {
   fr: {
     title: 'Bridge Assistant',
     subtitle: 'Votre conseiller IA 24/7',
-    placeholder: 'Ãcrivez votre question...',
+    placeholder: 'Écrivez votre question...',
     send: 'Envoyer',
-    thinking: 'Bridge IA rÃ©flÃ©chit...',
-    greeting: 'Bonjour ! ð Je suis votre assistant Bridge Safi. Comment puis-je vous aider aujourd\'hui ?',
-    quickTitle: 'Questions frÃ©quentes',
-    q1: 'ð¦ Suivre ma commande',
-    q2: 'ð Retard de livraison',
-    q3: 'ð³ ProblÃ¨me de paiement',
-    q4: 'â Autre question',
-    escalated: 'ð Un responsable Bridge vous contacte sous 30 min',
-    wa: 'ð± Contacter via WhatsApp',
-    back: 'â Retour',
+    thinking: 'Bridge IA réfléchit...',
+    greeting: 'Bonjour ! 👋 Je suis votre assistant Bridge Safi. Comment puis-je vous aider aujourd\'hui ?',
+    quickTitle: 'Questions fréquentes',
+    q1: '📦 Suivre ma commande',
+    q2: '🚚 Retard de livraison',
+    q3: '💳 Problème de paiement',
+    q4: '❓ Autre question',
+    escalated: '🔔 Un responsable Bridge vous contacte sous 30 min',
+    wa: '📱 Contacter via WhatsApp',
+    back: '← Retour',
   },
   en: {
     title: 'Bridge Assistant',
@@ -2265,54 +2265,54 @@ const ASSISTANT_T = {
     placeholder: 'Write your question...',
     send: 'Send',
     thinking: 'Bridge AI is thinking...',
-    greeting: 'Hello! ð I\'m your Bridge Safi assistant. How can I help you today?',
+    greeting: 'Hello! 👋 I\'m your Bridge Safi assistant. How can I help you today?',
     quickTitle: 'Frequent questions',
-    q1: 'ð¦ Track my order',
-    q2: 'ð Delivery delay',
-    q3: 'ð³ Payment issue',
-    q4: 'â Other question',
-    escalated: 'ð A Bridge manager will contact you within 30 min',
-    wa: 'ð± Contact via WhatsApp',
-    back: 'â Back',
+    q1: '📦 Track my order',
+    q2: '🚚 Delivery delay',
+    q3: '💳 Payment issue',
+    q4: '❓ Other question',
+    escalated: '🔔 A Bridge manager will contact you within 30 min',
+    wa: '📱 Contact via WhatsApp',
+    back: '← Back',
   },
   ar: {
-    title: 'ÙØ³Ø§Ø¹Ø¯ Ø¨Ø±ÙØ¯Ø¬',
-    subtitle: 'ÙØ³ØªØ´Ø§Ø±Ù Ø§ÙØ°ÙÙ 24/7',
-    placeholder: 'Ø§ÙØªØ¨ Ø³Ø¤Ø§ÙÙ...',
-    send: 'Ø¥Ø±Ø³Ø§Ù',
-    thinking: 'Ø¨Ø±ÙØ¯Ø¬ AI ÙÙÙØ±...',
-    greeting: 'Ø£ÙÙØ§Ù! ð Ø£ÙØ§ ÙØ³Ø§Ø¹Ø¯Ù Ø§ÙØ°ÙÙ ÙÙ Bridge Safi. ÙÙÙ ÙÙÙÙÙÙ ÙØ³Ø§Ø¹Ø¯ØªÙ Ø§ÙÙÙÙØ',
-    quickTitle: 'Ø£Ø³Ø¦ÙØ© Ø´Ø§Ø¦Ø¹Ø©',
-    q1: 'ð¦ ØªØªØ¨Ø¹ Ø·ÙØ¨Ù',
-    q2: 'ð ØªØ£Ø®Ø± Ø§ÙØªÙØµÙÙ',
-    q3: 'ð³ ÙØ´ÙÙØ© ÙÙ Ø§ÙØ¯ÙØ¹',
-    q4: 'â Ø³Ø¤Ø§Ù Ø¢Ø®Ø±',
-    escalated: 'ð Ø³ÙØªØµÙ Ø¨Ù ÙØ³Ø¤ÙÙ Bridge Ø®ÙØ§Ù 30 Ø¯ÙÙÙØ©',
-    wa: 'ð± ØªÙØ§ØµÙ Ø¹Ø¨Ø± ÙØ§ØªØ³Ø§Ø¨',
-    back: 'â Ø±Ø¬ÙØ¹',
+    title: 'مساعد بريدج',
+    subtitle: 'مستشارك الذكي 24/7',
+    placeholder: 'اكتب سؤالك...',
+    send: 'إرسال',
+    thinking: 'بريدج AI يفكر...',
+    greeting: 'أهلاً! 👋 أنا مساعدك الذكي من Bridge Safi. كيف يمكنني مساعدتك اليوم؟',
+    quickTitle: 'أسئلة شائعة',
+    q1: '📦 تتبع طلبي',
+    q2: '🚚 تأخر التوصيل',
+    q3: '💳 مشكلة في الدفع',
+    q4: '❓ سؤال آخر',
+    escalated: '🔔 سيتصل بك مسؤول Bridge خلال 30 دقيقة',
+    wa: '📱 تواصل عبر واتساب',
+    back: '→ رجوع',
   },
   amz: {
-    title: 'â´°âµâµâ´°âµ¡â´°âµ Bridge',
-    subtitle: 'â´°âµâµâ´°âµ¡â´°âµ âµâµâ´½ 24/7',
-    placeholder: 'â´½âµâ´± âµâµâµâ´¹âµ âµâµâ´½...',
-    send: 'âµ¥âµ¥âµ',
-    thinking: 'Bridge AI âµâµâµâ´¼â´½â´½âµâµ...',
-    greeting: 'â´°âµ£âµâµ! ð âµâ´½â´½ â´°âµâµâ´°âµ¡â´°âµ âµâµâ´½ âµ Bridge Safi.',
-    quickTitle: 'âµâµâµâµâ´¹âµâµ âµâµâµ¥âµâ´°âµ¢âµ',
-    q1: 'ð¦ âµâµâ´³âµ â´°âµ£âµâµâµ¥ âµâµâµ',
-    q2: 'ð â´°âµâµâµâµ âµ âµâµ£âµâµ',
-    q3: 'ð³ â´°âµâ´½â´½âµâµ âµ âµâµâµâµâ´¼',
-    q4: 'â â´°âµâµâµâ´¹ âµ¢â´°â´¹âµ',
-    escalated: 'ð â´°âµâµâµâµ¡âµ Bridge â´°â´· â´½ âµâµâµâµâµ âµ 30 âµâµâµâ´·â´°âµâµâµ',
-    wa: 'ð± âµâµâµâµâµ âµ WhatsApp',
-    back: 'â â´°âµ£âµ£âµâµ',
+    title: 'ⴰⵎⵙⴰⵡⴰⵍ Bridge',
+    subtitle: 'ⴰⵎⵙⴰⵡⴰⵍ ⵏⵏⴽ 24/7',
+    placeholder: 'ⴽⵜⴱ ⵓⵙⵉⴹⵏ ⵏⵏⴽ...',
+    send: 'ⵥⵥⵍ',
+    thinking: 'Bridge AI ⵉⵜⵜⴼⴽⴽⵉⵔ...',
+    greeting: 'ⴰⵣⵓⵍ! 👋 ⵏⴽⴽ ⴰⵎⵙⴰⵡⴰⵍ ⵏⵏⴽ ⵏ Bridge Safi.',
+    quickTitle: 'ⵉⵙⵙⵉⴹⵏⵏ ⵉⵎⵥⵍⴰⵢⵏ',
+    q1: '📦 ⵙⵍⴳⵏ ⴰⵣⵏⵓⵥ ⵏⵏⵉ',
+    q2: '🚚 ⴰⵃⵟⵟⵓ ⵏ ⵓⵣⵏⵉ',
+    q3: '💳 ⴰⵎⴽⴽⵓⵙ ⵏ ⵓⵙⵓⵔⴼ',
+    q4: '❓ ⴰⵙⵙⵉⴹ ⵢⴰⴹⵏ',
+    escalated: '🔔 ⴰⵎⵙⵉⵡⵍ Bridge ⴰⴷ ⴽ ⵉⵙⵙⵏⵖ ⵖ 30 ⵜⵓⵙⴷⴰⵜⵉⵏ',
+    wa: '📱 ⵙⵙⵏⵎⵍ ⵙ WhatsApp',
+    back: '← ⴰⵣⵣⵓⵍ',
   },
 };
 
 type AssistLang = 'fr'|'en'|'ar'|'amz';
 const ASSIST_LANGS: AssistLang[] = ['fr','en','ar','amz'];
 const ASSIST_CHAT_KEY = 'bridge_assistant_chat';
-// âââ RESTAURANT OWNER PAGE ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── RESTAURANT OWNER PAGE ────────────────────────────────────────────────────
 
 const RESTO_RESTAURANTS = [
   "McDonald's Safi",
@@ -2345,14 +2345,14 @@ function playAlert() {
 
 function statusLabel(s: string) {
   const m: Record<string,{label:string;color:string}> = {
-    pending:   {label:'ð¡ En attente',   color:'#F59E0B'},
-    accepted:  {label:'ð¢ AcceptÃ©e',     color:'#10B981'},
-    preparing: {label:'ðµ En prÃ©paration',color:'#3B82F6'},
-    ready:     {label:'â PrÃªt',         color:'#059669'},
-    delivered: {label:'ð¦ LivrÃ©e',       color:'#6B7280'},
-    refused:   {label:'â RefusÃ©e',      color:'#EF4444'},
-    cancelled: {label:'ð« AnnulÃ©e',      color:'#EF4444'},
-    on_the_way:{label:'ð´ En route',     color:'#8B5CF6'},
+    pending:   {label:'🟡 En attente',   color:'#F59E0B'},
+    accepted:  {label:'🟢 Acceptée',     color:'#10B981'},
+    preparing: {label:'🔵 En préparation',color:'#3B82F6'},
+    ready:     {label:'✅ Prêt',         color:'#059669'},
+    delivered: {label:'📦 Livrée',       color:'#6B7280'},
+    refused:   {label:'❌ Refusée',      color:'#EF4444'},
+    cancelled: {label:'🚫 Annulée',      color:'#EF4444'},
+    on_the_way:{label:'🚴 En route',     color:'#8B5CF6'},
   };
   return m[s] || {label:s, color:'#9CA3AF'};
 }
@@ -2490,7 +2490,7 @@ function RestaurantOwnerPage() {
       body: JSON.stringify({ status, restaurantName: restoName }),
     });
     setOrders(prev => prev.map(o => o.ref === ref ? {...o, status} : o));
-    // Sync tracking store â customer sees the change in real-time
+    // Sync tracking store → customer sees the change in real-time
     if (status === 'preparing' || status === 'accepted') {
       fetch(`/api/tracking/${ref}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
@@ -2567,41 +2567,41 @@ function RestaurantOwnerPage() {
   const active  = orders.filter(o => ['accepted','preparing'].includes(o.status));
   const done    = orders.filter(o => ['ready','delivered','refused','cancelled','on_the_way'].includes(o.status));
 
-  // ââ NOT SIGNED IN ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── NOT SIGNED IN ────────────────────────────────────────────────────────────
   if (!isLoaded || loading) return (
     <div style={{minHeight:'100dvh',background:'linear-gradient(135deg,#0A1A0F,#0D2E1A)',display:'flex',alignItems:'center',justifyContent:'center'}}>
-      <span style={{color:'rgba(255,255,255,0.4)',fontSize:13}}>Chargementâ¦</span>
+      <span style={{color:'rgba(255,255,255,0.4)',fontSize:13}}>Chargement…</span>
     </div>
   );
 
   if (!isSignedIn) return (
     <div style={{minHeight:'100dvh',background:'linear-gradient(135deg,#0A1A0F 0%,#0D2E1A 50%,#0A1A0F 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'20px',fontFamily:'system-ui'}}>
-      <div style={{fontSize:52,marginBottom:14}}>ð½ï¸</div>
+      <div style={{fontSize:52,marginBottom:14}}>🍽️</div>
       <h1 style={{color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.1em',margin:'0 0 4px',textAlign:'center'}}>ESPACE RESTAURATEURS</h1>
-      <p style={{color:'rgba(255,255,255,0.4)',fontSize:12,fontWeight:600,margin:'0 0 28px',textAlign:'center'}}>Bridge Safi Â· Interface partenaire</p>
+      <p style={{color:'rgba(255,255,255,0.4)',fontSize:12,fontWeight:600,margin:'0 0 28px',textAlign:'center'}}>Bridge Safi · Interface partenaire</p>
       <div style={{width:'100%',maxWidth:340,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:24,padding:'24px 20px',display:'flex',flexDirection:'column',gap:14,textAlign:'center'}}>
-        <p style={{color:'rgba(255,255,255,0.6)',fontSize:13,margin:0}}>Connectez-vous avec votre compte Bridge pour accÃ©der Ã  votre espace restaurateur.</p>
+        <p style={{color:'rgba(255,255,255,0.6)',fontSize:13,margin:0}}>Connectez-vous avec votre compte Bridge pour accéder à votre espace restaurateur.</p>
         <button onClick={()=>navigate('/sign-in?redirect_url=/restaurant')}
           style={{width:'100%',padding:'15px 0',borderRadius:14,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669,#4ADE80)',color:'#fff',fontSize:15,fontWeight:900}}>
-          Se connecter â
+          Se connecter →
         </button>
         <button onClick={()=>navigate('/sign-up?redirect_url=/restaurant')}
           style={{width:'100%',padding:'13px 0',borderRadius:14,border:'1px solid rgba(255,255,255,0.15)',cursor:'pointer',background:'transparent',color:'rgba(255,255,255,0.6)',fontSize:13,fontWeight:700}}>
-          CrÃ©er un compte
+          Créer un compte
         </button>
       </div>
       <button onClick={()=>navigate('/')} style={{marginTop:20,background:'none',border:'none',color:'rgba(255,255,255,0.35)',fontSize:12,fontWeight:700,cursor:'pointer'}}>
-        â Retour Ã  Bridge
+        ← Retour à Bridge
       </button>
     </div>
   );
 
-  // ââ SIGNED IN BUT NO RESTAURANT LINKED YET ââââââââââââââââââââââââââââââââ
+  // ── SIGNED IN BUT NO RESTAURANT LINKED YET ────────────────────────────────
   if (!linked) return (
     <div style={{minHeight:'100dvh',background:'linear-gradient(135deg,#0A1A0F 0%,#0D2E1A 50%,#0A1A0F 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'20px',fontFamily:'system-ui'}}>
-      <div style={{fontSize:52,marginBottom:14}}>ð½ï¸</div>
+      <div style={{fontSize:52,marginBottom:14}}>🍽️</div>
       <h1 style={{color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.1em',margin:'0 0 4px',textAlign:'center'}}>LIER VOTRE RESTAURANT</h1>
-      <p style={{color:'rgba(255,255,255,0.4)',fontSize:12,fontWeight:600,margin:'0 0 6px',textAlign:'center'}}>ConnectÃ© : <strong style={{color:'#4ADE80'}}>{user?.emailAddresses?.[0]?.emailAddress}</strong></p>
+      <p style={{color:'rgba(255,255,255,0.4)',fontSize:12,fontWeight:600,margin:'0 0 6px',textAlign:'center'}}>Connecté : <strong style={{color:'#4ADE80'}}>{user?.emailAddresses?.[0]?.emailAddress}</strong></p>
       <p style={{color:'rgba(255,255,255,0.3)',fontSize:11,margin:'0 0 24px',textAlign:'center'}}>Choisissez votre restaurant et entrez le PIN fourni par Bridge Safi</p>
 
       <div style={{width:'100%',maxWidth:340,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:24,padding:'24px 20px',display:'flex',flexDirection:'column',gap:14}}>
@@ -2609,14 +2609,14 @@ function RestaurantOwnerPage() {
           <label style={{color:'rgba(255,255,255,0.5)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase' as const,display:'block',marginBottom:6}}>Votre Restaurant</label>
           <select value={claimName} onChange={e=>setClaimName(e.target.value)}
             style={{width:'100%',padding:'13px 14px',borderRadius:14,background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',color:claimName?'#fff':'rgba(255,255,255,0.4)',fontSize:14,fontWeight:700,outline:'none',appearance:'none' as const}}>
-            <option value="">-- SÃ©lectionner --</option>
+            <option value="">-- Sélectionner --</option>
             {RESTO_RESTAURANTS.map(r=><option key={r} value={r} style={{background:'#1a2e1f',color:'#fff'}}>{r}</option>)}
           </select>
         </div>
         <div>
           <label style={{color:'rgba(255,255,255,0.5)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase' as const,display:'block',marginBottom:6}}>Code PIN (4 chiffres)</label>
           <input type="password" inputMode="numeric" maxLength={4} value={claimPin} onChange={e=>setClaimPin(e.target.value.replace(/\D/g,'').slice(0,4))}
-            placeholder="â¢â¢â¢â¢"
+            placeholder="••••"
             style={{width:'100%',boxSizing:'border-box' as const,padding:'13px 14px',borderRadius:14,background:'rgba(255,255,255,0.08)',border:`1px solid ${linkErr?'#EF4444':'rgba(255,255,255,0.15)'}`,color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.5em',textAlign:'center' as const,outline:'none'}}
             onKeyDown={e=>{if(e.key==='Enter')handleClaim();}}/>
           {linkErr && <p style={{color:'#F87171',fontSize:11,fontWeight:700,margin:'6px 0 0'}}>{linkErr}</p>}
@@ -2625,19 +2625,19 @@ function RestaurantOwnerPage() {
           style={{width:'100%',padding:'15px 0',borderRadius:14,border:'none',cursor:!claimName||claimPin.length!==4||linking?'not-allowed':'pointer',
             background:!claimName||claimPin.length!==4||linking?'rgba(255,255,255,0.1)':'linear-gradient(135deg,#059669,#4ADE80)',
             color:!claimName||claimPin.length!==4||linking?'rgba(255,255,255,0.4)':'#fff',fontSize:15,fontWeight:900}}>
-          {linking ? 'Liaison en coursâ¦' : 'Lier mon restaurant â'}
+          {linking ? 'Liaison en cours…' : 'Lier mon restaurant →'}
         </button>
         <p style={{color:'rgba(255,255,255,0.25)',fontSize:10,textAlign:'center' as const,margin:0}}>
-          Le PIN est fourni par l'Ã©quipe Bridge Safi lors de l'inscription partenaire
+          Le PIN est fourni par l'équipe Bridge Safi lors de l'inscription partenaire
         </p>
       </div>
       <button onClick={()=>navigate('/')} style={{marginTop:20,background:'none',border:'none',color:'rgba(255,255,255,0.35)',fontSize:12,fontWeight:700,cursor:'pointer'}}>
-        â Retour Ã  Bridge
+        ← Retour à Bridge
       </button>
     </div>
   );
 
-  // ââ ORDER CARD ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── ORDER CARD ──────────────────────────────────────────────────────────────
   const OrderCard = ({o}: {o: RestoOrder}) => {
     const st = statusLabel(o.status);
     const items = Array.isArray(o.items) ? o.items as {name:string;qty:number;price:number}[] : [];
@@ -2652,58 +2652,58 @@ function RestaurantOwnerPage() {
           <span style={{color:st.color,fontSize:10,fontWeight:900,background:`${st.color}18`,padding:'3px 8px',borderRadius:8}}>{st.label}</span>
         </div>
 
-        <p style={{color:'#fff',fontSize:13,fontWeight:700,margin:'0 0 2px'}}>ð¤ {o.customerName} Â· ð {o.customerPhone}</p>
-        <p style={{color:'rgba(255,255,255,0.5)',fontSize:11,fontWeight:600,margin:'0 0 8px'}}>ð {o.customerAddress} Â· {o.deliveryMode==='collect'?'Click & Collect':'Livraison'}</p>
+        <p style={{color:'#fff',fontSize:13,fontWeight:700,margin:'0 0 2px'}}>👤 {o.customerName} · 📞 {o.customerPhone}</p>
+        <p style={{color:'rgba(255,255,255,0.5)',fontSize:11,fontWeight:600,margin:'0 0 8px'}}>📍 {o.customerAddress} · {o.deliveryMode==='collect'?'Click & Collect':'Livraison'}</p>
 
         {items.length>0 && (
           <div style={{background:'rgba(0,0,0,0.2)',borderRadius:10,padding:'8px 10px',marginBottom:10}}>
             {items.map((it,i)=>(
               <p key={i} style={{color:'rgba(255,255,255,0.75)',fontSize:11,fontWeight:600,margin:'0 0 2px'}}>
-                Ã {it.qty} {it.name} â {it.price} MAD
+                × {it.qty} {it.name} — {it.price} MAD
               </p>
             ))}
           </div>
         )}
 
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom: o.status==='pending'||o.status==='accepted'||o.status==='preparing'?10:0}}>
-          <span style={{color:'#4ADE80',fontSize:14,fontWeight:900}}>ð° {o.total} MAD</span>
-          <span style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700}}>{o.paymentMethod==='cash'?'ðµ Cash':o.paymentMethod==='card'?'ð³ Carte':'ð³'}</span>
+          <span style={{color:'#4ADE80',fontSize:14,fontWeight:900}}>💰 {o.total} MAD</span>
+          <span style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700}}>{o.paymentMethod==='cash'?'💵 Cash':o.paymentMethod==='card'?'💳 Carte':'💳'}</span>
         </div>
 
         {o.status==='pending' && (
           <div style={{display:'flex',gap:8}}>
             <button onClick={()=>updateStatus(o.ref,'accepted')}
               style={{flex:1,padding:'11px 0',borderRadius:12,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669,#4ADE80)',color:'#fff',fontSize:13,fontWeight:900}}>
-              â Accepter
+              ✅ Accepter
             </button>
             <button onClick={()=>updateStatus(o.ref,'refused')}
               style={{flex:1,padding:'11px 0',borderRadius:12,cursor:'pointer',background:'rgba(239,68,68,0.2)',border:'1px solid rgba(239,68,68,0.5)',color:'#F87171',fontSize:13,fontWeight:900}}>
-              â Refuser
+              ❌ Refuser
             </button>
           </div>
         )}
         {o.status==='accepted' && (
           <button onClick={()=>updateStatus(o.ref,'preparing')}
             style={{width:'100%',padding:'11px 0',borderRadius:12,cursor:'pointer',background:'rgba(59,130,246,0.2)',border:'1px solid rgba(59,130,246,0.5)',color:'#60A5FA',fontSize:13,fontWeight:900}}>
-            ð¨âð³ En prÃ©paration
+            👨‍🍳 En préparation
           </button>
         )}
         {o.status==='preparing' && (
           <button onClick={()=>updateStatus(o.ref,'ready')}
             style={{width:'100%',padding:'11px 0',borderRadius:12,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669,#4ADE80)',color:'#fff',fontSize:13,fontWeight:900}}>
-            ð Commande PrÃªte !
+            🔔 Commande Prête !
           </button>
         )}
       </div>
     );
   };
 
-  // ââ DASHBOARD SCREEN ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── DASHBOARD SCREEN ────────────────────────────────────────────────────────
   return (
     <div style={{minHeight:'100dvh',background:'linear-gradient(135deg,#0A1A0F 0%,#0D2E1A 50%,#0A1A0F 100%)',fontFamily:'system-ui',paddingBottom:30}}>
       {/* Header */}
       <div style={{position:'sticky',top:0,zIndex:100,background:'rgba(4,17,10,0.95)',backdropFilter:'blur(12px)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'12px 16px',display:'flex',alignItems:'center',gap:10}}>
-        <span style={{fontSize:20}}>ð½ï¸</span>
+        <span style={{fontSize:20}}>🍽️</span>
         <div style={{flex:1}}>
           <p style={{color:'#fff',fontSize:13,fontWeight:900,margin:0,lineHeight:1}}>{restoName}</p>
           <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:600,margin:0}}>Espace restaurateur</p>
@@ -2714,16 +2714,16 @@ function RestaurantOwnerPage() {
             background: isOpen?'rgba(74,222,128,0.2)':'rgba(239,68,68,0.2)',
             border: `1px solid ${isOpen?'rgba(74,222,128,0.4)':'rgba(239,68,68,0.4)'}`,
             color: isOpen?'#4ADE80':'#F87171', fontSize:11,fontWeight:900}}>
-          {isOpen?'ð¢ OUVERT':'ð´ FERMÃ'}
+          {isOpen?'🟢 OUVERT':'🔴 FERMÉ'}
         </button>
         <button onClick={logout} style={{padding:'7px 12px',borderRadius:20,border:'1px solid rgba(255,255,255,0.1)',background:'transparent',color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700,cursor:'pointer'}}>
-          DÃ©co.
+          Déco.
         </button>
       </div>
 
       {/* Tab navigation */}
       <div style={{display:'flex',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
-        {([['orders','ð Commandes'],['settings','âï¸ ParamÃ¨tres']] as const).map(([tab,label])=>(
+        {([['orders','📋 Commandes'],['settings','⚙️ Paramètres']] as const).map(([tab,label])=>(
           <button key={tab} onClick={()=>setActiveTab(tab)}
             style={{flex:1,padding:'12px 0',border:'none',cursor:'pointer',background:'transparent',
               color: activeTab===tab?'#4ADE80':'rgba(255,255,255,0.35)',
@@ -2735,7 +2735,7 @@ function RestaurantOwnerPage() {
         ))}
       </div>
 
-      {/* ââ COMMANDES TAB âââââââââââââââââââââââââââââââââââââââââââ */}
+      {/* ── COMMANDES TAB ─────────────────────────────────────────── */}
       {activeTab==='orders' && (
         <div style={{padding:'14px 14px 0'}}>
           {/* Stats */}
@@ -2743,7 +2743,7 @@ function RestaurantOwnerPage() {
             {[
               {label:'En attente', count:pending.length, color:'#F59E0B'},
               {label:'En cours',   count:active.length,  color:'#3B82F6'},
-              {label:'TerminÃ©es',  count:done.length,     color:'#6B7280'},
+              {label:'Terminées',  count:done.length,     color:'#6B7280'},
             ].map(s=>(
               <div key={s.label} style={{flex:1,padding:'10px 0',textAlign:'center',background:'rgba(255,255,255,0.03)',borderRadius:12,border:'1px solid rgba(255,255,255,0.06)'}}>
                 <p style={{color:s.color,fontSize:20,fontWeight:900,margin:0}}>{s.count}</p>
@@ -2754,13 +2754,13 @@ function RestaurantOwnerPage() {
 
           <button onClick={()=>fetchOrders()}
             style={{width:'100%',padding:'10px 0',borderRadius:14,border:'1px solid rgba(255,255,255,0.1)',background:'rgba(255,255,255,0.04)',color:'rgba(255,255,255,0.5)',fontSize:12,fontWeight:700,cursor:'pointer',marginBottom:14}}>
-            ð Actualiser les commandes
+            🔄 Actualiser les commandes
           </button>
 
           {pending.length>0 && (
             <>
               <p style={{color:'#F59E0B',fontSize:10,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'0 0 10px'}}>
-                ð¡ EN ATTENTE ({pending.length})
+                🟡 EN ATTENTE ({pending.length})
               </p>
               {pending.map(o=><OrderCard key={o.ref} o={o}/>)}
             </>
@@ -2768,7 +2768,7 @@ function RestaurantOwnerPage() {
           {active.length>0 && (
             <>
               <p style={{color:'#60A5FA',fontSize:10,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'14px 0 10px'}}>
-                ð¨âð³ EN COURS ({active.length})
+                👨‍🍳 EN COURS ({active.length})
               </p>
               {active.map(o=><OrderCard key={o.ref} o={o}/>)}
             </>
@@ -2776,14 +2776,14 @@ function RestaurantOwnerPage() {
           {done.length>0 && (
             <>
               <p style={{color:'rgba(255,255,255,0.25)',fontSize:10,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'14px 0 10px'}}>
-                ð¦ TERMINÃES ({done.length})
+                📦 TERMINÉES ({done.length})
               </p>
               {done.map(o=><OrderCard key={o.ref} o={o}/>)}
             </>
           )}
           {orders.length===0 && (
             <div style={{textAlign:'center',paddingTop:40}}>
-              <div style={{fontSize:48,marginBottom:12}}>ð½ï¸</div>
+              <div style={{fontSize:48,marginBottom:12}}>🍽️</div>
               <p style={{color:'rgba(255,255,255,0.3)',fontSize:14,fontWeight:700}}>Aucune commande pour l'instant</p>
               <p style={{color:'rgba(255,255,255,0.2)',fontSize:12,fontWeight:600}}>Actualisation automatique toutes les 12 secondes</p>
             </div>
@@ -2791,13 +2791,13 @@ function RestaurantOwnerPage() {
         </div>
       )}
 
-      {/* ââ PARAMÃTRES TAB ââââââââââââââââââââââââââââââââââââââââââ */}
+      {/* ── PARAMÈTRES TAB ────────────────────────────────────────── */}
       {activeTab==='settings' && (
         <div style={{padding:'16px 14px 40px'}}>
 
           {/* Restaurant info */}
           <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:18,padding:'16px',marginBottom:16}}>
-            <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 14px'}}>ð Informations</p>
+            <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 14px'}}>📋 Informations</p>
 
             <div style={{marginBottom:12}}>
               <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.1em',textTransform:'uppercase',display:'block',marginBottom:6}}>Nom du restaurant</label>
@@ -2805,7 +2805,7 @@ function RestaurantOwnerPage() {
             </div>
 
             <div style={{marginBottom:12}}>
-              <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.1em',textTransform:'uppercase',display:'block',marginBottom:6}}>TÃ©lÃ©phone WhatsApp</label>
+              <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.1em',textTransform:'uppercase',display:'block',marginBottom:6}}>Téléphone WhatsApp</label>
               <input type="tel" value={profile.phone} onChange={e=>setProfile(p=>({...p,phone:e.target.value}))}
                 placeholder="+212612345678"
                 style={{width:'100%',boxSizing:'border-box',padding:'12px 14px',borderRadius:12,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',color:'#fff',fontSize:13,fontWeight:600,outline:'none'}}/>
@@ -2821,8 +2821,8 @@ function RestaurantOwnerPage() {
 
           {/* GPS coordinates */}
           <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:18,padding:'16px',marginBottom:16}}>
-            <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 14px'}}>ð CoordonnÃ©es GPS</p>
-            <p style={{color:'rgba(255,255,255,0.3)',fontSize:11,fontWeight:600,margin:'0 0 12px'}}>UtilisÃ©es pour le dispatch intelligent des livreurs.</p>
+            <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 14px'}}>📍 Coordonnées GPS</p>
+            <p style={{color:'rgba(255,255,255,0.3)',fontSize:11,fontWeight:600,margin:'0 0 12px'}}>Utilisées pour le dispatch intelligent des livreurs.</p>
             <div style={{display:'flex',gap:10}}>
               <div style={{flex:1}}>
                 <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.1em',textTransform:'uppercase',display:'block',marginBottom:6}}>Latitude</label>
@@ -2842,16 +2842,16 @@ function RestaurantOwnerPage() {
           {/* Integration / Webhook */}
           <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:18,padding:'16px',marginBottom:16}}>
             <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
-              <span style={{fontSize:16}}>ð</span>
-              <p style={{color:'#fff',fontSize:13,fontWeight:900,margin:0}}>Pont d'intÃ©gration Eats</p>
+              <span style={{fontSize:16}}>🔗</span>
+              <p style={{color:'#fff',fontSize:13,fontWeight:900,margin:0}}>Pont d'intégration Eats</p>
             </div>
-            <p style={{color:'rgba(255,255,255,0.35)',fontSize:11,fontWeight:600,margin:'0 0 14px'}}>Donnez ces informations Ã  votre responsable Bridge Eats</p>
+            <p style={{color:'rgba(255,255,255,0.35)',fontSize:11,fontWeight:600,margin:'0 0 14px'}}>Donnez ces informations à votre responsable Bridge Eats</p>
             <div style={{background:'rgba(74,222,128,0.06)',border:'1px solid rgba(74,222,128,0.15)',borderRadius:12,padding:'10px 12px',marginBottom:14}}>
-              <p style={{color:'rgba(74,222,128,0.8)',fontSize:11,fontWeight:600,margin:0}}>Bridge Eats enverra automatiquement vos nouvelles commandes Ã  cette URL en utilisant votre token secret. DÃ¨s qu'une commande arrive, l'alarme sonne et elle apparaÃ®t sur votre tableau de bord.</p>
+              <p style={{color:'rgba(74,222,128,0.8)',fontSize:11,fontWeight:600,margin:0}}>Bridge Eats enverra automatiquement vos nouvelles commandes à cette URL en utilisant votre token secret. Dès qu'une commande arrive, l'alarme sonne et elle apparaît sur votre tableau de bord.</p>
             </div>
 
             <div style={{marginBottom:12}}>
-              <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.12em',textTransform:'uppercase',display:'block',marginBottom:6}}>URL DU WEBHOOK (votre systÃ¨me)</label>
+              <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.12em',textTransform:'uppercase',display:'block',marginBottom:6}}>URL DU WEBHOOK (votre système)</label>
               <div style={{display:'flex',gap:8,alignItems:'center'}}>
                 <input type="url" value={profile.webhookUrl} onChange={e=>setProfile(p=>({...p,webhookUrl:e.target.value}))}
                   placeholder="https://votre-systeme.com/api/commandes"
@@ -2859,14 +2859,14 @@ function RestaurantOwnerPage() {
                 {profile.webhookUrl && (
                   <button onClick={()=>copyToClipboard(profile.webhookUrl,'wh')}
                     style={{padding:'11px 14px',borderRadius:12,border:'1px solid rgba(255,255,255,0.1)',background:'rgba(255,255,255,0.05)',color:'rgba(255,255,255,0.5)',fontSize:12,cursor:'pointer',flexShrink:0}}>
-                    {copied==='wh'?'â':'â'}
+                    {copied==='wh'?'✓':'⎘'}
                   </button>
                 )}
               </div>
             </div>
 
             <div style={{marginBottom:12}}>
-              <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.12em',textTransform:'uppercase',display:'block',marginBottom:6}}>EN-TÃTE REQUIS</label>
+              <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.12em',textTransform:'uppercase',display:'block',marginBottom:6}}>EN-TÊTE REQUIS</label>
               <div style={{padding:'11px 12px',borderRadius:12,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',color:'rgba(255,255,255,0.6)',fontSize:12,fontWeight:700,fontFamily:'monospace'}}>X-Bridge-Token</div>
             </div>
 
@@ -2879,7 +2879,7 @@ function RestaurantOwnerPage() {
                   </div>
                   <button onClick={()=>copyToClipboard(bridgeSecret,'secret')}
                     style={{padding:'11px 14px',borderRadius:12,border:'1px solid rgba(255,255,255,0.1)',background:'rgba(255,255,255,0.05)',color:'rgba(255,255,255,0.5)',fontSize:12,cursor:'pointer',flexShrink:0}}>
-                    {copied==='secret'?'â':'â'}
+                    {copied==='secret'?'✓':'⎘'}
                   </button>
                 </div>
               </div>
@@ -2889,19 +2889,19 @@ function RestaurantOwnerPage() {
           {/* Push Notifications */}
           <div style={{background:'rgba(255,255,255,0.03)',border:`1px solid ${pushEnabled?'rgba(74,222,128,0.25)':'rgba(255,255,255,0.08)'}`,borderRadius:18,padding:'16px',marginBottom:16}}>
             <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
-              <span style={{fontSize:16}}>ð</span>
+              <span style={{fontSize:16}}>🔔</span>
               <p style={{color:'#fff',fontSize:13,fontWeight:900,margin:0}}>Notifications push</p>
               {pushEnabled && <span style={{marginLeft:'auto',fontSize:10,fontWeight:900,color:'#4ADE80',background:'rgba(74,222,128,0.15)',padding:'3px 8px',borderRadius:8}}>ACTIF</span>}
             </div>
             <p style={{color:'rgba(255,255,255,0.35)',fontSize:11,fontWeight:600,margin:'0 0 14px'}}>
-              Recevez une alerte instantanÃ©e sur cet appareil dÃ¨s qu'une nouvelle commande arrive â avant mÃªme le livreur.
+              Recevez une alerte instantanée sur cet appareil dès qu'une nouvelle commande arrive — avant même le livreur.
             </p>
             <button onClick={togglePushNotifications} disabled={pushLoading}
               style={{width:'100%',padding:'13px 0',borderRadius:14,cursor:pushLoading?'not-allowed':'pointer',
                 background: pushEnabled ? 'rgba(239,68,68,0.15)' : pushLoading ? 'rgba(255,255,255,0.08)' : 'linear-gradient(135deg,#065F46,#059669)',
                 border: pushEnabled ? '1px solid rgba(239,68,68,0.4)' : 'none',
                 color: pushEnabled?'#F87171':'#fff',fontSize:13,fontWeight:900,transition:'all 0.3s'}}>
-              {pushLoading ? 'â³ En coursâ¦' : pushEnabled ? 'ð DÃ©sactiver les notifications' : 'ð Activer les notifications sur cet appareil'}
+              {pushLoading ? '⏳ En cours…' : pushEnabled ? '🔕 Désactiver les notifications' : '🔔 Activer les notifications sur cet appareil'}
             </button>
           </div>
 
@@ -2910,7 +2910,7 @@ function RestaurantOwnerPage() {
             style={{width:'100%',padding:'15px 0',borderRadius:16,border:'none',cursor:profileLoading?'not-allowed':'pointer',
               background: profileSaved?'linear-gradient(135deg,#059669,#4ADE80)':profileLoading?'rgba(255,255,255,0.1)':'linear-gradient(135deg,#065F46,#059669)',
               color:'#fff',fontSize:15,fontWeight:900,letterSpacing:'0.05em',transition:'all 0.3s'}}>
-            {profileSaved?'â EnregistrÃ© !':profileLoading?'Enregistrement...':'ð¾ Enregistrer le profil'}
+            {profileSaved?'✅ Enregistré !':profileLoading?'Enregistrement...':'💾 Enregistrer le profil'}
           </button>
         </div>
       )}
@@ -2919,9 +2919,9 @@ function RestaurantOwnerPage() {
   );
 }
 
-// âââ END RESTAURANT OWNER PAGE ââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── END RESTAURANT OWNER PAGE ────────────────────────────────────────────────
 
-const ASSIST_LANG_LABELS: Record<AssistLang,string> = {fr:'FR',en:'EN',ar:'AR',amz:'â´°âµâµ£'};
+const ASSIST_LANG_LABELS: Record<AssistLang,string> = {fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
 
 function BridgeAssistantPage() {
   const [, navigate] = useLocation();
@@ -2992,7 +2992,7 @@ function BridgeAssistantPage() {
       setMessages(prev => [...prev, { role:'assistant', content: data.reply }]);
       if (data.isEscalation) setEscalated(true);
     } catch {
-      setMessages(prev => [...prev, { role:'assistant', content: 'â ï¸ Service temporairement indisponible. RÃ©essayez dans quelques instants.' }]);
+      setMessages(prev => [...prev, { role:'assistant', content: '⚠️ Service temporairement indisponible. Réessayez dans quelques instants.' }]);
     } finally {
       setLoading(false);
     }
@@ -3024,7 +3024,7 @@ function BridgeAssistantPage() {
               <button onClick={clearConversation}
                 title="Effacer la conversation"
                 style={{background:'rgba(239,68,68,0.1)',border:'1px solid rgba(239,68,68,0.3)',color:'#f87171',borderRadius:12,padding:'8px 10px',fontSize:14,cursor:'pointer',lineHeight:1}}>
-                ðï¸
+                🗑️
               </button>
             )}
             <button onClick={()=>setLang(l=>{const i=ASSIST_LANGS.indexOf(l);return ASSIST_LANGS[(i+1)%ASSIST_LANGS.length];})}
@@ -3125,7 +3125,7 @@ function BridgeAssistantPage() {
             onClick={()=>sendMessage(input)}
             disabled={loading||!input.trim()}
             style={{width:46,height:46,borderRadius:14,background:loading||!input.trim()?'rgba(79,70,229,0.3)':'linear-gradient(135deg,#4f46e5,#7c3aed)',border:'none',color:'#fff',fontSize:20,cursor:loading||!input.trim()?'default':'pointer',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',transition:'all 0.2s',boxShadow:loading||!input.trim()?'none':'0 4px 14px rgba(79,70,229,0.4)'}}>
-            {loading ? 'â³' : 'â'}
+            {loading ? '⏳' : '↑'}
           </button>
         </div>
       </div>
@@ -3140,9 +3140,9 @@ function BridgeAssistantPage() {
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
-// âââ Error Boundary â attrape les crashes React silencieux ââââââââââââââââââ
+// ─── Error Boundary — attrape les crashes React silencieux ──────────────────
 interface EBState { hasError: boolean; error: string }
 class ErrorBoundary extends Component<{ children: React.ReactNode }, EBState> {
   constructor(props: { children: React.ReactNode }) {
@@ -3164,7 +3164,7 @@ class ErrorBoundary extends Component<{ children: React.ReactNode }, EBState> {
         background: 'linear-gradient(160deg,#030712,#020c07)',
         fontFamily: 'system-ui, sans-serif',
       }}>
-        <div style={{ fontSize: 56, marginBottom: 16 }}>â ï¸</div>
+        <div style={{ fontSize: 56, marginBottom: 16 }}>⚠️</div>
         <p style={{ color: '#F87171', fontSize: 13, fontWeight: 900, letterSpacing: '0.12em', margin: '0 0 8px', textTransform: 'uppercase' }}>
           Erreur de l'application
         </p>
@@ -3178,7 +3178,7 @@ class ErrorBoundary extends Component<{ children: React.ReactNode }, EBState> {
             background: 'linear-gradient(135deg,#065F46,#4ADE80)', color: '#fff',
             fontSize: 14, fontWeight: 900, letterSpacing: '0.06em',
           }}>
-          ð Recharger l'application
+          🔄 Recharger l'application
         </button>
       </div>
     );
@@ -3196,9 +3196,9 @@ function AdminStatsPanel({ adminKey }: { adminKey: string }) {
     if (!adminKey.trim()) { setStats(null); return; }
     try {
       const r = await fetch(`/api/admin/stats?adminKey=${encodeURIComponent(adminKey.trim())}`);
-      if (!r.ok) { setErr('ClÃ© admin invalide.'); setStats(null); return; }
+      if (!r.ok) { setErr('Clé admin invalide.'); setStats(null); return; }
       setStats(await r.json()); setErr('');
-    } catch { setErr('Erreur rÃ©seau.'); }
+    } catch { setErr('Erreur réseau.'); }
   };
   useEffect(() => { refresh(); /* eslint-disable-next-line */ }, [adminKey]);
 
@@ -3217,7 +3217,7 @@ function AdminStatsPanel({ adminKey }: { adminKey: string }) {
 
   return (
     <div style={{ marginTop: 24, padding: 16, background: '#ECFDF5', borderRadius: 14, border: '1px solid #A7F3D0' }}>
-      <h3 style={{ fontSize: 14, fontWeight: 900, color: '#065F46', marginBottom: 12 }}>ð Visiteurs Bridge</h3>
+      <h3 style={{ fontSize: 14, fontWeight: 900, color: '#065F46', marginBottom: 12 }}>📊 Visiteurs Bridge</h3>
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
         <Card label="AUJOURD'HUI" value={stats.today.uniques} sub={`${stats.today.views} vues`} />
@@ -3243,7 +3243,7 @@ function AdminStatsPanel({ adminKey }: { adminKey: string }) {
                 <div style={{ width: `${pct}%`, height: '100%', background: 'linear-gradient(90deg, #10B981, #4ADE80)' }} />
               </div>
               <div style={{ minWidth: 90, textAlign: 'right', fontSize: 10, color: '#065F46', fontWeight: 800 }}>
-                {d.uniques} pers Â· {d.views} vues
+                {d.uniques} pers · {d.views} vues
               </div>
             </div>
           );
@@ -3252,7 +3252,7 @@ function AdminStatsPanel({ adminKey }: { adminKey: string }) {
 
       <button onClick={refresh}
         style={{ marginTop: 12, width: '100%', padding: '8px 0', background: '#065F46', color: '#fff', border: 'none', borderRadius: 8, fontSize: 11, fontWeight: 800, cursor: 'pointer' }}>
-        ð RafraÃ®chir
+        🔄 Rafraîchir
       </button>
     </div>
   );
@@ -3274,10 +3274,10 @@ function AdminCouponsPanel({ adminKey }: { adminKey: string }) {
     if (!adminKey.trim()) return;
     try {
       const r = await fetch(`/api/admin/coupons?adminKey=${encodeURIComponent(adminKey.trim())}`);
-      if (!r.ok) { setErr('ClÃ© admin invalide pour les coupons.'); setCoupons([]); return; }
+      if (!r.ok) { setErr('Clé admin invalide pour les coupons.'); setCoupons([]); return; }
       const d = await r.json();
       setCoupons(d.coupons || []); setErr('');
-    } catch { setErr('Erreur rÃ©seau.'); }
+    } catch { setErr('Erreur réseau.'); }
   };
 
   useEffect(() => { refresh(); /* eslint-disable-next-line */ }, [adminKey]);
@@ -3299,10 +3299,10 @@ function AdminCouponsPanel({ adminKey }: { adminKey: string }) {
       });
       const d = await r.json();
       if (!r.ok) { setErr(d.error || 'Erreur.'); return; }
-      setMsg(d.message || 'Code crÃ©Ã©.');
+      setMsg(d.message || 'Code créé.');
       setCode(''); setDiscountValue(''); setMaxUses(''); setExpiresAt(''); setNote('');
       await refresh();
-    } catch { setErr('Erreur rÃ©seau.'); }
+    } catch { setErr('Erreur réseau.'); }
     finally { setBusy(false); }
   };
 
@@ -3328,9 +3328,9 @@ function AdminCouponsPanel({ adminKey }: { adminKey: string }) {
 
   return (
     <div style={{ marginTop: 24, padding: 16, background: '#FFFBEB', borderRadius: 14, border: '1px solid #FDE68A' }}>
-      <h3 style={{ fontSize: 14, fontWeight: 900, color: '#92400E', marginBottom: 4 }}>ðï¸ Codes promo</h3>
+      <h3 style={{ fontSize: 14, fontWeight: 900, color: '#92400E', marginBottom: 4 }}>🎟️ Codes promo</h3>
       <p style={{ fontSize: 11, color: '#A16207', marginBottom: 14 }}>
-        CrÃ©ez vos codes â vous dÃ©cidez Ã  qui les envoyer.
+        Créez vos codes — vous décidez à qui les envoyer.
       </p>
 
       <div style={{ display: 'grid', gap: 8, marginBottom: 12 }}>
@@ -3353,7 +3353,7 @@ function AdminCouponsPanel({ adminKey }: { adminKey: string }) {
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <div style={{ flex: 1 }}>
-            <label style={labelStyle}>Max utilisations (vide = illimitÃ©)</label>
+            <label style={labelStyle}>Max utilisations (vide = illimité)</label>
             <input style={inputStyle} type="number" value={maxUses} onChange={e => setMaxUses(e.target.value)} placeholder="ex: 50" />
           </div>
           <div style={{ flex: 1 }}>
@@ -3362,14 +3362,14 @@ function AdminCouponsPanel({ adminKey }: { adminKey: string }) {
           </div>
         </div>
         <div>
-          <label style={labelStyle}>Note (privÃ©e)</label>
+          <label style={labelStyle}>Note (privée)</label>
           <input style={inputStyle} value={note} onChange={e => setNote(e.target.value)} placeholder="ex: Pour Khalid - lancement" />
         </div>
         {err && <div style={errStyle}>{err}</div>}
-        {msg && <div style={{ padding: '8px 12px', borderRadius: 10, background: '#F0FDF4', border: '1px solid #BBF7D0', color: '#065F46', fontSize: 12, fontWeight: 700 }}>â {msg}</div>}
+        {msg && <div style={{ padding: '8px 12px', borderRadius: 10, background: '#F0FDF4', border: '1px solid #BBF7D0', color: '#065F46', fontSize: 12, fontWeight: 700 }}>✅ {msg}</div>}
         <button onClick={handleCreate} disabled={busy}
           style={{ ...btn, background: '#92400E', opacity: busy ? 0.7 : 1, marginTop: 4 }}>
-          {busy ? 'CrÃ©ation...' : 'â CrÃ©er le code'}
+          {busy ? 'Création...' : '➕ Créer le code'}
         </button>
       </div>
 
@@ -3389,26 +3389,26 @@ function AdminCouponsPanel({ adminKey }: { adminKey: string }) {
                     <span style={{ fontSize: 11, fontWeight: 800, color: '#92400E', background: '#FEF3C7', padding: '2px 6px', borderRadius: 6 }}>
                       {c.discountType === 'percent' ? `-${c.discountValue}%` : `-${c.discountValue} DH`}
                     </span>
-                    {!c.active && <span style={{ fontSize: 10, color: '#DC2626', fontWeight: 700 }}>DÃSACTIVÃ</span>}
+                    {!c.active && <span style={{ fontSize: 10, color: '#DC2626', fontWeight: 700 }}>DÉSACTIVÉ</span>}
                   </div>
                   <div style={{ fontSize: 10, color: '#6B7280', marginTop: 4 }}>
-                    UtilisÃ© {c.usedCount}{c.maxUses ? `/${c.maxUses}` : ''} fois
-                    {c.expiresAt ? ` Â· expire ${new Date(c.expiresAt).toLocaleDateString('fr-FR')}` : ''}
+                    Utilisé {c.usedCount}{c.maxUses ? `/${c.maxUses}` : ''} fois
+                    {c.expiresAt ? ` · expire ${new Date(c.expiresAt).toLocaleDateString('fr-FR')}` : ''}
                   </div>
                   {c.note && <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2, fontStyle: 'italic' }}>{c.note}</div>}
                 </div>
                 <div style={{ display: 'flex', gap: 4 }}>
-                  <button onClick={() => { navigator.clipboard.writeText(c.code); setMsg(`${c.code} copiÃ© !`); setTimeout(()=>setMsg(''), 2000); }}
+                  <button onClick={() => { navigator.clipboard.writeText(c.code); setMsg(`${c.code} copié !`); setTimeout(()=>setMsg(''), 2000); }}
                     style={{ padding: '6px 8px', background: '#1F2937', color: '#fff', border: 'none', borderRadius: 8, fontSize: 11, cursor: 'pointer' }}>
-                    ð
+                    📋
                   </button>
                   <button onClick={() => handleToggle(c.code)}
                     style={{ padding: '6px 8px', background: c.active ? '#6B7280' : '#10B981', color: '#fff', border: 'none', borderRadius: 8, fontSize: 11, cursor: 'pointer' }}>
-                    {c.active ? 'â¸' : 'â¶'}
+                    {c.active ? '⏸' : '▶'}
                   </button>
                   <button onClick={() => handleDelete(c.code)}
                     style={{ padding: '6px 8px', background: '#DC2626', color: '#fff', border: 'none', borderRadius: 8, fontSize: 11, cursor: 'pointer' }}>
-                    ð
+                    🗑
                   </button>
                 </div>
               </div>
@@ -3420,7 +3420,7 @@ function AdminCouponsPanel({ adminKey }: { adminKey: string }) {
   );
 }
 
-// âââ Missions / Pub page âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Missions / Pub page ─────────────────────────────────────────────────────
 // Pour brancher AdGate : remplace '' par l'URL offerwall de ton compte AdGate
 const ADGATE_OFFERWALL_URL = '';
 
@@ -3435,76 +3435,76 @@ interface MissionCompl { id: number; missionId: number; diamondsAwarded: number;
 type MLang = 'fr'|'en'|'ar'|'amz';
 const MISSION_T = {
   fr: {
-    title:'ð Gagner des diamants', sub:'Regarde des pubs, fais des missions',
+    title:'💎 Gagner des diamants', sub:'Regarde des pubs, fais des missions',
     today:"AUJOURD'HUI", dailyCap:'Plafond journalier', of:'sur',
-    capReached:'ð Plafond atteint ! Revenez demain.',
-    authNudge:'ð Connecte-toi pour encaisser tes rÃ©compenses â',
-    cats:{ video:'ð¬ PublicitÃ©s vidÃ©o', offerwall:'ð± Jeux & Offres', social:'ð£ RÃ©seaux sociaux', survey:'ð Sondages', fortune:'ð¡ Roue de la fortune' },
-    topBadge:'â­ TOP', timesToday:(c:number,m:number)=>`${c}/${m} fois aujourd'hui`,
-    adTitle:'PUBLICITÃ SPONSORISÃE', adWatching:'Visionnage de la publicitÃ© en coursâ¦',
-    fortuneRunning:'Roue de la fortune en coursâ¦', waitSec:(s:number)=>`Patiente encore ${s}sâ¦`,
-    claim:(d:number)=>`ð RÃ©clamer ${d.toLocaleString()} ð`, cancel:'Annuler',
+    capReached:'🎉 Plafond atteint ! Revenez demain.',
+    authNudge:'🔒 Connecte-toi pour encaisser tes récompenses →',
+    cats:{ video:'🎬 Publicités vidéo', offerwall:'📱 Jeux & Offres', social:'📣 Réseaux sociaux', survey:'📊 Sondages', fortune:'🎡 Roue de la fortune' },
+    topBadge:'⭐ TOP', timesToday:(c:number,m:number)=>`${c}/${m} fois aujourd'hui`,
+    adTitle:'PUBLICITÉ SPONSORISÉE', adWatching:'Visionnage de la publicité en cours…',
+    fortuneRunning:'Roue de la fortune en cours…', waitSec:(s:number)=>`Patiente encore ${s}s…`,
+    claim:(d:number)=>`🎁 Réclamer ${d.toLocaleString()} 💎`, cancel:'Annuler',
     socialOpened:"La page s'est ouverte dans un nouvel onglet. Effectue l'action puis confirme.",
-    socialWait:'â³ Attends quelques secondesâ¦',
-    socialClaim:(d:number)=>`â C'est fait â RÃ©clamer ${d.toLocaleString()} ð`,
-    done:'â Fait', offerwallTip:'ð¡ IntÃ©gration Lootably / Offertoro : renseigne',
+    socialWait:'⏳ Attends quelques secondes…',
+    socialClaim:(d:number)=>`✅ C'est fait — Réclamer ${d.toLocaleString()} 💎`,
+    done:'✓ Fait', offerwallTip:'💡 Intégration Lootably / Offertoro : renseigne',
     offerwallTip2:'dans main.tsx pour afficher l\'offerwall ici.',
-    errLogin:'Connecte-toi pour gagner des ð !', errLimit:'Limite journaliÃ¨re atteinte',
-    errDone:'DÃ©jÃ  effectuÃ© !', errNet:'Erreur rÃ©seau', credited:(d:number,h:string)=>`+${d.toLocaleString()} ð crÃ©ditÃ©s ! (${h})`,
+    errLogin:'Connecte-toi pour gagner des 💎 !', errLimit:'Limite journalière atteinte',
+    errDone:'Déjà effectué !', errNet:'Erreur réseau', credited:(d:number,h:string)=>`+${d.toLocaleString()} 💎 crédités ! (${h})`,
   },
   en: {
-    title:'ð Earn Diamonds', sub:'Watch ads, complete missions',
+    title:'💎 Earn Diamonds', sub:'Watch ads, complete missions',
     today:'TODAY', dailyCap:'Daily cap', of:'/',
-    capReached:'ð Daily cap reached! Come back tomorrow.',
-    authNudge:'ð Sign in to claim your rewards â',
-    cats:{ video:'ð¬ Video Ads', offerwall:'ð± Games & Offers', social:'ð£ Social Media', survey:'ð Surveys', fortune:'ð¡ Wheel of Fortune' },
-    topBadge:'â­ TOP', timesToday:(c:number,m:number)=>`${c}/${m} today`,
-    adTitle:'SPONSORED AD', adWatching:'Watching the adâ¦',
-    fortuneRunning:'Spinning the wheelâ¦', waitSec:(s:number)=>`Wait ${s}s moreâ¦`,
-    claim:(d:number)=>`ð Claim ${d.toLocaleString()} ð`, cancel:'Cancel',
+    capReached:'🎉 Daily cap reached! Come back tomorrow.',
+    authNudge:'🔒 Sign in to claim your rewards →',
+    cats:{ video:'🎬 Video Ads', offerwall:'📱 Games & Offers', social:'📣 Social Media', survey:'📊 Surveys', fortune:'🎡 Wheel of Fortune' },
+    topBadge:'⭐ TOP', timesToday:(c:number,m:number)=>`${c}/${m} today`,
+    adTitle:'SPONSORED AD', adWatching:'Watching the ad…',
+    fortuneRunning:'Spinning the wheel…', waitSec:(s:number)=>`Wait ${s}s more…`,
+    claim:(d:number)=>`🎁 Claim ${d.toLocaleString()} 💎`, cancel:'Cancel',
     socialOpened:'The page opened in a new tab. Complete the action then confirm.',
-    socialWait:'â³ Wait a few secondsâ¦',
-    socialClaim:(d:number)=>`â Done â Claim ${d.toLocaleString()} ð`,
-    done:'â Done', offerwallTip:'ð¡ Lootably / Offertoro integration: set',
+    socialWait:'⏳ Wait a few seconds…',
+    socialClaim:(d:number)=>`✅ Done — Claim ${d.toLocaleString()} 💎`,
+    done:'✓ Done', offerwallTip:'💡 Lootably / Offertoro integration: set',
     offerwallTip2:'in main.tsx to show the offerwall here.',
-    errLogin:'Sign in to earn ð!', errLimit:'Daily limit reached',
-    errDone:'Already done!', errNet:'Network error', credited:(d:number,h:string)=>`+${d.toLocaleString()} ð credited! (${h})`,
+    errLogin:'Sign in to earn 💎!', errLimit:'Daily limit reached',
+    errDone:'Already done!', errNet:'Network error', credited:(d:number,h:string)=>`+${d.toLocaleString()} 💎 credited! (${h})`,
   },
   ar: {
-    title:'ð Ø§ÙØ³Ø¨ Ø§ÙÙØ§Ø³Ø§Øª', sub:'Ø´Ø§ÙØ¯ Ø§ÙØ¥Ø¹ÙØ§ÙØ§ØªØ Ø£ÙØ¬Ø² Ø§ÙÙÙØ§Ù',
-    today:'Ø§ÙÙÙÙ', dailyCap:'Ø§ÙØ­Ø¯ Ø§ÙÙÙÙÙ', of:'ÙÙ',
-    capReached:'ð ÙØµÙØª ÙÙØ­Ø¯ Ø§ÙÙÙÙÙ! Ø¹Ø¯ ØºØ¯Ø§Ù.',
-    authNudge:'ð Ø³Ø¬ÙÙ Ø§ÙØ¯Ø®ÙÙ ÙÙØ­ØµÙÙ Ø¹ÙÙ ÙÙØ§ÙØ¢ØªÙ â',
-    cats:{ video:'ð¬ Ø¥Ø¹ÙØ§ÙØ§Øª ÙÙØ¯ÙÙ', offerwall:'ð± Ø£ÙØ¹Ø§Ø¨ ÙØ¹Ø±ÙØ¶', social:'ð£ Ø´Ø¨ÙØ§Øª Ø§ÙØªÙØ§ØµÙ', survey:'ð Ø§Ø³ØªØ·ÙØ§Ø¹Ø§Øª', fortune:'ð¡ Ø¹Ø¬ÙØ© Ø§ÙØ­Ø¸' },
-    topBadge:'â­ Ø§ÙØ£ÙØ¶Ù', timesToday:(c:number,m:number)=>`${c}/${m} ÙØ±Ø© Ø§ÙÙÙÙ`,
-    adTitle:'Ø¥Ø¹ÙØ§Ù ÙÙÙÙÙ', adWatching:'Ø¬Ø§Ø±Ù ÙØ´Ø§ÙØ¯Ø© Ø§ÙØ¥Ø¹ÙØ§Ùâ¦',
-    fortuneRunning:'Ø¬Ø§Ø±Ù Ø§ÙØ¯ÙØ±Ø§Ùâ¦', waitSec:(s:number)=>`Ø§ÙØªØ¸Ø± ${s}Ø«â¦`,
-    claim:(d:number)=>`ð Ø§Ø­ØµÙ Ø¹ÙÙ ${d.toLocaleString()} ð`, cancel:'Ø¥ÙØºØ§Ø¡',
-    socialOpened:'ÙÙØªØ­Øª Ø§ÙØµÙØ­Ø© ÙÙ ØªØ¨ÙÙØ¨ Ø¬Ø¯ÙØ¯. Ø£ÙØ¬Ø² Ø§ÙØ¥Ø¬Ø±Ø§Ø¡ Ø«Ù Ø£ÙÙØ¯.',
-    socialWait:'â³ Ø§ÙØªØ¸Ø± Ø«ÙØ§ÙÙâ¦',
-    socialClaim:(d:number)=>`â ØªÙ â Ø§Ø­ØµÙ Ø¹ÙÙ ${d.toLocaleString()} ð`,
-    done:'â ØªÙ', offerwallTip:'ð¡ ØªÙØ§ÙÙ Lootably: Ø§Ø¶Ø¨Ø·',
-    offerwallTip2:'ÙÙ main.tsx ÙØ¹Ø±Ø¶ Ø§ÙØ¹Ø±ÙØ¶ ÙÙØ§.',
-    errLogin:'Ø³Ø¬ÙÙ Ø§ÙØ¯Ø®ÙÙ ÙÙØ³Ø¨ ð!', errLimit:'ÙØµÙØª ÙÙØ­Ø¯ Ø§ÙÙÙÙÙ',
-    errDone:'ØªÙ Ø¥ÙØ¬Ø§Ø²Ù Ø¨Ø§ÙÙØ¹Ù!', errNet:'Ø®Ø·Ø£ ÙÙ Ø§ÙØ´Ø¨ÙØ©', credited:(d:number,h:string)=>`+${d.toLocaleString()} ð ÙÙØ¶Ø§ÙØ©! (${h})`,
+    title:'💎 اكسب الماسات', sub:'شاهد الإعلانات، أنجز المهام',
+    today:'اليوم', dailyCap:'الحد اليومي', of:'من',
+    capReached:'🎉 وصلت للحد اليومي! عد غداً.',
+    authNudge:'🔒 سجّل الدخول للحصول على مكافآتك ←',
+    cats:{ video:'🎬 إعلانات فيديو', offerwall:'📱 ألعاب وعروض', social:'📣 شبكات التواصل', survey:'📊 استطلاعات', fortune:'🎡 عجلة الحظ' },
+    topBadge:'⭐ الأفضل', timesToday:(c:number,m:number)=>`${c}/${m} مرة اليوم`,
+    adTitle:'إعلان مموّل', adWatching:'جاري مشاهدة الإعلان…',
+    fortuneRunning:'جاري الدوران…', waitSec:(s:number)=>`انتظر ${s}ث…`,
+    claim:(d:number)=>`🎁 احصل على ${d.toLocaleString()} 💎`, cancel:'إلغاء',
+    socialOpened:'فُتحت الصفحة في تبويب جديد. أنجز الإجراء ثم أكّد.',
+    socialWait:'⏳ انتظر ثواني…',
+    socialClaim:(d:number)=>`✅ تم — احصل على ${d.toLocaleString()} 💎`,
+    done:'✓ تم', offerwallTip:'💡 تكامل Lootably: اضبط',
+    offerwallTip2:'في main.tsx لعرض العروض هنا.',
+    errLogin:'سجّل الدخول لكسب 💎!', errLimit:'وصلت للحد اليومي',
+    errDone:'تم إنجازه بالفعل!', errNet:'خطأ في الشبكة', credited:(d:number,h:string)=>`+${d.toLocaleString()} 💎 مُضافة! (${h})`,
   },
   amz: {
-    title:'ð â´°â´½âµâµâ´· âµâµâ´°âµâµâµ', sub:'âµ¥âµ âµâµâ´°â´³âµâ´°âµ¡âµ Â· âµâµâµâ´¼âµ âµâµâµâµâµâµâµâµ¡âµâµ',
-    today:'â´°âµâµ â´°', dailyCap:'â´°âµâµâµâµâµ âµ âµ¡â´°âµâµ', of:'/',
-    capReached:'ð âµ¡â´°âµâµâ´° â´°âµâµâµâµâµ! â´°âµâµ âµâ´¹âµâµâµ.',
-    authNudge:'ð â´½âµâµ âµâµâ´°â´· âµâ´°â´½â´½â´° âµâµâµâµâ´°âµâµâµâµ â',
-    cats:{ video:'ð¬ âµâµâ´°â´³âµâ´°âµ¡âµ âµ âµâµ¡âµâ´·âµ¢âµ', offerwall:'ð± âµâµâ´°âµ¡âµâµâµ¡âµ', social:'ð£ âµâµâµâµâµâµ âµâµâµâµâ´°âµ¡âµ', survey:'ð âµâµâµâµâµâµâµ', fortune:'ð¡ âµâ´°âµâµâ´¼â´¼â´°' },
-    topBadge:'â­ â´°âµâµâµâ´°âµ', timesToday:(c:number,m:number)=>`${c}/${m} â´°âµâµ â´°`,
-    adTitle:'â´°âµâµâµâµâµâµ', adWatching:'âµâµâµâµâµ¥âµ âµâµâµâµâµâµâµâ¦',
-    fortuneRunning:'âµâ´°âµâµâ´¼â´¼â´° â´³ âµâµâµâµâµ¡â´¹â¦', waitSec:(s:number)=>`âµâ´¹âµ ${s}âµâ¦`,
-    claim:(d:number)=>`ð â´°âµ¡âµ ${d.toLocaleString()} ð`, cancel:'â´½â´½âµ',
-    socialOpened:'âµâµâµâµâµ âµâµâµâ´·â´° â´³ âµâ´±âµâµâ´·âµ âµ¢â´°â´¹âµâµâµ. â´½âµâµâµ âµâµâµâµâµ âµâµâµ âµâµâµâµâµ.',
-    socialWait:'â³ âµâ´¹âµ âµâµâµâ´½â´½â¦',
-    socialClaim:(d:number)=>`â âµâµâµâµ â â´°âµ¡âµ ${d.toLocaleString()} ð`,
-    done:'â âµâµâµâµ', offerwallTip:'ð¡ Lootably: âµâµâ´¼âµ',
-    offerwallTip2:'â´³ main.tsx âµâµâ´°â´· âµâµâµâ´°âµâµ£ âµâµâµâ´½âµâµâµâµ¡âµâµ â´·âµâµ.',
-    errLogin:'â´½âµâµ âµâµâ´°â´· âµâ´°â´½â´½â´° ð!', errLimit:'âµ¡â´°âµâµâ´° â´°âµâµâµâµâµ âµ âµ¡â´°âµâµ',
-    errDone:'âµâµâµâµ â´·â´°âµ!', errNet:'âµâ´°âµâµâµâµ âµ âµâµâ´½âµâµ¢âµ', credited:(d:number,h:string)=>`+${d.toLocaleString()} ð â´·â´·â´°âµâµ! (${h})`,
+    title:'💎 ⴰⴽⵙⵓⴷ ⵉⵎⴰⵙⵙⵏ', sub:'ⵥⵔ ⵉⵏⴰⴳⵔⴰⵡⵏ · ⵙⵙⵓⴼⵖ ⵜⵉⵎⵉⵙⵙⵉⵡⵉⵏ',
+    today:'ⴰⵙⵙ ⴰ', dailyCap:'ⴰⵎⵓⵟⵟⵓ ⵏ ⵡⴰⵙⵙ', of:'/',
+    capReached:'🎉 ⵡⴰⵅⵅⴰ ⴰⵎⵓⵟⵟⵓ! ⴰⵙⵙ ⵉⴹⵍⵍⵉ.',
+    authNudge:'🔒 ⴽⵛⵎ ⵓⵍⴰⴷ ⵜⴰⴽⴽⴰ ⵜⵉⵙⵙⴰⵍⵜⵉⵏ →',
+    cats:{ video:'🎬 ⵉⵏⴰⴳⵔⴰⵡⵏ ⵏ ⵓⵡⵉⴷⵢⵓ', offerwall:'📱 ⵉⵖⴰⵡⵙⵉⵡⵏ', social:'📣 ⵉⵙⵓⵙⵙⵏ ⵉⵏⵎⵔⴰⵡⵏ', survey:'📊 ⵉⵙⵇⵙⵉⵜⵏ', fortune:'🎡 ⵜⴰⵔⵓⴼⴼⴰ' },
+    topBadge:'⭐ ⴰⵎⵇⵔⴰⵏ', timesToday:(c:number,m:number)=>`${c}/${m} ⴰⵙⵙ ⴰ`,
+    adTitle:'ⴰⵙⵎⵓⵙⵙⵓ', adWatching:'ⵉⵜⵜⵓⵥⵔ ⵓⵙⵎⵓⵙⵙⵓ…',
+    fortuneRunning:'ⵜⴰⵔⵓⴼⴼⴰ ⴳ ⵓⵙⵙⵉⵡⴹ…', waitSec:(s:number)=>`ⵃⴹⵓ ${s}ⵙ…`,
+    claim:(d:number)=>`🎁 ⴰⵡⵉ ${d.toLocaleString()} 💎`, cancel:'ⴽⴽⵙ',
+    socialOpened:'ⵜⵙⵔⵉⵔ ⵜⵙⵓⴷⴰ ⴳ ⵜⴱⵔⵉⴷⵜ ⵢⴰⴹⵏⵉⵏ. ⴽⵎⵎⵍ ⵜⵉⵔⵎⵜ ⵔⵏⵓ ⵙⵙⵉⵜⵎ.',
+    socialWait:'⏳ ⵃⴹⵓ ⵉⵎⵉⴽⴽ…',
+    socialClaim:(d:number)=>`✅ ⵉⵍⵓⵍ — ⴰⵡⵉ ${d.toLocaleString()} 💎`,
+    done:'✓ ⵉⵍⵓⵍ', offerwallTip:'💡 Lootably: ⵙⵏⴼⵍ',
+    offerwallTip2:'ⴳ main.tsx ⵓⵍⴰⴷ ⵜⵏⵏⴰⵔⵣ ⵜⵉⵙⴽⵓⵜⵉⵡⵉⵏ ⴷⵉⵔ.',
+    errLogin:'ⴽⵛⵎ ⵓⵍⴰⴷ ⵜⴰⴽⴽⴰ 💎!', errLimit:'ⵡⴰⵅⵅⴰ ⴰⵎⵓⵟⵟⵓ ⵏ ⵡⴰⵙⵙ',
+    errDone:'ⵉⵍⵓⵍ ⴷⴰⵜ!', errNet:'ⵜⴰⵖⵓⵍⵜ ⵏ ⵓⵙⴽⵏⵢⵓ', credited:(d:number,h:string)=>`+${d.toLocaleString()} 💎 ⴷⴷⴰⵏⵜ! (${h})`,
   },
 };
 
@@ -3579,7 +3579,7 @@ function MissionsPage() {
     } catch { showToast(t.errNet, false); }
   };
 
-  // ââ Video / Fortune mission flow ââ
+  // ── Video / Fortune mission flow ──
   const startAd = (mission: MissionData) => {
     if (!isSignedIn) { showToast(t.errLogin, false); return; }
     const cnt = todayCount(mission.id);
@@ -3601,7 +3601,7 @@ function MissionsPage() {
     await complete(m);
   };
 
-  // ââ Social mission flow ââ
+  // ── Social mission flow ──
   const startSocial = (mission: MissionData) => {
     if (!isSignedIn) { showToast(t.errLogin, false); return; }
     const cnt = todayCount(mission.id);
@@ -3639,13 +3639,13 @@ function MissionsPage() {
     <div style={S.page}>
       {/* Header */}
       <div style={S.header}>
-        <button style={S.back} onClick={() => navigate('/')}>{isAR ? 'â' : 'â'}</button>
+        <button style={S.back} onClick={() => navigate('/')}>{isAR ? '→' : '←'}</button>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 17, fontWeight: 900, letterSpacing: '0.02em' }}>{t.title}</div>
           <div style={{ fontSize: 11, color: '#64748b', marginTop: 1 }}>{t.sub}</div>
         </div>
         <div style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 12, padding: '6px 12px', textAlign: 'center' }}>
-          <div style={{ fontSize: 13, fontWeight: 900, color: '#10b981' }}>{todayDiamonds.toLocaleString()} ð</div>
+          <div style={{ fontSize: 13, fontWeight: 900, color: '#10b981' }}>{todayDiamonds.toLocaleString()} 💎</div>
           <div style={{ fontSize: 9, color: '#64748b', letterSpacing: '0.06em' }}>{t.today}</div>
         </div>
       </div>
@@ -3655,7 +3655,7 @@ function MissionsPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 11, color: '#94a3b8' }}>
           <span>{t.dailyCap}</span>
           <span style={{ fontWeight: 800, color: pct >= 100 ? '#10b981' : '#f59e0b' }}>
-            {todayDiamonds.toLocaleString()} {t.of} {DAILY_CAP.toLocaleString()} ð
+            {todayDiamonds.toLocaleString()} {t.of} {DAILY_CAP.toLocaleString()} 💎
           </span>
         </div>
         <div style={{ height: 8, background: 'rgba(255,255,255,0.08)', borderRadius: 99 }}>
@@ -3709,7 +3709,7 @@ function MissionsPage() {
                     </div>
                     <div style={{ textAlign: isAR ? 'left' : 'right', flexShrink: 0 }}>
                       <div style={S.pill(maxed)}>
-                        {maxed ? t.done : `+${mission.rewardDiamonds >= 1000 ? (mission.rewardDiamonds/1000).toFixed(0)+'K' : mission.rewardDiamonds} ð`}
+                        {maxed ? t.done : `+${mission.rewardDiamonds >= 1000 ? (mission.rewardDiamonds/1000).toFixed(0)+'K' : mission.rewardDiamonds} 💎`}
                       </div>
                       {!maxed && <div style={{ fontSize: 10, color: top ? '#f59e0b' : '#475569', marginTop: 3, fontWeight: top ? 800 : 400 }}>{dhLabel(mission.rewardDiamonds, mission.type)}</div>}
                     </div>
@@ -3730,7 +3730,7 @@ function MissionsPage() {
               {!adDone && <span style={{ color: '#f59e0b' }}>{adCountdown}s</span>}
             </div>
             <div style={{ height: 180, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: 20 }}>
-              <div style={{ fontSize: 48 }}>{adMission.type === 'fortune' ? 'ð¡' : 'ð¬'}</div>
+              <div style={{ fontSize: 48 }}>{adMission.type === 'fortune' ? '🎡' : '🎬'}</div>
               <div style={{ fontSize: 13, color: '#94a3b8', textAlign: 'center', lineHeight: 1.5 }}>
                 {adMission.type === 'fortune' ? t.fortuneRunning : t.adWatching}
               </div>
@@ -3808,7 +3808,7 @@ function AdminAuthPage() {
       const data = await r.json();
       if (!r.ok) { setError(data.error || 'Erreur.'); return null; }
       return data;
-    } catch { setError('Erreur rÃ©seau.'); return null; }
+    } catch { setError('Erreur réseau.'); return null; }
     finally { setLoading(false); }
   };
 
@@ -3819,69 +3819,69 @@ function AdminAuthPage() {
   };
 
   const handleBan = async () => {
-    if (!email.trim() || !adminKey.trim()) { setError('Email et clÃ© admin requis.'); return; }
-    if (!window.confirm(`Bannir dÃ©finitivement ${email} ? Il ne pourra plus se connecter ni se rÃ©inscrire.`)) return;
+    if (!email.trim() || !adminKey.trim()) { setError('Email et clé admin requis.'); return; }
+    if (!window.confirm(`Bannir définitivement ${email} ? Il ne pourra plus se connecter ni se réinscrire.`)) return;
     const data = await callApi('/api/admin/ban-user');
     if (data?.ok) setSuccess(data.message || 'Utilisateur banni.');
   };
 
   const handleUnban = async () => {
-    if (!email.trim() || !adminKey.trim()) { setError('Email et clÃ© admin requis.'); return; }
+    if (!email.trim() || !adminKey.trim()) { setError('Email et clé admin requis.'); return; }
     const data = await callApi('/api/admin/unban-user');
-    if (data?.ok) setSuccess(data.message || 'Utilisateur dÃ©banni.');
+    if (data?.ok) setSuccess(data.message || 'Utilisateur débanni.');
   };
 
   const handleDelete = async () => {
-    if (!email.trim() || !adminKey.trim()) { setError('Email et clÃ© admin requis.'); return; }
-    if (!window.confirm(`Supprimer le compte de ${email} ? Il pourra se rÃ©inscrire avec le mÃªme email.`)) return;
+    if (!email.trim() || !adminKey.trim()) { setError('Email et clé admin requis.'); return; }
+    if (!window.confirm(`Supprimer le compte de ${email} ? Il pourra se réinscrire avec le même email.`)) return;
     const data = await callApi('/api/admin/delete-user');
-    if (data?.ok) setSuccess(data.message || 'Compte supprimÃ©.');
+    if (data?.ok) setSuccess(data.message || 'Compte supprimé.');
   };
 
   return (
     <AuthPageWrapper>
       <AuthCardHeader
-        title="ð AccÃ¨s Admin"
-        sub="GÃ©nÃ©rez un lien de connexion direct pour un utilisateur"
+        title="🔑 Accès Admin"
+        sub="Générez un lien de connexion direct pour un utilisateur"
       />
       <form onSubmit={handleGenerate} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <FocusInput label="Email de l'utilisateur" value={email} onChange={setEmail}
           placeholder="user@exemple.com" type="email" autoComplete="off" />
-        <FocusInput label="ClÃ© admin (code chauffeur)" value={adminKey} onChange={setAdminKey}
+        <FocusInput label="Clé admin (code chauffeur)" value={adminKey} onChange={setAdminKey}
           placeholder="BRIDGE-DRIVER-2025" type="password" autoComplete="off" />
         {error && <div style={errStyle}>{error}</div>}
         {success && (
           <div style={{ padding: '10px 12px', borderRadius: 10, background: '#F0FDF4',
             border: '1px solid #BBF7D0', color: '#065F46', fontSize: 13, fontWeight: 700 }}>
-            â {success}
+            ✅ {success}
           </div>
         )}
         <button type="submit" style={{ ...btn, opacity: loading ? 0.7 : 1 }} disabled={loading}>
-          {loading ? 'Patientez...' : 'ð GÃ©nÃ©rer un lien de connexion'}
+          {loading ? 'Patientez...' : '🔗 Générer un lien de connexion'}
         </button>
         <div style={{ display: 'flex', gap: 8 }}>
           <button type="button" onClick={handleBan} disabled={loading}
             style={{ ...btn, flex: 1, background: '#DC2626', opacity: loading ? 0.7 : 1 }}>
-            ð« Bannir
+            🚫 Bannir
           </button>
           <button type="button" onClick={handleUnban} disabled={loading}
             style={{ ...btn, flex: 1, background: '#6B7280', opacity: loading ? 0.7 : 1 }}>
-            â©ï¸ DÃ©bannir
+            ↩️ Débannir
           </button>
         </div>
         <button type="button" onClick={handleDelete} disabled={loading}
           style={{ ...btn, background: '#7C2D12', opacity: loading ? 0.7 : 1 }}>
-          ðï¸ Supprimer le compte (peut se rÃ©inscrire)
+          🗑️ Supprimer le compte (peut se réinscrire)
         </button>
         <p style={{ fontSize: 11, color: '#9CA3AF', textAlign: 'center', marginTop: 4, lineHeight: 1.5 }}>
-          <b>Bannir</b> = bloquÃ© pour toujours.<br/>
-          <b>Supprimer</b> = effacÃ©, peut se rÃ©inscrire.
+          <b>Bannir</b> = bloqué pour toujours.<br/>
+          <b>Supprimer</b> = effacé, peut se réinscrire.
         </p>
       </form>
       {link && (
         <div style={{ marginTop: 20, padding: 16, background: '#F0FDF4', borderRadius: 12, border: '1px solid #BBF7D0' }}>
           <p style={{ fontSize: 11, fontWeight: 800, color: '#065F46', marginBottom: 8, letterSpacing: '0.08em' }}>
-            â LIEN VALABLE 1 HEURE
+            ✅ LIEN VALABLE 1 HEURE
           </p>
           <p style={{ fontSize: 11, color: '#374151', wordBreak: 'break-all', marginBottom: 12, lineHeight: 1.5 }}>
             {link}
@@ -3890,10 +3890,10 @@ function AdminAuthPage() {
             onClick={() => { navigator.clipboard.writeText(link); }}
             style={{ width: '100%', padding: '10px 0', borderRadius: 10, border: 'none', cursor: 'pointer',
               background: '#065F46', color: '#fff', fontSize: 13, fontWeight: 800 }}>
-            ð Copier le lien
+            📋 Copier le lien
           </button>
           <p style={{ fontSize: 10, color: '#9CA3AF', marginTop: 8, textAlign: 'center' }}>
-            Envoyez ce lien Ã  l'utilisateur via WhatsApp â il se connectera automatiquement
+            Envoyez ce lien à l'utilisateur via WhatsApp — il se connectera automatiquement
           </p>
         </div>
       )}
@@ -3904,12 +3904,12 @@ function AdminAuthPage() {
   );
 }
 
-// âââ FLOATING WHATSAPP BUTTON âââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── FLOATING WHATSAPP BUTTON ─────────────────────────────────────────────────
 
 function FloatingWAButton() {
   const [location] = useLocation();
   if (location === '/assistant') return null;
-  const msg = encodeURIComponent('Bonjour Bridge Safi, j\'ai besoin d\'aide ð');
+  const msg = encodeURIComponent('Bonjour Bridge Safi, j\'ai besoin d\'aide 🙏');
   return (
     <a
       href={`https://wa.me/212764794856?text=${msg}`}
@@ -3935,7 +3935,7 @@ function FloatingWAButton() {
   );
 }
 
-// âââ FLOATING AI ASSISTANT WIDGET âââââââââââââââââââââââââââââââââââââââââââââ
+// ─── FLOATING AI ASSISTANT WIDGET ─────────────────────────────────────────────
 
 function FloatingAssistantWidget() {
   const [location] = useLocation();
@@ -4001,7 +4001,7 @@ function FloatingAssistantWidget() {
       if (data.isEscalation) setEscalated(true);
       if (!open) setUnread(u => u + 1);
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'â ï¸ Service temporairement indisponible.' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: '⚠️ Service temporairement indisponible.' }]);
     } finally { setLoading(false); }
   };
 
@@ -4018,7 +4018,7 @@ function FloatingAssistantWidget() {
         .w-bubble:hover{transform:scale(1.1)!important}
       `}</style>
 
-      {/* Floating bubble â sits above WhatsApp button */}
+      {/* Floating bubble — sits above WhatsApp button */}
       <button className="w-bubble" onClick={() => setOpen(o => !o)}
         style={{position:'fixed',bottom:144,right:16,zIndex:61,width:46,height:46,borderRadius:'50%',
           background:'linear-gradient(135deg,#4f46e5,#7c3aed)',
@@ -4070,7 +4070,7 @@ function FloatingAssistantWidget() {
                 <button onClick={clearConversation}
                   style={{background:'rgba(239,68,68,0.1)',border:'1px solid rgba(239,68,68,0.3)',
                     color:'#f87171',borderRadius:10,padding:'5px 8px',fontSize:13,cursor:'pointer'}}>
-                  ðï¸
+                  🗑️
                 </button>
               )}
               <button onClick={()=>setLang(l=>{const i=ASSIST_LANGS.indexOf(l);return ASSIST_LANGS[(i+1)%ASSIST_LANGS.length];})}
@@ -4081,7 +4081,7 @@ function FloatingAssistantWidget() {
               <button onClick={()=>setOpen(false)}
                 style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',
                   color:'#94a3b8',borderRadius:10,padding:'5px 9px',fontSize:11,fontWeight:700,cursor:'pointer'}}>
-                â
+                ✕
               </button>
             </div>
           </div>
@@ -4111,7 +4111,7 @@ function FloatingAssistantWidget() {
                   <div style={{width:24,height:24,borderRadius:'50%',
                     background:'linear-gradient(135deg,#4f46e5,#7c3aed)',
                     display:'flex',alignItems:'center',justifyContent:'center',
-                    flexShrink:0,marginRight:7,marginTop:3,fontSize:11}}>â¦</div>
+                    flexShrink:0,marginRight:7,marginTop:3,fontSize:11}}>✦</div>
                 )}
                 <div style={{maxWidth:'78%',padding:'8px 12px',
                   borderRadius:msg.role==='user'?'16px 16px 3px 16px':'3px 16px 16px 16px',
@@ -4128,7 +4128,7 @@ function FloatingAssistantWidget() {
             {loading&&(
               <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:9}}>
                 <div style={{width:24,height:24,borderRadius:'50%',background:'linear-gradient(135deg,#4f46e5,#7c3aed)',
-                  display:'flex',alignItems:'center',justifyContent:'center',fontSize:11}}>â¦</div>
+                  display:'flex',alignItems:'center',justifyContent:'center',fontSize:11}}>✦</div>
                 <div style={{background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.08)',
                   borderRadius:'3px 16px 16px 16px',padding:'9px 14px',display:'flex',gap:4}}>
                   {[0,1,2].map(i=>(
@@ -4178,7 +4178,7 @@ function FloatingAssistantWidget() {
   );
 }
 
-// ââ Leaderboard Page â classement synchronisÃ© avec le Manager âââââââââââââââââ
+// ── Leaderboard Page — classement synchronisé avec le Manager ─────────────────
 interface ManagerPlayer { id:number; pseudo:string; phone:string; diamonds:number; score:number; gamesPlayed:number; menuCost:number; missing:number; amountMAD:number; }
 
 function LeaderboardPage() {
@@ -4211,17 +4211,17 @@ function LeaderboardPage() {
   const myPlayer = players.find(p => p.phone === userPhone);
   const myRank = myPlayer ? players.findIndex(p => p.phone === userPhone) + 1 : null;
 
-  const medalEmoji = (i: number) => i === 0 ? 'ð¥' : i === 1 ? 'ð¥' : i === 2 ? 'ð¥' : `${i + 1}.`;
+  const medalEmoji = (i: number) => i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`;
   const progressPct = (d: number) => Math.min(100, Math.round((d / GAME_TARGET) * 100));
 
   return (
     <div style={{minHeight:'100vh',background:'linear-gradient(180deg,#04110A 0%,#071C11 60%,#050F08 100%)',color:'white'}}>
       {/* Header */}
       <div style={{background:'rgba(0,0,0,0.4)',backdropFilter:'blur(12px)',padding:'14px 20px',display:'flex',alignItems:'center',gap:12,borderBottom:'1px solid rgba(74,222,128,0.15)',position:'sticky',top:0,zIndex:10}}>
-        <button onClick={()=>navigate('/game')} style={{background:'none',border:'none',color:'#4ADE80',fontSize:20,cursor:'pointer',padding:'4px',lineHeight:1}}>â</button>
+        <button onClick={()=>navigate('/game')} style={{background:'none',border:'none',color:'#4ADE80',fontSize:20,cursor:'pointer',padding:'4px',lineHeight:1}}>←</button>
         <div>
-          <div style={{fontSize:'17px',fontWeight:900,letterSpacing:'0.05em'}}>ð Classement Safi Runner</div>
-          <div style={{fontSize:'11px',color:'rgba(255,255,255,0.4)',marginTop:'1px'}}>SynchronisÃ© avec le Manager Â· Objectif : {GAME_TARGET.toLocaleString()} ð</div>
+          <div style={{fontSize:'17px',fontWeight:900,letterSpacing:'0.05em'}}>🏆 Classement Safi Runner</div>
+          <div style={{fontSize:'11px',color:'rgba(255,255,255,0.4)',marginTop:'1px'}}>Synchronisé avec le Manager · Objectif : {GAME_TARGET.toLocaleString()} 💎</div>
         </div>
       </div>
 
@@ -4234,7 +4234,7 @@ function LeaderboardPage() {
               <div style={{fontSize:24,fontWeight:900,marginTop:2}}>#{myRank} {(myPlayer.pseudo || myPlayer.name)}</div>
             </div>
             <div style={{textAlign:'right'}}>
-              <div style={{fontSize:22,fontWeight:900,color:'#4ADE80'}}>{(myPlayer.diamonds||0).toLocaleString()} ð</div>
+              <div style={{fontSize:22,fontWeight:900,color:'#4ADE80'}}>{(myPlayer.diamonds||0).toLocaleString()} 💎</div>
               <div style={{fontSize:11,color:'rgba(255,255,255,0.5)',marginTop:2}}>{progressPct(myPlayer.diamonds||0)}% de l'objectif</div>
             </div>
           </div>
@@ -4243,17 +4243,17 @@ function LeaderboardPage() {
             <div style={{height:'100%',borderRadius:'999px',background:'linear-gradient(90deg,#059669,#4ADE80)',width:`${progressPct(myPlayer.diamonds||0)}%`,transition:'width 0.5s ease'}}/>
           </div>
           <div style={{display:'flex',justifyContent:'space-between',marginTop:6,fontSize:11,color:'rgba(255,255,255,0.4)'}}>
-            <span>{(myPlayer.diamonds||0).toLocaleString()} ð gagnÃ©s</span>
-            <span>{((myPlayer.missing||0)).toLocaleString()} ð manquants</span>
+            <span>{(myPlayer.diamonds||0).toLocaleString()} 💎 gagnés</span>
+            <span>{((myPlayer.missing||0)).toLocaleString()} 💎 manquants</span>
           </div>
           {(myPlayer.missing||0) > 0 && (
             <div style={{marginTop:8,padding:'8px 10px',background:'rgba(239,68,68,0.12)',borderRadius:'8px',border:'1px solid rgba(239,68,68,0.2)',fontSize:12,color:'#FCA5A5'}}>
-              â ï¸ Il manque {(myPlayer.missing||0).toLocaleString()} ð â pÃ©nalitÃ© estimÃ©e : <strong>{myPlayer.amountMAD} DH</strong>
+              ⚠️ Il manque {(myPlayer.missing||0).toLocaleString()} 💎 → pénalité estimée : <strong>{myPlayer.amountMAD} DH</strong>
             </div>
           )}
           {(myPlayer.missing||0) <= 0 && (
             <div style={{marginTop:8,padding:'8px 10px',background:'rgba(74,222,128,0.1)',borderRadius:'8px',border:'1px solid rgba(74,222,128,0.2)',fontSize:12,color:'#4ADE80'}}>
-              ð Objectif atteint ! Prochaine livraison <strong>GRATUITE</strong> ð
+              🎉 Objectif atteint ! Prochaine livraison <strong>GRATUITE</strong> 🎁
             </div>
           )}
         </div>
@@ -4261,7 +4261,7 @@ function LeaderboardPage() {
 
       {/* Rules reminder */}
       <div style={{margin:'12px 16px 0',background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'10px 14px',fontSize:12,color:'rgba(255,255,255,0.5)',lineHeight:1.6}}>
-        ð <strong style={{color:'rgba(255,255,255,0.7)'}}>RÃ¨gles :</strong> 3 jours Ã 2h/jour Â· 6 000 ð par heure Â· Objectif : 60 000 ð Â· Manque 10 000 ð = 5 DH de pÃ©nalitÃ©
+        📜 <strong style={{color:'rgba(255,255,255,0.7)'}}>Règles :</strong> 3 jours × 2h/jour · 6 000 💎 par heure · Objectif : 60 000 💎 · Manque 10 000 💎 = 5 DH de pénalité
       </div>
 
       {/* Player list */}
@@ -4275,8 +4275,8 @@ function LeaderboardPage() {
         )}
         {!loading && players.length === 0 && (
           <div style={{textAlign:'center',padding:'60px 20px',color:'rgba(255,255,255,0.35)'}}>
-            <div style={{fontSize:48,marginBottom:12}}>ð</div>
-            <p>Aucun joueur enregistrÃ©</p>
+            <div style={{fontSize:48,marginBottom:12}}>🏆</div>
+            <p>Aucun joueur enregistré</p>
           </div>
         )}
         {!loading && players.map((p, i) => {
@@ -4291,12 +4291,12 @@ function LeaderboardPage() {
                     {p.pseudo || p.name || p.phone}
                     {isMe && <span style={{fontSize:10,background:'#059669',color:'#fff',padding:'1px 6px',borderRadius:'999px',fontWeight:700}}>Moi</span>}
                   </div>
-                  <div style={{fontSize:11,color:'rgba(255,255,255,0.4)',marginTop:1}}>{p.gamesPlayed} parties jouÃ©es</div>
+                  <div style={{fontSize:11,color:'rgba(255,255,255,0.4)',marginTop:1}}>{p.gamesPlayed} parties jouées</div>
                 </div>
                 <div style={{textAlign:'right',flexShrink:0}}>
-                  <div style={{fontWeight:900,fontSize:15,color:pct>=100?'#4ADE80':'white'}}>{(p.diamonds||0).toLocaleString()} ð</div>
+                  <div style={{fontWeight:900,fontSize:15,color:pct>=100?'#4ADE80':'white'}}>{(p.diamonds||0).toLocaleString()} 💎</div>
                   <div style={{fontSize:10,color:pct>=100?'#4ADE80':p.missing>0?'#FCA5A5':'rgba(255,255,255,0.4)',marginTop:1}}>
-                    {pct>=100 ? 'â Objectif atteint' : `â${(p.missing||0).toLocaleString()} ð`}
+                    {pct>=100 ? '✅ Objectif atteint' : `−${(p.missing||0).toLocaleString()} 💎`}
                   </div>
                 </div>
               </div>
@@ -4311,7 +4311,7 @@ function LeaderboardPage() {
   );
 }
 
-// ââ Store Owner Page (Tabac / Pharmacie / Fleurs) âââââââââââââââââââââââââââââ
+// ── Store Owner Page (Tabac / Pharmacie / Fleurs) ─────────────────────────────
 type StoreType = 'tabac' | 'pharmacie' | 'fleurs';
 interface StoreOrder {
   id: number; ref: string; customerName: string; customerPhone: string;
@@ -4319,9 +4319,9 @@ interface StoreOrder {
   total: number; status: string; deliveryMode: string; paymentMethod: string; createdAt: string;
 }
 const STORE_INFO: Record<StoreType, {name:string;emoji:string;accent:string}> = {
-  tabac:     { name:'Bridge Tabac',     emoji:'ð¬', accent:'#e94560' },
-  pharmacie: { name:'Bridge Pharmacie', emoji:'ð', accent:'#8B5CF6' },
-  fleurs:    { name:'Bridge Fleurs',    emoji:'ð¸', accent:'#EC4899' },
+  tabac:     { name:'Bridge Tabac',     emoji:'🚬', accent:'#e94560' },
+  pharmacie: { name:'Bridge Pharmacie', emoji:'💊', accent:'#8B5CF6' },
+  fleurs:    { name:'Bridge Fleurs',    emoji:'🌸', accent:'#EC4899' },
 };
 function StoreOwnerPage({ params }: { params?: { type?: string } }) {
   const storeType = (params?.type || '') as StoreType;
@@ -4399,8 +4399,8 @@ function StoreOwnerPage({ params }: { params?: { type?: string } }) {
         <div style={{background:'#161630',borderRadius:'20px',padding:'40px 32px',maxWidth:'360px',width:'100%',textAlign:'center'}}>
           <div style={{fontSize:'52px',marginBottom:'12px'}}>{info.emoji}</div>
           <h1 style={{color:'white',fontSize:'22px',fontWeight:'700',marginBottom:'4px'}}>{info.name}</h1>
-          <p style={{color:'rgba(255,255,255,0.45)',fontSize:'13px',marginBottom:'32px'}}>Espace propriÃ©taire</p>
-          <input type="password" placeholder="Code d'accÃ¨s" value={code}
+          <p style={{color:'rgba(255,255,255,0.45)',fontSize:'13px',marginBottom:'32px'}}>Espace propriétaire</p>
+          <input type="password" placeholder="Code d'accès" value={code}
             onChange={e => setCode(e.target.value)}
             onKeyDown={e => e.key==='Enter' && handleLogin()}
             style={{width:'100%',padding:'14px 16px',borderRadius:'12px',border:`2px solid ${authErr?'#ef4444':'rgba(255,255,255,0.1)'}`,background:'rgba(255,255,255,0.06)',color:'white',fontSize:'18px',boxSizing:'border-box',textAlign:'center',letterSpacing:'6px',outline:'none'}}
@@ -4408,14 +4408,14 @@ function StoreOwnerPage({ params }: { params?: { type?: string } }) {
           {authErr && <p style={{color:'#ef4444',fontSize:'13px',marginTop:'8px'}}>{authErr}</p>}
           <button onClick={handleLogin} disabled={authLoading || !code}
             style={{marginTop:'16px',width:'100%',padding:'14px',borderRadius:'12px',border:'none',background:info.accent,color:'white',fontSize:'15px',fontWeight:'600',cursor:authLoading||!code?'not-allowed':'pointer',opacity:authLoading||!code?0.55:1,transition:'opacity 0.2s'}}>
-            {authLoading ? 'VÃ©rification...' : 'AccÃ©der â'}
+            {authLoading ? 'Vérification...' : 'Accéder →'}
           </button>
         </div>
       </div>
     );
   }
 
-  const statusLabel: Record<string,string> = { pending:'â³ En attente', accepted:'â AcceptÃ©', preparing:'ð¨âð³ En prÃ©paration', ready:'ð¦ PrÃªt', delivered:'ð LivrÃ©', cancelled:'â AnnulÃ©' };
+  const statusLabel: Record<string,string> = { pending:'⏳ En attente', accepted:'✅ Accepté', preparing:'👨‍🍳 En préparation', ready:'📦 Prêt', delivered:'🎉 Livré', cancelled:'❌ Annulé' };
   const formatTime = (s: string) => { try { return new Date(s).toLocaleTimeString('fr-MA',{hour:'2-digit',minute:'2-digit'}); } catch { return ''; } };
   const pending = orders.filter(o => o.status==='pending');
   const active  = orders.filter(o => ['accepted','preparing','ready'].includes(o.status));
@@ -4428,13 +4428,13 @@ function StoreOwnerPage({ params }: { params?: { type?: string } }) {
         <span style={{color:'rgba(255,255,255,0.45)',fontSize:'12px'}}>{formatTime(order.createdAt)}</span>
       </div>
       <p style={{color:'white',fontWeight:'600',fontSize:'15px',margin:'0 0 3px'}}>{order.customerName}</p>
-      <p style={{color:'rgba(255,255,255,0.55)',fontSize:'13px',margin:'0 0 3px'}}>ð {order.customerPhone}</p>
-      <p style={{color:'rgba(255,255,255,0.55)',fontSize:'13px',margin:'0 0 10px'}}>ð {order.customerAddress}</p>
+      <p style={{color:'rgba(255,255,255,0.55)',fontSize:'13px',margin:'0 0 3px'}}>📞 {order.customerPhone}</p>
+      <p style={{color:'rgba(255,255,255,0.55)',fontSize:'13px',margin:'0 0 10px'}}>📍 {order.customerAddress}</p>
       {Array.isArray(order.items) && order.items.length > 0 && (
         <div style={{background:'rgba(0,0,0,0.3)',borderRadius:'10px',padding:'10px',marginBottom:'10px'}}>
           {order.items.map((item,i) => (
             <div key={i} style={{display:'flex',justifyContent:'space-between',fontSize:'13px',color:'rgba(255,255,255,0.8)',marginBottom:'3px'}}>
-              <span>{item.name} Ã{item.qty}</span><span>{(item.price*item.qty).toFixed(0)} DH</span>
+              <span>{item.name} ×{item.qty}</span><span>{(item.price*item.qty).toFixed(0)} DH</span>
             </div>
           ))}
           <div style={{borderTop:'1px solid rgba(255,255,255,0.1)',marginTop:'7px',paddingTop:'7px',display:'flex',justifyContent:'space-between',fontWeight:'700',color:'white',fontSize:'14px'}}>
@@ -4442,15 +4442,15 @@ function StoreOwnerPage({ params }: { params?: { type?: string } }) {
           </div>
         </div>
       )}
-      <p style={{color:'rgba(255,255,255,0.4)',fontSize:'12px',margin:'0 0 10px'}}>ð³ {order.paymentMethod} Â· {statusLabel[order.status]||order.status}</p>
+      <p style={{color:'rgba(255,255,255,0.4)',fontSize:'12px',margin:'0 0 10px'}}>💳 {order.paymentMethod} · {statusLabel[order.status]||order.status}</p>
       <div style={{display:'flex',gap:'8px',flexWrap:'wrap'}}>
         {order.status==='pending' && <>
-          <button onClick={()=>updateStatus(order.ref,'accepted')} style={{flex:1,padding:'9px 12px',borderRadius:'8px',border:'none',background:'#22c55e',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>â Accepter</button>
-          <button onClick={()=>updateStatus(order.ref,'cancelled')} style={{padding:'9px 14px',borderRadius:'8px',border:'none',background:'#ef4444',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>â</button>
+          <button onClick={()=>updateStatus(order.ref,'accepted')} style={{flex:1,padding:'9px 12px',borderRadius:'8px',border:'none',background:'#22c55e',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>✅ Accepter</button>
+          <button onClick={()=>updateStatus(order.ref,'cancelled')} style={{padding:'9px 14px',borderRadius:'8px',border:'none',background:'#ef4444',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>✕</button>
         </>}
-        {order.status==='accepted' && <button onClick={()=>updateStatus(order.ref,'preparing')} style={{flex:1,padding:'9px',borderRadius:'8px',border:'none',background:'#f59e0b',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>ð¨âð³ En prÃ©paration</button>}
-        {order.status==='preparing' && <button onClick={()=>updateStatus(order.ref,'ready')} style={{flex:1,padding:'9px',borderRadius:'8px',border:'none',background:'#8B5CF6',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>ð¦ PrÃªt pour livraison</button>}
-        {order.status==='ready' && <button onClick={()=>updateStatus(order.ref,'delivered')} style={{flex:1,padding:'9px',borderRadius:'8px',border:'none',background:'#06b6d4',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>ð MarquÃ© livrÃ©</button>}
+        {order.status==='accepted' && <button onClick={()=>updateStatus(order.ref,'preparing')} style={{flex:1,padding:'9px',borderRadius:'8px',border:'none',background:'#f59e0b',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>👨‍🍳 En préparation</button>}
+        {order.status==='preparing' && <button onClick={()=>updateStatus(order.ref,'ready')} style={{flex:1,padding:'9px',borderRadius:'8px',border:'none',background:'#8B5CF6',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>📦 Prêt pour livraison</button>}
+        {order.status==='ready' && <button onClick={()=>updateStatus(order.ref,'delivered')} style={{flex:1,padding:'9px',borderRadius:'8px',border:'none',background:'#06b6d4',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>🎉 Marqué livré</button>}
       </div>
     </div>
   );
@@ -4461,16 +4461,16 @@ function StoreOwnerPage({ params }: { params?: { type?: string } }) {
         <div>
           <div style={{fontSize:'18px',fontWeight:'700'}}>{info.emoji} {info.name}</div>
           <div style={{fontSize:'12px',marginTop:'2px'}}>
-            {pending.length>0 ? <span style={{color:'#ef4444',fontWeight:'600'}}>ð´ {pending.length} nouvelle{pending.length>1?'s':''} commande{pending.length>1?'s':''}</span> : <span style={{color:'rgba(255,255,255,0.4)'}}>Aucune commande en attente</span>}
+            {pending.length>0 ? <span style={{color:'#ef4444',fontWeight:'600'}}>🔴 {pending.length} nouvelle{pending.length>1?'s':''} commande{pending.length>1?'s':''}</span> : <span style={{color:'rgba(255,255,255,0.4)'}}>Aucune commande en attente</span>}
           </div>
         </div>
-        <button onClick={logout} style={{padding:'7px 13px',borderRadius:'9px',border:'1px solid rgba(255,255,255,0.15)',background:'transparent',color:'rgba(255,255,255,0.6)',fontSize:'12px',cursor:'pointer'}}>DÃ©connexion</button>
+        <button onClick={logout} style={{padding:'7px 13px',borderRadius:'9px',border:'1px solid rgba(255,255,255,0.15)',background:'transparent',color:'rgba(255,255,255,0.6)',fontSize:'12px',cursor:'pointer'}}>Déconnexion</button>
       </div>
       <div style={{padding:'16px',maxWidth:'580px',margin:'0 auto'}}>
-        {pending.length>0 && <div style={{marginBottom:'24px'}}><h2 style={{color:'#ef4444',fontSize:'14px',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'0.5px'}}>â¡ Nouvelles commandes ({pending.length})</h2>{pending.map(o=><OrderCard key={o.ref} order={o}/>)}</div>}
-        {active.length>0 && <div style={{marginBottom:'24px'}}><h2 style={{color:'#f59e0b',fontSize:'14px',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'0.5px'}}>ð En cours ({active.length})</h2>{active.map(o=><OrderCard key={o.ref} order={o}/>)}</div>}
-        {done.length>0 && <div><h2 style={{color:'rgba(255,255,255,0.35)',fontSize:'14px',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'0.5px'}}>TerminÃ©es</h2>{done.map(o=><OrderCard key={o.ref} order={o}/>)}</div>}
-        {orders.length===0 && <div style={{textAlign:'center',padding:'70px 20px',color:'rgba(255,255,255,0.35)'}}><div style={{fontSize:'52px',marginBottom:'14px'}}>{info.emoji}</div><p style={{fontSize:'16px'}}>Aucune commande pour l'instant</p><p style={{fontSize:'13px',marginTop:'6px'}}>Les nouvelles commandes apparaÃ®tront automatiquement</p></div>}
+        {pending.length>0 && <div style={{marginBottom:'24px'}}><h2 style={{color:'#ef4444',fontSize:'14px',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'0.5px'}}>⚡ Nouvelles commandes ({pending.length})</h2>{pending.map(o=><OrderCard key={o.ref} order={o}/>)}</div>}
+        {active.length>0 && <div style={{marginBottom:'24px'}}><h2 style={{color:'#f59e0b',fontSize:'14px',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'0.5px'}}>🔄 En cours ({active.length})</h2>{active.map(o=><OrderCard key={o.ref} order={o}/>)}</div>}
+        {done.length>0 && <div><h2 style={{color:'rgba(255,255,255,0.35)',fontSize:'14px',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'0.5px'}}>Terminées</h2>{done.map(o=><OrderCard key={o.ref} order={o}/>)}</div>}
+        {orders.length===0 && <div style={{textAlign:'center',padding:'70px 20px',color:'rgba(255,255,255,0.35)'}}><div style={{fontSize:'52px',marginBottom:'14px'}}>{info.emoji}</div><p style={{fontSize:'16px'}}>Aucune commande pour l'instant</p><p style={{fontSize:'13px',marginTop:'6px'}}>Les nouvelles commandes apparaîtront automatiquement</p></div>}
       </div>
     </div>
   );
@@ -4506,7 +4506,7 @@ function ClerkProviderWithRoutes() {
   );
 }
 
-// âââ Visit tracker (fire once per session) ââââââââââââââââââââââââââââââââ
+// ─── Visit tracker (fire once per session) ────────────────────────────────
 (() => {
   try {
     let sid = localStorage.getItem('bridge_sid');
