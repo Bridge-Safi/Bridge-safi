@@ -3460,7 +3460,7 @@ function RestaurantCard({r,lang,t,onClick,compact=false}:{r:Restaurant;lang:Lang
             <span className="text-yellow-400 text-xs">★</span>
             <span className="text-[10px] font-black" style={{color:'var(--c-text)'}}>{r.rating}</span>
             <div className="w-0.5 h-0.5 rounded-full mx-0.5" style={{background:'#D9C5A0'}}/>
-            <span className="text-[10px]" style={{color:'#6B7280'}}>⏱{r.deliveryTime}{t.delivMin}</span>
+            <span className="text-[10px]" style={{color:'#6B7280'}}>⏱{_ue(r.deliveryTime)}{t.delivMin}</span>
           </div>
           <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{background:'#F0FDF4'}}>
             <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"/>
@@ -3506,7 +3506,7 @@ function RestaurantCard({r,lang,t,onClick,compact=false}:{r:Restaurant;lang:Lang
             <span className="text-xs font-black" style={{color:'var(--c-text)'}}>{r.rating}</span>
           </div>
           <div className="w-1 h-1 rounded-full" style={{background:'#D9C5A0'}}/>
-          <span className="text-xs" style={{color:'#6B7280'}}>⏱ {r.deliveryTime} {t.delivMin}</span>
+          <span className="text-xs" style={{color:'#6B7280'}}>⏱ {_ue(r.deliveryTime)} {t.delivMin}</span>
           <div className="w-1 h-1 rounded-full" style={{background:'#D9C5A0'}}/>
           <span className="text-xs" style={{color:'#6B7280'}}>{t.minOrder} {r.minOrder} MAD</span>
         </div>
