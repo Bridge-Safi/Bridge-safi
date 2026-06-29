@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo, createContext, useContext } from 'react';
-import { useUser, useClerk, useAuth } from '@clerk/react';
+import { useUser, useAuth, useBridgeAuth } from './bridge-auth';
 import { useLocation } from 'wouter';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Polygon, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -3875,7 +3875,7 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
     };
     reader.readAsDataURL(file);
   };
-  const { signOut } = useClerk();
+  const { signOut } = useBridgeAuth();
   const [, navigate] = useLocation();
   const { user } = useUser(); const { isSignedIn } = useAuth();
   const [errs,setErrs]=useState<Record<string,boolean>>({});
