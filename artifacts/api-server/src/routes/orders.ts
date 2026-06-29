@@ -1,7 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { db, ordersTable, restaurantsTable } from "@workspace/db";
 import { eq, desc, sql as sqlRaw } from "drizzle-orm";
-import { getAuth, verifyToken } from "@clerk/express";
 import { notifyDrivers, notifySpecificDrivers, notifyDriversExcept, notifyRestaurantOwner } from "./push";
 import { getDriverPositions, syncTrackingStatus } from "./tracking";
 import { addSSEClient, removeSSEClient, broadcastOrder } from "../lib/sse";
@@ -25,7 +24,7 @@ function requireDriverKey(req: Request, res: Response, next: NextFunction): void
 
 /** Middleware — vérifie l'authentification Clerk du client */
 function requireClerkAuth(req: Request, res: Response, next: NextFunction): void {
-  const { userId } = getAuth(req);
+  const userId = req.auth?.userId ?? null;
   if (!userId) {
     res.status(401).json({ error: "Non authentifié" });
     return;

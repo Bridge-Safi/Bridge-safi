@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { getAuth } from "@clerk/express";
 import { db, userProfilesTable } from "@workspace/db";
 import { eq, ne, and } from "drizzle-orm";
 import { logger } from "../lib/logger";
@@ -8,7 +7,7 @@ const router = Router();
 
 // GET /api/profile/check-phone?phone=X
 router.get("/profile/check-phone", async (req, res) => {
-  const { userId } = getAuth(req);
+  const userId = req.auth?.userId ?? null;
   if (!userId) { res.status(401).json({ error: "Non authentifié" }); return; }
   const phone = String(req.query.phone || "").trim();
   if (!phone) { res.json({ taken: false }); return; }
@@ -27,7 +26,7 @@ router.get("/profile/check-phone", async (req, res) => {
 
 // POST /api/profile/sync — save name + phone + address + optional avatar, enforce phone uniqueness
 router.post("/profile/sync", async (req, res) => {
-  const { userId } = getAuth(req);
+  const userId = req.auth?.userId ?? null;
   if (!userId) { res.status(401).json({ error: "Non authentifié" }); return; }
 
   const { phone, name, address, avatar } = req.body as {
@@ -74,7 +73,7 @@ router.post("/profile/sync", async (req, res) => {
 
 // GET /api/profile — retourne le profil de l'utilisateur connecté (sans avatarData)
 router.get("/profile", async (req, res) => {
-  const { userId } = getAuth(req);
+  const userId = req.auth?.userId ?? null;
   if (!userId) { res.status(401).json({ error: "Non authentifié" }); return; }
   try {
     const rows = await db.select().from(userProfilesTable).where(eq(userProfilesTable.userId, userId)).limit(1);

@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { randomUUID } from "crypto";
-import { getAuth } from "@clerk/express";
 import { db, gameDiamondsTable, userProfilesTable } from "@workspace/db";
 import { eq, sql } from "drizzle-orm";
 import { pool } from "@workspace/db";
@@ -36,7 +35,7 @@ async function lookupToken(token: string): Promise<{ userId: string; phone: stri
 
 // POST /api/game/token — génère un token sécurisé avec le vrai numéro du compte
 router.post("/game/token", async (req, res) => {
-  const { userId } = getAuth(req);
+  const userId = req.auth?.userId ?? null;
   if (!userId) { res.status(401).json({ error: "Non authentifié" }); return; }
   try {
     const rows = await db.select().from(userProfilesTable).where(eq(userProfilesTable.userId, userId)).limit(1);
@@ -114,7 +113,7 @@ router.post("/game/diamonds/by-token", async (req, res) => {
 
 // GET /api/game/diamonds — returns current diamond count for authenticated user
 router.get("/game/diamonds", async (req, res) => {
-  const { userId } = getAuth(req);
+  const userId = req.auth?.userId ?? null;
   if (!userId) {
     res.status(401).json({ error: "Non authentifié" });
     return;
@@ -139,7 +138,7 @@ router.get("/game/diamonds", async (req, res) => {
 
 // POST /api/game/diamonds — upsert diamond count for authenticated user
 router.post("/game/diamonds", async (req, res) => {
-  const { userId } = getAuth(req);
+  const userId = req.auth?.userId ?? null;
   if (!userId) {
     res.status(401).json({ error: "Non authentifié" });
     return;
@@ -207,7 +206,7 @@ router.post("/game/diamonds", async (req, res) => {
 
 // POST /api/game/diamonds/spend — deduct diamonds spent at checkout
 router.post("/game/diamonds/spend", async (req, res) => {
-  const { userId } = getAuth(req);
+  const userId = req.auth?.userId ?? null;
   if (!userId) {
     res.status(401).json({ error: "Non authentifié" });
     return;

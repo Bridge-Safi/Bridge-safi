@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { getAuth } from "@clerk/express";
 import { db, gameDiamondsTable, missionsTable, missionCompletionsTable } from "@workspace/db";
 import { eq, and, gte, sql, count } from "drizzle-orm";
 import { logger } from "../lib/logger";
@@ -29,7 +28,7 @@ seedMissionsIfEmpty().catch(err => logger.error({ err }, "Failed to seed mission
 
 // GET /api/missions — list all active missions + today completions for user
 router.get("/missions", async (req, res) => {
-  const { userId } = getAuth(req);
+  const userId = req.auth?.userId ?? null;
   try {
     const missions = await db
       .select()
@@ -66,7 +65,7 @@ router.get("/missions", async (req, res) => {
 
 // POST /api/missions/:id/complete — complete a mission and earn diamonds
 router.post("/missions/:id/complete", async (req, res) => {
-  const { userId } = getAuth(req);
+  const userId = req.auth?.userId ?? null;
   if (!userId) { res.status(401).json({ error: "Connexion requise pour gagner des diamants" }); return; }
 
   const missionId = parseInt(req.params.id, 10);
@@ -137,7 +136,7 @@ router.post("/missions/:id/complete", async (req, res) => {
 
 // GET /api/missions/earnings — today's stats
 router.get("/missions/earnings", async (req, res) => {
-  const { userId } = getAuth(req);
+  const userId = req.auth?.userId ?? null;
   if (!userId) { res.status(401).json({ error: "Non authentifié" }); return; }
   try {
     const startOfDay = new Date(); startOfDay.setHours(0, 0, 0, 0);
