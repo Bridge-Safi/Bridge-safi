@@ -984,8 +984,8 @@ const MCDO_WATER   = 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?
 // ─── HELPERS DATA GLOVO ─────────────────────────────────────────────────────
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const _n=(s:string)=>({fr:s,en:s,ar:s,amz:s}) as ML;
-const _gp=(h:string)=>h?'https://glovo.dhmedia.io/image/menus-glovo/products/'+h+'?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19LHsid2VicCI6e319XQ==':'';
-const RESTAURANTS: Restaurant[] = [
+
+const _ue=(s:string)=>{try{return JSON.parse('"'+s+'"');}catch{return s;}};
   // ─── McDONALD'S SAFI (Featured · Pinned #1) ──────────────────────────────
   {
     id:'mcdonalds-safi',
