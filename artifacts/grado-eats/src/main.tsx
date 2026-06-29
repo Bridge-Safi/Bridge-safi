@@ -6,8 +6,6 @@ import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/reac
 import App, { HistoryPageRoute } from "./App";
 import "./index.css";
 
-
-
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 const queryClient = new QueryClient();
@@ -17,7 +15,6 @@ function stripBase(path: string): string {
     ? path.slice(basePath.length) || "/"
     : path;
 }
-
 
 
 function AuthPageWrapper({ children }: { children: React.ReactNode }) {
@@ -74,7 +71,7 @@ function AuthPageWrapper({ children }: { children: React.ReactNode }) {
           color: '#D9C5A0', fontSize: '0.62rem', letterSpacing: '0.2em',
           fontWeight: 700, margin: '4px 0 0', opacity: 0.9,
         }}>
-          SAFI ÃÂÃÂÃÂÃÂ· MAROC ÃÂÃÂÃÂÃÂ· ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ
+          SAFI · MAROC · آسفي · ⵙⴰⴼⵉ
         </p>
 
         {/* Gold bar */}
@@ -84,7 +81,7 @@ function AuthPageWrapper({ children }: { children: React.ReactNode }) {
           <div style={{ width: 36, height: 1, background: 'linear-gradient(to left, transparent, #D9C5A0)' }} />
         </div>
         <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.62rem', letterSpacing: '0.18em', marginTop: 4 }}>
-          Bienvenue ÃÂÃÂÃÂÃÂ· Welcome ÃÂÃÂÃÂÃÂ· ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ
+          Bienvenue · Welcome · أهلاً وسهلاً
         </p>
       </div>
 
@@ -114,7 +111,7 @@ function AuthPageWrapper({ children }: { children: React.ReactNode }) {
         marginTop: '1.5rem', letterSpacing: '0.15em', textAlign: 'center',
         position: 'relative', zIndex: 1,
       }}>
-        ÃÂÃÂÃÂÃÂ© 2026 BRIDGE SAFI ÃÂÃÂÃÂÃÂ· safi-bridge.ma ÃÂÃÂÃÂÃÂ· ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ SÃÂÃÂÃÂÃÂ©curisÃÂÃÂÃÂÃÂ©
+        © 2026 BRIDGE SAFI · safi-bridge.ma · 🔒 Sécurisé
       </p>
     </div>
   );
@@ -129,7 +126,7 @@ function AuthCardHeader({ title, sub }: { title: string; sub: string }) {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ SHARED FORM STYLES ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─── SHARED FORM STYLES ───────────────────────────────────────────────────────
 
 const inp: React.CSSProperties = {
   width: '100%', padding: '0.75rem 1rem', borderRadius: 14,
@@ -170,31 +167,30 @@ function FocusInput({ label: labelText, type = 'text', value, onChange, placehol
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ SIGN-IN PAGE (custom ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ email/phone + password, single screen) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─── SIGN-IN PAGE (custom — email/phone + password, single screen) ─────────
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ FORGOT PASSWORD PAGE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─── FORGOT PASSWORD PAGE ─────────────────────────────────────────────────────
 
 function ForgotPasswordPage() {
   const [, navigate] = useLocation();
   return (
     <AuthPageWrapper>
-      <AuthCardHeader title="Mot de passe oubliÃÂ©" sub="Contactez le support Bridge" />
-      <div style={{ textAlign:'center', padding:'1rem 0' }}>
-        <p style={{ fontSize:'0.85rem', color:'#374151', marginBottom:'1.5rem', lineHeight:1.6 }}>
-          Envoyez un message WhatsApp avec votre numÃÂ©ro pour rÃÂ©initialiser votre mot de passe.
+      <AuthCardHeader title="Mot de passe oublié" sub="Contactez le support Bridge" />
+      <div style={{textAlign:'center',padding:'1rem 0'}}>
+        <p style={{fontSize:'0.85rem',color:'#374151',marginBottom:'1.5rem',lineHeight:1.6}}>
+          Envoyez un message WhatsApp avec votre numéro pour réinitialiser votre mot de passe.
         </p>
-        <a href="https://wa.me/212600000000?text=Mot+de+passe+oubli%C3%A9"
-          target="_blank" rel="noopener noreferrer"
-          style={{ display:'block', width:'100%', padding:'0.875rem', borderRadius:14, border:'none',
-            background:'#25D366', color:'white', fontWeight:900, fontSize:'0.875rem',
-            textDecoration:'none', textAlign:'center', boxShadow:'0 6px 20px rgba(37,211,102,0.3)' }}>
-          Ã°ÂÂÂ¬ Contacter le support WhatsApp
+        <a href="https://wa.me/212600000000?text=Mot+de+passe+oubli%C3%A9" target="_blank" rel="noopener noreferrer"
+          style={{display:'block',width:'100%',padding:'0.875rem',borderRadius:14,border:'none',
+            background:'#25D366',color:'white',fontWeight:900,fontSize:'0.875rem',
+            textDecoration:'none',textAlign:'center',boxShadow:'0 6px 20px rgba(37,211,102,0.3)'}}>
+          💬 Contacter le support WhatsApp
         </a>
       </div>
-      <div style={{ textAlign:'center', marginTop:'0.5rem', paddingTop:'1rem', borderTop:'1px solid #E5E1D8' }}>
-        <button onClick={() => navigate('/sign-in')}
-          style={{ background:'none', border:'none', color:'#065F46', fontWeight:700, fontSize:'0.75rem', cursor:'pointer' }}>
-          Ã¢ÂÂ Retour ÃÂ  la connexion
+      <div style={{textAlign:'center',marginTop:'0.5rem',paddingTop:'1rem',borderTop:'1px solid #E5E1D8'}}>
+        <button onClick={()=>navigate('/sign-in')}
+          style={{background:'none',border:'none',color:'#065F46',fontWeight:700,fontSize:'0.75rem',cursor:'pointer'}}>
+          ← Retour à la connexion
         </button>
       </div>
     </AuthPageWrapper>
@@ -208,67 +204,65 @@ type FactorStrategy = 'email_code' | 'phone_code' | 'totp' | string;
 const STAY_KEY = 'bridge_stay_signed_in';
 
 function SignInPage() {
-  const { signIn } = useBridgeAuth();
-  const { isLoaded, isSignedIn } = useUser();
+  const {signIn} = useBridgeAuth();
+  const {isLoaded, isSignedIn} = useUser();
   const [, navigate] = useLocation();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [staySignedIn, setStaySignedIn] = useState(true);
   const isEmailId = identifier.includes('@');
-  useEffect(() => { if (isLoaded && isSignedIn) navigate(basePath || '/'); }, [isLoaded, isSignedIn, navigate]);
+  useEffect(()=>{if(isLoaded&&isSignedIn) navigate(basePath||'/');},[isLoaded,isSignedIn]);
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (loading) return;
-    if (!identifier.trim()) { setError('Entrez votre numÃÂ©ro ou adresse email.'); return; }
-    if (!password) { setError('Entrez votre mot de passe.'); return; }
+    e.preventDefault(); if(loading) return;
+    if(!identifier.trim()){setError('Numéro ou email requis.');return;}
+    if(!password){setError('Mot de passe requis.');return;}
     setLoading(true); setError('');
-    try { await signIn(identifier.trim(), password); navigate(basePath || '/'); }
-    catch (err: any) { setError(err.message || 'Identifiants incorrects. RÃÂ©essayez.'); }
+    try{await signIn(identifier.trim(),password); navigate(basePath||'/');}
+    catch(err:any){setError(err.message||'Identifiants incorrects.');}
     setLoading(false);
   };
   return (
     <AuthPageWrapper>
-      <AuthCardHeader title="Connexion ÃÂ· Sign in" sub="TÃÂ©lÃÂ©phone ou email ÃÂ· Mot de passe" />
-      <div style={{ marginBottom:'1rem', paddingBottom:'1rem', borderBottom:'1px dashed #E5E1D8', textAlign:'center' }}>
+      <AuthCardHeader title="Connexion · Sign in" sub="Téléphone ou email · Mot de passe" />
+      <div style={{marginBottom:'1rem',paddingBottom:'1rem',borderBottom:'1px dashed #E5E1D8',textAlign:'center'}}>
         <button type="button"
-          onClick={() => { localStorage.setItem('bridge_guest_mode','1'); window.location.href=(basePath||'')+'/'; }}
-          style={{ width:'100%', padding:'14px 0', borderRadius:14, border:'none', cursor:'pointer',
+          onClick={()=>{localStorage.setItem('bridge_guest_mode','1');window.location.href=(basePath||'')+'/';}}
+          style={{width:'100%',padding:'14px 0',borderRadius:14,border:'none',cursor:'pointer',
             background:'linear-gradient(135deg,#059669 0%,#4ADE80 50%,#059669 100%)',
-            color:'#fff', fontSize:'0.95rem', fontWeight:900 }}>
-          Ã°ÂÂÂ Commander sans compte
+            color:'#fff',fontSize:'0.95rem',fontWeight:900}}>
+          🛒 Commander sans compte
         </button>
       </div>
-      <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column' }}>
-        <FocusInput label="TÃÂ©lÃÂ©phone ou email" value={identifier} onChange={setIdentifier}
+      <form onSubmit={handleSubmit} style={{display:'flex',flexDirection:'column'}}>
+        <FocusInput label="Téléphone ou email" value={identifier} onChange={setIdentifier}
           placeholder={isEmailId?'vous@example.com':'+212 6XX XXX XXX'}
           autoComplete="username" type={isEmailId?'email':'tel'} />
         <FocusInput label="Mot de passe" type="password" value={password} onChange={setPassword}
-          placeholder="Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢" autoComplete="current-password" />
+          placeholder="••••••••" autoComplete="current-password" />
         {error && <div style={errStyle}>{error}</div>}
-        <button type="submit" style={{ ...btn, opacity:loading?0.7:1, marginTop:14 }} disabled={loading}>
-          {loading?'Connexion...':'Connexion Ã¢ÂÂ'}
+        <button type="submit" style={{...btn,opacity:loading?0.7:1,marginTop:14}} disabled={loading}>
+          {loading?'Connexion...':'Connexion →'}
         </button>
       </form>
-      <div style={{ textAlign:'center', marginTop:'1rem' }}>
-        <button onClick={() => navigate('/forgot-password')}
-          style={{ background:'none', border:'none', color:'#9CA3AF', fontSize:'0.72rem', cursor:'pointer', textDecoration:'underline' }}>
-          Mot de passe oubliÃÂ© ?
+      <div style={{textAlign:'center',marginTop:'1rem'}}>
+        <button onClick={()=>navigate('/forgot-password')}
+          style={{background:'none',border:'none',color:'#9CA3AF',fontSize:'0.72rem',cursor:'pointer',textDecoration:'underline'}}>
+          Mot de passe oublié ?
         </button>
       </div>
-      <div style={{ textAlign:'center', marginTop:'0.75rem', paddingTop:'0.75rem', borderTop:'1px solid #E5E1D8' }}>
-        <span style={{ fontSize:'0.75rem', color:'#9CA3AF' }}>Pas encore de compte ? </span>
-        <button onClick={() => navigate('/sign-up')}
-          style={{ background:'none', border:'none', color:'#065F46', fontWeight:700, fontSize:'0.75rem', cursor:'pointer' }}>
-          CrÃÂ©er un compte
+      <div style={{textAlign:'center',marginTop:'0.75rem',paddingTop:'0.75rem',borderTop:'1px solid #E5E1D8'}}>
+        <span style={{fontSize:'0.75rem',color:'#9CA3AF'}}>Pas encore de compte ? </span>
+        <button onClick={()=>navigate('/sign-up')}
+          style={{background:'none',border:'none',color:'#065F46',fontWeight:700,fontSize:'0.75rem',cursor:'pointer'}}>
+          Créer un compte
         </button>
       </div>
     </AuthPageWrapper>
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ SIGN-UP PAGE (custom ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ name + email/phone + password, then OTP) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─── SIGN-UP PAGE (custom — name + email/phone + password, then OTP) ──────
 
 const SIGNUP_LANGS = ['fr','en','ar','amz'] as const;
 type SignUpLang = typeof SIGNUP_LANGS[number];
@@ -283,60 +277,60 @@ const SIGNUP_T: Record<SignUpLang, {
   loadMsgs: string[];
 }> = {
   fr: {
-    title:'CrÃÂÃÂÃÂÃÂ©er un compte ÃÂÃÂÃÂÃÂ· Sign up', sub:'Email ou tÃÂÃÂÃÂÃÂ©lÃÂÃÂÃÂÃÂ©phone + mot de passe',
-    emailLabel:'EMAIL OU NUMÃÂÃÂÃÂÃÂRO DE TÃÂÃÂÃÂÃÂLÃÂÃÂÃÂÃÂPHONE *', emailPh:'+212 6XX XXX XXX ou email@...',
-    passLabel:'MOT DE PASSE * (8 CARACTÃÂÃÂÃÂÃÂRES MIN.)', passPh:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢',
-    btnCreate:'CrÃÂÃÂÃÂÃÂ©er mon compte ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ', btnCreating:'CrÃÂÃÂÃÂÃÂ©ation en cours...',
-    errEmail:'Email invalide ou dÃÂÃÂÃÂÃÂ©jÃÂÃÂÃÂÃÂ  utilisÃÂÃÂÃÂÃÂ©.', errPhone:'NumÃÂÃÂÃÂÃÂ©ro invalide ou dÃÂÃÂÃÂÃÂ©jÃÂÃÂÃÂÃÂ  utilisÃÂÃÂÃÂÃÂ©.',
-    errPass:'Mot de passe trop faible (8 caractÃÂÃÂÃÂÃÂ¨res min.).', errId:'Email ou tÃÂÃÂÃÂÃÂ©lÃÂÃÂÃÂÃÂ©phone requis.',
-    alreadyHave:'DÃÂÃÂÃÂÃÂ©jÃÂÃÂÃÂÃÂ  un compte ?', login:'Se connecter',
-    verifyTitle:'VÃÂÃÂÃÂÃÂ©rification ÃÂÃÂÃÂÃÂ· Verify', verifySub:(id)=>`Code envoyÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ  ${id}`,
-    verifyLabel:'CODE DE VÃÂÃÂÃÂÃÂRIFICATION (6 CHIFFRES)', btnVerify:'VÃÂÃÂÃÂÃÂ©rifier ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ', btnVerifying:'VÃÂÃÂÃÂÃÂ©rification...',
-    errCode:'Code incorrect ou expirÃÂÃÂÃÂÃÂ©.', back:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Retour',
-    loadMsgs:['Bienvenue chez Bridge Safi ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ²ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¦','CrÃÂÃÂÃÂÃÂ©ation de votre compte...','PrÃÂÃÂÃÂÃÂ©paration de vos services...','Presque prÃÂÃÂÃÂÃÂªt ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨','Connexion sÃÂÃÂÃÂÃÂ©curisÃÂÃÂÃÂÃÂ©e ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ'],
+    title:'Créer un compte · Sign up', sub:'Email ou téléphone + mot de passe',
+    emailLabel:'EMAIL OU NUMÉRO DE TÉLÉPHONE *', emailPh:'+212 6XX XXX XXX ou email@...',
+    passLabel:'MOT DE PASSE * (8 CARACTÈRES MIN.)', passPh:'••••••••',
+    btnCreate:'Créer mon compte →', btnCreating:'Création en cours...',
+    errEmail:'Email invalide ou déjà utilisé.', errPhone:'Numéro invalide ou déjà utilisé.',
+    errPass:'Mot de passe trop faible (8 caractères min.).', errId:'Email ou téléphone requis.',
+    alreadyHave:'Déjà un compte ?', login:'Se connecter',
+    verifyTitle:'Vérification · Verify', verifySub:(id)=>`Code envoyé à ${id}`,
+    verifyLabel:'CODE DE VÉRIFICATION (6 CHIFFRES)', btnVerify:'Vérifier →', btnVerifying:'Vérification...',
+    errCode:'Code incorrect ou expiré.', back:'← Retour',
+    loadMsgs:['Bienvenue chez Bridge Safi 🇲🇦','Création de votre compte...','Préparation de vos services...','Presque prêt ✨','Connexion sécurisée 🔒'],
   },
   en: {
-    title:'Create account ÃÂÃÂÃÂÃÂ· CrÃÂÃÂÃÂÃÂ©er un compte', sub:'Email or phone + password',
+    title:'Create account · Créer un compte', sub:'Email or phone + password',
     emailLabel:'EMAIL OR PHONE NUMBER *', emailPh:'+212 6XX XXX XXX or email@...',
-    passLabel:'PASSWORD * (MIN. 8 CHARACTERS)', passPh:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢',
-    btnCreate:'Create my account ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ', btnCreating:'Creating account...',
+    passLabel:'PASSWORD * (MIN. 8 CHARACTERS)', passPh:'••••••••',
+    btnCreate:'Create my account →', btnCreating:'Creating account...',
     errEmail:'Invalid or already used email.', errPhone:'Invalid or already used number.',
     errPass:'Password too weak (min. 8 characters).', errId:'Email or phone required.',
     alreadyHave:'Already have an account?', login:'Sign in',
-    verifyTitle:'Verification ÃÂÃÂÃÂÃÂ· VÃÂÃÂÃÂÃÂ©rification', verifySub:(id)=>`Code sent to ${id}`,
-    verifyLabel:'VERIFICATION CODE (6 DIGITS)', btnVerify:'Verify ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ', btnVerifying:'Verifying...',
-    errCode:'Wrong or expired code.', back:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Back',
-    loadMsgs:['Welcome to Bridge Safi ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ²ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¦','Creating your account...','Setting up your services...','Almost ready ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨','Securing your connection ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ'],
+    verifyTitle:'Verification · Vérification', verifySub:(id)=>`Code sent to ${id}`,
+    verifyLabel:'VERIFICATION CODE (6 DIGITS)', btnVerify:'Verify →', btnVerifying:'Verifying...',
+    errCode:'Wrong or expired code.', back:'← Back',
+    loadMsgs:['Welcome to Bridge Safi 🇲🇦','Creating your account...','Setting up your services...','Almost ready ✨','Securing your connection 🔒'],
   },
   ar: {
-    title:'ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ· Sign up', sub:'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ + ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±',
-    emailLabel:'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ *', emailPh:'+212 6XX XXX XXX ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ email@...',
-    passLabel:'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± * (8 ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ)', passPh:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢',
-    btnCreate:'ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ', btnCreating:'ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡...',
-    errEmail:'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ.', errPhone:'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ.',
-    errPass:'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© (8 ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ).', errId:'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨.',
-    alreadyHave:'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ', login:'ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ',
-    verifyTitle:'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· Verify', verifySub:(id)=>`ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ² ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ${id}`,
-    verifyLabel:'ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ² ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ (6 ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ)', btnVerify:'ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ', btnVerifying:'ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ...',
-    errCode:'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ² ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂ¦ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©.', back:'ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ',
-    loadMsgs:['ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Bridge Safi ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ²ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¦','ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ...','ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ² ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ...','ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ² ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨','ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ'],
+    title:'إنشاء حساب · Sign up', sub:'البريد أو الهاتف + كلمة المرور',
+    emailLabel:'البريد الإلكتروني أو رقم الهاتف *', emailPh:'+212 6XX XXX XXX أو email@...',
+    passLabel:'كلمة المرور * (8 أحرف على الأقل)', passPh:'••••••••',
+    btnCreate:'إنشاء حسابي ←', btnCreating:'جارٍ الإنشاء...',
+    errEmail:'البريد غير صالح أو مستخدم مسبقاً.', errPhone:'الرقم غير صالح أو مستخدم مسبقاً.',
+    errPass:'كلمة المرور ضعيفة (8 أحرف على الأقل).', errId:'البريد أو الهاتف مطلوب.',
+    alreadyHave:'لديك حساب؟', login:'تسجيل الدخول',
+    verifyTitle:'التحقق · Verify', verifySub:(id)=>`تم إرسال الرمز إلى ${id}`,
+    verifyLabel:'رمز التحقق (6 أرقام)', btnVerify:'تحقق ←', btnVerifying:'جارٍ التحقق...',
+    errCode:'الرمز خاطئ أو منتهي الصلاحية.', back:'رجوع →',
+    loadMsgs:['أهلاً بك في Bridge Safi 🇲🇦','جارٍ إنشاء حسابك...','تجهيز خدماتك...','تقريباً جاهز ✨','تأمين اتصالك 🔒'],
   },
   amz: {
-    title:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂÃÂÃÂ· Sign up', sub:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ»ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ + ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ±ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    emailLabel:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ»ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ *', emailPh:'+212 6XX XXX XXX ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ email@...',
-    passLabel:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ±ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ * (8 ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ»ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ)', passPh:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢',
-    btnCreate:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ', btnCreating:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°...',
-    errEmail:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ»ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ»ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ.', errPhone:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ»ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ.',
-    errPass:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ±ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¥ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¥ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ (8).', errId:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ»ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ.',
-    alreadyHave:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ° ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ?', login:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    verifyTitle:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ ÃÂÃÂÃÂÃÂ· Verify', verifySub:(id)=>`ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ${id}`,
-    verifyLabel:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ (6)', btnVerify:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ', btnVerifying:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°...',
-    errCode:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ»ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ.', back:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    loadMsgs:['ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ Bridge Safi ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ²ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¦','ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ° ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ...','ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ...','ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¹ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ° ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¨','ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ° ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ'],
+    title:'ⴰⵙⵏⴼⴰⵔ · Sign up', sub:'ⴰⵎⴻⵢⵍ ⵏⵖ ⵓⵟⵟⵓⵏ + ⵜⴰⴱⵔⴰⵜ',
+    emailLabel:'ⴰⵎⴻⵢⵍ ⵏⵖ ⵓⵟⵟⵓⵏ *', emailPh:'+212 6XX XXX XXX ⵏⵖ email@...',
+    passLabel:'ⵜⴰⴱⵔⴰⵜ * (8 ⵉⵙⴽⴽⵉⵏⴻⵏ)', passPh:'••••••••',
+    btnCreate:'ⴰⵙⵏⴼⴰⵔ ⵏ ⵓⵎⵓⵔ ←', btnCreating:'ⵉⵙⴽⴽⴰ...',
+    errEmail:'ⴰⵎⴻⵢⵍ ⵓⵔ ⵢⵓⴷⴼⴻⵏ.', errPhone:'ⵓⵟⵟⵓⵏ ⵓⵔ ⵢⵓⴷⴼⴻⵏ.',
+    errPass:'ⵜⴰⴱⵔⴰⵜ ⵜⴰⵎⵥⵥⵢⴰⵏⵜ (8).', errId:'ⴰⵎⴻⵢⵍ ⵏⵖ ⵓⵟⵟⵓⵏ ⵉⵍⴰⵔ.',
+    alreadyHave:'ⵎⴰⵛ ⵉⵍⵍⴰ ⵓⵎⵓⵔ?', login:'ⴽⵛⵎ',
+    verifyTitle:'ⴰⵙⵉⵏⴼ · Verify', verifySub:(id)=>`ⴰⵙⵉⵏⴼ ⵉⵜⵜⵓⵙⴽⴰⵔ ${id}`,
+    verifyLabel:'ⵓⵟⵟⵓⵏ ⵏ ⵓⵙⵉⵏⴼ (6)', btnVerify:'ⵙⵉⵏⴼ ←', btnVerifying:'ⵉⵙⴽⴽⴰ...',
+    errCode:'ⵓⵟⵟⵓⵏ ⵓⵔ ⵢⵓⴷⴼⴻⵏ.', back:'← ⴰⵣⵣⵓⵍ',
+    loadMsgs:['ⴰⵣⵓⵍ Bridge Safi 🇲🇦','ⵉⵙⴽⴽⴰ ⵓⵎⵓⵔ...','ⵜⵓⴷⴷⵓⵜ ⵏ ⵜⵎⵙⴽⴰⵔⵉⵏ...','ⴰⴽⴽⴰⴹ ⵢⵓⵙⴰ ✨','ⵜⵓⵜⵜⵔⴰ 🔒'],
   },
 };
 
-const LANG_FLAGS: Record<SignUpLang, string> = { fr:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ«ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ·', en:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ§', ar:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ²ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¦', amz:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£' };
+const LANG_FLAGS: Record<SignUpLang, string> = { fr:'🇫🇷', en:'🇬🇧', ar:'🇲🇦', amz:'ⵣ' };
 
 function SignUpLoadingOverlay({ msgs, lang }: { msgs: string[]; lang: SignUpLang }) {
   const [msgIdx, setMsgIdx] = useState(0);
@@ -407,10 +401,10 @@ function SignUpLoadingOverlay({ msgs, lang }: { msgs: string[]; lang: SignUpLang
           {msgs[msgIdx]}
         </p>
         <p style={{ color:'rgba(255,255,255,0.45)', fontSize:'0.62rem', marginTop:6, letterSpacing:'0.08em', fontWeight:600 }}>
-          {lang==='ar'?'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ 5ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ15 ÃÂÃÂÃÂÃÂ«ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦':lang==='en'?'May take 5ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ15 s on slow networksÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦':'Peut prendre 5ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ15 s selon le rÃÂÃÂÃÂÃÂ©seauÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦'}
+          {lang==='ar'?'قد يستغرق 5–15 ثانية…':lang==='en'?'May take 5–15 s on slow networks…':'Peut prendre 5–15 s selon le réseau…'}
         </p>
         <p style={{ color:'rgba(255,255,255,0.2)', fontSize:'0.58rem', marginTop:4, letterSpacing:'0.15em' }}>
-          BRIDGE SAFI ÃÂÃÂÃÂÃÂ· ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ
+          BRIDGE SAFI · آسفي · ⵙⴰⴼⵉ
         </p>
       </div>
 
@@ -420,8 +414,8 @@ function SignUpLoadingOverlay({ msgs, lang }: { msgs: string[]; lang: SignUpLang
 }
 
 function SignUpPage() {
-  const { signUp } = useBridgeAuth();
-  const { isLoaded, isSignedIn } = useUser();
+  const {signUp} = useBridgeAuth();
+  const {isLoaded, isSignedIn} = useUser();
   const [, navigate] = useLocation();
   const [identifier, setIdentifier] = useState('');
   const [name, setName] = useState('');
@@ -429,38 +423,35 @@ function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const isEmailId = identifier.includes('@');
-  useEffect(() => { if (isLoaded && isSignedIn) navigate(basePath || '/'); }, [isLoaded, isSignedIn, navigate]);
+  useEffect(()=>{if(isLoaded&&isSignedIn) navigate(basePath||'/');},[isLoaded,isSignedIn]);
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (loading) return;
-    if (!identifier.trim()) { setError('NumÃÂ©ro ou email requis.'); return; }
-    if (password.length < 8) { setError('Mot de passe trop faible (8 car. min.).'); return; }
+    e.preventDefault(); if(loading) return;
+    if(!identifier.trim()){setError('Numéro ou email requis.');return;}
+    if(password.length<8){setError('Mot de passe trop faible (8 car. min.).');return;}
     setLoading(true); setError('');
-    try { await signUp(identifier.trim(), password, name.trim()); navigate(basePath || '/'); }
-    catch (err: any) { setError(err.message || 'Erreur lors de la crÃÂ©ation du compte.'); }
+    try{await signUp(identifier.trim(),password,name.trim()); navigate(basePath||'/');}
+    catch(err:any){setError(err.message||'Erreur lors de la création du compte.');}
     setLoading(false);
   };
-  if (loading) return <SignUpLoadingOverlay msgs={['Bienvenue chez Bridge Safi Ã°ÂÂÂ²Ã°ÂÂÂ¦','CrÃÂ©ation de votre compte...','Presque prÃÂªt Ã¢ÂÂ¨']} lang="fr" />;
+  if(loading) return <SignUpLoadingOverlay msgs={['Bienvenue chez Bridge Safi 🇲🇦','Création de votre compte...','Presque prêt ✨']} lang="fr" />;
   return (
     <AuthPageWrapper>
-      <AuthCardHeader title="CrÃÂ©er un compte ÃÂ· Sign up" sub="TÃÂ©lÃÂ©phone ou email + mot de passe" />
-      <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column' }}>
-        <FocusInput label="TÃÂ©lÃÂ©phone ou email *"
-          value={identifier} onChange={setIdentifier}
+      <AuthCardHeader title="Créer un compte · Sign up" sub="Téléphone ou email + mot de passe" />
+      <form onSubmit={handleSubmit} style={{display:'flex',flexDirection:'column'}}>
+        <FocusInput label="Téléphone ou email *" value={identifier} onChange={setIdentifier}
           placeholder={isEmailId?'vous@example.com':'+212 6XX XXX XXX'}
           autoComplete="username" type={isEmailId?'email':'tel'} />
         <FocusInput label="Nom (optionnel)" value={name} onChange={setName}
-          placeholder="Votre prÃÂ©nom" autoComplete="name" />
-        <FocusInput label="Mot de passe * (8 car. min.)" type="password"
-          value={password} onChange={setPassword}
-          placeholder="Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢" autoComplete="new-password" />
+          placeholder="Votre prénom" autoComplete="name" />
+        <FocusInput label="Mot de passe * (8 car. min.)" type="password" value={password} onChange={setPassword}
+          placeholder="••••••••" autoComplete="new-password" />
         {error && <div style={errStyle}>{error}</div>}
-        <button type="submit" style={{ ...btn }}>CrÃÂ©er mon compte Ã¢ÂÂ</button>
+        <button type="submit" style={{...btn}}>Créer mon compte →</button>
       </form>
-      <div style={{ textAlign:'center', marginTop:'1.25rem', paddingTop:'1rem', borderTop:'1px solid #E5E1D8' }}>
-        <span style={{ fontSize:'0.75rem', color:'#9CA3AF' }}>DÃÂ©jÃÂ  un compte ? </span>
-        <button onClick={() => navigate('/sign-in')}
-          style={{ background:'none', border:'none', color:'#065F46', fontWeight:700, fontSize:'0.75rem', cursor:'pointer' }}>
+      <div style={{textAlign:'center',marginTop:'1.25rem',paddingTop:'1rem',borderTop:'1px solid #E5E1D8'}}>
+        <span style={{fontSize:'0.75rem',color:'#9CA3AF'}}>Déjà un compte ? </span>
+        <button onClick={()=>navigate('/sign-in')}
+          style={{background:'none',border:'none',color:'#065F46',fontWeight:700,fontSize:'0.75rem',cursor:'pointer'}}>
           Se connecter
         </button>
       </div>
@@ -468,273 +459,275 @@ function SignUpPage() {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Session keep-alive: renews the Clerk JWT every 4 min when
-//    the user chose "Rester connectÃÂÃÂÃÂÃÂ©", preventing inactivity sign-out ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ GAME PAGE PLACEHOLDER ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+
+// ── Session keep-alive: renews the Clerk JWT every 4 min when
+//    the user chose "Rester connecté", preventing inactivity sign-out ──────────
+
+// ─── GAME PAGE PLACEHOLDER ────────────────────────────────────────────────────
 
 const GAME_LANGS = ['fr','en','ar','amz'] as const;
 type GameLang = typeof GAME_LANGS[number];
-const GAME_LANG_LABELS: Record<GameLang,string> = {fr:'FR',en:'EN',ar:'AR',amz:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£'};
+const GAME_LANG_LABELS: Record<GameLang,string> = {fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
 const GAME_URL = 'https://game.safi-bridge.ma';
 const GAME_TARGET = 60000;
 const GAME_T = {
   fr:{
-    back:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Retour', playerId:'ID JOUEUR', diamonds:'MES DIAMANTS', playBtn:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ® JOUER MAINTENANT',
-    rulesBtn:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ RÃÂÃÂÃÂÃÂ¨gles du jeu', target:'OBJECTIF', progress:'PROGRESSION',
-    days:'3 jours ÃÂÃÂÃÂÃÂ· 3h/jour', pts:'pts',
-    howTitle:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ COMMENT GAGNER ?',
-    sec1Title:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ±ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ DURÃÂÃÂÃÂÃÂE DE JEU',
-    sec1:'Jouez 3h/jour pendant 3 jours ÃÂÃÂÃÂÃÂ· DurÃÂÃÂÃÂÃÂ©e totale : 9h ÃÂÃÂÃÂÃÂ· Plus vous jouez, plus vous gagnez de ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ !',
-    sec2Title:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ DIAMANTS ÃÂÃÂÃÂÃÂ RÃÂÃÂÃÂÃÂCOLTER',
-    sec2:'Objectif : 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ en 3 jours ÃÂÃÂÃÂÃÂ· Rythme : 6 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ/heure (3h ÃÂÃÂÃÂÃÂ 3j = 54 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ) ÃÂÃÂÃÂÃÂ· +2 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ/jour bonus (1h en plus) = 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ = livraison gratuite',
-    sec3Title:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ DIAMANTS MANQUANTS',
-    sec3:'Objectif atteint ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ tout est offert ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· Manque 10 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ vous payez 5 DH ÃÂÃÂÃÂÃÂ· Calcul : diamants manquants ÃÂÃÂÃÂÃÂ· 10 000 ÃÂÃÂÃÂÃÂ 5 DH',
-    bonusTitle:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ BONUS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ LIVRAISON GRATUITE',
-    bonusDesc:'Jouez 4h/jour (1h bonus) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ +2 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ/jour ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ = livraison 100% GRATUITE ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· Sinon le jeu s\'arrÃÂÃÂÃÂÃÂªte net ÃÂÃÂÃÂÃÂ  3h, revenez le lendemain',
+    back:'← Retour', playerId:'ID JOUEUR', diamonds:'MES DIAMANTS', playBtn:'🎮 JOUER MAINTENANT',
+    rulesBtn:'📜 Règles du jeu', target:'OBJECTIF', progress:'PROGRESSION',
+    days:'3 jours · 3h/jour', pts:'pts',
+    howTitle:'🏆 COMMENT GAGNER ?',
+    sec1Title:'⏱️ DURÉE DE JEU',
+    sec1:'Jouez 3h/jour pendant 3 jours · Durée totale : 9h · Plus vous jouez, plus vous gagnez de 💎 !',
+    sec2Title:'💎 DIAMANTS À RÉCOLTER',
+    sec2:'Objectif : 60 000 💎 en 3 jours · Rythme : 6 000 💎/heure (3h × 3j = 54 000 💎) · +2 000 💎/jour bonus (1h en plus) = 60 000 💎 = livraison gratuite',
+    sec3Title:'🐝 DIAMANTS MANQUANTS',
+    sec3:'Objectif atteint → tout est offert 🎉 · Manque 10 000 💎 → vous payez 5 DH · Calcul : diamants manquants ÷ 10 000 × 5 DH',
+    bonusTitle:'🎁 BONUS — LIVRAISON GRATUITE',
+    bonusDesc:'Jouez 4h/jour (1h bonus) → +2 000 💎/jour → 60 000 💎 = livraison 100% GRATUITE 🎁 · Sinon le jeu s\'arrête net à 3h, revenez le lendemain',
   },
   en:{
-    back:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Back', playerId:'PLAYER ID', diamonds:'MY DIAMONDS', playBtn:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ® PLAY NOW',
-    rulesBtn:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Game Rules', target:'TARGET', progress:'PROGRESS',
-    days:'3 days ÃÂÃÂÃÂÃÂ· 3h/day', pts:'pts',
-    howTitle:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ HOW TO WIN?',
-    sec1Title:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ±ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ PLAY TIME',
-    sec1:'Play 3h/day for 3 days ÃÂÃÂÃÂÃÂ· Total: 9h ÃÂÃÂÃÂÃÂ· The more you play, the more ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ you earn!',
-    sec2Title:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ DIAMONDS TO COLLECT',
-    sec2:'Goal: 60,000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ in 3 days ÃÂÃÂÃÂÃÂ· Rate: 6,000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ/hour (3h ÃÂÃÂÃÂÃÂ 3j = 54,000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ) ÃÂÃÂÃÂÃÂ· +2,000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ/day bonus (1 extra hour) = 60,000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ = free delivery',
-    sec3Title:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ MISSING DIAMONDS',
-    sec3:'Goal reached ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ everything is free ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· Missing 10,000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ you pay 5 DH ÃÂÃÂÃÂÃÂ· Formula: missing ÃÂÃÂÃÂÃÂ· 10,000 ÃÂÃÂÃÂÃÂ 5 DH',
-    bonusTitle:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ BONUS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ FREE DELIVERY',
-    bonusDesc:'Play 4h/day (1 bonus hour) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ +2,000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ/day ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 60,000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ = 100% FREE delivery ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· Otherwise the game stops at 3h, come back tomorrow',
+    back:'← Back', playerId:'PLAYER ID', diamonds:'MY DIAMONDS', playBtn:'🎮 PLAY NOW',
+    rulesBtn:'📜 Game Rules', target:'TARGET', progress:'PROGRESS',
+    days:'3 days · 3h/day', pts:'pts',
+    howTitle:'🏆 HOW TO WIN?',
+    sec1Title:'⏱️ PLAY TIME',
+    sec1:'Play 3h/day for 3 days · Total: 9h · The more you play, the more 💎 you earn!',
+    sec2Title:'💎 DIAMONDS TO COLLECT',
+    sec2:'Goal: 60,000 💎 in 3 days · Rate: 6,000 💎/hour (3h × 3j = 54,000 💎) · +2,000 💎/day bonus (1 extra hour) = 60,000 💎 = free delivery',
+    sec3Title:'🐝 MISSING DIAMONDS',
+    sec3:'Goal reached → everything is free 🎉 · Missing 10,000 💎 → you pay 5 DH · Formula: missing ÷ 10,000 × 5 DH',
+    bonusTitle:'🎁 BONUS — FREE DELIVERY',
+    bonusDesc:'Play 4h/day (1 bonus hour) → +2,000 💎/day → 60,000 💎 = 100% FREE delivery 🎁 · Otherwise the game stops at 3h, come back tomorrow',
   },
   ar:{
-    back:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹', playerId:'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¨', diamonds:'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ', playBtn:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ® ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ',
-    rulesBtn:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ©', target:'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ', progress:'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ',
-    days:'3 ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· 3 ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂª/ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ', pts:'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂ©',
-    howTitle:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂ',
-    sec1Title:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ±ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¨',
-    sec1:'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¨ 3 ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂª/ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ© 3 ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹: 9 ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ· ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ«ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂª ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ«ÃÂÃÂÃÂÃÂ±!',
-    sec2Title:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ©',
-    sec2:'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ: 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ 3 ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· 6 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ/ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ© (3ÃÂÃÂÃÂÃÂ³ ÃÂÃÂÃÂÃÂ 3ÃÂÃÂÃÂÃÂ£ = 54 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ) ÃÂÃÂÃÂÃÂ· +2 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ/ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ© (ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©) = 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ = ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ',
-    sec3Title:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ©',
-    sec3:'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¡ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµ 10 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ 5 ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨: ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµ ÃÂÃÂÃÂÃÂ· 10 000 ÃÂÃÂÃÂÃÂ 5 = ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ',
-    bonusTitle:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ© ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ',
-    bonusDesc:'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¨ 4 ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂª/ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ (ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ +2 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ/ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ = ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ 100% ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ 3 ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ',
+    back:'→ رجوع', playerId:'معرّف اللاعب', diamonds:'ماساتي', playBtn:'🎮 العب الآن',
+    rulesBtn:'📜 قواعد اللعبة', target:'الهدف', progress:'التقدم',
+    days:'3 أيام · 3 ساعات/يوم', pts:'نقطة',
+    howTitle:'🏆 كيف تفوز؟',
+    sec1Title:'⏱️ مدة اللعب',
+    sec1:'العب 3 ساعات/يوم لمدة 3 أيام · المجموع: 9 ساعات · كلما لعبت أكثر، كسبت 💎 أكثر!',
+    sec2Title:'💎 الماسات المطلوبة',
+    sec2:'الهدف: 60 000 💎 في 3 أيام · 6 000 💎/ساعة (3س × 3أ = 54 000 💎) · +2 000 💎/يوم مكافأة (ساعة إضافية) = 60 000 💎 = توصيل مجاني',
+    sec3Title:'🐝 الماسات الناقصة',
+    sec3:'وصلت للهدف → كل شيء مجاني 🎉 · نقص 10 000 💎 → تدفع 5 دراهم · الحساب: الناقص ÷ 10 000 × 5 = دراهم',
+    bonusTitle:'🎁 مكافأة — توصيل مجاني',
+    bonusDesc:'العب 4 ساعات/يوم (ساعة إضافية) → +2 000 💎/يوم → 60 000 💎 = توصيل مجاني 100% 🎁 · وإلا توقف اللعبة عند 3 ساعات، عد غداً',
   },
   amz:{
-    back:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ', playerId:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ³ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡', diamonds:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ', playBtn:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ® ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    rulesBtn:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ', target:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ', progress:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¹',
-    days:'3 ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂÃÂÃÂ· 3 ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ/ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ', pts:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    howTitle:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ· ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ?',
-    sec1Title:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ±ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    sec1:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ 3 ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ/ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂÃÂÃÂ· 3 ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂÃÂÃÂ· ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ: 9 ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    sec2Title:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ· ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·',
-    sec2:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ: 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· 6 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ/ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂÃÂÃÂ· +2 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ/ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ±ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ = ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¥ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    sec3Title:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    sec3:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ° ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¥ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· 10 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 5 ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂÃÂÃÂ· ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ: ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂÃÂÃÂ· 10 000 ÃÂÃÂÃÂÃÂ 5 = ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    bonusTitle:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ±ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¥ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    bonusDesc:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ 4 ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ/ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ +2 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ = ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¥ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ 100% ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ',
+    back:'← ⴰⵣⵣⵓⵍ', playerId:'ⴰⵏⴳⵔⴰⵡ', diamonds:'ⵉⴷⵢⴰⵎⴰⵏ ⵉⵏⵓ', playBtn:'🎮 ⵙⵖⵔ ⴷⴰⵖⵉ',
+    rulesBtn:'📜 ⵜⵉⵖⵔⵉ', target:'ⴰⵎⵓⵟⵟⵓ', progress:'ⴰⵎⵙⵉⵡⴹ',
+    days:'3 ⵡⴰⵙⵙⴰⵜⵏ · 3 ⵜⵉⵙⵙⵓⵜⵉⵏ/ⴰⵙⵙ', pts:'ⵜⵉⵏⵎⵍⴰⵏ',
+    howTitle:'🏆 ⵎⴰⵎⴽ ⴰⴷ ⵜⴽⵙⵎ?',
+    sec1Title:'⏱️ ⴰⵣⵎⵣ ⵏ ⵓⵣⵔⴰⵔ',
+    sec1:'ⵣⵔ 3 ⵜⵉⵙⵙⵓⵜⵉⵏ/ⴰⵙⵙ · 3 ⵡⴰⵙⵙⴰⵜⵏ · ⴰⵎⵎⴰⵙ: 9 ⵜⵉⵙⵙⵓⵜⵉⵏ',
+    sec2Title:'💎 ⵉⴷⵢⴰⵎⴰⵏ ⴰⴷ ⵜⴽⵛⵎⴷ',
+    sec2:'ⴰⵎⵓⵟⵟⵓ: 60 000 💎 · 6 000 💎/ⵜⵉⵙⵙⵓⵜ · +2 000 💎/ⴰⵙⵙ ⴱⵓⵏⵓⵙ = ⴰⵣⵏⵏⵣ ⵉⵥⵍⵉ',
+    sec3Title:'🐝 ⵉⴷⵢⴰⵎⴰⵏ ⵉⵔⵓⵔⵏ',
+    sec3:'ⵡⴰⵅⵅⴰ ⴰⵎⵓⵟⵟⵓ → ⴽⵓⵍⵍⵓ ⵉⵥⵍⵉ 🎉 · 10 000 💎 ⵉⵔⵓⵔ → 5 ⴷⵔⵀⵎ · ⵓⵔ: ⵉⵔⵓⵔⵏ ÷ 10 000 × 5 = ⴷⵔⵀⵎ',
+    bonusTitle:'🎁 ⴱⵓⵏⵓⵙ — ⴰⵣⵏⵏⵣ ⵉⵥⵍⵉ',
+    bonusDesc:'ⵣⵔ 4 ⵜⵉⵙⵙⵓⵜⵉⵏ/ⴰⵙⵙ → +2 000 💎 → 60 000 💎 = ⴰⵣⵏⵏⵣ ⵉⵥⵍⵉ 100% 🎁',
   },
 };
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ BRIDGE GAME RULES MODAL ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─── BRIDGE GAME RULES MODAL ──────────────────────────────────────────────────
 
 function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void }) {
   const isAR = lang === 'ar';
   const rules = {
     fr: {
-      title: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ RÃÂÃÂÃÂÃÂ¨gles du Jeu',
-      subtitle: 'Bridge Shark ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Comment gagner ?',
+      title: '📜 Règles du Jeu',
+      subtitle: 'Bridge Shark — Comment gagner ?',
       sections: [
         {
-          icon: 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ±ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ', title: 'DurÃÂÃÂÃÂÃÂ©e de jeu',
+          icon: '⏱️', title: 'Durée de jeu',
           points: [
-            'Jouez autant que vous voulez, ÃÂÃÂÃÂÃÂ  votre rythme',
-            'Objectif total : atteindre 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ',
-            'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Plus vous jouez, plus vous gagnez de ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ !',
+            'Jouez autant que vous voulez, à votre rythme',
+            'Objectif total : atteindre 60 000 💎',
+            '🎁 Plus vous jouez, plus vous gagnez de 💎 !',
           ]
         },
         {
-          icon: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ', title: 'Diamants ÃÂÃÂÃÂÃÂ  rÃÂÃÂÃÂÃÂ©colter',
+          icon: '💎', title: 'Diamants à récolter',
           points: [
-            'Objectif : rÃÂÃÂÃÂÃÂ©colter 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ',
-            '200 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ = 1 MAD de rÃÂÃÂÃÂÃÂ©duction sur votre commande',
-            '60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ = 300 MAD offerts !',
+            'Objectif : récolter 60 000 💎',
+            '200 💎 = 1 MAD de réduction sur votre commande',
+            '60 000 💎 = 300 MAD offerts !',
           ]
         },
         {
-          icon: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸', title: 'Diamants manquants',
+          icon: '💸', title: 'Diamants manquants',
           points: [
-            'Si vous atteignez 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ tout est offert ! ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ',
-            'S\'il manque 10 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ vous payez 5 DH',
-            'S\'il manque 30 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ vous payez 15 DH',
-            'Calcul : diamants manquants ÃÂÃÂÃÂÃÂ· 10 000 ÃÂÃÂÃÂÃÂ 5 DH',
+            'Si vous atteignez 60 000 💎 → tout est offert ! 🎉',
+            'S\'il manque 10 000 💎 → vous payez 5 DH',
+            'S\'il manque 30 000 💎 → vous payez 15 DH',
+            'Calcul : diamants manquants ÷ 10 000 × 5 DH',
           ]
         },
         {
-          icon: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ´', title: 'BONUS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Livraison gratuite',
+          icon: '🚴', title: 'BONUS — Livraison gratuite',
           points: [
-            'Atteignez 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ prochaine livraison 100% GRATUITE ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ',
-            'Chaque commande jouÃÂÃÂÃÂÃÂ©e booste vos diamants !',
+            'Atteignez 60 000 💎 → prochaine livraison 100% GRATUITE 🎁',
+            'Chaque commande jouée booste vos diamants !',
           ]
         },
         {
-          icon: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ', title: 'Comment utiliser vos gains',
+          icon: '🎁', title: 'Comment utiliser vos gains',
           points: [
-            'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ Un menu depuis Bridge Eats',
-            'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬ Un paquet de cigarettes via Bridge Tabac',
-            'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¹ Une coupe de fleurs via Bridge Fleurs',
-            'ÃÂÃÂÃÂÃÂchangez directement dans l\'application !',
+            '🛵 Un menu depuis Bridge Eats',
+            '🚬 Un paquet de cigarettes via Bridge Tabac',
+            '🌹 Une coupe de fleurs via Bridge Fleurs',
+            'Échangez directement dans l\'application !',
           ]
         },
       ],
-      example: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ Exemple : vous avez 50 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ au lieu de 60 000 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ il manque 10 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ vous payez seulement 5 DH.',
-      close: 'J\'ai compris ! ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¦ÃÂÃÂ',
+      example: '💡 Exemple : vous avez 50 000 💎 au lieu de 60 000 → il manque 10 000 💎 → vous payez seulement 5 DH.',
+      close: 'J\'ai compris ! 🦈',
     },
     en: {
-      title: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Game Rules',
-      subtitle: 'Bridge Shark ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ How to win?',
+      title: '📜 Game Rules',
+      subtitle: 'Bridge Shark — How to win?',
       sections: [
         {
-          icon: 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ±ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ', title: 'Playing time',
+          icon: '⏱️', title: 'Playing time',
           points: [
             'Play at your own pace, whenever you want',
-            'Total goal: reach 60,000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ',
-            'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ The more you play, the more ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ you earn!',
+            'Total goal: reach 60,000 💎',
+            '🎁 The more you play, the more 💎 you earn!',
           ]
         },
         {
-          icon: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ', title: 'Diamonds to collect',
+          icon: '💎', title: 'Diamonds to collect',
           points: [
-            'Goal: collect 60,000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ',
-            '200 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ = 1 MAD discount on your order',
-            '60,000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ = 300 MAD off!',
+            'Goal: collect 60,000 💎',
+            '200 💎 = 1 MAD discount on your order',
+            '60,000 💎 = 300 MAD off!',
           ]
         },
         {
-          icon: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸', title: 'Missing diamonds',
+          icon: '💸', title: 'Missing diamonds',
           points: [
-            'Reach 60,000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ everything is free! ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ',
-            'Missing 10,000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ you pay 5 DH',
-            'Missing 30,000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ you pay 15 DH',
-            'Formula: missing diamonds ÃÂÃÂÃÂÃÂ· 10,000 ÃÂÃÂÃÂÃÂ 5 DH',
+            'Reach 60,000 💎 → everything is free! 🎉',
+            'Missing 10,000 💎 → you pay 5 DH',
+            'Missing 30,000 💎 → you pay 15 DH',
+            'Formula: missing diamonds ÷ 10,000 × 5 DH',
           ]
         },
         {
-          icon: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ´', title: 'BONUS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Free delivery',
+          icon: '🚴', title: 'BONUS — Free delivery',
           points: [
-            'Reach 60,000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ next delivery 100% FREE ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ',
+            'Reach 60,000 💎 → next delivery 100% FREE 🎁',
             'Every order played boosts your diamonds!',
           ]
         },
         {
-          icon: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ', title: 'How to use your winnings',
+          icon: '🎁', title: 'How to use your winnings',
           points: [
-            'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ A meal from Bridge Eats',
-            'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬ A pack of cigarettes from Bridge Tabac',
-            'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¹ A bunch of flowers from Bridge Fleurs',
+            '🛵 A meal from Bridge Eats',
+            '🚬 A pack of cigarettes from Bridge Tabac',
+            '🌹 A bunch of flowers from Bridge Fleurs',
             'Redeem directly in the app!',
           ]
         },
       ],
-      example: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ Example: you have 50,000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ instead of 60,000 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ missing 10,000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ you pay only 5 DH.',
-      close: 'Got it! ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¦ÃÂÃÂ',
+      example: '💡 Example: you have 50,000 💎 instead of 60,000 → missing 10,000 💎 → you pay only 5 DH.',
+      close: 'Got it! 🦈',
     },
     ar: {
-      title: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ©',
-      subtitle: 'Bridge Shark ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂ',
+      title: '📜 قواعد اللعبة',
+      subtitle: 'Bridge Shark — كيف تفوز؟',
       sections: [
         {
-          icon: 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ±ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ', title: 'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¨',
+          icon: '⏱️', title: 'وقت اللعب',
           points: [
-            'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ¦ÃÂÃÂÃÂÃÂª',
-            'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ : ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ',
-            'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ«ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ«ÃÂÃÂÃÂÃÂ±!',
+            'العب بالوتيرة التي تريدها، متى شئت',
+            'الهدف الكلي : الوصول إلى 60 000 💎',
+            '🎁 كلما لعبت أكثر، كسبت ماسات أكثر!',
           ]
         },
         {
-          icon: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ', title: 'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ©',
+          icon: '💎', title: 'الماسات المطلوبة',
           points: [
-            'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ : ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ',
-            '200 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ = 1 ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ',
-            '60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ = 300 ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ!',
+            'الهدف : جمع 60 000 💎',
+            '200 💎 = 1 درهم خصم على طلبك',
+            '60 000 💎 = 300 درهم مجاناً!',
           ]
         },
         {
-          icon: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸', title: 'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ©',
+          icon: '💸', title: 'الماسات الناقصة',
           points: [
-            'ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂª 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¡ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ! ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ',
-            'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµ 10 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ 5 ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ',
-            'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµ 30 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ 15 ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ',
-            'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨ : ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµ ÃÂÃÂÃÂÃÂ· 10 000 ÃÂÃÂÃÂÃÂ 5 = ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ',
+            'حققت 60 000 💎 → كل شيء مجاني! 🎉',
+            'ناقص 10 000 💎 → تدفع 5 دراهم',
+            'ناقص 30 000 💎 → تدفع 15 درهم',
+            'الحساب : الناقص ÷ 10 000 × 5 = دراهم',
           ]
         },
         {
-          icon: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ´', title: 'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ© ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ',
+          icon: '🚴', title: 'مكافأة — توصيل مجاني',
           points: [
-            'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ 100% ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ',
-            'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂª!',
+            'اجمع 60 000 💎 → توصيلك التالي مجاني 100% 🎁',
+            'كل طلب يلعبه يرفع رصيدك من الماسات!',
           ]
         },
         {
-          icon: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ', title: 'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ',
+          icon: '🎁', title: 'كيف تستخدم مكاسبك',
           points: [
-            'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Bridge Eats',
-            'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬ ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¦ÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Bridge Tabac',
-            'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¹ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Bridge Fleurs',
-            'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ!',
+            '🛵 وجبة من Bridge Eats',
+            '🚬 علبة سجائر من Bridge Tabac',
+            '🌹 باقة ورد من Bridge Fleurs',
+            'استبدل مباشرة من التطبيق!',
           ]
         },
       ],
-      example: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ«ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ : ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ 50 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ 60 000 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµ 10 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ 5 ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ·.',
-      close: 'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂª! ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¦ÃÂÃÂ',
+      example: '💡 مثال : لديك 50 000 💎 بدلاً من 60 000 → ناقص 10 000 💎 → تدفع 5 دراهم فقط.',
+      close: 'فهمت! 🦈',
     },
     amz: {
-      title: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡',
+      title: '📜 ⵜⵉⵖⵔⵉ ⵏ ⵓⵎⴽⵙⴰⵡ',
       subtitle: 'Bridge Shark',
       sections: [
         {
-          icon: 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ±ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ', title: 'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡',
+          icon: '⏱️', title: 'ⴰⵣⵎⵣ ⵏ ⵓⵎⴽⵙⴰⵡ',
           points: [
-            'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·, ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·',
-            'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ : 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ',
-            'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ!',
+            'ⵙⵖⵔ ⵎⴰⵎⴽ ⵜⵔⵉⴷ, ⴰⵎⵎⴰⵙ ⵜⵔⵉⴷ',
+            'ⴰⵎⵓⵟⵟⵓ : 60 000 💎',
+            '🎁 ⴽⵓⵍⵍⵓ ⵉⵍⵎⵎⴰⵏ → ⵉⵍⵎⵎⴰⵏ ⵉⵏⵙ 💎!',
           ]
         },
         {
-          icon: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ', title: 'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
+          icon: '💎', title: 'ⵉⴷⵢⴰⵎⴰⵏ ⵉⵍⴰⵎⵎⴰⵏ',
           points: [
-            'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ : 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ',
-            '200 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ = 1 ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°',
-            '60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ = 300 ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½!',
+            'ⴰⵎⵓⵟⵟⵓ : 60 000 💎',
+            '200 💎 = 1 ⴷⵔⵀⵎ ⵙ ⵜⴼⴰⴷⴰ',
+            '60 000 💎 = 300 ⴷⵔⵀⵎ ⵉⵍⵉ ⵖⵔⴰⵜⴽ!',
           ]
         },
         {
-          icon: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸', title: 'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
+          icon: '💸', title: 'ⵉⴷⵢⴰⵎⴰⵏ ⵉⵍⵍⴰⵏ',
           points: [
-            '60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½! ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ',
-            'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ° 10 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 5 ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-            'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ° 30 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 15 ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-            'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ: ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂÃÂÃÂ· 10 000 ÃÂÃÂÃÂÃÂ 5 = ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
+            '60 000 💎 → ⴽⵓⵍⵍⵓ ⵢⵉⵍⵉ ⵖⵔⴰⵜⴽ! 🎉',
+            'ⵢⵍⵍⴰ 10 000 💎 → 5 ⴷⵔⵀⵎ',
+            'ⵢⵍⵍⴰ 30 000 💎 → 15 ⴷⵔⵀⵎ',
+            'ⵓⵔ: ⵉⵔⵓⵔⵏ ÷ 10 000 × 5 = ⴷⵔⵀⵎ',
           ]
         },
         {
-          icon: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ´', title: 'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ±ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ±ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ° ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼',
+          icon: '🚴', title: 'ⴱⵓⵏⵓⵙ — ⴰⵣⵏⵏⵣ ⴱⵍⴰ ⴰⵣⵔⴼ',
           points: [
-            '60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ 100% ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ',
-            'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¹ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ!',
+            '60 000 💎 → ⴰⵣⵏⵏⵣ ⵢⵉⵍⵉ ⵖⵔⴰⵜⴽ 100% 🎁',
+            'ⴽⵓⵍⵍⵓ ⴰⵎⵔ ⵉⵙⵙⵓⴼⵖ 💎 ⵉⵢⴰⴹⵏⵉⵏ!',
           ]
         },
         {
-          icon: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ', title: 'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ· ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½',
+          icon: '🎁', title: 'ⵎⴰⵎⴽ ⵜⵙⵖⵔⵙⴷ ⵉⵔⵏⵓⵜⵏ ⵏⵏⴽ',
           points: [
-            'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ Bridge Eats',
-            'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ±ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ Bridge Tabac',
-            'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¹ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ Bridge Fleurs',
+            '🛵 ⴰⵎⵏⵙⵉ ⵙ Bridge Eats',
+            '🚬 ⵜⴰⴱⴰⵖⵓⵔⵜ ⵙ Bridge Tabac',
+            '🌹 ⵉⵣⵓⵍⴰⵏ ⵙ Bridge Fleurs',
           ]
         },
       ],
-      example: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ 50 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ³ 60 000 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ° 10 000 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ 5 ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ.',
-      close: 'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ! ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¦ÃÂÃÂ',
+      example: '💡 50 000 💎 ⴷⴳ 60 000 → ⵢⵍⵍⴰ 10 000 → 5 ⴷⵔⵀⵎ.',
+      close: 'ⵙⵙⵉⵏⵖ! 🦈',
     },
   };
 
@@ -789,7 +782,7 @@ function GameRulesModal({ lang, onClose }: { lang: GameLang; onClose: () => void
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ PWA Install Banner (pages hors Bridge Eats) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─── PWA Install Banner (pages hors Bridge Eats) ──────────────────────────────
 function PWAInstallBannerSimple({ appName = 'Bridge Safi' }: { appName?: string }) {
   const [show, setShow] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
@@ -842,14 +835,14 @@ function PWAInstallBannerSimple({ appName = 'Bridge Safi' }: { appName?: string 
               </div>
               <div style={{flex:1,minWidth:0}}>
                 <p style={{fontWeight:900,color:'white',fontSize:14,margin:'0 0 2px',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>Installer {appName}</p>
-                <p style={{color:'rgba(255,255,255,0.7)',fontSize:12,margin:0}}>AccÃÂÃÂÃÂÃÂ¨s rapide depuis l'ÃÂÃÂÃÂÃÂ©cran d'accueil</p>
+                <p style={{color:'rgba(255,255,255,0.7)',fontSize:12,margin:0}}>Accès rapide depuis l'écran d'accueil</p>
               </div>
               <div style={{display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
                 <button onClick={install} style={{fontWeight:900,fontSize:12,padding:'8px 16px',borderRadius:20,border:'none',cursor:'pointer',background:'#D9C5A0',color:'#065F46',boxShadow:'0 4px 14px rgba(0,0,0,0.2)'}}>
                   Installer
                 </button>
                 <button onClick={dismiss} style={{fontWeight:900,fontSize:12,padding:'8px 12px',borderRadius:20,border:'none',cursor:'pointer',background:'rgba(255,255,255,0.12)',color:'rgba(255,255,255,0.7)'}}>
-                  ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+                  ✕
                 </button>
               </div>
             </div>
@@ -857,9 +850,9 @@ function PWAInstallBannerSimple({ appName = 'Bridge Safi' }: { appName?: string 
             <div style={{textAlign:'center',padding:'4px 0'}}>
               <p style={{color:'white',fontWeight:900,fontSize:13,margin:'0 0 10px'}}>Installer {appName}</p>
               <p style={{color:'rgba(255,255,255,0.8)',fontSize:12,margin:'0 0 12px'}}>
-                Appuyez sur <span style={{fontSize:20}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</span> puis <strong>"Sur l'ÃÂÃÂÃÂÃÂ©cran d'accueil"</strong>
+                Appuyez sur <span style={{fontSize:20}}>⎋</span> puis <strong>"Sur l'écran d'accueil"</strong>
               </p>
-              <div style={{fontSize:28,marginBottom:12}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</div>
+              <div style={{fontSize:28,marginBottom:12}}>➕</div>
               <button onClick={dismiss} style={{fontWeight:700,fontSize:12,padding:'8px 20px',borderRadius:16,border:'none',cursor:'pointer',background:'rgba(255,255,255,0.15)',color:'rgba(255,255,255,0.8)'}}>
                 Plus tard
               </button>
@@ -887,22 +880,22 @@ function GamePage() {
 
   if (!isLoaded) return null;
 
-  // Not signed in ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ show lock screen (Bridge Eats login REQUIRED, no phone bypass)
+  // Not signed in — show lock screen (Bridge Eats login REQUIRED, no phone bypass)
   if (!isSignedIn) {
     const lockT = {
-      fr: { title: 'CONNEXION BRIDGE EATS REQUISE', game: 'SAFI RUNNER', desc: 'Pour jouer, connecte-toi d\'abord sur Bridge Eats avec ton email et ton numÃÂÃÂÃÂÃÂ©ro. Tu seras automatiquement reconnu sur le jeu et tes diamants seront synchronisÃÂÃÂÃÂÃÂ©s.', connectBtn: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ ME CONNECTER SUR BRIDGE EATS', note: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Bridge Eats gÃÂÃÂÃÂÃÂ¨re la connexion. Tes ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ sont liÃÂÃÂÃÂÃÂ©s ÃÂÃÂÃÂÃÂ  ton compte\nÃÂÃÂ¢ÃÂÃÂÃÂÃÂ joue depuis n\'importe quel appareil avec le mÃÂÃÂÃÂÃÂªme email.', signUpLink: 'Pas encore inscrit ? CrÃÂÃÂÃÂÃÂ©er un compte' },
-      en: { title: 'BRIDGE EATS LOGIN REQUIRED', game: 'SAFI RUNNER', desc: 'To play, sign in to Bridge Eats first with your email and number. You\'ll be automatically recognized and your diamonds will sync.', connectBtn: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ SIGN IN ON BRIDGE EATS', note: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Bridge Eats manages the login. Your ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ are linked to your account\nÃÂÃÂ¢ÃÂÃÂÃÂÃÂ play from any device with the same email.', signUpLink: 'Not registered yet? Create an account' },
-      ar: { title: 'ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨', game: 'SAFI RUNNER', desc: 'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Bridge Eats. ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¦ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ.', connectBtn: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ± Bridge Eats', note: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Bridge Eats ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ. ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ.', signUpLink: 'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ¦ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ' },
-      amz: { title: 'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ³ BRIDGE EATS', game: 'SAFI RUNNER', desc: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ±ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ± ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ Bridge Eats.', connectBtn: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ BRIDGE EATS', note: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Bridge Eats ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ³.', signUpLink: 'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ· ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°? ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ±' },
+      fr: { title: 'CONNEXION BRIDGE EATS REQUISE', game: 'SAFI RUNNER', desc: 'Pour jouer, connecte-toi d\'abord sur Bridge Eats avec ton email et ton numéro. Tu seras automatiquement reconnu sur le jeu et tes diamants seront synchronisés.', connectBtn: '🛵 ME CONNECTER SUR BRIDGE EATS', note: '🔒 Bridge Eats gère la connexion. Tes 💎 sont liés à ton compte\n— joue depuis n\'importe quel appareil avec le même email.', signUpLink: 'Pas encore inscrit ? Créer un compte' },
+      en: { title: 'BRIDGE EATS LOGIN REQUIRED', game: 'SAFI RUNNER', desc: 'To play, sign in to Bridge Eats first with your email and number. You\'ll be automatically recognized and your diamonds will sync.', connectBtn: '🛵 SIGN IN ON BRIDGE EATS', note: '🔒 Bridge Eats manages the login. Your 💎 are linked to your account\n— play from any device with the same email.', signUpLink: 'Not registered yet? Create an account' },
+      ar: { title: 'تسجيل الدخول مطلوب', game: 'SAFI RUNNER', desc: 'للعب، سجّل دخولك أولاً على Bridge Eats. سيتم التعرف عليك تلقائياً وستتزامن ماساتك.', connectBtn: '🛵 تسجيل الدخول عبر Bridge Eats', note: '🔒 Bridge Eats يدير الاتصال. 💎 مرتبطة بحسابك.', signUpLink: 'ليس لديك حساب؟ أنشئ واحداً' },
+      amz: { title: 'ⴰⵙⵉⵔⴳ BRIDGE EATS', game: 'SAFI RUNNER', desc: '💎 ⵔⴱⵓⵏⵜ ⵉ ⵓⵃⵙⴰⴱ ⵏⵏⴽ ⵖ Bridge Eats.', connectBtn: '🛵 ⴽⵛⵎ ⵖ BRIDGE EATS', note: '🔒 Bridge Eats ⵉⵙⵖⵉⵡⵙ ⴰⵙⵉⵔⴳ.', signUpLink: 'ⵓⵔ ⵜⵙⵖⵔⴷ ⴰⵔⴰ? ⵙⵏⴼⵍ ⵓⵃⵙⴰⴱ' },
     }[lang];
     return (
       <div dir={isAR ? 'rtl' : 'ltr'} style={{minHeight:'100dvh',background:'linear-gradient(180deg,#04110A 0%,#071C11 60%,#050F08 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'32px 20px',gap:0}}>
         <div style={{width:'100%',maxWidth:360,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(74,222,128,0.2)',borderRadius:28,padding:'36px 24px 28px',display:'flex',flexDirection:'column',alignItems:'center',gap:16,backdropFilter:'blur(12px)'}}>
-          <div style={{fontSize:52,lineHeight:1}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</div>
+          <div style={{fontSize:52,lineHeight:1}}>🔒</div>
           <p style={{color:'#4ADE80',fontSize:10,fontWeight:900,letterSpacing:'0.18em',margin:0,textAlign:'center',textTransform:'uppercase'}}>{lockT.title}</p>
-          <p style={{color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.12em',margin:0,textAlign:'center'}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¦ÃÂÃÂ {lockT.game}</p>
+          <p style={{color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.12em',margin:0,textAlign:'center'}}>🦈 {lockT.game}</p>
           <p style={{color:'rgba(255,255,255,0.65)',fontSize:13,fontWeight:500,lineHeight:1.6,textAlign:'center',margin:0}}>{lockT.desc}</p>
-          {/* SEUL accÃÂÃÂÃÂÃÂ¨s : via Bridge Eats ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ aucune entrÃÂÃÂÃÂÃÂ©e par numÃÂÃÂÃÂÃÂ©ro seul */}
+          {/* SEUL accès : via Bridge Eats — aucune entrée par numéro seul */}
           <button onClick={()=>navigate('/sign-in')} style={{width:'100%',padding:'18px 0',borderRadius:18,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669 0%,#4ADE80 50%,#059669 100%)',color:'#fff',fontSize:15,fontWeight:900,letterSpacing:'0.04em',marginTop:4,boxShadow:'0 0 28px rgba(74,222,128,0.4)'}}>
             {lockT.connectBtn}
           </button>
@@ -915,7 +908,7 @@ function GamePage() {
     );
   }
 
-  // Signed in ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ fetch game token then show Safi Runner
+  // Signed in — fetch game token then show Safi Runner
   return <><GameIframe userId={user.id} lang={lang} isAR={isAR} /><PWAInstallBannerSimple appName="Bridge Game" /></>;
 }
 
@@ -1032,7 +1025,7 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
       const msg = event.data;
       if (!msg) return;
 
-      // Game requests player info ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ send profile
+      // Game requests player info → send profile
       if (msg.type === 'request_player_info') { sendProfileToGame(); return; }
 
       const rawDiamonds: number | undefined =
@@ -1043,8 +1036,8 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
         undefined;
       if (typeof rawDiamonds !== 'number' || rawDiamonds < 0 || !Number.isInteger(rawDiamonds)) return;
 
-      // If game sends less than the session start, it started from 0 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ add to existing balance.
-      // If game sends more than session start, it incorporated our starting value ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ use directly.
+      // If game sends less than the session start, it started from 0 → add to existing balance.
+      // If game sends more than session start, it incorporated our starting value → use directly.
       const sessionStart = sessionStartDiamonds.current;
       const diamonds = rawDiamonds < sessionStart
         ? sessionStart + rawDiamonds   // game reset to 0, add earned to previous balance
@@ -1071,16 +1064,16 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
   }, [playerName, avatarSrc]);
 
   const noPhoneMsg = {
-    fr: { title: 'NUMÃÂÃÂÃÂÃÂRO REQUIS', body: 'Pour jouer, tu dois d\'abord enregistrer ton numÃÂÃÂÃÂÃÂ©ro de tÃÂÃÂÃÂÃÂ©lÃÂÃÂÃÂÃÂ©phone dans ton profil Bridge.', btn: 'Aller ÃÂÃÂÃÂÃÂ  mon profil' },
+    fr: { title: 'NUMÉRO REQUIS', body: 'Pour jouer, tu dois d\'abord enregistrer ton numéro de téléphone dans ton profil Bridge.', btn: 'Aller à mon profil' },
     en: { title: 'PHONE REQUIRED', body: 'To play, you must first add your phone number to your Bridge profile.', btn: 'Go to my profile' },
-    ar: { title: 'ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨', body: 'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ.', btn: 'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ' },
-    amz: { title: 'AÃÂÃÂ¡ÃÂÃÂ¹ÃÂÃÂ¬ILIFUN ILAQ', body: 'Ad tsÃÂÃÂÃÂÃÂ£eÃÂÃÂ¡ÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¡ÃÂÃÂ¸ÃÂÃÂ, ÃÂÃÂÃÂÃÂemmreÃÂÃÂÃÂÃÂ£ aÃÂÃÂ¡ÃÂÃÂ¹ÃÂÃÂ­ilifun inek.', btn: 'AÃÂÃÂ¡ÃÂÃÂ¸ÃÂÃÂ¥sab inek' },
+    ar: { title: 'رقم الهاتف مطلوب', body: 'للعب، يجب عليك أولاً إضافة رقم هاتفك في ملفك الشخصي.', btn: 'الملف الشخصي' },
+    amz: { title: 'AṬILIFUN ILAQ', body: 'Ad tsɣeṛḍ, ɛemmreɣ aṭilifun inek.', btn: 'Aḥsab inek' },
   }[lang];
 
   if (state === 'loading') return (
     <div style={{minHeight:'100dvh',background:'#04110A',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:16}}>
       <div style={{width:44,height:44,border:'3px solid rgba(74,222,128,0.3)',borderTop:'3px solid #4ADE80',borderRadius:'50%',animation:'spin 0.9s linear infinite'}}/>
-      <p style={{color:'rgba(255,255,255,0.4)',fontSize:12,fontWeight:700,letterSpacing:'0.1em'}}>{isAR?'ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ...':lang==='en'?'Loading...':'Chargement...'}</p>
+      <p style={{color:'rgba(255,255,255,0.4)',fontSize:12,fontWeight:700,letterSpacing:'0.1em'}}>{isAR?'تحميل...':lang==='en'?'Loading...':'Chargement...'}</p>
       <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
     </div>
   );
@@ -1088,11 +1081,11 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
   if (state === 'no_phone') return (
     <div dir={isAR?'rtl':'ltr'} style={{minHeight:'100dvh',background:'linear-gradient(180deg,#04110A,#071C11)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'32px 20px'}}>
       <div style={{width:'100%',maxWidth:360,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(248,113,113,0.3)',borderRadius:28,padding:'36px 24px',display:'flex',flexDirection:'column',alignItems:'center',gap:14,backdropFilter:'blur(12px)'}}>
-        <div style={{fontSize:48}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ</div>
+        <div style={{fontSize:48}}>📵</div>
         <p style={{color:'#F87171',fontSize:10,fontWeight:900,letterSpacing:'0.18em',margin:0,textAlign:'center',textTransform:'uppercase'}}>{noPhoneMsg.title}</p>
         <p style={{color:'rgba(255,255,255,0.65)',fontSize:13,fontWeight:500,lineHeight:1.6,textAlign:'center',margin:0}}>{noPhoneMsg.body}</p>
         <button onClick={()=>navigate('/')} style={{width:'100%',padding:'16px 0',borderRadius:16,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669,#4ADE80)',color:'#fff',fontSize:14,fontWeight:900,marginTop:4}}>
-          ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¤ {noPhoneMsg.btn}
+          👤 {noPhoneMsg.btn}
         </button>
       </div>
     </div>
@@ -1100,16 +1093,16 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
 
   if (state === 'error') return (
     <div style={{minHeight:'100dvh',background:'#04110A',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:12}}>
-      <p style={{color:'#F87171',fontSize:13,fontWeight:700}}>{isAR?'ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂ£ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ':lang==='en'?'Failed to load game':'Erreur de chargement'}</p>
+      <p style={{color:'#F87171',fontSize:13,fontWeight:700}}>{isAR?'خطأ في التحميل':lang==='en'?'Failed to load game':'Erreur de chargement'}</p>
       <button onClick={()=>navigate('/')} style={{padding:'12px 24px',borderRadius:14,border:'none',background:'rgba(74,222,128,0.15)',color:'#4ADE80',fontSize:13,fontWeight:900,cursor:'pointer'}}>
-        ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ {isAR?'ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹':lang==='en'?'Back':'Retour'}
+        ← {isAR?'رجوع':lang==='en'?'Back':'Retour'}
       </button>
     </div>
   );
 
   const gameApiBase = window.location.origin;
   const saveUrl = `${gameApiBase}/api/game/diamonds/by-token`;
-  // Use the server-side avatar endpoint ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ a stable HTTPS URL the game can always fetch.
+  // Use the server-side avatar endpoint — a stable HTTPS URL the game can always fetch.
   // Falls back to Clerk imageUrl if the user hasn't saved a custom photo yet.
   const serverAvatarUrl = `${window.location.origin}/api/profile/avatar/${encodeURIComponent(userId)}`;
   const avatarParam = `&avatarUrl=${encodeURIComponent(serverAvatarUrl)}`;
@@ -1118,7 +1111,7 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
 
   return (
     <div style={{position:'fixed',inset:0,zIndex:9999,background:'#000'}}>
-      {/* Fullscreen iframe ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ no space stolen */}
+      {/* Fullscreen iframe — no space stolen */}
       <iframe
         ref={iframeRef}
         src={gameSrc}
@@ -1127,7 +1120,7 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
         title="Safi Runner"
         onLoad={sendProfileToGame}
       />
-      {/* Right-side controls ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ back arrow + avatar stacked, near the game's player circle */}
+      {/* Right-side controls — back arrow + avatar stacked, near the game's player circle */}
       <div style={{position:'absolute',right:10,bottom:120,zIndex:10,display:'flex',flexDirection:'column',alignItems:'center',gap:8,pointerEvents:'auto'}}>
         {/* Back button */}
         <button onClick={()=>navigate('/')}
@@ -1135,7 +1128,7 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
             background:'rgba(4,17,10,0.75)',backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',
             color:'#4ADE80',fontSize:18,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',
             boxShadow:'0 2px 12px rgba(0,0,0,0.5)',lineHeight:1}}>
-          ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+          ←
         </button>
         {/* Leaderboard button */}
         <button onClick={()=>navigate('/classement')}
@@ -1144,7 +1137,7 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
             color:'#FFD700',fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',
             boxShadow:'0 2px 12px rgba(0,0,0,0.5)',lineHeight:1}}
           title="Classement">
-          ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ
+          🏆
         </button>
         {/* Avatar */}
         {avatarSrc
@@ -1153,14 +1146,14 @@ function GameIframe({ userId, lang, isAR }: { userId: string; lang: GameLang; is
           : <div style={{width:36,height:36,borderRadius:'50%',background:'rgba(4,17,10,0.75)',
               backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',
               border:'2px solid rgba(74,222,128,0.4)',display:'flex',alignItems:'center',justifyContent:'center',
-              fontSize:16,boxShadow:'0 2px 12px rgba(0,0,0,0.5)',flexShrink:0}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¤</div>
+              fontSize:16,boxShadow:'0 2px 12px rgba(0,0,0,0.5)',flexShrink:0}}>👤</div>
         }
       </div>
     </div>
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ DRIVER GPS TRACKER PAGE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─── DRIVER GPS TRACKER PAGE ─────────────────────────────────────────────────
 // Supports both delivery (ref starts with digit) and taxi (ref starts with TC-)
 
 function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
@@ -1173,20 +1166,20 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
     document.documentElement.classList.toggle('dark', dark);
   }, []);
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Delivery mode state ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── Delivery mode state ──
   const [status, setStatus] = useState<'asking'|'active'|'error'|'denied'>('asking');
   const [coords, setCoords] = useState<{lat:number;lng:number}|null>(null);
   const [lastSent, setLastSent] = useState<number|null>(null);
   const watchId = useRef<number|null>(null);
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Taxi mode state ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── Taxi mode state ──
   const [taxiState, setTaxiState] = useState<'loading'|'pending'|'accepted'|'arrived'>('loading');
   const [bookingInfo, setBookingInfo] = useState<{customerName?:string;customerPhone?:string;clientAddress?:string;destination?:string;clientLat?:number;clientLng?:number}|null>(null);
   const [taxiCoords, setTaxiCoords] = useState<{lat:number;lng:number}|null>(null);
   const [taxiLastSent, setTaxiLastSent] = useState<number|null>(null);
   const taxiWatchId = useRef<number|null>(null);
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Load taxi booking info ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── Load taxi booking info ──
   useEffect(() => {
     if (!isTaxi) return;
     fetch(`/api/tracking/${ref}`)
@@ -1243,7 +1236,7 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
     setTaxiState('arrived');
   };
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Delivery mode ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── Delivery mode ──
   const [delivStatus, setDelivStatus] = useState<'received'|'preparing'|'on_way'|'delivered'>('received');
 
   const pushPosition = async (lat: number, lng: number) => {
@@ -1297,18 +1290,18 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
   const secsAgo = lastSent ? Math.round((Date.now() - lastSent) / 1000) : null;
   const taxiSecsAgo = taxiLastSent ? Math.round((Date.now() - taxiLastSent) / 1000) : null;
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ TAXI MODE UI ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── TAXI MODE UI ──
   if (isTaxi) {
     return (
       <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg,#78350F 0%,#1A2F23 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'system-ui, sans-serif' }}>
         <div style={{ width: '100%', maxWidth: '360px', background: '#fff', borderRadius: '24px', padding: '28px 24px', boxShadow: '0 8px 40px rgba(0,0,0,0.3)', textAlign: 'center' }}>
-          <div style={{ fontSize: '56px', marginBottom: '8px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</div>
+          <div style={{ fontSize: '56px', marginBottom: '8px' }}>🚖</div>
           <h1 style={{ fontSize: '18px', fontWeight: '900', color: '#78350F', margin: '0 0 2px' }}>Bridge Moto Taxi</h1>
           <p style={{ fontSize: '11px', color: '#9CA3AF', margin: '0 0 20px' }}>Course #{ref}</p>
 
           {taxiState === 'loading' && (
             <div style={{ padding: '20px', background: '#FEF3C7', borderRadius: '12px' }}>
-              <p style={{ fontSize: '13px', color: '#B45309', fontWeight: '700' }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³ Chargement de la courseÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦</p>
+              <p style={{ fontSize: '13px', color: '#B45309', fontWeight: '700' }}>⏳ Chargement de la course…</p>
             </div>
           )}
 
@@ -1316,10 +1309,10 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
             <div>
               {/* Booking info card */}
               <div style={{ background: '#FEF3C7', borderRadius: '14px', padding: '14px', marginBottom: '16px', textAlign: 'left' }}>
-                <p style={{ fontSize: '10px', fontWeight: '900', color: '#92400E', letterSpacing: '0.1em', marginBottom: '10px' }}>DÃÂÃÂÃÂÃÂTAILS DE LA COURSE</p>
+                <p style={{ fontSize: '10px', fontWeight: '900', color: '#92400E', letterSpacing: '0.1em', marginBottom: '10px' }}>DÉTAILS DE LA COURSE</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                    <span style={{ fontSize: '14px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¤</span>
+                    <span style={{ fontSize: '14px' }}>👤</span>
                     <div>
                       <p style={{ fontSize: '13px', fontWeight: '800', color: '#1A2F23', margin: 0 }}>{bookingInfo.customerName || 'Client'}</p>
                       {bookingInfo.customerPhone && <a href={`tel:${bookingInfo.customerPhone}`} style={{ fontSize: '12px', color: '#78350F', fontWeight: '700', textDecoration: 'none' }}>{bookingInfo.customerPhone}</a>}
@@ -1327,19 +1320,19 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
                   </div>
                   {bookingInfo.clientAddress && (
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                      <span style={{ fontSize: '14px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</span>
+                      <span style={{ fontSize: '14px' }}>📍</span>
                       <div>
-                        <p style={{ fontSize: '10px', color: '#9CA3AF', margin: '0 0 2px', fontWeight: '700' }}>DÃÂÃÂÃÂÃÂPART</p>
+                        <p style={{ fontSize: '10px', color: '#9CA3AF', margin: '0 0 2px', fontWeight: '700' }}>DÉPART</p>
                         <p style={{ fontSize: '12px', color: '#1A2F23', margin: 0 }}>{bookingInfo.clientAddress}</p>
                         {bookingInfo.clientLat && bookingInfo.clientLng && (
-                          <a href={`https://maps.google.com/?q=${bookingInfo.clientLat},${bookingInfo.clientLng}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#3B82F6', fontWeight: '700' }}>Ouvrir dans Maps ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</a>
+                          <a href={`https://maps.google.com/?q=${bookingInfo.clientLat},${bookingInfo.clientLng}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#3B82F6', fontWeight: '700' }}>Ouvrir dans Maps →</a>
                         )}
                       </div>
                     </div>
                   )}
                   {bookingInfo.destination && (
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                      <span style={{ fontSize: '14px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</span>
+                      <span style={{ fontSize: '14px' }}>🏁</span>
                       <div>
                         <p style={{ fontSize: '10px', color: '#9CA3AF', margin: '0 0 2px', fontWeight: '700' }}>DESTINATION</p>
                         <p style={{ fontSize: '12px', color: '#1A2F23', margin: 0 }}>{bookingInfo.destination}</p>
@@ -1349,17 +1342,17 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
                 </div>
               </div>
               <button onClick={handleAccept} style={{ width: '100%', padding: '14px', background: 'linear-gradient(135deg,#065F46,#10B981)', color: '#fff', border: 'none', borderRadius: '14px', fontSize: '16px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 4px 16px rgba(16,185,129,0.4)' }}>
-                ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Accepter la course
+                ✅ Accepter la course
               </button>
             </div>
           )}
 
           {taxiState === 'pending' && !bookingInfo && (
             <div style={{ padding: '20px', background: '#FEF3C7', borderRadius: '12px' }}>
-              <p style={{ fontSize: '13px', color: '#B45309', fontWeight: '700' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Course en attente</p>
+              <p style={{ fontSize: '13px', color: '#B45309', fontWeight: '700' }}>📋 Course en attente</p>
               <p style={{ fontSize: '11px', color: '#92400E', marginTop: '4px' }}>Informations client non disponibles</p>
               <button onClick={handleAccept} style={{ marginTop: '12px', width: '100%', padding: '12px', background: '#065F46', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: '900', cursor: 'pointer' }}>
-                ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Accepter
+                ✅ Accepter
               </button>
             </div>
           )}
@@ -1373,7 +1366,7 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
               {bookingInfo?.destination && (
                 <div style={{ background: '#EFF6FF', borderRadius: '12px', padding: '10px 14px', marginBottom: '12px', textAlign: 'left' }}>
                   <p style={{ fontSize: '10px', color: '#9CA3AF', fontWeight: '700', marginBottom: '2px' }}>DESTINATION</p>
-                  <p style={{ fontSize: '13px', color: '#1D4ED8', fontWeight: '800', margin: 0 }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ {bookingInfo.destination}</p>
+                  <p style={{ fontSize: '13px', color: '#1D4ED8', fontWeight: '800', margin: 0 }}>🏁 {bookingInfo.destination}</p>
                 </div>
               )}
               {taxiCoords && (
@@ -1381,21 +1374,21 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
                   {taxiCoords.lat.toFixed(6)}, {taxiCoords.lng.toFixed(6)}
                 </p>
               )}
-              {taxiSecsAgo !== null && <p style={{ fontSize: '11px', color: '#10B981', marginBottom: '16px' }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Mis ÃÂÃÂÃÂÃÂ  jour il y a {taxiSecsAgo}s</p>}
+              {taxiSecsAgo !== null && <p style={{ fontSize: '11px', color: '#10B981', marginBottom: '16px' }}>✓ Mis à jour il y a {taxiSecsAgo}s</p>}
               <button onClick={handleArrived} style={{ width: '100%', padding: '14px', background: 'linear-gradient(135deg,#78350F,#F59E0B)', color: '#fff', border: 'none', borderRadius: '14px', fontSize: '16px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 4px 16px rgba(120,53,15,0.4)' }}>
-                ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¯ Je suis arrivÃÂÃÂÃÂÃÂ© !
+                🎯 Je suis arrivé !
               </button>
               <div style={{ marginTop: '12px', padding: '10px', background: '#FEF3C7', borderRadius: '10px' }}>
-                <p style={{ fontSize: '11px', color: '#92400E', fontWeight: '700' }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Ne fermez pas cette page</p>
+                <p style={{ fontSize: '11px', color: '#92400E', fontWeight: '700' }}>⚠️ Ne fermez pas cette page</p>
               </div>
             </div>
           )}
 
           {taxiState === 'arrived' && (
             <div style={{ background: '#EFF6FF', borderRadius: '14px', padding: '20px' }}>
-              <p style={{ fontSize: '36px', marginBottom: '8px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</p>
-              <p style={{ fontSize: '16px', fontWeight: '900', color: '#1D4ED8', marginBottom: '4px' }}>Course terminÃÂÃÂÃÂÃÂ©e !</p>
-              <p style={{ fontSize: '12px', color: '#3B82F6' }}>Le client a ÃÂÃÂÃÂÃÂ©tÃÂÃÂÃÂÃÂ© notifiÃÂÃÂÃÂÃÂ© de votre arrivÃÂÃÂÃÂÃÂ©e.</p>
+              <p style={{ fontSize: '36px', marginBottom: '8px' }}>🎉</p>
+              <p style={{ fontSize: '16px', fontWeight: '900', color: '#1D4ED8', marginBottom: '4px' }}>Course terminée !</p>
+              <p style={{ fontSize: '12px', color: '#3B82F6' }}>Le client a été notifié de votre arrivée.</p>
             </div>
           )}
         </div>
@@ -1404,18 +1397,18 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
     );
   }
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ DELIVERY MODE UI ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── DELIVERY MODE UI ──
   return (
     <div style={{ minHeight: '100vh', background: '#F0FDF4', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'system-ui, sans-serif' }}>
       <div style={{ width: '100%', maxWidth: '360px', background: '#fff', borderRadius: '24px', padding: '32px 24px', boxShadow: '0 8px 40px rgba(0,0,0,0.12)', textAlign: 'center' }}>
-        <div style={{ fontSize: '64px', marginBottom: '16px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ</div>
-        <h1 style={{ fontSize: '20px', fontWeight: '900', color: '#065F46', margin: '0 0 4px' }}>Bridge Safi ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ GPS Livreur</h1>
+        <div style={{ fontSize: '64px', marginBottom: '16px' }}>🛵</div>
+        <h1 style={{ fontSize: '20px', fontWeight: '900', color: '#065F46', margin: '0 0 4px' }}>Bridge Safi — GPS Livreur</h1>
         <p style={{ fontSize: '12px', color: '#9CA3AF', margin: '0 0 24px' }}>Commande #{ref}</p>
 
         {status === 'asking' && (
           <div style={{ background: '#FEF3C7', borderRadius: '12px', padding: '16px' }}>
-            <p style={{ fontSize: '14px', color: '#B45309', fontWeight: '700' }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³ En attente de la localisationÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦</p>
-            <p style={{ fontSize: '12px', color: '#92400E', marginTop: '4px' }}>Autorisez l'accÃÂÃÂÃÂÃÂ¨s ÃÂÃÂÃÂÃÂ  votre position GPS</p>
+            <p style={{ fontSize: '14px', color: '#B45309', fontWeight: '700' }}>⏳ En attente de la localisation…</p>
+            <p style={{ fontSize: '12px', color: '#92400E', marginTop: '4px' }}>Autorisez l'accès à votre position GPS</p>
           </div>
         )}
 
@@ -1428,13 +1421,13 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
             </div>
 
             {/* Status buttons */}
-            <p style={{ fontSize: '10px', fontWeight: '900', color: '#9CA3AF', letterSpacing: '0.08em', marginBottom: '10px', textTransform: 'uppercase' }}>Mettre ÃÂÃÂÃÂÃÂ  jour le statut</p>
+            <p style={{ fontSize: '10px', fontWeight: '900', color: '#9CA3AF', letterSpacing: '0.08em', marginBottom: '10px', textTransform: 'uppercase' }}>Mettre à jour le statut</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
               {([
-                { key: 'received',  label: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Commande reÃÂÃÂÃÂÃÂ§ue',      bg: '#F0FDF4', border: '#86EFAC', color: '#065F46' },
-                { key: 'preparing', label: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ³ En prÃÂÃÂÃÂÃÂ©paration',       bg: '#FEF3C7', border: '#FDE68A', color: '#92400E' },
-                { key: 'on_way',    label: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ En chemin vers le client', bg: '#EFF6FF', border: '#93C5FD', color: '#1D4ED8' },
-                { key: 'delivered', label: 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Livraison effectuÃÂÃÂÃÂÃÂ©e',  bg: '#065F46', border: '#065F46', color: '#fff'    },
+                { key: 'received',  label: '📋 Commande reçue',      bg: '#F0FDF4', border: '#86EFAC', color: '#065F46' },
+                { key: 'preparing', label: '👨‍🍳 En préparation',       bg: '#FEF3C7', border: '#FDE68A', color: '#92400E' },
+                { key: 'on_way',    label: '🛵 En chemin vers le client', bg: '#EFF6FF', border: '#93C5FD', color: '#1D4ED8' },
+                { key: 'delivered', label: '✅ Livraison effectuée',  bg: '#065F46', border: '#065F46', color: '#fff'    },
               ] as {key:'received'|'preparing'|'on_way'|'delivered';label:string;bg:string;border:string;color:string}[]).map(s=>(
                 <button key={s.key} onClick={()=>updateDelivStatus(s.key)}
                   style={{
@@ -1453,11 +1446,11 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
 
             {coords && (
               <p style={{ fontSize: '10px', fontFamily: 'monospace', color: '#9CA3AF', background: '#F9FAFB', borderRadius: '8px', padding: '6px 8px', marginBottom: '8px' }}>
-                ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}
+                📍 {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}
               </p>
             )}
             <div style={{ padding: '10px 12px', background: '#FEF3C7', borderRadius: '10px' }}>
-              <p style={{ fontSize: '11px', color: '#92400E', fontWeight: '700' }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Ne fermez pas cette page</p>
+              <p style={{ fontSize: '11px', color: '#92400E', fontWeight: '700' }}>⚠️ Ne fermez pas cette page</p>
               <p style={{ fontSize: '10px', color: '#B45309', marginTop: '2px' }}>Laissez-la ouverte pendant toute la livraison</p>
             </div>
           </div>
@@ -1465,23 +1458,23 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
 
         {status === 'active' && delivStatus === 'delivered' && (
           <div style={{ background: '#F0FDF4', borderRadius: '14px', padding: '20px' }}>
-            <p style={{ fontSize: '36px', marginBottom: '8px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</p>
-            <p style={{ fontSize: '16px', fontWeight: '900', color: '#065F46', marginBottom: '4px' }}>Livraison terminÃÂÃÂÃÂÃÂ©e !</p>
-            <p style={{ fontSize: '12px', color: '#6B7280' }}>Le client a ÃÂÃÂÃÂÃÂ©tÃÂÃÂÃÂÃÂ© notifiÃÂÃÂÃÂÃÂ©. Merci !</p>
+            <p style={{ fontSize: '36px', marginBottom: '8px' }}>🎉</p>
+            <p style={{ fontSize: '16px', fontWeight: '900', color: '#065F46', marginBottom: '4px' }}>Livraison terminée !</p>
+            <p style={{ fontSize: '12px', color: '#6B7280' }}>Le client a été notifié. Merci !</p>
           </div>
         )}
 
         {status === 'denied' && (
           <div style={{ background: '#FEE2E2', borderRadius: '12px', padding: '16px' }}>
-            <p style={{ fontSize: '14px', color: '#DC2626', fontWeight: '700' }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ AccÃÂÃÂÃÂÃÂ¨s GPS refusÃÂÃÂÃÂÃÂ©</p>
-            <p style={{ fontSize: '12px', color: '#991B1B', marginTop: '4px' }}>Activez la localisation dans les paramÃÂÃÂÃÂÃÂ¨tres de votre navigateur puis rechargez la page</p>
+            <p style={{ fontSize: '14px', color: '#DC2626', fontWeight: '700' }}>❌ Accès GPS refusé</p>
+            <p style={{ fontSize: '12px', color: '#991B1B', marginTop: '4px' }}>Activez la localisation dans les paramètres de votre navigateur puis rechargez la page</p>
           </div>
         )}
 
         {status === 'error' && (
           <div style={{ background: '#FEE2E2', borderRadius: '12px', padding: '16px' }}>
-            <p style={{ fontSize: '14px', color: '#DC2626', fontWeight: '700' }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Lien invalide</p>
-            <p style={{ fontSize: '12px', color: '#991B1B', marginTop: '4px' }}>Utilisez le lien envoyÃÂÃÂÃÂÃÂ© par le restaurant</p>
+            <p style={{ fontSize: '14px', color: '#DC2626', fontWeight: '700' }}>❌ Lien invalide</p>
+            <p style={{ fontSize: '12px', color: '#991B1B', marginTop: '4px' }}>Utilisez le lien envoyé par le restaurant</p>
           </div>
         )}
       </div>
@@ -1490,7 +1483,7 @@ function DriverTrackerPage({ params }: { params?: { ref?: string } }) {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ DISPATCH PAGE (livreur + chauffeur taxi) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─── DISPATCH PAGE (livreur + chauffeur taxi) ─────────────────────────────────
 
 type DispatchRole = 'choose' | 'livreur' | 'taxi' | 'moto';
 
@@ -1579,10 +1572,10 @@ function DispatchPage() {
   // Update page title based on role (affects PWA app name on install)
   useEffect(() => {
     if (role === 'moto') document.title = 'Bridge Moto Taxi';
-    else if (role === 'taxi') document.title = 'Bridge Taxi ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Safi';
+    else if (role === 'taxi') document.title = 'Bridge Taxi — Safi';
     else if (role === 'livreur') document.title = 'Bridge Livraison';
     else document.title = 'Bridge Dispatch';
-    return () => { document.title = 'Bridge Safi ÃÂÃÂÃÂÃÂ· Livraison & Taxi ÃÂÃÂÃÂÃÂ  Safi, Maroc'; };
+    return () => { document.title = 'Bridge Safi · Livraison & Taxi à Safi, Maroc'; };
   }, [role]);
 
   const handleSetRole = async (r: 'livreur' | 'taxi' | 'moto') => {
@@ -1597,7 +1590,7 @@ function DispatchPage() {
     setPushLoading(false);
   };
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ GPS reporting to server (for smart dispatch proximity) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── GPS reporting to server (for smart dispatch proximity) ──
   // Reports driver position every 30s so the API knows who is nearby which restaurant
   const gpsReportRef = useRef<number | null>(null);
   const liveGPSRef = useRef<{ lat: number; lng: number } | null>(null);
@@ -1637,7 +1630,7 @@ function DispatchPage() {
     };
   }, [role, driverName]);
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ EATS: SSE stream for new orders ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── EATS: SSE stream for new orders ──
   useEffect(() => {
     if (role !== 'livreur') return;
     const es = new EventSource('/api/orders/stream?driverKey=BRIDGE-DRIVER-2025');
@@ -1685,7 +1678,7 @@ function DispatchPage() {
       headers: { 'Content-Type': 'application/json', 'x-driver-key': DKEY },
       body: JSON.stringify({ status: 'accepted', driverName: driverName || 'Livreur' }),
     }).catch(() => {});
-    // Don't override tracking status here ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ restaurant may have already set 'preparing'
+    // Don't override tracking status here — restaurant may have already set 'preparing'
   };
 
   const pickupEatsOrder = async () => {
@@ -1697,7 +1690,7 @@ function DispatchPage() {
       headers: { 'Content-Type': 'application/json', 'x-driver-key': DKEY },
       body: JSON.stringify({ status: 'on_the_way' }),
     }).catch(() => {});
-    // Tracking store: on_way ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ customer sees EN CHEMIN ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ
+    // Tracking store: on_way → customer sees EN CHEMIN 🛵
     await fetch(`/api/tracking/${activeEatsOrder.ref}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -1731,7 +1724,7 @@ function DispatchPage() {
     if (eatsWatchId.current != null) navigator.geolocation.clearWatch(eatsWatchId.current);
     const order = activeEatsOrder;
     if (order) {
-      // Tracking store: delivered ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ customer sees LIVRÃÂÃÂÃÂÃÂE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+      // Tracking store: delivered → customer sees LIVRÉE ✅
       await fetch(`/api/tracking/${order.ref}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'delivered' }),
@@ -1741,7 +1734,7 @@ function DispatchPage() {
         method: 'PATCH', headers: { 'Content-Type': 'application/json', 'x-driver-key': DKEY },
         body: JSON.stringify({ status: 'delivered' }),
       }).catch(() => {});
-      // Delete tracking entry after 15s so customer can see LIVRÃÂÃÂÃÂÃÂE
+      // Delete tracking entry after 15s so customer can see LIVRÉE
       const ref = order.ref;
       setTimeout(() => { fetch(`/api/tracking/${ref}`, { method: 'DELETE' }).catch(() => {}); }, 15000);
     }
@@ -1752,7 +1745,7 @@ function DispatchPage() {
     fetchEatsOrders();
   };
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ TAXI: poll for pending bookings ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── TAXI: poll for pending bookings ──
   useEffect(() => {
     if (role !== 'taxi') return;
     const poll = async () => {
@@ -1774,7 +1767,7 @@ function DispatchPage() {
     return () => { clearInterval(iv); if (taxiWatchId.current != null) navigator.geolocation.clearWatch(taxiWatchId.current); };
   }, [role]);
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ MOTO: poll for pending moto-taxi bookings ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── MOTO: poll for pending moto-taxi bookings ──
   useEffect(() => {
     if (role !== 'moto') return;
     const poll = async () => {
@@ -1884,7 +1877,7 @@ function DispatchPage() {
     setMotoGPS('idle');
   };
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ UI ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── UI ──
   const cardStyle: React.CSSProperties = { background: '#fff', borderRadius: 20, padding: '18px 16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', marginBottom: 12, border: '1.5px solid #E5E7EB' };
 
   // CHOOSE ROLE
@@ -1900,13 +1893,13 @@ function DispatchPage() {
         <input
           value={driverName}
           onChange={e => setDriverName(e.target.value)}
-          placeholder="Votre prÃÂÃÂÃÂÃÂ©nom (ex: Youssef)"
+          placeholder="Votre prénom (ex: Youssef)"
           style={{ width: '100%', maxWidth: 340, padding: '12px 16px', borderRadius: 14, border: '1px solid rgba(74,222,128,0.3)', background: 'rgba(255,255,255,0.06)', color: '#fff', fontSize: 14, marginBottom: 10, outline: 'none', boxSizing: 'border-box' }}
         />
         <input
           value={driverPhone}
           onChange={e => setDriverPhone(e.target.value)}
-          placeholder="Votre tÃÂÃÂÃÂÃÂ©lÃÂÃÂÃÂÃÂ©phone (ex: 0600000000)"
+          placeholder="Votre téléphone (ex: 0600000000)"
           type="tel"
           style={{ width: '100%', maxWidth: 340, padding: '12px 16px', borderRadius: 14, border: '1px solid rgba(74,222,128,0.3)', background: 'rgba(255,255,255,0.06)', color: '#fff', fontSize: 14, marginBottom: 20, outline: 'none', boxSizing: 'border-box' }}
         />
@@ -1914,7 +1907,7 @@ function DispatchPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 340 }}>
           <button onClick={() => handleSetRole('livreur')}
             style={{ padding: '18px 16px', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#7C3AED,#A78BFA)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 24px rgba(124,58,237,0.35)', display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left' }}>
-            <span style={{ fontSize: 26, flexShrink: 0 }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ</span>
+            <span style={{ fontSize: 26, flexShrink: 0 }}>🛵</span>
             <div>
               <div style={{ fontSize: 15, fontWeight: 900 }}>Livreur de Repas</div>
               <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85 }}>Livraison de repas et commandes</div>
@@ -1922,22 +1915,22 @@ function DispatchPage() {
           </button>
           <button onClick={() => handleSetRole('taxi')}
             style={{ padding: '18px 16px', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#B45309,#F59E0B)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 24px rgba(245,158,11,0.35)', display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left' }}>
-            <span style={{ fontSize: 26, flexShrink: 0 }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</span>
+            <span style={{ fontSize: 26, flexShrink: 0 }}>🚖</span>
             <div>
               <div style={{ fontSize: 15, fontWeight: 900 }}>Taxi Confort</div>
-              <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85 }}>Courses taxi confort ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Safi</div>
+              <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85 }}>Courses taxi confort — Safi</div>
             </div>
           </button>
           <button onClick={() => handleSetRole('moto')}
             style={{ padding: '18px 16px', borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#9A3412,#F97316)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 24px rgba(249,115,22,0.35)', display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left' }}>
-            <span style={{ fontSize: 26, flexShrink: 0 }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ</span>
+            <span style={{ fontSize: 26, flexShrink: 0 }}>🛵</span>
             <div>
               <div style={{ fontSize: 15, fontWeight: 900 }}>Bridge Moto Taxi</div>
-              <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85 }}>Courses moto ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Bridge Moto Taxi</div>
+              <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.85 }}>Courses moto — Bridge Moto Taxi</div>
             </div>
           </button>
         </div>
-        <button onClick={() => navigate('/')} style={{ marginTop: 24, color: 'rgba(255,255,255,0.4)', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer' }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Retour</button>
+        <button onClick={() => navigate('/')} style={{ marginTop: 24, color: 'rgba(255,255,255,0.4)', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer' }}>← Retour</button>
       </div>
     );
   }
@@ -1948,7 +1941,7 @@ function DispatchPage() {
   const accent = role === 'taxi' ? '#F59E0B' : role === 'moto' ? '#F97316' : '#059669';
   const accentLight = role === 'taxi' ? '#FEF3C7' : role === 'moto' ? '#FFEDD5' : '#D1FAE5';
   const accentDark = role === 'taxi' ? '#B45309' : role === 'moto' ? '#9A3412' : '#065F46';
-  const icon = role === 'taxi' ? 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ' : role === 'moto' ? 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ' : 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ';
+  const icon = role === 'taxi' ? '🚖' : role === 'moto' ? '🛵' : '🛵';
   const label = role === 'taxi' ? 'Taxi Confort' : role === 'moto' ? 'Moto Taxi' : 'Livreur de Repas';
 
   return (
@@ -1960,23 +1953,23 @@ function DispatchPage() {
           <h1 style={{ color: '#fff', fontSize: '1.1rem', fontWeight: 900, margin: 0 }}>{icon} {driverName || label}</h1>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {pushLoading && <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³</span>}
-          {pushOk && <span style={{ background: 'rgba(74,222,128,0.2)', border: '1px solid rgba(74,222,128,0.4)', borderRadius: 20, padding: '3px 10px', color: '#4ADE80', fontSize: 10, fontWeight: 900 }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Notifs ON</span>}
+          {pushLoading && <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>⏳</span>}
+          {pushOk && <span style={{ background: 'rgba(74,222,128,0.2)', border: '1px solid rgba(74,222,128,0.4)', borderRadius: 20, padding: '3px 10px', color: '#4ADE80', fontSize: 10, fontWeight: 900 }}>🔔 Notifs ON</span>}
           <button onClick={() => { setRole('choose'); setActiveEatsOrder(null); setActiveTaxi(null); setActiveMoto(null); }}
-            style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', borderRadius: 10, padding: '6px 12px', fontSize: 12, cursor: 'pointer' }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂµ</button>
+            style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', borderRadius: 10, padding: '6px 12px', fontSize: 12, cursor: 'pointer' }}>⟵</button>
         </div>
       </div>
 
       <div style={{ padding: '20px 16px', maxWidth: 480, margin: '0 auto' }}>
 
-        {/* ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ EATS / SCOOTER MODE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ */}
+        {/* ── EATS / SCOOTER MODE ── */}
         {isDelivery && !activeEatsOrder && (
           <>
             <p style={{ fontSize: 11, fontWeight: 800, color: '#9CA3AF', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 12 }}>COMMANDES EN ATTENTE ({eatsOrders.length})</p>
             {eatsOrders.length === 0 ? (
               <div style={{ ...cardStyle, textAlign: 'center', padding: '40px 20px' }}>
-                <p style={{ fontSize: 32, margin: '0 0 10px' }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³</p>
-                <p style={{ color: '#6B7280', fontSize: 14, fontWeight: 700, margin: 0 }}>En attente de commandesÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦</p>
+                <p style={{ fontSize: 32, margin: '0 0 10px' }}>⏳</p>
+                <p style={{ color: '#6B7280', fontSize: 14, fontWeight: 700, margin: 0 }}>En attente de commandes…</p>
                 <p style={{ color: '#9CA3AF', fontSize: 11, margin: '4px 0 0' }}>La sonnette retentira automatiquement</p>
               </div>
             ) : eatsOrders.map(order => (
@@ -1988,12 +1981,12 @@ function DispatchPage() {
                   </div>
                   <span style={{ background: '#D1FAE5', color: '#065F46', fontSize: 12, fontWeight: 900, borderRadius: 20, padding: '4px 12px' }}>{order.total} MAD</span>
                 </div>
-                <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 2px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¤ {order.customerName}</p>
-                {order.restaurantName && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¥ÃÂÃÂ {order.restaurantName}</p>}
-                <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 12px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ {order.customerAddress}</p>
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 2px' }}>👤 {order.customerName}</p>
+                {order.restaurantName && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>🥘 {order.restaurantName}</p>}
+                <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 12px' }}>📍 {order.customerAddress}</p>
                 <button onClick={() => acceptEatsOrder(order)}
                   style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#059669,#4ADE80)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(5,150,105,0.3)' }}>
-                  ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Accepter cette commande
+                  ✅ Accepter cette commande
                 </button>
               </div>
             ))}
@@ -2006,12 +1999,12 @@ function DispatchPage() {
             <div style={{ ...cardStyle, borderColor: '#BBF7D0', borderWidth: 2, marginBottom: 10 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 2px' }}>COMMANDE ACCEPTÃÂÃÂÃÂÃÂE</p>
+                  <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 2px' }}>COMMANDE ACCEPTÉE</p>
                   <p style={{ fontSize: 18, fontWeight: 900, color: '#059669', margin: 0 }}>{activeEatsOrder.ref}</p>
                 </div>
                 <span style={{ background: '#D1FAE5', color: '#065F46', fontSize: 13, fontWeight: 900, borderRadius: 20, padding: '4px 12px' }}>{activeEatsOrder.total} MAD</span>
               </div>
-              <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '10px 0 2px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¤ {activeEatsOrder.customerName}</p>
+              <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '10px 0 2px' }}>👤 {activeEatsOrder.customerName}</p>
             </div>
 
             {/* GPS indicator (when active) */}
@@ -2019,43 +2012,43 @@ function DispatchPage() {
               <div style={{ background: '#D1FAE5', borderRadius: 12, padding: '10px 14px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#059669', display: 'inline-block', animation: 'pulse 1.5s infinite', flexShrink: 0 }}/>
                 <div>
-                  <p style={{ fontSize: 12, fontWeight: 900, color: '#065F46', margin: 0 }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ GPS EN DIRECT ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Client vous suit</p>
+                  <p style={{ fontSize: 12, fontWeight: 900, color: '#065F46', margin: 0 }}>📡 GPS EN DIRECT — Client vous suit</p>
                   {eatsCoords && <p style={{ fontSize: 10, color: '#6B7280', margin: '2px 0 0', fontFamily: 'monospace' }}>{eatsCoords.lat.toFixed(5)}, {eatsCoords.lng.toFixed(5)}</p>}
                 </div>
               </div>
             )}
-            {eatsGPS === 'denied' && <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 10 }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ GPS refusÃÂÃÂÃÂÃÂ© ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ activez la localisation dans les paramÃÂÃÂÃÂÃÂ¨tres</p>}
+            {eatsGPS === 'denied' && <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 10 }}>❌ GPS refusé — activez la localisation dans les paramètres</p>}
 
-            {/* ÃÂÃÂÃÂÃÂTAPE 1 : Aller au restaurant */}
+            {/* ÉTAPE 1 : Aller au restaurant */}
             <div style={{ ...cardStyle, borderColor: eatsDriverStep === 'going_to_restaurant' ? '#FDE68A' : '#BBF7D0', borderWidth: 2, marginBottom: 10, opacity: eatsDriverStep === 'done' ? 0.5 : 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                 <div style={{ width: 28, height: 28, borderRadius: '50%', background: eatsDriverStep !== 'going_to_restaurant' ? '#059669' : '#FEF3C7', border: `2px solid ${eatsDriverStep !== 'going_to_restaurant' ? '#059669' : '#F59E0B'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <span style={{ fontSize: 12, color: eatsDriverStep !== 'going_to_restaurant' ? '#fff' : '#B45309', fontWeight: 900 }}>{eatsDriverStep !== 'going_to_restaurant' ? 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ' : '1'}</span>
+                  <span style={{ fontSize: 12, color: eatsDriverStep !== 'going_to_restaurant' ? '#fff' : '#B45309', fontWeight: 900 }}>{eatsDriverStep !== 'going_to_restaurant' ? '✓' : '1'}</span>
                 </div>
                 <div>
-                  <p style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: 0 }}>POINT DE COLLECTE ÃÂÃÂÃÂÃÂ· ÃÂÃÂÃÂÃÂTAPE 1</p>
+                  <p style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: 0 }}>POINT DE COLLECTE · ÉTAPE 1</p>
                   <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: 0 }}>{activeEatsOrder.restaurantName || 'Restaurant'}</p>
                 </div>
               </div>
               {activeEatsOrder.restaurantName && (
                 <a href={`https://maps.google.com/?q=${encodeURIComponent(activeEatsOrder.restaurantName + ' Safi Maroc')}`} target="_blank" rel="noopener noreferrer"
                   style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#F3F4F6', borderRadius: 10, padding: '7px 12px', fontSize: 12, fontWeight: 700, color: '#3B82F6', textDecoration: 'none', marginBottom: eatsDriverStep === 'going_to_restaurant' ? 10 : 0 }}>
-                  ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Naviguer ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Restaurant
+                  ✈️ Naviguer → Restaurant
                 </a>
               )}
               {eatsDriverStep === 'going_to_restaurant' && (
                 <button onClick={pickupEatsOrder}
                   style={{ width: '100%', padding: '15px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#B45309,#F59E0B)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(180,83,9,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-                  <span style={{ fontSize: 20 }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ</span> J'ai rÃÂÃÂÃÂÃÂ©cupÃÂÃÂÃÂÃÂ©rÃÂÃÂÃÂÃÂ© la commande
+                  <span style={{ fontSize: 20 }}>☑️</span> J'ai récupéré la commande
                 </button>
               )}
             </div>
 
-            {/* ÃÂÃÂÃÂÃÂTAPE 2 : Livrer au client */}
+            {/* ÉTAPE 2 : Livrer au client */}
             <div style={{ ...cardStyle, borderColor: eatsDriverStep === 'delivering' ? '#93C5FD' : '#E5E7EB', borderWidth: 2, opacity: eatsDriverStep === 'going_to_restaurant' ? 0.5 : 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                 <div style={{ width: 28, height: 28, borderRadius: '50%', background: eatsDriverStep === 'done' ? '#059669' : eatsDriverStep === 'delivering' ? '#EFF6FF' : '#F3F4F6', border: `2px solid ${eatsDriverStep === 'done' ? '#059669' : eatsDriverStep === 'delivering' ? '#3B82F6' : '#E5E7EB'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <span style={{ fontSize: 12, color: eatsDriverStep === 'done' ? '#fff' : eatsDriverStep === 'delivering' ? '#1D4ED8' : '#9CA3AF', fontWeight: 900 }}>{eatsDriverStep === 'done' ? 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ' : '2'}</span>
+                  <span style={{ fontSize: 12, color: eatsDriverStep === 'done' ? '#fff' : eatsDriverStep === 'delivering' ? '#1D4ED8' : '#9CA3AF', fontWeight: 900 }}>{eatsDriverStep === 'done' ? '✓' : '2'}</span>
                 </div>
                 <div>
                   <p style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: 0 }}>DESTINATION</p>
@@ -2066,11 +2059,11 @@ function DispatchPage() {
                 <>
                   <a href={`https://maps.google.com/?q=${encodeURIComponent(activeEatsOrder.customerAddress)}`} target="_blank" rel="noopener noreferrer"
                     style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#EFF6FF', borderRadius: 10, padding: '7px 12px', fontSize: 12, fontWeight: 700, color: '#3B82F6', textDecoration: 'none', marginBottom: 10 }}>
-                    ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Naviguer ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Client
+                    ✈️ Naviguer → Client
                   </a>
                   <button onClick={finishEatsDelivery}
                     style={{ width: '100%', padding: '15px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#065F46,#059669)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(5,150,105,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-                    <span style={{ fontSize: 20 }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</span> J'ai livrÃÂÃÂÃÂÃÂ© au client
+                    <span style={{ fontSize: 20 }}>✅</span> J'ai livré au client
                   </button>
                 </>
               )}
@@ -2079,14 +2072,14 @@ function DispatchPage() {
           </>
         )}
 
-        {/* ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ TAXI MODE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ */}
+        {/* ── TAXI MODE ── */}
         {role === 'taxi' && !activeTaxi && (
           <>
             <p style={{ fontSize: 11, fontWeight: 800, color: '#9CA3AF', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 12 }}>COURSES EN ATTENTE ({taxiBookings.length})</p>
             {taxiBookings.length === 0 ? (
               <div style={{ ...cardStyle, textAlign: 'center', padding: '40px 20px' }}>
-                <p style={{ fontSize: 32, margin: '0 0 10px' }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³</p>
-                <p style={{ color: '#6B7280', fontSize: 14, fontWeight: 700, margin: 0 }}>En attente de coursesÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦</p>
+                <p style={{ fontSize: 32, margin: '0 0 10px' }}>⏳</p>
+                <p style={{ color: '#6B7280', fontSize: 14, fontWeight: 700, margin: 0 }}>En attente de courses…</p>
                 <p style={{ color: '#9CA3AF', fontSize: 11, margin: '4px 0 0' }}>La sonnette retentira automatiquement</p>
               </div>
             ) : taxiBookings.map(booking => (
@@ -2098,12 +2091,12 @@ function DispatchPage() {
                   </div>
                   <span style={{ background: '#FEF3C7', color: '#B45309', fontSize: 11, fontWeight: 900, borderRadius: 20, padding: '4px 10px' }}>NOUVEAU</span>
                 </div>
-                <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¤ {booking.customerName || 'Client'}</p>
-                {booking.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ DÃÂÃÂÃÂÃÂ©part : {booking.clientAddress}</p>}
-                {booking.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 6px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Destination : {booking.destination}</p>}
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>👤 {booking.customerName || 'Client'}</p>
+                {booking.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>📍 Départ : {booking.clientAddress}</p>}
+                {booking.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 6px' }}>🏁 Destination : {booking.destination}</p>}
                 {booking.clientPrice && (
                   <div style={{ background: '#FEF3C7', borderRadius: 10, padding: '8px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: 12, color: '#92400E', fontWeight: 800 }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ° Client propose : <strong style={{ fontSize: 15 }}>{booking.clientPrice} DH</strong></span>
+                    <span style={{ fontSize: 12, color: '#92400E', fontWeight: 800 }}>💰 Client propose : <strong style={{ fontSize: 15 }}>{booking.clientPrice} DH</strong></span>
                   </div>
                 )}
                 <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
@@ -2120,12 +2113,12 @@ function DispatchPage() {
                       fetch(`/api/tracking/${booking.ref}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ driverPrice: v }) }).catch(() => {});
                     }}
                     style={{ padding: '9px 14px', borderRadius: 10, border: 'none', background: '#F59E0B', color: '#fff', fontWeight: 900, fontSize: 13, cursor: 'pointer' }}>
-                    ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¨
+                    📨
                   </button>
                 </div>
                 <button onClick={() => acceptTaxi(booking)}
                   style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#B45309,#F59E0B)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(180,83,9,0.3)' }}>
-                  ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Accepter la course
+                  ✅ Accepter la course
                 </button>
               </div>
             ))}
@@ -2134,39 +2127,39 @@ function DispatchPage() {
 
         {role === 'taxi' && activeTaxi && (
           <div style={{ ...cardStyle, borderColor: '#FDE68A', borderWidth: 2 }}>
-            <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 8px' }}>COURSE ACCEPTÃÂÃÂÃÂÃÂE</p>
+            <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 8px' }}>COURSE ACCEPTÉE</p>
             <p style={{ fontSize: 18, fontWeight: 900, color: '#B45309', margin: '0 0 6px' }}>{activeTaxi.ref}</p>
-            <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¤ {activeTaxi.customerName || 'Client'}</p>
-            {activeTaxi.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ DÃÂÃÂÃÂÃÂ©part : {activeTaxi.clientAddress}</p>}
-            {activeTaxi.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 14px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Destination : {activeTaxi.destination}</p>}
+            <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>👤 {activeTaxi.customerName || 'Client'}</p>
+            {activeTaxi.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>📍 Départ : {activeTaxi.clientAddress}</p>}
+            {activeTaxi.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 14px' }}>🏁 Destination : {activeTaxi.destination}</p>}
 
             {taxiGPS === 'active' ? (
               <div style={{ background: '#FEF3C7', borderRadius: 12, padding: '12px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#F59E0B', display: 'inline-block', animation: 'pulse 1.5s infinite' }}/>
-                <p style={{ fontSize: 12, fontWeight: 900, color: '#B45309', margin: 0 }}>GPS EN DIRECT ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Client vous suit sur la carte</p>
+                <p style={{ fontSize: 12, fontWeight: 900, color: '#B45309', margin: 0 }}>GPS EN DIRECT — Client vous suit sur la carte</p>
               </div>
             ) : taxiGPS === 'denied' ? (
-              <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 12 }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ GPS refusÃÂÃÂÃÂÃÂ© ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ activez la localisation</p>
+              <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 12 }}>❌ GPS refusé — activez la localisation</p>
             ) : (
-              <p style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 12 }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³ DÃÂÃÂÃÂÃÂ©marrage GPSÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦</p>
+              <p style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 12 }}>⏳ Démarrage GPS…</p>
             )}
 
             <button onClick={finishTaxi}
               style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#059669,#34D399)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(5,150,105,0.4)' }}>
-              ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ J'ai dÃÂÃÂÃÂÃÂ©posÃÂÃÂÃÂÃÂ© le client
+              ✅ J'ai déposé le client
             </button>
             <style>{`@keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:1;transform:scale(1.3);}}`}</style>
           </div>
         )}
 
-        {/* ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ MOTO TAXI MODE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ */}
+        {/* ── MOTO TAXI MODE ── */}
         {isMoto && !activeMoto && (
           <>
             <p style={{ fontSize: 11, fontWeight: 800, color: '#9CA3AF', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 12 }}>COURSES MOTO EN ATTENTE ({motoBookings.length})</p>
             {motoBookings.length === 0 ? (
               <div style={{ ...cardStyle, textAlign: 'center', padding: '40px 20px' }}>
-                <p style={{ fontSize: 32, margin: '0 0 10px' }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³</p>
-                <p style={{ color: '#6B7280', fontSize: 14, fontWeight: 700, margin: 0 }}>En attente de courses motoÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦</p>
+                <p style={{ fontSize: 32, margin: '0 0 10px' }}>⏳</p>
+                <p style={{ color: '#6B7280', fontSize: 14, fontWeight: 700, margin: 0 }}>En attente de courses moto…</p>
                 <p style={{ color: '#9CA3AF', fontSize: 11, margin: '4px 0 0' }}>La sonnette retentira automatiquement</p>
               </div>
             ) : motoBookings.map(booking => (
@@ -2178,12 +2171,12 @@ function DispatchPage() {
                   </div>
                   <span style={{ background: '#FFEDD5', color: '#9A3412', fontSize: 11, fontWeight: 900, borderRadius: 20, padding: '4px 10px' }}>NOUVEAU</span>
                 </div>
-                <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¤ {booking.customerName || 'Client'}</p>
-                {booking.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ DÃÂÃÂÃÂÃÂ©part : {booking.clientAddress}</p>}
-                {booking.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 6px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Destination : {booking.destination}</p>}
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>👤 {booking.customerName || 'Client'}</p>
+                {booking.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>📍 Départ : {booking.clientAddress}</p>}
+                {booking.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 6px' }}>🏁 Destination : {booking.destination}</p>}
                 {booking.clientPrice && (
                   <div style={{ background: '#FFEDD5', borderRadius: 10, padding: '8px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: 12, color: '#7C2D12', fontWeight: 800 }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ° Client propose : <strong style={{ fontSize: 15 }}>{booking.clientPrice} DH</strong></span>
+                    <span style={{ fontSize: 12, color: '#7C2D12', fontWeight: 800 }}>💰 Client propose : <strong style={{ fontSize: 15 }}>{booking.clientPrice} DH</strong></span>
                   </div>
                 )}
                 <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
@@ -2200,12 +2193,12 @@ function DispatchPage() {
                       fetch(`/api/tracking/${booking.ref}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ driverPrice: v }) }).catch(() => {});
                     }}
                     style={{ padding: '9px 14px', borderRadius: 10, border: 'none', background: '#F97316', color: '#fff', fontWeight: 900, fontSize: 13, cursor: 'pointer' }}>
-                    ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¨
+                    📨
                   </button>
                 </div>
                 <button onClick={() => acceptMoto(booking)}
                   style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#9A3412,#F97316)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(249,115,22,0.3)' }}>
-                  ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Accepter la course moto
+                  ✅ Accepter la course moto
                 </button>
               </div>
             ))}
@@ -2214,26 +2207,26 @@ function DispatchPage() {
 
         {isMoto && activeMoto && (
           <div style={{ ...cardStyle, borderColor: '#FED7AA', borderWidth: 2 }}>
-            <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 8px' }}>COURSE MOTO ACCEPTÃÂÃÂÃÂÃÂE</p>
+            <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.1em', margin: '0 0 8px' }}>COURSE MOTO ACCEPTÉE</p>
             <p style={{ fontSize: 18, fontWeight: 900, color: '#9A3412', margin: '0 0 6px' }}>{activeMoto.ref}</p>
-            <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¤ {activeMoto.customerName || 'Client'}</p>
-            {activeMoto.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ DÃÂÃÂÃÂÃÂ©part : {activeMoto.clientAddress}</p>}
-            {activeMoto.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 14px' }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Destination : {activeMoto.destination}</p>}
+            <p style={{ fontSize: 13, fontWeight: 800, color: '#111', margin: '0 0 4px' }}>👤 {activeMoto.customerName || 'Client'}</p>
+            {activeMoto.clientAddress && <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 2px' }}>📍 Départ : {activeMoto.clientAddress}</p>}
+            {activeMoto.destination && <p style={{ fontSize: 12, color: '#1D4ED8', fontWeight: 800, margin: '0 0 14px' }}>🏁 Destination : {activeMoto.destination}</p>}
 
             {motoGPS === 'active' ? (
               <div style={{ background: '#FFEDD5', borderRadius: 12, padding: '12px 14px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#F97316', display: 'inline-block', animation: 'pulse 1.5s infinite' }}/>
-                <p style={{ fontSize: 12, fontWeight: 900, color: '#9A3412', margin: 0 }}>GPS EN DIRECT ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Client vous suit sur la carte</p>
+                <p style={{ fontSize: 12, fontWeight: 900, color: '#9A3412', margin: 0 }}>GPS EN DIRECT — Client vous suit sur la carte</p>
               </div>
             ) : motoGPS === 'denied' ? (
-              <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 12 }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ GPS refusÃÂÃÂÃÂÃÂ© ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ activez la localisation</p>
+              <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 12 }}>❌ GPS refusé — activez la localisation</p>
             ) : (
-              <p style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 12 }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³ DÃÂÃÂÃÂÃÂ©marrage GPSÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦</p>
+              <p style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 12 }}>⏳ Démarrage GPS…</p>
             )}
 
             <button onClick={finishMoto}
               style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#059669,#34D399)', color: '#fff', fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 16px rgba(5,150,105,0.4)' }}>
-              ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ J'ai dÃÂÃÂÃÂÃÂ©posÃÂÃÂÃÂÃÂ© le client
+              ✅ J'ai déposé le client
             </button>
             <style>{`@keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:1;transform:scale(1.3);}}`}</style>
           </div>
@@ -2245,7 +2238,7 @@ function DispatchPage() {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ BRIDGE AI ASSISTANT PAGE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─── BRIDGE AI ASSISTANT PAGE ────────────────────────────────────────────────
 
 type AssistMsg = { role: 'user' | 'assistant'; content: string };
 
@@ -2253,18 +2246,18 @@ const ASSISTANT_T = {
   fr: {
     title: 'Bridge Assistant',
     subtitle: 'Votre conseiller IA 24/7',
-    placeholder: 'ÃÂÃÂÃÂÃÂcrivez votre question...',
+    placeholder: 'Écrivez votre question...',
     send: 'Envoyer',
-    thinking: 'Bridge IA rÃÂÃÂÃÂÃÂ©flÃÂÃÂÃÂÃÂ©chit...',
-    greeting: 'Bonjour ! ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Je suis votre assistant Bridge Safi. Comment puis-je vous aider aujourd\'hui ?',
-    quickTitle: 'Questions frÃÂÃÂÃÂÃÂ©quentes',
-    q1: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¦ Suivre ma commande',
-    q2: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Retard de livraison',
-    q3: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ³ ProblÃÂÃÂÃÂÃÂ¨me de paiement',
-    q4: 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Autre question',
-    escalated: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Un responsable Bridge vous contacte sous 30 min',
-    wa: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ± Contacter via WhatsApp',
-    back: 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Retour',
+    thinking: 'Bridge IA réfléchit...',
+    greeting: 'Bonjour ! 👋 Je suis votre assistant Bridge Safi. Comment puis-je vous aider aujourd\'hui ?',
+    quickTitle: 'Questions fréquentes',
+    q1: '📦 Suivre ma commande',
+    q2: '🚚 Retard de livraison',
+    q3: '💳 Problème de paiement',
+    q4: '❓ Autre question',
+    escalated: '🔔 Un responsable Bridge vous contacte sous 30 min',
+    wa: '📱 Contacter via WhatsApp',
+    back: '← Retour',
   },
   en: {
     title: 'Bridge Assistant',
@@ -2272,54 +2265,54 @@ const ASSISTANT_T = {
     placeholder: 'Write your question...',
     send: 'Send',
     thinking: 'Bridge AI is thinking...',
-    greeting: 'Hello! ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ I\'m your Bridge Safi assistant. How can I help you today?',
+    greeting: 'Hello! 👋 I\'m your Bridge Safi assistant. How can I help you today?',
     quickTitle: 'Frequent questions',
-    q1: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¦ Track my order',
-    q2: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Delivery delay',
-    q3: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ³ Payment issue',
-    q4: 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Other question',
-    escalated: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ A Bridge manager will contact you within 30 min',
-    wa: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ± Contact via WhatsApp',
-    back: 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Back',
+    q1: '📦 Track my order',
+    q2: '🚚 Delivery delay',
+    q3: '💳 Payment issue',
+    q4: '❓ Other question',
+    escalated: '🔔 A Bridge manager will contact you within 30 min',
+    wa: '📱 Contact via WhatsApp',
+    back: '← Back',
   },
   ar: {
-    title: 'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¬',
-    subtitle: 'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ 24/7',
-    placeholder: 'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¤ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ...',
-    send: 'ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ',
-    thinking: 'ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¬ AI ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±...',
-    greeting: 'ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ! ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Bridge Safi. ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ',
-    quickTitle: 'ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¦ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¦ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ©',
-    q1: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¦ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ¹ ÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ',
-    q2: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ',
-    q3: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ³ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹',
-    q4: 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¤ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂ±',
-    escalated: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¤ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Bridge ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ 30 ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©',
-    wa: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨',
-    back: 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹',
+    title: 'مساعد بريدج',
+    subtitle: 'مستشارك الذكي 24/7',
+    placeholder: 'اكتب سؤالك...',
+    send: 'إرسال',
+    thinking: 'بريدج AI يفكر...',
+    greeting: 'أهلاً! 👋 أنا مساعدك الذكي من Bridge Safi. كيف يمكنني مساعدتك اليوم؟',
+    quickTitle: 'أسئلة شائعة',
+    q1: '📦 تتبع طلبي',
+    q2: '🚚 تأخر التوصيل',
+    q3: '💳 مشكلة في الدفع',
+    q4: '❓ سؤال آخر',
+    escalated: '🔔 سيتصل بك مسؤول Bridge خلال 30 دقيقة',
+    wa: '📱 تواصل عبر واتساب',
+    back: '→ رجوع',
   },
   amz: {
-    title: 'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ Bridge',
-    subtitle: 'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ 24/7',
-    placeholder: 'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ± ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¹ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½...',
-    send: 'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¥ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¥ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    thinking: 'Bridge AI ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ...',
-    greeting: 'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ! ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ Bridge Safi.',
-    quickTitle: 'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¹ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¥ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    q1: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¦ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ³ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¥ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    q2: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    q3: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ³ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼',
-    q4: 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¹ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¹ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    escalated: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ Bridge ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ· ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ 30 ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    wa: 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ± ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ WhatsApp',
-    back: 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
+    title: 'ⴰⵎⵙⴰⵡⴰⵍ Bridge',
+    subtitle: 'ⴰⵎⵙⴰⵡⴰⵍ ⵏⵏⴽ 24/7',
+    placeholder: 'ⴽⵜⴱ ⵓⵙⵉⴹⵏ ⵏⵏⴽ...',
+    send: 'ⵥⵥⵍ',
+    thinking: 'Bridge AI ⵉⵜⵜⴼⴽⴽⵉⵔ...',
+    greeting: 'ⴰⵣⵓⵍ! 👋 ⵏⴽⴽ ⴰⵎⵙⴰⵡⴰⵍ ⵏⵏⴽ ⵏ Bridge Safi.',
+    quickTitle: 'ⵉⵙⵙⵉⴹⵏⵏ ⵉⵎⵥⵍⴰⵢⵏ',
+    q1: '📦 ⵙⵍⴳⵏ ⴰⵣⵏⵓⵥ ⵏⵏⵉ',
+    q2: '🚚 ⴰⵃⵟⵟⵓ ⵏ ⵓⵣⵏⵉ',
+    q3: '💳 ⴰⵎⴽⴽⵓⵙ ⵏ ⵓⵙⵓⵔⴼ',
+    q4: '❓ ⴰⵙⵙⵉⴹ ⵢⴰⴹⵏ',
+    escalated: '🔔 ⴰⵎⵙⵉⵡⵍ Bridge ⴰⴷ ⴽ ⵉⵙⵙⵏⵖ ⵖ 30 ⵜⵓⵙⴷⴰⵜⵉⵏ',
+    wa: '📱 ⵙⵙⵏⵎⵍ ⵙ WhatsApp',
+    back: '← ⴰⵣⵣⵓⵍ',
   },
 };
 
 type AssistLang = 'fr'|'en'|'ar'|'amz';
 const ASSIST_LANGS: AssistLang[] = ['fr','en','ar','amz'];
 const ASSIST_CHAT_KEY = 'bridge_assistant_chat';
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ RESTAURANT OWNER PAGE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─── RESTAURANT OWNER PAGE ────────────────────────────────────────────────────
 
 const RESTO_RESTAURANTS = [
   "McDonald's Safi",
@@ -2352,14 +2345,14 @@ function playAlert() {
 
 function statusLabel(s: string) {
   const m: Record<string,{label:string;color:string}> = {
-    pending:   {label:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ En attente',   color:'#F59E0B'},
-    accepted:  {label:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¢ AcceptÃÂÃÂÃÂÃÂ©e',     color:'#10B981'},
-    preparing: {label:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ En prÃÂÃÂÃÂÃÂ©paration',color:'#3B82F6'},
-    ready:     {label:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ PrÃÂÃÂÃÂÃÂªt',         color:'#059669'},
-    delivered: {label:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¦ LivrÃÂÃÂÃÂÃÂ©e',       color:'#6B7280'},
-    refused:   {label:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ RefusÃÂÃÂÃÂÃÂ©e',      color:'#EF4444'},
-    cancelled: {label:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ« AnnulÃÂÃÂÃÂÃÂ©e',      color:'#EF4444'},
-    on_the_way:{label:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ´ En route',     color:'#8B5CF6'},
+    pending:   {label:'🟡 En attente',   color:'#F59E0B'},
+    accepted:  {label:'🟢 Acceptée',     color:'#10B981'},
+    preparing: {label:'🔵 En préparation',color:'#3B82F6'},
+    ready:     {label:'✅ Prêt',         color:'#059669'},
+    delivered: {label:'📦 Livrée',       color:'#6B7280'},
+    refused:   {label:'❌ Refusée',      color:'#EF4444'},
+    cancelled: {label:'🚫 Annulée',      color:'#EF4444'},
+    on_the_way:{label:'🚴 En route',     color:'#8B5CF6'},
   };
   return m[s] || {label:s, color:'#9CA3AF'};
 }
@@ -2497,7 +2490,7 @@ function RestaurantOwnerPage() {
       body: JSON.stringify({ status, restaurantName: restoName }),
     });
     setOrders(prev => prev.map(o => o.ref === ref ? {...o, status} : o));
-    // Sync tracking store ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ customer sees the change in real-time
+    // Sync tracking store → customer sees the change in real-time
     if (status === 'preparing' || status === 'accepted') {
       fetch(`/api/tracking/${ref}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
@@ -2574,41 +2567,41 @@ function RestaurantOwnerPage() {
   const active  = orders.filter(o => ['accepted','preparing'].includes(o.status));
   const done    = orders.filter(o => ['ready','delivered','refused','cancelled','on_the_way'].includes(o.status));
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ NOT SIGNED IN ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── NOT SIGNED IN ────────────────────────────────────────────────────────────
   if (!isLoaded || loading) return (
     <div style={{minHeight:'100dvh',background:'linear-gradient(135deg,#0A1A0F,#0D2E1A)',display:'flex',alignItems:'center',justifyContent:'center'}}>
-      <span style={{color:'rgba(255,255,255,0.4)',fontSize:13}}>ChargementÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦</span>
+      <span style={{color:'rgba(255,255,255,0.4)',fontSize:13}}>Chargement…</span>
     </div>
   );
 
   if (!isSignedIn) return (
     <div style={{minHeight:'100dvh',background:'linear-gradient(135deg,#0A1A0F 0%,#0D2E1A 50%,#0A1A0F 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'20px',fontFamily:'system-ui'}}>
-      <div style={{fontSize:52,marginBottom:14}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ½ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ</div>
+      <div style={{fontSize:52,marginBottom:14}}>🍽️</div>
       <h1 style={{color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.1em',margin:'0 0 4px',textAlign:'center'}}>ESPACE RESTAURATEURS</h1>
-      <p style={{color:'rgba(255,255,255,0.4)',fontSize:12,fontWeight:600,margin:'0 0 28px',textAlign:'center'}}>Bridge Safi ÃÂÃÂÃÂÃÂ· Interface partenaire</p>
+      <p style={{color:'rgba(255,255,255,0.4)',fontSize:12,fontWeight:600,margin:'0 0 28px',textAlign:'center'}}>Bridge Safi · Interface partenaire</p>
       <div style={{width:'100%',maxWidth:340,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:24,padding:'24px 20px',display:'flex',flexDirection:'column',gap:14,textAlign:'center'}}>
-        <p style={{color:'rgba(255,255,255,0.6)',fontSize:13,margin:0}}>Connectez-vous avec votre compte Bridge pour accÃÂÃÂÃÂÃÂ©der ÃÂÃÂÃÂÃÂ  votre espace restaurateur.</p>
+        <p style={{color:'rgba(255,255,255,0.6)',fontSize:13,margin:0}}>Connectez-vous avec votre compte Bridge pour accéder à votre espace restaurateur.</p>
         <button onClick={()=>navigate('/sign-in?redirect_url=/restaurant')}
           style={{width:'100%',padding:'15px 0',borderRadius:14,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669,#4ADE80)',color:'#fff',fontSize:15,fontWeight:900}}>
-          Se connecter ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+          Se connecter →
         </button>
         <button onClick={()=>navigate('/sign-up?redirect_url=/restaurant')}
           style={{width:'100%',padding:'13px 0',borderRadius:14,border:'1px solid rgba(255,255,255,0.15)',cursor:'pointer',background:'transparent',color:'rgba(255,255,255,0.6)',fontSize:13,fontWeight:700}}>
-          CrÃÂÃÂÃÂÃÂ©er un compte
+          Créer un compte
         </button>
       </div>
       <button onClick={()=>navigate('/')} style={{marginTop:20,background:'none',border:'none',color:'rgba(255,255,255,0.35)',fontSize:12,fontWeight:700,cursor:'pointer'}}>
-        ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Retour ÃÂÃÂÃÂÃÂ  Bridge
+        ← Retour à Bridge
       </button>
     </div>
   );
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ SIGNED IN BUT NO RESTAURANT LINKED YET ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── SIGNED IN BUT NO RESTAURANT LINKED YET ────────────────────────────────
   if (!linked) return (
     <div style={{minHeight:'100dvh',background:'linear-gradient(135deg,#0A1A0F 0%,#0D2E1A 50%,#0A1A0F 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'20px',fontFamily:'system-ui'}}>
-      <div style={{fontSize:52,marginBottom:14}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ½ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ</div>
+      <div style={{fontSize:52,marginBottom:14}}>🍽️</div>
       <h1 style={{color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.1em',margin:'0 0 4px',textAlign:'center'}}>LIER VOTRE RESTAURANT</h1>
-      <p style={{color:'rgba(255,255,255,0.4)',fontSize:12,fontWeight:600,margin:'0 0 6px',textAlign:'center'}}>ConnectÃÂÃÂÃÂÃÂ© : <strong style={{color:'#4ADE80'}}>{user?.emailAddresses?.[0]?.emailAddress}</strong></p>
+      <p style={{color:'rgba(255,255,255,0.4)',fontSize:12,fontWeight:600,margin:'0 0 6px',textAlign:'center'}}>Connecté : <strong style={{color:'#4ADE80'}}>{user?.emailAddresses?.[0]?.emailAddress}</strong></p>
       <p style={{color:'rgba(255,255,255,0.3)',fontSize:11,margin:'0 0 24px',textAlign:'center'}}>Choisissez votre restaurant et entrez le PIN fourni par Bridge Safi</p>
 
       <div style={{width:'100%',maxWidth:340,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:24,padding:'24px 20px',display:'flex',flexDirection:'column',gap:14}}>
@@ -2616,14 +2609,14 @@ function RestaurantOwnerPage() {
           <label style={{color:'rgba(255,255,255,0.5)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase' as const,display:'block',marginBottom:6}}>Votre Restaurant</label>
           <select value={claimName} onChange={e=>setClaimName(e.target.value)}
             style={{width:'100%',padding:'13px 14px',borderRadius:14,background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',color:claimName?'#fff':'rgba(255,255,255,0.4)',fontSize:14,fontWeight:700,outline:'none',appearance:'none' as const}}>
-            <option value="">-- SÃÂÃÂÃÂÃÂ©lectionner --</option>
+            <option value="">-- Sélectionner --</option>
             {RESTO_RESTAURANTS.map(r=><option key={r} value={r} style={{background:'#1a2e1f',color:'#fff'}}>{r}</option>)}
           </select>
         </div>
         <div>
           <label style={{color:'rgba(255,255,255,0.5)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase' as const,display:'block',marginBottom:6}}>Code PIN (4 chiffres)</label>
           <input type="password" inputMode="numeric" maxLength={4} value={claimPin} onChange={e=>setClaimPin(e.target.value.replace(/\D/g,'').slice(0,4))}
-            placeholder="ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¢"
+            placeholder="••••"
             style={{width:'100%',boxSizing:'border-box' as const,padding:'13px 14px',borderRadius:14,background:'rgba(255,255,255,0.08)',border:`1px solid ${linkErr?'#EF4444':'rgba(255,255,255,0.15)'}`,color:'#fff',fontSize:22,fontWeight:900,letterSpacing:'0.5em',textAlign:'center' as const,outline:'none'}}
             onKeyDown={e=>{if(e.key==='Enter')handleClaim();}}/>
           {linkErr && <p style={{color:'#F87171',fontSize:11,fontWeight:700,margin:'6px 0 0'}}>{linkErr}</p>}
@@ -2632,19 +2625,19 @@ function RestaurantOwnerPage() {
           style={{width:'100%',padding:'15px 0',borderRadius:14,border:'none',cursor:!claimName||claimPin.length!==4||linking?'not-allowed':'pointer',
             background:!claimName||claimPin.length!==4||linking?'rgba(255,255,255,0.1)':'linear-gradient(135deg,#059669,#4ADE80)',
             color:!claimName||claimPin.length!==4||linking?'rgba(255,255,255,0.4)':'#fff',fontSize:15,fontWeight:900}}>
-          {linking ? 'Liaison en coursÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦' : 'Lier mon restaurant ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ'}
+          {linking ? 'Liaison en cours…' : 'Lier mon restaurant →'}
         </button>
         <p style={{color:'rgba(255,255,255,0.25)',fontSize:10,textAlign:'center' as const,margin:0}}>
-          Le PIN est fourni par l'ÃÂÃÂÃÂÃÂ©quipe Bridge Safi lors de l'inscription partenaire
+          Le PIN est fourni par l'équipe Bridge Safi lors de l'inscription partenaire
         </p>
       </div>
       <button onClick={()=>navigate('/')} style={{marginTop:20,background:'none',border:'none',color:'rgba(255,255,255,0.35)',fontSize:12,fontWeight:700,cursor:'pointer'}}>
-        ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Retour ÃÂÃÂÃÂÃÂ  Bridge
+        ← Retour à Bridge
       </button>
     </div>
   );
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ORDER CARD ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── ORDER CARD ──────────────────────────────────────────────────────────────
   const OrderCard = ({o}: {o: RestoOrder}) => {
     const st = statusLabel(o.status);
     const items = Array.isArray(o.items) ? o.items as {name:string;qty:number;price:number}[] : [];
@@ -2659,58 +2652,58 @@ function RestaurantOwnerPage() {
           <span style={{color:st.color,fontSize:10,fontWeight:900,background:`${st.color}18`,padding:'3px 8px',borderRadius:8}}>{st.label}</span>
         </div>
 
-        <p style={{color:'#fff',fontSize:13,fontWeight:700,margin:'0 0 2px'}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¤ {o.customerName} ÃÂÃÂÃÂÃÂ· ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ {o.customerPhone}</p>
-        <p style={{color:'rgba(255,255,255,0.5)',fontSize:11,fontWeight:600,margin:'0 0 8px'}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ {o.customerAddress} ÃÂÃÂÃÂÃÂ· {o.deliveryMode==='collect'?'Click & Collect':'Livraison'}</p>
+        <p style={{color:'#fff',fontSize:13,fontWeight:700,margin:'0 0 2px'}}>👤 {o.customerName} · 📞 {o.customerPhone}</p>
+        <p style={{color:'rgba(255,255,255,0.5)',fontSize:11,fontWeight:600,margin:'0 0 8px'}}>📍 {o.customerAddress} · {o.deliveryMode==='collect'?'Click & Collect':'Livraison'}</p>
 
         {items.length>0 && (
           <div style={{background:'rgba(0,0,0,0.2)',borderRadius:10,padding:'8px 10px',marginBottom:10}}>
             {items.map((it,i)=>(
               <p key={i} style={{color:'rgba(255,255,255,0.75)',fontSize:11,fontWeight:600,margin:'0 0 2px'}}>
-                ÃÂÃÂÃÂÃÂ {it.qty} {it.name} ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ {it.price} MAD
+                × {it.qty} {it.name} — {it.price} MAD
               </p>
             ))}
           </div>
         )}
 
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom: o.status==='pending'||o.status==='accepted'||o.status==='preparing'?10:0}}>
-          <span style={{color:'#4ADE80',fontSize:14,fontWeight:900}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ° {o.total} MAD</span>
-          <span style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700}}>{o.paymentMethod==='cash'?'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂµ Cash':o.paymentMethod==='card'?'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ³ Carte':'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ³'}</span>
+          <span style={{color:'#4ADE80',fontSize:14,fontWeight:900}}>💰 {o.total} MAD</span>
+          <span style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700}}>{o.paymentMethod==='cash'?'💵 Cash':o.paymentMethod==='card'?'💳 Carte':'💳'}</span>
         </div>
 
         {o.status==='pending' && (
           <div style={{display:'flex',gap:8}}>
             <button onClick={()=>updateStatus(o.ref,'accepted')}
               style={{flex:1,padding:'11px 0',borderRadius:12,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669,#4ADE80)',color:'#fff',fontSize:13,fontWeight:900}}>
-              ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Accepter
+              ✅ Accepter
             </button>
             <button onClick={()=>updateStatus(o.ref,'refused')}
               style={{flex:1,padding:'11px 0',borderRadius:12,cursor:'pointer',background:'rgba(239,68,68,0.2)',border:'1px solid rgba(239,68,68,0.5)',color:'#F87171',fontSize:13,fontWeight:900}}>
-              ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Refuser
+              ❌ Refuser
             </button>
           </div>
         )}
         {o.status==='accepted' && (
           <button onClick={()=>updateStatus(o.ref,'preparing')}
             style={{width:'100%',padding:'11px 0',borderRadius:12,cursor:'pointer',background:'rgba(59,130,246,0.2)',border:'1px solid rgba(59,130,246,0.5)',color:'#60A5FA',fontSize:13,fontWeight:900}}>
-            ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ³ En prÃÂÃÂÃÂÃÂ©paration
+            👨‍🍳 En préparation
           </button>
         )}
         {o.status==='preparing' && (
           <button onClick={()=>updateStatus(o.ref,'ready')}
             style={{width:'100%',padding:'11px 0',borderRadius:12,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#059669,#4ADE80)',color:'#fff',fontSize:13,fontWeight:900}}>
-            ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Commande PrÃÂÃÂÃÂÃÂªte !
+            🔔 Commande Prête !
           </button>
         )}
       </div>
     );
   };
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ DASHBOARD SCREEN ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── DASHBOARD SCREEN ────────────────────────────────────────────────────────
   return (
     <div style={{minHeight:'100dvh',background:'linear-gradient(135deg,#0A1A0F 0%,#0D2E1A 50%,#0A1A0F 100%)',fontFamily:'system-ui',paddingBottom:30}}>
       {/* Header */}
       <div style={{position:'sticky',top:0,zIndex:100,background:'rgba(4,17,10,0.95)',backdropFilter:'blur(12px)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'12px 16px',display:'flex',alignItems:'center',gap:10}}>
-        <span style={{fontSize:20}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ½ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ</span>
+        <span style={{fontSize:20}}>🍽️</span>
         <div style={{flex:1}}>
           <p style={{color:'#fff',fontSize:13,fontWeight:900,margin:0,lineHeight:1}}>{restoName}</p>
           <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:600,margin:0}}>Espace restaurateur</p>
@@ -2721,16 +2714,16 @@ function RestaurantOwnerPage() {
             background: isOpen?'rgba(74,222,128,0.2)':'rgba(239,68,68,0.2)',
             border: `1px solid ${isOpen?'rgba(74,222,128,0.4)':'rgba(239,68,68,0.4)'}`,
             color: isOpen?'#4ADE80':'#F87171', fontSize:11,fontWeight:900}}>
-          {isOpen?'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¢ OUVERT':'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ´ FERMÃÂÃÂÃÂÃÂ'}
+          {isOpen?'🟢 OUVERT':'🔴 FERMÉ'}
         </button>
         <button onClick={logout} style={{padding:'7px 12px',borderRadius:20,border:'1px solid rgba(255,255,255,0.1)',background:'transparent',color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:700,cursor:'pointer'}}>
-          DÃÂÃÂÃÂÃÂ©co.
+          Déco.
         </button>
       </div>
 
       {/* Tab navigation */}
       <div style={{display:'flex',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
-        {([['orders','ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Commandes'],['settings','ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ ParamÃÂÃÂÃÂÃÂ¨tres']] as const).map(([tab,label])=>(
+        {([['orders','📋 Commandes'],['settings','⚙️ Paramètres']] as const).map(([tab,label])=>(
           <button key={tab} onClick={()=>setActiveTab(tab)}
             style={{flex:1,padding:'12px 0',border:'none',cursor:'pointer',background:'transparent',
               color: activeTab===tab?'#4ADE80':'rgba(255,255,255,0.35)',
@@ -2742,7 +2735,7 @@ function RestaurantOwnerPage() {
         ))}
       </div>
 
-      {/* ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ COMMANDES TAB ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ */}
+      {/* ── COMMANDES TAB ─────────────────────────────────────────── */}
       {activeTab==='orders' && (
         <div style={{padding:'14px 14px 0'}}>
           {/* Stats */}
@@ -2750,7 +2743,7 @@ function RestaurantOwnerPage() {
             {[
               {label:'En attente', count:pending.length, color:'#F59E0B'},
               {label:'En cours',   count:active.length,  color:'#3B82F6'},
-              {label:'TerminÃÂÃÂÃÂÃÂ©es',  count:done.length,     color:'#6B7280'},
+              {label:'Terminées',  count:done.length,     color:'#6B7280'},
             ].map(s=>(
               <div key={s.label} style={{flex:1,padding:'10px 0',textAlign:'center',background:'rgba(255,255,255,0.03)',borderRadius:12,border:'1px solid rgba(255,255,255,0.06)'}}>
                 <p style={{color:s.color,fontSize:20,fontWeight:900,margin:0}}>{s.count}</p>
@@ -2761,13 +2754,13 @@ function RestaurantOwnerPage() {
 
           <button onClick={()=>fetchOrders()}
             style={{width:'100%',padding:'10px 0',borderRadius:14,border:'1px solid rgba(255,255,255,0.1)',background:'rgba(255,255,255,0.04)',color:'rgba(255,255,255,0.5)',fontSize:12,fontWeight:700,cursor:'pointer',marginBottom:14}}>
-            ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Actualiser les commandes
+            🔄 Actualiser les commandes
           </button>
 
           {pending.length>0 && (
             <>
               <p style={{color:'#F59E0B',fontSize:10,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'0 0 10px'}}>
-                ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ EN ATTENTE ({pending.length})
+                🟡 EN ATTENTE ({pending.length})
               </p>
               {pending.map(o=><OrderCard key={o.ref} o={o}/>)}
             </>
@@ -2775,7 +2768,7 @@ function RestaurantOwnerPage() {
           {active.length>0 && (
             <>
               <p style={{color:'#60A5FA',fontSize:10,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'14px 0 10px'}}>
-                ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ³ EN COURS ({active.length})
+                👨‍🍳 EN COURS ({active.length})
               </p>
               {active.map(o=><OrderCard key={o.ref} o={o}/>)}
             </>
@@ -2783,14 +2776,14 @@ function RestaurantOwnerPage() {
           {done.length>0 && (
             <>
               <p style={{color:'rgba(255,255,255,0.25)',fontSize:10,fontWeight:900,letterSpacing:'0.15em',textTransform:'uppercase',margin:'14px 0 10px'}}>
-                ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¦ TERMINÃÂÃÂÃÂÃÂES ({done.length})
+                📦 TERMINÉES ({done.length})
               </p>
               {done.map(o=><OrderCard key={o.ref} o={o}/>)}
             </>
           )}
           {orders.length===0 && (
             <div style={{textAlign:'center',paddingTop:40}}>
-              <div style={{fontSize:48,marginBottom:12}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ½ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ</div>
+              <div style={{fontSize:48,marginBottom:12}}>🍽️</div>
               <p style={{color:'rgba(255,255,255,0.3)',fontSize:14,fontWeight:700}}>Aucune commande pour l'instant</p>
               <p style={{color:'rgba(255,255,255,0.2)',fontSize:12,fontWeight:600}}>Actualisation automatique toutes les 12 secondes</p>
             </div>
@@ -2798,13 +2791,13 @@ function RestaurantOwnerPage() {
         </div>
       )}
 
-      {/* ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ PARAMÃÂÃÂÃÂÃÂTRES TAB ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ */}
+      {/* ── PARAMÈTRES TAB ────────────────────────────────────────── */}
       {activeTab==='settings' && (
         <div style={{padding:'16px 14px 40px'}}>
 
           {/* Restaurant info */}
           <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:18,padding:'16px',marginBottom:16}}>
-            <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 14px'}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Informations</p>
+            <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 14px'}}>📋 Informations</p>
 
             <div style={{marginBottom:12}}>
               <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.1em',textTransform:'uppercase',display:'block',marginBottom:6}}>Nom du restaurant</label>
@@ -2812,7 +2805,7 @@ function RestaurantOwnerPage() {
             </div>
 
             <div style={{marginBottom:12}}>
-              <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.1em',textTransform:'uppercase',display:'block',marginBottom:6}}>TÃÂÃÂÃÂÃÂ©lÃÂÃÂÃÂÃÂ©phone WhatsApp</label>
+              <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.1em',textTransform:'uppercase',display:'block',marginBottom:6}}>Téléphone WhatsApp</label>
               <input type="tel" value={profile.phone} onChange={e=>setProfile(p=>({...p,phone:e.target.value}))}
                 placeholder="+212612345678"
                 style={{width:'100%',boxSizing:'border-box',padding:'12px 14px',borderRadius:12,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',color:'#fff',fontSize:13,fontWeight:600,outline:'none'}}/>
@@ -2828,8 +2821,8 @@ function RestaurantOwnerPage() {
 
           {/* GPS coordinates */}
           <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:18,padding:'16px',marginBottom:16}}>
-            <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 14px'}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ CoordonnÃÂÃÂÃÂÃÂ©es GPS</p>
-            <p style={{color:'rgba(255,255,255,0.3)',fontSize:11,fontWeight:600,margin:'0 0 12px'}}>UtilisÃÂÃÂÃÂÃÂ©es pour le dispatch intelligent des livreurs.</p>
+            <p style={{color:'rgba(255,255,255,0.4)',fontSize:10,fontWeight:900,letterSpacing:'0.12em',textTransform:'uppercase',margin:'0 0 14px'}}>📍 Coordonnées GPS</p>
+            <p style={{color:'rgba(255,255,255,0.3)',fontSize:11,fontWeight:600,margin:'0 0 12px'}}>Utilisées pour le dispatch intelligent des livreurs.</p>
             <div style={{display:'flex',gap:10}}>
               <div style={{flex:1}}>
                 <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.1em',textTransform:'uppercase',display:'block',marginBottom:6}}>Latitude</label>
@@ -2849,16 +2842,16 @@ function RestaurantOwnerPage() {
           {/* Integration / Webhook */}
           <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:18,padding:'16px',marginBottom:16}}>
             <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
-              <span style={{fontSize:16}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</span>
-              <p style={{color:'#fff',fontSize:13,fontWeight:900,margin:0}}>Pont d'intÃÂÃÂÃÂÃÂ©gration Eats</p>
+              <span style={{fontSize:16}}>🔗</span>
+              <p style={{color:'#fff',fontSize:13,fontWeight:900,margin:0}}>Pont d'intégration Eats</p>
             </div>
-            <p style={{color:'rgba(255,255,255,0.35)',fontSize:11,fontWeight:600,margin:'0 0 14px'}}>Donnez ces informations ÃÂÃÂÃÂÃÂ  votre responsable Bridge Eats</p>
+            <p style={{color:'rgba(255,255,255,0.35)',fontSize:11,fontWeight:600,margin:'0 0 14px'}}>Donnez ces informations à votre responsable Bridge Eats</p>
             <div style={{background:'rgba(74,222,128,0.06)',border:'1px solid rgba(74,222,128,0.15)',borderRadius:12,padding:'10px 12px',marginBottom:14}}>
-              <p style={{color:'rgba(74,222,128,0.8)',fontSize:11,fontWeight:600,margin:0}}>Bridge Eats enverra automatiquement vos nouvelles commandes ÃÂÃÂÃÂÃÂ  cette URL en utilisant votre token secret. DÃÂÃÂÃÂÃÂ¨s qu'une commande arrive, l'alarme sonne et elle apparaÃÂÃÂÃÂÃÂ®t sur votre tableau de bord.</p>
+              <p style={{color:'rgba(74,222,128,0.8)',fontSize:11,fontWeight:600,margin:0}}>Bridge Eats enverra automatiquement vos nouvelles commandes à cette URL en utilisant votre token secret. Dès qu'une commande arrive, l'alarme sonne et elle apparaît sur votre tableau de bord.</p>
             </div>
 
             <div style={{marginBottom:12}}>
-              <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.12em',textTransform:'uppercase',display:'block',marginBottom:6}}>URL DU WEBHOOK (votre systÃÂÃÂÃÂÃÂ¨me)</label>
+              <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.12em',textTransform:'uppercase',display:'block',marginBottom:6}}>URL DU WEBHOOK (votre système)</label>
               <div style={{display:'flex',gap:8,alignItems:'center'}}>
                 <input type="url" value={profile.webhookUrl} onChange={e=>setProfile(p=>({...p,webhookUrl:e.target.value}))}
                   placeholder="https://votre-systeme.com/api/commandes"
@@ -2866,14 +2859,14 @@ function RestaurantOwnerPage() {
                 {profile.webhookUrl && (
                   <button onClick={()=>copyToClipboard(profile.webhookUrl,'wh')}
                     style={{padding:'11px 14px',borderRadius:12,border:'1px solid rgba(255,255,255,0.1)',background:'rgba(255,255,255,0.05)',color:'rgba(255,255,255,0.5)',fontSize:12,cursor:'pointer',flexShrink:0}}>
-                    {copied==='wh'?'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ':'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ'}
+                    {copied==='wh'?'✓':'⎘'}
                   </button>
                 )}
               </div>
             </div>
 
             <div style={{marginBottom:12}}>
-              <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.12em',textTransform:'uppercase',display:'block',marginBottom:6}}>EN-TÃÂÃÂÃÂÃÂTE REQUIS</label>
+              <label style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:800,letterSpacing:'0.12em',textTransform:'uppercase',display:'block',marginBottom:6}}>EN-TÊTE REQUIS</label>
               <div style={{padding:'11px 12px',borderRadius:12,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',color:'rgba(255,255,255,0.6)',fontSize:12,fontWeight:700,fontFamily:'monospace'}}>X-Bridge-Token</div>
             </div>
 
@@ -2886,7 +2879,7 @@ function RestaurantOwnerPage() {
                   </div>
                   <button onClick={()=>copyToClipboard(bridgeSecret,'secret')}
                     style={{padding:'11px 14px',borderRadius:12,border:'1px solid rgba(255,255,255,0.1)',background:'rgba(255,255,255,0.05)',color:'rgba(255,255,255,0.5)',fontSize:12,cursor:'pointer',flexShrink:0}}>
-                    {copied==='secret'?'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ':'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ'}
+                    {copied==='secret'?'✓':'⎘'}
                   </button>
                 </div>
               </div>
@@ -2896,19 +2889,19 @@ function RestaurantOwnerPage() {
           {/* Push Notifications */}
           <div style={{background:'rgba(255,255,255,0.03)',border:`1px solid ${pushEnabled?'rgba(74,222,128,0.25)':'rgba(255,255,255,0.08)'}`,borderRadius:18,padding:'16px',marginBottom:16}}>
             <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
-              <span style={{fontSize:16}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</span>
+              <span style={{fontSize:16}}>🔔</span>
               <p style={{color:'#fff',fontSize:13,fontWeight:900,margin:0}}>Notifications push</p>
               {pushEnabled && <span style={{marginLeft:'auto',fontSize:10,fontWeight:900,color:'#4ADE80',background:'rgba(74,222,128,0.15)',padding:'3px 8px',borderRadius:8}}>ACTIF</span>}
             </div>
             <p style={{color:'rgba(255,255,255,0.35)',fontSize:11,fontWeight:600,margin:'0 0 14px'}}>
-              Recevez une alerte instantanÃÂÃÂÃÂÃÂ©e sur cet appareil dÃÂÃÂÃÂÃÂ¨s qu'une nouvelle commande arrive ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ avant mÃÂÃÂÃÂÃÂªme le livreur.
+              Recevez une alerte instantanée sur cet appareil dès qu'une nouvelle commande arrive — avant même le livreur.
             </p>
             <button onClick={togglePushNotifications} disabled={pushLoading}
               style={{width:'100%',padding:'13px 0',borderRadius:14,cursor:pushLoading?'not-allowed':'pointer',
                 background: pushEnabled ? 'rgba(239,68,68,0.15)' : pushLoading ? 'rgba(255,255,255,0.08)' : 'linear-gradient(135deg,#065F46,#059669)',
                 border: pushEnabled ? '1px solid rgba(239,68,68,0.4)' : 'none',
                 color: pushEnabled?'#F87171':'#fff',fontSize:13,fontWeight:900,transition:'all 0.3s'}}>
-              {pushLoading ? 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³ En coursÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦' : pushEnabled ? 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ DÃÂÃÂÃÂÃÂ©sactiver les notifications' : 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Activer les notifications sur cet appareil'}
+              {pushLoading ? '⏳ En cours…' : pushEnabled ? '🔕 Désactiver les notifications' : '🔔 Activer les notifications sur cet appareil'}
             </button>
           </div>
 
@@ -2917,7 +2910,7 @@ function RestaurantOwnerPage() {
             style={{width:'100%',padding:'15px 0',borderRadius:16,border:'none',cursor:profileLoading?'not-allowed':'pointer',
               background: profileSaved?'linear-gradient(135deg,#059669,#4ADE80)':profileLoading?'rgba(255,255,255,0.1)':'linear-gradient(135deg,#065F46,#059669)',
               color:'#fff',fontSize:15,fontWeight:900,letterSpacing:'0.05em',transition:'all 0.3s'}}>
-            {profileSaved?'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ EnregistrÃÂÃÂÃÂÃÂ© !':profileLoading?'Enregistrement...':'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¾ Enregistrer le profil'}
+            {profileSaved?'✅ Enregistré !':profileLoading?'Enregistrement...':'💾 Enregistrer le profil'}
           </button>
         </div>
       )}
@@ -2926,9 +2919,9 @@ function RestaurantOwnerPage() {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ END RESTAURANT OWNER PAGE ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─── END RESTAURANT OWNER PAGE ────────────────────────────────────────────────
 
-const ASSIST_LANG_LABELS: Record<AssistLang,string> = {fr:'FR',en:'EN',ar:'AR',amz:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£'};
+const ASSIST_LANG_LABELS: Record<AssistLang,string> = {fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
 
 function BridgeAssistantPage() {
   const [, navigate] = useLocation();
@@ -2999,7 +2992,7 @@ function BridgeAssistantPage() {
       setMessages(prev => [...prev, { role:'assistant', content: data.reply }]);
       if (data.isEscalation) setEscalated(true);
     } catch {
-      setMessages(prev => [...prev, { role:'assistant', content: 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Service temporairement indisponible. RÃÂÃÂÃÂÃÂ©essayez dans quelques instants.' }]);
+      setMessages(prev => [...prev, { role:'assistant', content: '⚠️ Service temporairement indisponible. Réessayez dans quelques instants.' }]);
     } finally {
       setLoading(false);
     }
@@ -3031,7 +3024,7 @@ function BridgeAssistantPage() {
               <button onClick={clearConversation}
                 title="Effacer la conversation"
                 style={{background:'rgba(239,68,68,0.1)',border:'1px solid rgba(239,68,68,0.3)',color:'#f87171',borderRadius:12,padding:'8px 10px',fontSize:14,cursor:'pointer',lineHeight:1}}>
-                ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ
+                🗑️
               </button>
             )}
             <button onClick={()=>setLang(l=>{const i=ASSIST_LANGS.indexOf(l);return ASSIST_LANGS[(i+1)%ASSIST_LANGS.length];})}
@@ -3132,7 +3125,7 @@ function BridgeAssistantPage() {
             onClick={()=>sendMessage(input)}
             disabled={loading||!input.trim()}
             style={{width:46,height:46,borderRadius:14,background:loading||!input.trim()?'rgba(79,70,229,0.3)':'linear-gradient(135deg,#4f46e5,#7c3aed)',border:'none',color:'#fff',fontSize:20,cursor:loading||!input.trim()?'default':'pointer',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',transition:'all 0.2s',boxShadow:loading||!input.trim()?'none':'0 4px 14px rgba(79,70,229,0.4)'}}>
-            {loading ? 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³' : 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ'}
+            {loading ? '⏳' : '↑'}
           </button>
         </div>
       </div>
@@ -3147,9 +3140,9 @@ function BridgeAssistantPage() {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─────────────────────────────────────────────────────────────────────────────
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Error Boundary ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ attrape les crashes React silencieux ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─── Error Boundary — attrape les crashes React silencieux ──────────────────
 interface EBState { hasError: boolean; error: string }
 class ErrorBoundary extends Component<{ children: React.ReactNode }, EBState> {
   constructor(props: { children: React.ReactNode }) {
@@ -3171,7 +3164,7 @@ class ErrorBoundary extends Component<{ children: React.ReactNode }, EBState> {
         background: 'linear-gradient(160deg,#030712,#020c07)',
         fontFamily: 'system-ui, sans-serif',
       }}>
-        <div style={{ fontSize: 56, marginBottom: 16 }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ</div>
+        <div style={{ fontSize: 56, marginBottom: 16 }}>⚠️</div>
         <p style={{ color: '#F87171', fontSize: 13, fontWeight: 900, letterSpacing: '0.12em', margin: '0 0 8px', textTransform: 'uppercase' }}>
           Erreur de l'application
         </p>
@@ -3185,7 +3178,7 @@ class ErrorBoundary extends Component<{ children: React.ReactNode }, EBState> {
             background: 'linear-gradient(135deg,#065F46,#4ADE80)', color: '#fff',
             fontSize: 14, fontWeight: 900, letterSpacing: '0.06em',
           }}>
-          ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Recharger l'application
+          🔄 Recharger l'application
         </button>
       </div>
     );
@@ -3203,9 +3196,9 @@ function AdminStatsPanel({ adminKey }: { adminKey: string }) {
     if (!adminKey.trim()) { setStats(null); return; }
     try {
       const r = await fetch(`/api/admin/stats?adminKey=${encodeURIComponent(adminKey.trim())}`);
-      if (!r.ok) { setErr('ClÃÂÃÂÃÂÃÂ© admin invalide.'); setStats(null); return; }
+      if (!r.ok) { setErr('Clé admin invalide.'); setStats(null); return; }
       setStats(await r.json()); setErr('');
-    } catch { setErr('Erreur rÃÂÃÂÃÂÃÂ©seau.'); }
+    } catch { setErr('Erreur réseau.'); }
   };
   useEffect(() => { refresh(); /* eslint-disable-next-line */ }, [adminKey]);
 
@@ -3224,7 +3217,7 @@ function AdminStatsPanel({ adminKey }: { adminKey: string }) {
 
   return (
     <div style={{ marginTop: 24, padding: 16, background: '#ECFDF5', borderRadius: 14, border: '1px solid #A7F3D0' }}>
-      <h3 style={{ fontSize: 14, fontWeight: 900, color: '#065F46', marginBottom: 12 }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Visiteurs Bridge</h3>
+      <h3 style={{ fontSize: 14, fontWeight: 900, color: '#065F46', marginBottom: 12 }}>📊 Visiteurs Bridge</h3>
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
         <Card label="AUJOURD'HUI" value={stats.today.uniques} sub={`${stats.today.views} vues`} />
@@ -3250,7 +3243,7 @@ function AdminStatsPanel({ adminKey }: { adminKey: string }) {
                 <div style={{ width: `${pct}%`, height: '100%', background: 'linear-gradient(90deg, #10B981, #4ADE80)' }} />
               </div>
               <div style={{ minWidth: 90, textAlign: 'right', fontSize: 10, color: '#065F46', fontWeight: 800 }}>
-                {d.uniques} pers ÃÂÃÂÃÂÃÂ· {d.views} vues
+                {d.uniques} pers · {d.views} vues
               </div>
             </div>
           );
@@ -3259,7 +3252,7 @@ function AdminStatsPanel({ adminKey }: { adminKey: string }) {
 
       <button onClick={refresh}
         style={{ marginTop: 12, width: '100%', padding: '8px 0', background: '#065F46', color: '#fff', border: 'none', borderRadius: 8, fontSize: 11, fontWeight: 800, cursor: 'pointer' }}>
-        ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ RafraÃÂÃÂÃÂÃÂ®chir
+        🔄 Rafraîchir
       </button>
     </div>
   );
@@ -3281,10 +3274,10 @@ function AdminCouponsPanel({ adminKey }: { adminKey: string }) {
     if (!adminKey.trim()) return;
     try {
       const r = await fetch(`/api/admin/coupons?adminKey=${encodeURIComponent(adminKey.trim())}`);
-      if (!r.ok) { setErr('ClÃÂÃÂÃÂÃÂ© admin invalide pour les coupons.'); setCoupons([]); return; }
+      if (!r.ok) { setErr('Clé admin invalide pour les coupons.'); setCoupons([]); return; }
       const d = await r.json();
       setCoupons(d.coupons || []); setErr('');
-    } catch { setErr('Erreur rÃÂÃÂÃÂÃÂ©seau.'); }
+    } catch { setErr('Erreur réseau.'); }
   };
 
   useEffect(() => { refresh(); /* eslint-disable-next-line */ }, [adminKey]);
@@ -3306,10 +3299,10 @@ function AdminCouponsPanel({ adminKey }: { adminKey: string }) {
       });
       const d = await r.json();
       if (!r.ok) { setErr(d.error || 'Erreur.'); return; }
-      setMsg(d.message || 'Code crÃÂÃÂÃÂÃÂ©ÃÂÃÂÃÂÃÂ©.');
+      setMsg(d.message || 'Code créé.');
       setCode(''); setDiscountValue(''); setMaxUses(''); setExpiresAt(''); setNote('');
       await refresh();
-    } catch { setErr('Erreur rÃÂÃÂÃÂÃÂ©seau.'); }
+    } catch { setErr('Erreur réseau.'); }
     finally { setBusy(false); }
   };
 
@@ -3335,9 +3328,9 @@ function AdminCouponsPanel({ adminKey }: { adminKey: string }) {
 
   return (
     <div style={{ marginTop: 24, padding: 16, background: '#FFFBEB', borderRadius: 14, border: '1px solid #FDE68A' }}>
-      <h3 style={{ fontSize: 14, fontWeight: 900, color: '#92400E', marginBottom: 4 }}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Codes promo</h3>
+      <h3 style={{ fontSize: 14, fontWeight: 900, color: '#92400E', marginBottom: 4 }}>🎟️ Codes promo</h3>
       <p style={{ fontSize: 11, color: '#A16207', marginBottom: 14 }}>
-        CrÃÂÃÂÃÂÃÂ©ez vos codes ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ vous dÃÂÃÂÃÂÃÂ©cidez ÃÂÃÂÃÂÃÂ  qui les envoyer.
+        Créez vos codes — vous décidez à qui les envoyer.
       </p>
 
       <div style={{ display: 'grid', gap: 8, marginBottom: 12 }}>
@@ -3360,7 +3353,7 @@ function AdminCouponsPanel({ adminKey }: { adminKey: string }) {
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <div style={{ flex: 1 }}>
-            <label style={labelStyle}>Max utilisations (vide = illimitÃÂÃÂÃÂÃÂ©)</label>
+            <label style={labelStyle}>Max utilisations (vide = illimité)</label>
             <input style={inputStyle} type="number" value={maxUses} onChange={e => setMaxUses(e.target.value)} placeholder="ex: 50" />
           </div>
           <div style={{ flex: 1 }}>
@@ -3369,14 +3362,14 @@ function AdminCouponsPanel({ adminKey }: { adminKey: string }) {
           </div>
         </div>
         <div>
-          <label style={labelStyle}>Note (privÃÂÃÂÃÂÃÂ©e)</label>
+          <label style={labelStyle}>Note (privée)</label>
           <input style={inputStyle} value={note} onChange={e => setNote(e.target.value)} placeholder="ex: Pour Khalid - lancement" />
         </div>
         {err && <div style={errStyle}>{err}</div>}
-        {msg && <div style={{ padding: '8px 12px', borderRadius: 10, background: '#F0FDF4', border: '1px solid #BBF7D0', color: '#065F46', fontSize: 12, fontWeight: 700 }}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ {msg}</div>}
+        {msg && <div style={{ padding: '8px 12px', borderRadius: 10, background: '#F0FDF4', border: '1px solid #BBF7D0', color: '#065F46', fontSize: 12, fontWeight: 700 }}>✅ {msg}</div>}
         <button onClick={handleCreate} disabled={busy}
           style={{ ...btn, background: '#92400E', opacity: busy ? 0.7 : 1, marginTop: 4 }}>
-          {busy ? 'CrÃÂÃÂÃÂÃÂ©ation...' : 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ CrÃÂÃÂÃÂÃÂ©er le code'}
+          {busy ? 'Création...' : '➕ Créer le code'}
         </button>
       </div>
 
@@ -3396,26 +3389,26 @@ function AdminCouponsPanel({ adminKey }: { adminKey: string }) {
                     <span style={{ fontSize: 11, fontWeight: 800, color: '#92400E', background: '#FEF3C7', padding: '2px 6px', borderRadius: 6 }}>
                       {c.discountType === 'percent' ? `-${c.discountValue}%` : `-${c.discountValue} DH`}
                     </span>
-                    {!c.active && <span style={{ fontSize: 10, color: '#DC2626', fontWeight: 700 }}>DÃÂÃÂÃÂÃÂSACTIVÃÂÃÂÃÂÃÂ</span>}
+                    {!c.active && <span style={{ fontSize: 10, color: '#DC2626', fontWeight: 700 }}>DÉSACTIVÉ</span>}
                   </div>
                   <div style={{ fontSize: 10, color: '#6B7280', marginTop: 4 }}>
-                    UtilisÃÂÃÂÃÂÃÂ© {c.usedCount}{c.maxUses ? `/${c.maxUses}` : ''} fois
-                    {c.expiresAt ? ` ÃÂÃÂÃÂÃÂ· expire ${new Date(c.expiresAt).toLocaleDateString('fr-FR')}` : ''}
+                    Utilisé {c.usedCount}{c.maxUses ? `/${c.maxUses}` : ''} fois
+                    {c.expiresAt ? ` · expire ${new Date(c.expiresAt).toLocaleDateString('fr-FR')}` : ''}
                   </div>
                   {c.note && <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2, fontStyle: 'italic' }}>{c.note}</div>}
                 </div>
                 <div style={{ display: 'flex', gap: 4 }}>
-                  <button onClick={() => { navigator.clipboard.writeText(c.code); setMsg(`${c.code} copiÃÂÃÂÃÂÃÂ© !`); setTimeout(()=>setMsg(''), 2000); }}
+                  <button onClick={() => { navigator.clipboard.writeText(c.code); setMsg(`${c.code} copié !`); setTimeout(()=>setMsg(''), 2000); }}
                     style={{ padding: '6px 8px', background: '#1F2937', color: '#fff', border: 'none', borderRadius: 8, fontSize: 11, cursor: 'pointer' }}>
-                    ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ
+                    📋
                   </button>
                   <button onClick={() => handleToggle(c.code)}
                     style={{ padding: '6px 8px', background: c.active ? '#6B7280' : '#10B981', color: '#fff', border: 'none', borderRadius: 8, fontSize: 11, cursor: 'pointer' }}>
-                    {c.active ? 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¸' : 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¶'}
+                    {c.active ? '⏸' : '▶'}
                   </button>
                   <button onClick={() => handleDelete(c.code)}
                     style={{ padding: '6px 8px', background: '#DC2626', color: '#fff', border: 'none', borderRadius: 8, fontSize: 11, cursor: 'pointer' }}>
-                    ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ
+                    🗑
                   </button>
                 </div>
               </div>
@@ -3427,7 +3420,7 @@ function AdminCouponsPanel({ adminKey }: { adminKey: string }) {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Missions / Pub page ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─── Missions / Pub page ─────────────────────────────────────────────────────
 // Pour brancher AdGate : remplace '' par l'URL offerwall de ton compte AdGate
 const ADGATE_OFFERWALL_URL = '';
 
@@ -3442,76 +3435,76 @@ interface MissionCompl { id: number; missionId: number; diamondsAwarded: number;
 type MLang = 'fr'|'en'|'ar'|'amz';
 const MISSION_T = {
   fr: {
-    title:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Gagner des diamants', sub:'Regarde des pubs, fais des missions',
+    title:'💎 Gagner des diamants', sub:'Regarde des pubs, fais des missions',
     today:"AUJOURD'HUI", dailyCap:'Plafond journalier', of:'sur',
-    capReached:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Plafond atteint ! Revenez demain.',
-    authNudge:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Connecte-toi pour encaisser tes rÃÂÃÂÃÂÃÂ©compenses ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ',
-    cats:{ video:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬ PublicitÃÂÃÂÃÂÃÂ©s vidÃÂÃÂÃÂÃÂ©o', offerwall:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ± Jeux & Offres', social:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ£ RÃÂÃÂÃÂÃÂ©seaux sociaux', survey:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Sondages', fortune:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ Roue de la fortune' },
-    topBadge:'ÃÂÃÂ¢ÃÂÃÂ­ÃÂÃÂ TOP', timesToday:(c:number,m:number)=>`${c}/${m} fois aujourd'hui`,
-    adTitle:'PUBLICITÃÂÃÂÃÂÃÂ SPONSORISÃÂÃÂÃÂÃÂE', adWatching:'Visionnage de la publicitÃÂÃÂÃÂÃÂ© en coursÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦',
-    fortuneRunning:'Roue de la fortune en coursÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦', waitSec:(s:number)=>`Patiente encore ${s}sÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦`,
-    claim:(d:number)=>`ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ RÃÂÃÂÃÂÃÂ©clamer ${d.toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ`, cancel:'Annuler',
+    capReached:'🎉 Plafond atteint ! Revenez demain.',
+    authNudge:'🔒 Connecte-toi pour encaisser tes récompenses →',
+    cats:{ video:'🎬 Publicités vidéo', offerwall:'📱 Jeux & Offres', social:'📣 Réseaux sociaux', survey:'📊 Sondages', fortune:'🎡 Roue de la fortune' },
+    topBadge:'⭐ TOP', timesToday:(c:number,m:number)=>`${c}/${m} fois aujourd'hui`,
+    adTitle:'PUBLICITÉ SPONSORISÉE', adWatching:'Visionnage de la publicité en cours…',
+    fortuneRunning:'Roue de la fortune en cours…', waitSec:(s:number)=>`Patiente encore ${s}s…`,
+    claim:(d:number)=>`🎁 Réclamer ${d.toLocaleString()} 💎`, cancel:'Annuler',
     socialOpened:"La page s'est ouverte dans un nouvel onglet. Effectue l'action puis confirme.",
-    socialWait:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³ Attends quelques secondesÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦',
-    socialClaim:(d:number)=>`ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ C'est fait ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ RÃÂÃÂÃÂÃÂ©clamer ${d.toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ`,
-    done:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Fait', offerwallTip:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ IntÃÂÃÂÃÂÃÂ©gration Lootably / Offertoro : renseigne',
+    socialWait:'⏳ Attends quelques secondes…',
+    socialClaim:(d:number)=>`✅ C'est fait — Réclamer ${d.toLocaleString()} 💎`,
+    done:'✓ Fait', offerwallTip:'💡 Intégration Lootably / Offertoro : renseigne',
     offerwallTip2:'dans main.tsx pour afficher l\'offerwall ici.',
-    errLogin:'Connecte-toi pour gagner des ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ !', errLimit:'Limite journaliÃÂÃÂÃÂÃÂ¨re atteinte',
-    errDone:'DÃÂÃÂÃÂÃÂ©jÃÂÃÂÃÂÃÂ  effectuÃÂÃÂÃÂÃÂ© !', errNet:'Erreur rÃÂÃÂÃÂÃÂ©seau', credited:(d:number,h:string)=>`+${d.toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ crÃÂÃÂÃÂÃÂ©ditÃÂÃÂÃÂÃÂ©s ! (${h})`,
+    errLogin:'Connecte-toi pour gagner des 💎 !', errLimit:'Limite journalière atteinte',
+    errDone:'Déjà effectué !', errNet:'Erreur réseau', credited:(d:number,h:string)=>`+${d.toLocaleString()} 💎 crédités ! (${h})`,
   },
   en: {
-    title:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Earn Diamonds', sub:'Watch ads, complete missions',
+    title:'💎 Earn Diamonds', sub:'Watch ads, complete missions',
     today:'TODAY', dailyCap:'Daily cap', of:'/',
-    capReached:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Daily cap reached! Come back tomorrow.',
-    authNudge:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Sign in to claim your rewards ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ',
-    cats:{ video:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬ Video Ads', offerwall:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ± Games & Offers', social:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ£ Social Media', survey:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Surveys', fortune:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ Wheel of Fortune' },
-    topBadge:'ÃÂÃÂ¢ÃÂÃÂ­ÃÂÃÂ TOP', timesToday:(c:number,m:number)=>`${c}/${m} today`,
-    adTitle:'SPONSORED AD', adWatching:'Watching the adÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦',
-    fortuneRunning:'Spinning the wheelÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦', waitSec:(s:number)=>`Wait ${s}s moreÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦`,
-    claim:(d:number)=>`ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Claim ${d.toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ`, cancel:'Cancel',
+    capReached:'🎉 Daily cap reached! Come back tomorrow.',
+    authNudge:'🔒 Sign in to claim your rewards →',
+    cats:{ video:'🎬 Video Ads', offerwall:'📱 Games & Offers', social:'📣 Social Media', survey:'📊 Surveys', fortune:'🎡 Wheel of Fortune' },
+    topBadge:'⭐ TOP', timesToday:(c:number,m:number)=>`${c}/${m} today`,
+    adTitle:'SPONSORED AD', adWatching:'Watching the ad…',
+    fortuneRunning:'Spinning the wheel…', waitSec:(s:number)=>`Wait ${s}s more…`,
+    claim:(d:number)=>`🎁 Claim ${d.toLocaleString()} 💎`, cancel:'Cancel',
     socialOpened:'The page opened in a new tab. Complete the action then confirm.',
-    socialWait:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³ Wait a few secondsÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦',
-    socialClaim:(d:number)=>`ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Done ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Claim ${d.toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ`,
-    done:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Done', offerwallTip:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ Lootably / Offertoro integration: set',
+    socialWait:'⏳ Wait a few seconds…',
+    socialClaim:(d:number)=>`✅ Done — Claim ${d.toLocaleString()} 💎`,
+    done:'✓ Done', offerwallTip:'💡 Lootably / Offertoro integration: set',
     offerwallTip2:'in main.tsx to show the offerwall here.',
-    errLogin:'Sign in to earn ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ!', errLimit:'Daily limit reached',
-    errDone:'Already done!', errNet:'Network error', credited:(d:number,h:string)=>`+${d.toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ credited! (${h})`,
+    errLogin:'Sign in to earn 💎!', errLimit:'Daily limit reached',
+    errDone:'Already done!', errNet:'Network error', credited:(d:number,h:string)=>`+${d.toLocaleString()} 💎 credited! (${h})`,
   },
   ar: {
-    title:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂª', sub:'ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ² ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ',
-    today:'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ', dailyCap:'ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ', of:'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ',
-    capReached:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ! ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ.',
-    authNudge:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ',
-    cats:{ video:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬ ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ', offerwall:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¶', social:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ£ ÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ', survey:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂª', fortune:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ¸' },
-    topBadge:'ÃÂÃÂ¢ÃÂÃÂ­ÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ', timesToday:(c:number,m:number)=>`${c}/${m} ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ`,
-    adTitle:'ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ', adWatching:'ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦',
-    fortuneRunning:'ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦', waitSec:(s:number)=>`ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ± ${s}ÃÂÃÂÃÂÃÂ«ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦`,
-    claim:(d:number)=>`ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ${d.toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ`, cancel:'ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂºÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡',
-    socialOpened:'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ© ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯. ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ² ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¡ ÃÂÃÂÃÂÃÂ«ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯.',
-    socialWait:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ± ÃÂÃÂÃÂÃÂ«ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦',
-    socialClaim:(d:number)=>`ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ${d.toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ`,
-    done:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ', offerwallTip:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Lootably: ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ·',
-    offerwallTip2:'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ main.tsx ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ¶ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¶ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§.',
-    errLogin:'ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ¨ ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ!', errLimit:'ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂµÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂª ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ¯ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ',
-    errDone:'ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¬ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂ!', errNet:'ÃÂÃÂÃÂÃÂ®ÃÂÃÂÃÂÃÂ·ÃÂÃÂÃÂÃÂ£ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©', credited:(d:number,h:string)=>`+${d.toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¶ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©! (${h})`,
+    title:'💎 اكسب الماسات', sub:'شاهد الإعلانات، أنجز المهام',
+    today:'اليوم', dailyCap:'الحد اليومي', of:'من',
+    capReached:'🎉 وصلت للحد اليومي! عد غداً.',
+    authNudge:'🔒 سجّل الدخول للحصول على مكافآتك ←',
+    cats:{ video:'🎬 إعلانات فيديو', offerwall:'📱 ألعاب وعروض', social:'📣 شبكات التواصل', survey:'📊 استطلاعات', fortune:'🎡 عجلة الحظ' },
+    topBadge:'⭐ الأفضل', timesToday:(c:number,m:number)=>`${c}/${m} مرة اليوم`,
+    adTitle:'إعلان مموّل', adWatching:'جاري مشاهدة الإعلان…',
+    fortuneRunning:'جاري الدوران…', waitSec:(s:number)=>`انتظر ${s}ث…`,
+    claim:(d:number)=>`🎁 احصل على ${d.toLocaleString()} 💎`, cancel:'إلغاء',
+    socialOpened:'فُتحت الصفحة في تبويب جديد. أنجز الإجراء ثم أكّد.',
+    socialWait:'⏳ انتظر ثواني…',
+    socialClaim:(d:number)=>`✅ تم — احصل على ${d.toLocaleString()} 💎`,
+    done:'✓ تم', offerwallTip:'💡 تكامل Lootably: اضبط',
+    offerwallTip2:'في main.tsx لعرض العروض هنا.',
+    errLogin:'سجّل الدخول لكسب 💎!', errLimit:'وصلت للحد اليومي',
+    errDone:'تم إنجازه بالفعل!', errNet:'خطأ في الشبكة', credited:(d:number,h:string)=>`+${d.toLocaleString()} 💎 مُضافة! (${h})`,
   },
   amz: {
-    title:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ· ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ', sub:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¥ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ³ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂÃÂÃÂ· ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    today:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°', dailyCap:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ', of:'/',
-    capReached:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ° ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ! ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¹ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ.',
-    authNudge:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ· ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ° ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ',
-    cats:{ video:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ³ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ', offerwall:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ± ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ', social:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ£ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ', survey:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ', fortune:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°' },
-    topBadge:'ÃÂÃÂ¢ÃÂÃÂ­ÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ', timesToday:(c:number,m:number)=>`${c}/${m} ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°`,
-    adTitle:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ', adWatching:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¥ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦',
-    fortuneRunning:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ° ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ³ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¹ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦', waitSec:(s:number)=>`ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¹ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ${s}ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦`,
-    claim:(d:number)=>`ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ${d.toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ`, cancel:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    socialOpened:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ° ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ³ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ±ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¹ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ. ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ.',
-    socialWait:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¹ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦',
-    socialClaim:(d:number)=>`ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ${d.toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ`,
-    done:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ', offerwallTip:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡ Lootably: ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ¼ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    offerwallTip2:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ³ main.tsx ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ· ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ£ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ.',
-    errLogin:'ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ· ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ° ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ!', errLimit:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ° ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¡ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ',
-    errDone:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ!', errNet:'ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ½ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ¢ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ', credited:(d:number,h:string)=>`+${d.toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ·ÃÂÃÂ¢ÃÂÃÂ´ÃÂÃÂ°ÃÂÃÂ¢ÃÂÃÂµÃÂÃÂÃÂÃÂ¢ÃÂÃÂµÃÂÃÂ! (${h})`,
+    title:'💎 ⴰⴽⵙⵓⴷ ⵉⵎⴰⵙⵙⵏ', sub:'ⵥⵔ ⵉⵏⴰⴳⵔⴰⵡⵏ · ⵙⵙⵓⴼⵖ ⵜⵉⵎⵉⵙⵙⵉⵡⵉⵏ',
+    today:'ⴰⵙⵙ ⴰ', dailyCap:'ⴰⵎⵓⵟⵟⵓ ⵏ ⵡⴰⵙⵙ', of:'/',
+    capReached:'🎉 ⵡⴰⵅⵅⴰ ⴰⵎⵓⵟⵟⵓ! ⴰⵙⵙ ⵉⴹⵍⵍⵉ.',
+    authNudge:'🔒 ⴽⵛⵎ ⵓⵍⴰⴷ ⵜⴰⴽⴽⴰ ⵜⵉⵙⵙⴰⵍⵜⵉⵏ →',
+    cats:{ video:'🎬 ⵉⵏⴰⴳⵔⴰⵡⵏ ⵏ ⵓⵡⵉⴷⵢⵓ', offerwall:'📱 ⵉⵖⴰⵡⵙⵉⵡⵏ', social:'📣 ⵉⵙⵓⵙⵙⵏ ⵉⵏⵎⵔⴰⵡⵏ', survey:'📊 ⵉⵙⵇⵙⵉⵜⵏ', fortune:'🎡 ⵜⴰⵔⵓⴼⴼⴰ' },
+    topBadge:'⭐ ⴰⵎⵇⵔⴰⵏ', timesToday:(c:number,m:number)=>`${c}/${m} ⴰⵙⵙ ⴰ`,
+    adTitle:'ⴰⵙⵎⵓⵙⵙⵓ', adWatching:'ⵉⵜⵜⵓⵥⵔ ⵓⵙⵎⵓⵙⵙⵓ…',
+    fortuneRunning:'ⵜⴰⵔⵓⴼⴼⴰ ⴳ ⵓⵙⵙⵉⵡⴹ…', waitSec:(s:number)=>`ⵃⴹⵓ ${s}ⵙ…`,
+    claim:(d:number)=>`🎁 ⴰⵡⵉ ${d.toLocaleString()} 💎`, cancel:'ⴽⴽⵙ',
+    socialOpened:'ⵜⵙⵔⵉⵔ ⵜⵙⵓⴷⴰ ⴳ ⵜⴱⵔⵉⴷⵜ ⵢⴰⴹⵏⵉⵏ. ⴽⵎⵎⵍ ⵜⵉⵔⵎⵜ ⵔⵏⵓ ⵙⵙⵉⵜⵎ.',
+    socialWait:'⏳ ⵃⴹⵓ ⵉⵎⵉⴽⴽ…',
+    socialClaim:(d:number)=>`✅ ⵉⵍⵓⵍ — ⴰⵡⵉ ${d.toLocaleString()} 💎`,
+    done:'✓ ⵉⵍⵓⵍ', offerwallTip:'💡 Lootably: ⵙⵏⴼⵍ',
+    offerwallTip2:'ⴳ main.tsx ⵓⵍⴰⴷ ⵜⵏⵏⴰⵔⵣ ⵜⵉⵙⴽⵓⵜⵉⵡⵉⵏ ⴷⵉⵔ.',
+    errLogin:'ⴽⵛⵎ ⵓⵍⴰⴷ ⵜⴰⴽⴽⴰ 💎!', errLimit:'ⵡⴰⵅⵅⴰ ⴰⵎⵓⵟⵟⵓ ⵏ ⵡⴰⵙⵙ',
+    errDone:'ⵉⵍⵓⵍ ⴷⴰⵜ!', errNet:'ⵜⴰⵖⵓⵍⵜ ⵏ ⵓⵙⴽⵏⵢⵓ', credited:(d:number,h:string)=>`+${d.toLocaleString()} 💎 ⴷⴷⴰⵏⵜ! (${h})`,
   },
 };
 
@@ -3586,7 +3579,7 @@ function MissionsPage() {
     } catch { showToast(t.errNet, false); }
   };
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Video / Fortune mission flow ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── Video / Fortune mission flow ──
   const startAd = (mission: MissionData) => {
     if (!isSignedIn) { showToast(t.errLogin, false); return; }
     const cnt = todayCount(mission.id);
@@ -3608,7 +3601,7 @@ function MissionsPage() {
     await complete(m);
   };
 
-  // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Social mission flow ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+  // ── Social mission flow ──
   const startSocial = (mission: MissionData) => {
     if (!isSignedIn) { showToast(t.errLogin, false); return; }
     const cnt = todayCount(mission.id);
@@ -3646,13 +3639,13 @@ function MissionsPage() {
     <div style={S.page}>
       {/* Header */}
       <div style={S.header}>
-        <button style={S.back} onClick={() => navigate('/')}>{isAR ? 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ' : 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ'}</button>
+        <button style={S.back} onClick={() => navigate('/')}>{isAR ? '→' : '←'}</button>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 17, fontWeight: 900, letterSpacing: '0.02em' }}>{t.title}</div>
           <div style={{ fontSize: 11, color: '#64748b', marginTop: 1 }}>{t.sub}</div>
         </div>
         <div style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 12, padding: '6px 12px', textAlign: 'center' }}>
-          <div style={{ fontSize: 13, fontWeight: 900, color: '#10b981' }}>{todayDiamonds.toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</div>
+          <div style={{ fontSize: 13, fontWeight: 900, color: '#10b981' }}>{todayDiamonds.toLocaleString()} 💎</div>
           <div style={{ fontSize: 9, color: '#64748b', letterSpacing: '0.06em' }}>{t.today}</div>
         </div>
       </div>
@@ -3662,7 +3655,7 @@ function MissionsPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 11, color: '#94a3b8' }}>
           <span>{t.dailyCap}</span>
           <span style={{ fontWeight: 800, color: pct >= 100 ? '#10b981' : '#f59e0b' }}>
-            {todayDiamonds.toLocaleString()} {t.of} {DAILY_CAP.toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ
+            {todayDiamonds.toLocaleString()} {t.of} {DAILY_CAP.toLocaleString()} 💎
           </span>
         </div>
         <div style={{ height: 8, background: 'rgba(255,255,255,0.08)', borderRadius: 99 }}>
@@ -3716,7 +3709,7 @@ function MissionsPage() {
                     </div>
                     <div style={{ textAlign: isAR ? 'left' : 'right', flexShrink: 0 }}>
                       <div style={S.pill(maxed)}>
-                        {maxed ? t.done : `+${mission.rewardDiamonds >= 1000 ? (mission.rewardDiamonds/1000).toFixed(0)+'K' : mission.rewardDiamonds} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ`}
+                        {maxed ? t.done : `+${mission.rewardDiamonds >= 1000 ? (mission.rewardDiamonds/1000).toFixed(0)+'K' : mission.rewardDiamonds} 💎`}
                       </div>
                       {!maxed && <div style={{ fontSize: 10, color: top ? '#f59e0b' : '#475569', marginTop: 3, fontWeight: top ? 800 : 400 }}>{dhLabel(mission.rewardDiamonds, mission.type)}</div>}
                     </div>
@@ -3737,7 +3730,7 @@ function MissionsPage() {
               {!adDone && <span style={{ color: '#f59e0b' }}>{adCountdown}s</span>}
             </div>
             <div style={{ height: 180, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: 20 }}>
-              <div style={{ fontSize: 48 }}>{adMission.type === 'fortune' ? 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¡' : 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬'}</div>
+              <div style={{ fontSize: 48 }}>{adMission.type === 'fortune' ? '🎡' : '🎬'}</div>
               <div style={{ fontSize: 13, color: '#94a3b8', textAlign: 'center', lineHeight: 1.5 }}>
                 {adMission.type === 'fortune' ? t.fortuneRunning : t.adWatching}
               </div>
@@ -3815,7 +3808,7 @@ function AdminAuthPage() {
       const data = await r.json();
       if (!r.ok) { setError(data.error || 'Erreur.'); return null; }
       return data;
-    } catch { setError('Erreur rÃÂÃÂÃÂÃÂ©seau.'); return null; }
+    } catch { setError('Erreur réseau.'); return null; }
     finally { setLoading(false); }
   };
 
@@ -3826,69 +3819,69 @@ function AdminAuthPage() {
   };
 
   const handleBan = async () => {
-    if (!email.trim() || !adminKey.trim()) { setError('Email et clÃÂÃÂÃÂÃÂ© admin requis.'); return; }
-    if (!window.confirm(`Bannir dÃÂÃÂÃÂÃÂ©finitivement ${email} ? Il ne pourra plus se connecter ni se rÃÂÃÂÃÂÃÂ©inscrire.`)) return;
+    if (!email.trim() || !adminKey.trim()) { setError('Email et clé admin requis.'); return; }
+    if (!window.confirm(`Bannir définitivement ${email} ? Il ne pourra plus se connecter ni se réinscrire.`)) return;
     const data = await callApi('/api/admin/ban-user');
     if (data?.ok) setSuccess(data.message || 'Utilisateur banni.');
   };
 
   const handleUnban = async () => {
-    if (!email.trim() || !adminKey.trim()) { setError('Email et clÃÂÃÂÃÂÃÂ© admin requis.'); return; }
+    if (!email.trim() || !adminKey.trim()) { setError('Email et clé admin requis.'); return; }
     const data = await callApi('/api/admin/unban-user');
-    if (data?.ok) setSuccess(data.message || 'Utilisateur dÃÂÃÂÃÂÃÂ©banni.');
+    if (data?.ok) setSuccess(data.message || 'Utilisateur débanni.');
   };
 
   const handleDelete = async () => {
-    if (!email.trim() || !adminKey.trim()) { setError('Email et clÃÂÃÂÃÂÃÂ© admin requis.'); return; }
-    if (!window.confirm(`Supprimer le compte de ${email} ? Il pourra se rÃÂÃÂÃÂÃÂ©inscrire avec le mÃÂÃÂÃÂÃÂªme email.`)) return;
+    if (!email.trim() || !adminKey.trim()) { setError('Email et clé admin requis.'); return; }
+    if (!window.confirm(`Supprimer le compte de ${email} ? Il pourra se réinscrire avec le même email.`)) return;
     const data = await callApi('/api/admin/delete-user');
-    if (data?.ok) setSuccess(data.message || 'Compte supprimÃÂÃÂÃÂÃÂ©.');
+    if (data?.ok) setSuccess(data.message || 'Compte supprimé.');
   };
 
   return (
     <AuthPageWrapper>
       <AuthCardHeader
-        title="ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ AccÃÂÃÂÃÂÃÂ¨s Admin"
-        sub="GÃÂÃÂÃÂÃÂ©nÃÂÃÂÃÂÃÂ©rez un lien de connexion direct pour un utilisateur"
+        title="🔑 Accès Admin"
+        sub="Générez un lien de connexion direct pour un utilisateur"
       />
       <form onSubmit={handleGenerate} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <FocusInput label="Email de l'utilisateur" value={email} onChange={setEmail}
           placeholder="user@exemple.com" type="email" autoComplete="off" />
-        <FocusInput label="ClÃÂÃÂÃÂÃÂ© admin (code chauffeur)" value={adminKey} onChange={setAdminKey}
+        <FocusInput label="Clé admin (code chauffeur)" value={adminKey} onChange={setAdminKey}
           placeholder="BRIDGE-DRIVER-2025" type="password" autoComplete="off" />
         {error && <div style={errStyle}>{error}</div>}
         {success && (
           <div style={{ padding: '10px 12px', borderRadius: 10, background: '#F0FDF4',
             border: '1px solid #BBF7D0', color: '#065F46', fontSize: 13, fontWeight: 700 }}>
-            ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ {success}
+            ✅ {success}
           </div>
         )}
         <button type="submit" style={{ ...btn, opacity: loading ? 0.7 : 1 }} disabled={loading}>
-          {loading ? 'Patientez...' : 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ GÃÂÃÂÃÂÃÂ©nÃÂÃÂÃÂÃÂ©rer un lien de connexion'}
+          {loading ? 'Patientez...' : '🔗 Générer un lien de connexion'}
         </button>
         <div style={{ display: 'flex', gap: 8 }}>
           <button type="button" onClick={handleBan} disabled={loading}
             style={{ ...btn, flex: 1, background: '#DC2626', opacity: loading ? 0.7 : 1 }}>
-            ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ« Bannir
+            🚫 Bannir
           </button>
           <button type="button" onClick={handleUnban} disabled={loading}
             style={{ ...btn, flex: 1, background: '#6B7280', opacity: loading ? 0.7 : 1 }}>
-            ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ©ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ DÃÂÃÂÃÂÃÂ©bannir
+            ↩️ Débannir
           </button>
         </div>
         <button type="button" onClick={handleDelete} disabled={loading}
           style={{ ...btn, background: '#7C2D12', opacity: loading ? 0.7 : 1 }}>
-          ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Supprimer le compte (peut se rÃÂÃÂÃÂÃÂ©inscrire)
+          🗑️ Supprimer le compte (peut se réinscrire)
         </button>
         <p style={{ fontSize: 11, color: '#9CA3AF', textAlign: 'center', marginTop: 4, lineHeight: 1.5 }}>
-          <b>Bannir</b> = bloquÃÂÃÂÃÂÃÂ© pour toujours.<br/>
-          <b>Supprimer</b> = effacÃÂÃÂÃÂÃÂ©, peut se rÃÂÃÂÃÂÃÂ©inscrire.
+          <b>Bannir</b> = bloqué pour toujours.<br/>
+          <b>Supprimer</b> = effacé, peut se réinscrire.
         </p>
       </form>
       {link && (
         <div style={{ marginTop: 20, padding: 16, background: '#F0FDF4', borderRadius: 12, border: '1px solid #BBF7D0' }}>
           <p style={{ fontSize: 11, fontWeight: 800, color: '#065F46', marginBottom: 8, letterSpacing: '0.08em' }}>
-            ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ LIEN VALABLE 1 HEURE
+            ✅ LIEN VALABLE 1 HEURE
           </p>
           <p style={{ fontSize: 11, color: '#374151', wordBreak: 'break-all', marginBottom: 12, lineHeight: 1.5 }}>
             {link}
@@ -3897,10 +3890,10 @@ function AdminAuthPage() {
             onClick={() => { navigator.clipboard.writeText(link); }}
             style={{ width: '100%', padding: '10px 0', borderRadius: 10, border: 'none', cursor: 'pointer',
               background: '#065F46', color: '#fff', fontSize: 13, fontWeight: 800 }}>
-            ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Copier le lien
+            📋 Copier le lien
           </button>
           <p style={{ fontSize: 10, color: '#9CA3AF', marginTop: 8, textAlign: 'center' }}>
-            Envoyez ce lien ÃÂÃÂÃÂÃÂ  l'utilisateur via WhatsApp ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ il se connectera automatiquement
+            Envoyez ce lien à l'utilisateur via WhatsApp — il se connectera automatiquement
           </p>
         </div>
       )}
@@ -3911,12 +3904,12 @@ function AdminAuthPage() {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ FLOATING WHATSAPP BUTTON ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─── FLOATING WHATSAPP BUTTON ─────────────────────────────────────────────────
 
 function FloatingWAButton() {
   const [location] = useLocation();
   if (location === '/assistant') return null;
-  const msg = encodeURIComponent('Bonjour Bridge Safi, j\'ai besoin d\'aide ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ');
+  const msg = encodeURIComponent('Bonjour Bridge Safi, j\'ai besoin d\'aide 🙏');
   return (
     <a
       href={`https://wa.me/212764794856?text=${msg}`}
@@ -3942,7 +3935,7 @@ function FloatingWAButton() {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ FLOATING AI ASSISTANT WIDGET ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─── FLOATING AI ASSISTANT WIDGET ─────────────────────────────────────────────
 
 function FloatingAssistantWidget() {
   const [location] = useLocation();
@@ -4008,7 +4001,7 @@ function FloatingAssistantWidget() {
       if (data.isEscalation) setEscalated(true);
       if (!open) setUnread(u => u + 1);
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Service temporairement indisponible.' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: '⚠️ Service temporairement indisponible.' }]);
     } finally { setLoading(false); }
   };
 
@@ -4025,7 +4018,7 @@ function FloatingAssistantWidget() {
         .w-bubble:hover{transform:scale(1.1)!important}
       `}</style>
 
-      {/* Floating bubble ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ sits above WhatsApp button */}
+      {/* Floating bubble — sits above WhatsApp button */}
       <button className="w-bubble" onClick={() => setOpen(o => !o)}
         style={{position:'fixed',bottom:144,right:16,zIndex:61,width:46,height:46,borderRadius:'50%',
           background:'linear-gradient(135deg,#4f46e5,#7c3aed)',
@@ -4077,7 +4070,7 @@ function FloatingAssistantWidget() {
                 <button onClick={clearConversation}
                   style={{background:'rgba(239,68,68,0.1)',border:'1px solid rgba(239,68,68,0.3)',
                     color:'#f87171',borderRadius:10,padding:'5px 8px',fontSize:13,cursor:'pointer'}}>
-                  ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ
+                  🗑️
                 </button>
               )}
               <button onClick={()=>setLang(l=>{const i=ASSIST_LANGS.indexOf(l);return ASSIST_LANGS[(i+1)%ASSIST_LANGS.length];})}
@@ -4088,7 +4081,7 @@ function FloatingAssistantWidget() {
               <button onClick={()=>setOpen(false)}
                 style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',
                   color:'#94a3b8',borderRadius:10,padding:'5px 9px',fontSize:11,fontWeight:700,cursor:'pointer'}}>
-                ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+                ✕
               </button>
             </div>
           </div>
@@ -4118,7 +4111,7 @@ function FloatingAssistantWidget() {
                   <div style={{width:24,height:24,borderRadius:'50%',
                     background:'linear-gradient(135deg,#4f46e5,#7c3aed)',
                     display:'flex',alignItems:'center',justifyContent:'center',
-                    flexShrink:0,marginRight:7,marginTop:3,fontSize:11}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦</div>
+                    flexShrink:0,marginRight:7,marginTop:3,fontSize:11}}>✦</div>
                 )}
                 <div style={{maxWidth:'78%',padding:'8px 12px',
                   borderRadius:msg.role==='user'?'16px 16px 3px 16px':'3px 16px 16px 16px',
@@ -4135,7 +4128,7 @@ function FloatingAssistantWidget() {
             {loading&&(
               <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:9}}>
                 <div style={{width:24,height:24,borderRadius:'50%',background:'linear-gradient(135deg,#4f46e5,#7c3aed)',
-                  display:'flex',alignItems:'center',justifyContent:'center',fontSize:11}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¦</div>
+                  display:'flex',alignItems:'center',justifyContent:'center',fontSize:11}}>✦</div>
                 <div style={{background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.08)',
                   borderRadius:'3px 16px 16px 16px',padding:'9px 14px',display:'flex',gap:4}}>
                   {[0,1,2].map(i=>(
@@ -4185,7 +4178,7 @@ function FloatingAssistantWidget() {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Leaderboard Page ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ classement synchronisÃÂÃÂÃÂÃÂ© avec le Manager ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ── Leaderboard Page — classement synchronisé avec le Manager ─────────────────
 interface ManagerPlayer { id:number; pseudo:string; phone:string; diamonds:number; score:number; gamesPlayed:number; menuCost:number; missing:number; amountMAD:number; }
 
 function LeaderboardPage() {
@@ -4218,17 +4211,17 @@ function LeaderboardPage() {
   const myPlayer = players.find(p => p.phone === userPhone);
   const myRank = myPlayer ? players.findIndex(p => p.phone === userPhone) + 1 : null;
 
-  const medalEmoji = (i: number) => i === 0 ? 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¥ÃÂÃÂ' : i === 1 ? 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¥ÃÂÃÂ' : i === 2 ? 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¥ÃÂÃÂ' : `${i + 1}.`;
+  const medalEmoji = (i: number) => i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`;
   const progressPct = (d: number) => Math.min(100, Math.round((d / GAME_TARGET) * 100));
 
   return (
     <div style={{minHeight:'100vh',background:'linear-gradient(180deg,#04110A 0%,#071C11 60%,#050F08 100%)',color:'white'}}>
       {/* Header */}
       <div style={{background:'rgba(0,0,0,0.4)',backdropFilter:'blur(12px)',padding:'14px 20px',display:'flex',alignItems:'center',gap:12,borderBottom:'1px solid rgba(74,222,128,0.15)',position:'sticky',top:0,zIndex:10}}>
-        <button onClick={()=>navigate('/game')} style={{background:'none',border:'none',color:'#4ADE80',fontSize:20,cursor:'pointer',padding:'4px',lineHeight:1}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</button>
+        <button onClick={()=>navigate('/game')} style={{background:'none',border:'none',color:'#4ADE80',fontSize:20,cursor:'pointer',padding:'4px',lineHeight:1}}>←</button>
         <div>
-          <div style={{fontSize:'17px',fontWeight:900,letterSpacing:'0.05em'}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Classement Safi Runner</div>
-          <div style={{fontSize:'11px',color:'rgba(255,255,255,0.4)',marginTop:'1px'}}>SynchronisÃÂÃÂÃÂÃÂ© avec le Manager ÃÂÃÂÃÂÃÂ· Objectif : {GAME_TARGET.toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</div>
+          <div style={{fontSize:'17px',fontWeight:900,letterSpacing:'0.05em'}}>🏆 Classement Safi Runner</div>
+          <div style={{fontSize:'11px',color:'rgba(255,255,255,0.4)',marginTop:'1px'}}>Synchronisé avec le Manager · Objectif : {GAME_TARGET.toLocaleString()} 💎</div>
         </div>
       </div>
 
@@ -4241,7 +4234,7 @@ function LeaderboardPage() {
               <div style={{fontSize:24,fontWeight:900,marginTop:2}}>#{myRank} {myPlayer.pseudo}</div>
             </div>
             <div style={{textAlign:'right'}}>
-              <div style={{fontSize:22,fontWeight:900,color:'#4ADE80'}}>{(myPlayer.diamonds||0).toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</div>
+              <div style={{fontSize:22,fontWeight:900,color:'#4ADE80'}}>{(myPlayer.diamonds||0).toLocaleString()} 💎</div>
               <div style={{fontSize:11,color:'rgba(255,255,255,0.5)',marginTop:2}}>{progressPct(myPlayer.diamonds||0)}% de l'objectif</div>
             </div>
           </div>
@@ -4250,17 +4243,17 @@ function LeaderboardPage() {
             <div style={{height:'100%',borderRadius:'999px',background:'linear-gradient(90deg,#059669,#4ADE80)',width:`${progressPct(myPlayer.diamonds||0)}%`,transition:'width 0.5s ease'}}/>
           </div>
           <div style={{display:'flex',justifyContent:'space-between',marginTop:6,fontSize:11,color:'rgba(255,255,255,0.4)'}}>
-            <span>{(myPlayer.diamonds||0).toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ gagnÃÂÃÂÃÂÃÂ©s</span>
-            <span>{((myPlayer.missing||0)).toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ manquants</span>
+            <span>{(myPlayer.diamonds||0).toLocaleString()} 💎 gagnés</span>
+            <span>{((myPlayer.missing||0)).toLocaleString()} 💎 manquants</span>
           </div>
           {(myPlayer.missing||0) > 0 && (
             <div style={{marginTop:8,padding:'8px 10px',background:'rgba(239,68,68,0.12)',borderRadius:'8px',border:'1px solid rgba(239,68,68,0.2)',fontSize:12,color:'#FCA5A5'}}>
-              ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Il manque {(myPlayer.missing||0).toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ pÃÂÃÂÃÂÃÂ©nalitÃÂÃÂÃÂÃÂ© estimÃÂÃÂÃÂÃÂ©e : <strong>{myPlayer.amountMAD} DH</strong>
+              ⚠️ Il manque {(myPlayer.missing||0).toLocaleString()} 💎 → pénalité estimée : <strong>{myPlayer.amountMAD} DH</strong>
             </div>
           )}
           {(myPlayer.missing||0) <= 0 && (
             <div style={{marginTop:8,padding:'8px 10px',background:'rgba(74,222,128,0.1)',borderRadius:'8px',border:'1px solid rgba(74,222,128,0.2)',fontSize:12,color:'#4ADE80'}}>
-              ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Objectif atteint ! Prochaine livraison <strong>GRATUITE</strong> ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ
+              🎉 Objectif atteint ! Prochaine livraison <strong>GRATUITE</strong> 🎁
             </div>
           )}
         </div>
@@ -4268,7 +4261,7 @@ function LeaderboardPage() {
 
       {/* Rules reminder */}
       <div style={{margin:'12px 16px 0',background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'10px 14px',fontSize:12,color:'rgba(255,255,255,0.5)',lineHeight:1.6}}>
-        ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ <strong style={{color:'rgba(255,255,255,0.7)'}}>RÃÂÃÂÃÂÃÂ¨gles :</strong> 3 jours ÃÂÃÂÃÂÃÂ 2h/jour ÃÂÃÂÃÂÃÂ· 6 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ par heure ÃÂÃÂÃÂÃÂ· Objectif : 60 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ· Manque 10 000 ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ = 5 DH de pÃÂÃÂÃÂÃÂ©nalitÃÂÃÂÃÂÃÂ©
+        📜 <strong style={{color:'rgba(255,255,255,0.7)'}}>Règles :</strong> 3 jours × 2h/jour · 6 000 💎 par heure · Objectif : 60 000 💎 · Manque 10 000 💎 = 5 DH de pénalité
       </div>
 
       {/* Player list */}
@@ -4282,8 +4275,8 @@ function LeaderboardPage() {
         )}
         {!loading && players.length === 0 && (
           <div style={{textAlign:'center',padding:'60px 20px',color:'rgba(255,255,255,0.35)'}}>
-            <div style={{fontSize:48,marginBottom:12}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</div>
-            <p>Aucun joueur enregistrÃÂÃÂÃÂÃÂ©</p>
+            <div style={{fontSize:48,marginBottom:12}}>🏆</div>
+            <p>Aucun joueur enregistré</p>
           </div>
         )}
         {!loading && players.map((p, i) => {
@@ -4298,12 +4291,12 @@ function LeaderboardPage() {
                     {p.pseudo || p.phone}
                     {isMe && <span style={{fontSize:10,background:'#059669',color:'#fff',padding:'1px 6px',borderRadius:'999px',fontWeight:700}}>Moi</span>}
                   </div>
-                  <div style={{fontSize:11,color:'rgba(255,255,255,0.4)',marginTop:1}}>{p.gamesPlayed} parties jouÃÂÃÂÃÂÃÂ©es</div>
+                  <div style={{fontSize:11,color:'rgba(255,255,255,0.4)',marginTop:1}}>{p.gamesPlayed} parties jouées</div>
                 </div>
                 <div style={{textAlign:'right',flexShrink:0}}>
-                  <div style={{fontWeight:900,fontSize:15,color:pct>=100?'#4ADE80':'white'}}>{(p.diamonds||0).toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ</div>
+                  <div style={{fontWeight:900,fontSize:15,color:pct>=100?'#4ADE80':'white'}}>{(p.diamonds||0).toLocaleString()} 💎</div>
                   <div style={{fontSize:10,color:pct>=100?'#4ADE80':p.missing>0?'#FCA5A5':'rgba(255,255,255,0.4)',marginTop:1}}>
-                    {pct>=100 ? 'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Objectif atteint' : `ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ${(p.missing||0).toLocaleString()} ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ`}
+                    {pct>=100 ? '✅ Objectif atteint' : `−${(p.missing||0).toLocaleString()} 💎`}
                   </div>
                 </div>
               </div>
@@ -4318,7 +4311,7 @@ function LeaderboardPage() {
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Store Owner Page (Tabac / Pharmacie / Fleurs) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ── Store Owner Page (Tabac / Pharmacie / Fleurs) ─────────────────────────────
 type StoreType = 'tabac' | 'pharmacie' | 'fleurs';
 interface StoreOrder {
   id: number; ref: string; customerName: string; customerPhone: string;
@@ -4326,9 +4319,9 @@ interface StoreOrder {
   total: number; status: string; deliveryMode: string; paymentMethod: string; createdAt: string;
 }
 const STORE_INFO: Record<StoreType, {name:string;emoji:string;accent:string}> = {
-  tabac:     { name:'Bridge Tabac',     emoji:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¬', accent:'#e94560' },
-  pharmacie: { name:'Bridge Pharmacie', emoji:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ', accent:'#8B5CF6' },
-  fleurs:    { name:'Bridge Fleurs',    emoji:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸', accent:'#EC4899' },
+  tabac:     { name:'Bridge Tabac',     emoji:'🚬', accent:'#e94560' },
+  pharmacie: { name:'Bridge Pharmacie', emoji:'💊', accent:'#8B5CF6' },
+  fleurs:    { name:'Bridge Fleurs',    emoji:'🌸', accent:'#EC4899' },
 };
 function StoreOwnerPage({ params }: { params?: { type?: string } }) {
   const storeType = (params?.type || '') as StoreType;
@@ -4406,8 +4399,8 @@ function StoreOwnerPage({ params }: { params?: { type?: string } }) {
         <div style={{background:'#161630',borderRadius:'20px',padding:'40px 32px',maxWidth:'360px',width:'100%',textAlign:'center'}}>
           <div style={{fontSize:'52px',marginBottom:'12px'}}>{info.emoji}</div>
           <h1 style={{color:'white',fontSize:'22px',fontWeight:'700',marginBottom:'4px'}}>{info.name}</h1>
-          <p style={{color:'rgba(255,255,255,0.45)',fontSize:'13px',marginBottom:'32px'}}>Espace propriÃÂÃÂÃÂÃÂ©taire</p>
-          <input type="password" placeholder="Code d'accÃÂÃÂÃÂÃÂ¨s" value={code}
+          <p style={{color:'rgba(255,255,255,0.45)',fontSize:'13px',marginBottom:'32px'}}>Espace propriétaire</p>
+          <input type="password" placeholder="Code d'accès" value={code}
             onChange={e => setCode(e.target.value)}
             onKeyDown={e => e.key==='Enter' && handleLogin()}
             style={{width:'100%',padding:'14px 16px',borderRadius:'12px',border:`2px solid ${authErr?'#ef4444':'rgba(255,255,255,0.1)'}`,background:'rgba(255,255,255,0.06)',color:'white',fontSize:'18px',boxSizing:'border-box',textAlign:'center',letterSpacing:'6px',outline:'none'}}
@@ -4415,14 +4408,14 @@ function StoreOwnerPage({ params }: { params?: { type?: string } }) {
           {authErr && <p style={{color:'#ef4444',fontSize:'13px',marginTop:'8px'}}>{authErr}</p>}
           <button onClick={handleLogin} disabled={authLoading || !code}
             style={{marginTop:'16px',width:'100%',padding:'14px',borderRadius:'12px',border:'none',background:info.accent,color:'white',fontSize:'15px',fontWeight:'600',cursor:authLoading||!code?'not-allowed':'pointer',opacity:authLoading||!code?0.55:1,transition:'opacity 0.2s'}}>
-            {authLoading ? 'VÃÂÃÂÃÂÃÂ©rification...' : 'AccÃÂÃÂÃÂÃÂ©der ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ'}
+            {authLoading ? 'Vérification...' : 'Accéder →'}
           </button>
         </div>
       </div>
     );
   }
 
-  const statusLabel: Record<string,string> = { pending:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ³ En attente', accepted:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ AcceptÃÂÃÂÃÂÃÂ©', preparing:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ³ En prÃÂÃÂÃÂÃÂ©paration', ready:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¦ PrÃÂÃÂÃÂÃÂªt', delivered:'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ LivrÃÂÃÂÃÂÃÂ©', cancelled:'ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ AnnulÃÂÃÂÃÂÃÂ©' };
+  const statusLabel: Record<string,string> = { pending:'⏳ En attente', accepted:'✅ Accepté', preparing:'👨‍🍳 En préparation', ready:'📦 Prêt', delivered:'🎉 Livré', cancelled:'❌ Annulé' };
   const formatTime = (s: string) => { try { return new Date(s).toLocaleTimeString('fr-MA',{hour:'2-digit',minute:'2-digit'}); } catch { return ''; } };
   const pending = orders.filter(o => o.status==='pending');
   const active  = orders.filter(o => ['accepted','preparing','ready'].includes(o.status));
@@ -4435,13 +4428,13 @@ function StoreOwnerPage({ params }: { params?: { type?: string } }) {
         <span style={{color:'rgba(255,255,255,0.45)',fontSize:'12px'}}>{formatTime(order.createdAt)}</span>
       </div>
       <p style={{color:'white',fontWeight:'600',fontSize:'15px',margin:'0 0 3px'}}>{order.customerName}</p>
-      <p style={{color:'rgba(255,255,255,0.55)',fontSize:'13px',margin:'0 0 3px'}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ {order.customerPhone}</p>
-      <p style={{color:'rgba(255,255,255,0.55)',fontSize:'13px',margin:'0 0 10px'}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ {order.customerAddress}</p>
+      <p style={{color:'rgba(255,255,255,0.55)',fontSize:'13px',margin:'0 0 3px'}}>📞 {order.customerPhone}</p>
+      <p style={{color:'rgba(255,255,255,0.55)',fontSize:'13px',margin:'0 0 10px'}}>📍 {order.customerAddress}</p>
       {Array.isArray(order.items) && order.items.length > 0 && (
         <div style={{background:'rgba(0,0,0,0.3)',borderRadius:'10px',padding:'10px',marginBottom:'10px'}}>
           {order.items.map((item,i) => (
             <div key={i} style={{display:'flex',justifyContent:'space-between',fontSize:'13px',color:'rgba(255,255,255,0.8)',marginBottom:'3px'}}>
-              <span>{item.name} ÃÂÃÂÃÂÃÂ{item.qty}</span><span>{(item.price*item.qty).toFixed(0)} DH</span>
+              <span>{item.name} ×{item.qty}</span><span>{(item.price*item.qty).toFixed(0)} DH</span>
             </div>
           ))}
           <div style={{borderTop:'1px solid rgba(255,255,255,0.1)',marginTop:'7px',paddingTop:'7px',display:'flex',justifyContent:'space-between',fontWeight:'700',color:'white',fontSize:'14px'}}>
@@ -4449,15 +4442,15 @@ function StoreOwnerPage({ params }: { params?: { type?: string } }) {
           </div>
         </div>
       )}
-      <p style={{color:'rgba(255,255,255,0.4)',fontSize:'12px',margin:'0 0 10px'}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ³ {order.paymentMethod} ÃÂÃÂÃÂÃÂ· {statusLabel[order.status]||order.status}</p>
+      <p style={{color:'rgba(255,255,255,0.4)',fontSize:'12px',margin:'0 0 10px'}}>💳 {order.paymentMethod} · {statusLabel[order.status]||order.status}</p>
       <div style={{display:'flex',gap:'8px',flexWrap:'wrap'}}>
         {order.status==='pending' && <>
-          <button onClick={()=>updateStatus(order.ref,'accepted')} style={{flex:1,padding:'9px 12px',borderRadius:'8px',border:'none',background:'#22c55e',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Accepter</button>
-          <button onClick={()=>updateStatus(order.ref,'cancelled')} style={{padding:'9px 14px',borderRadius:'8px',border:'none',background:'#ef4444',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ</button>
+          <button onClick={()=>updateStatus(order.ref,'accepted')} style={{flex:1,padding:'9px 12px',borderRadius:'8px',border:'none',background:'#22c55e',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>✅ Accepter</button>
+          <button onClick={()=>updateStatus(order.ref,'cancelled')} style={{padding:'9px 14px',borderRadius:'8px',border:'none',background:'#ef4444',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>✕</button>
         </>}
-        {order.status==='accepted' && <button onClick={()=>updateStatus(order.ref,'preparing')} style={{flex:1,padding:'9px',borderRadius:'8px',border:'none',background:'#f59e0b',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ³ En prÃÂÃÂÃÂÃÂ©paration</button>}
-        {order.status==='preparing' && <button onClick={()=>updateStatus(order.ref,'ready')} style={{flex:1,padding:'9px',borderRadius:'8px',border:'none',background:'#8B5CF6',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¦ PrÃÂÃÂÃÂÃÂªt pour livraison</button>}
-        {order.status==='ready' && <button onClick={()=>updateStatus(order.ref,'delivered')} style={{flex:1,padding:'9px',borderRadius:'8px',border:'none',background:'#06b6d4',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ MarquÃÂÃÂÃÂÃÂ© livrÃÂÃÂÃÂÃÂ©</button>}
+        {order.status==='accepted' && <button onClick={()=>updateStatus(order.ref,'preparing')} style={{flex:1,padding:'9px',borderRadius:'8px',border:'none',background:'#f59e0b',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>👨‍🍳 En préparation</button>}
+        {order.status==='preparing' && <button onClick={()=>updateStatus(order.ref,'ready')} style={{flex:1,padding:'9px',borderRadius:'8px',border:'none',background:'#8B5CF6',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>📦 Prêt pour livraison</button>}
+        {order.status==='ready' && <button onClick={()=>updateStatus(order.ref,'delivered')} style={{flex:1,padding:'9px',borderRadius:'8px',border:'none',background:'#06b6d4',color:'white',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>🎉 Marqué livré</button>}
       </div>
     </div>
   );
@@ -4468,16 +4461,16 @@ function StoreOwnerPage({ params }: { params?: { type?: string } }) {
         <div>
           <div style={{fontSize:'18px',fontWeight:'700'}}>{info.emoji} {info.name}</div>
           <div style={{fontSize:'12px',marginTop:'2px'}}>
-            {pending.length>0 ? <span style={{color:'#ef4444',fontWeight:'600'}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ´ {pending.length} nouvelle{pending.length>1?'s':''} commande{pending.length>1?'s':''}</span> : <span style={{color:'rgba(255,255,255,0.4)'}}>Aucune commande en attente</span>}
+            {pending.length>0 ? <span style={{color:'#ef4444',fontWeight:'600'}}>🔴 {pending.length} nouvelle{pending.length>1?'s':''} commande{pending.length>1?'s':''}</span> : <span style={{color:'rgba(255,255,255,0.4)'}}>Aucune commande en attente</span>}
           </div>
         </div>
-        <button onClick={logout} style={{padding:'7px 13px',borderRadius:'9px',border:'1px solid rgba(255,255,255,0.15)',background:'transparent',color:'rgba(255,255,255,0.6)',fontSize:'12px',cursor:'pointer'}}>DÃÂÃÂÃÂÃÂ©connexion</button>
+        <button onClick={logout} style={{padding:'7px 13px',borderRadius:'9px',border:'1px solid rgba(255,255,255,0.15)',background:'transparent',color:'rgba(255,255,255,0.6)',fontSize:'12px',cursor:'pointer'}}>Déconnexion</button>
       </div>
       <div style={{padding:'16px',maxWidth:'580px',margin:'0 auto'}}>
-        {pending.length>0 && <div style={{marginBottom:'24px'}}><h2 style={{color:'#ef4444',fontSize:'14px',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'0.5px'}}>ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ¡ Nouvelles commandes ({pending.length})</h2>{pending.map(o=><OrderCard key={o.ref} order={o}/>)}</div>}
-        {active.length>0 && <div style={{marginBottom:'24px'}}><h2 style={{color:'#f59e0b',fontSize:'14px',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'0.5px'}}>ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ En cours ({active.length})</h2>{active.map(o=><OrderCard key={o.ref} order={o}/>)}</div>}
-        {done.length>0 && <div><h2 style={{color:'rgba(255,255,255,0.35)',fontSize:'14px',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'0.5px'}}>TerminÃÂÃÂÃÂÃÂ©es</h2>{done.map(o=><OrderCard key={o.ref} order={o}/>)}</div>}
-        {orders.length===0 && <div style={{textAlign:'center',padding:'70px 20px',color:'rgba(255,255,255,0.35)'}}><div style={{fontSize:'52px',marginBottom:'14px'}}>{info.emoji}</div><p style={{fontSize:'16px'}}>Aucune commande pour l'instant</p><p style={{fontSize:'13px',marginTop:'6px'}}>Les nouvelles commandes apparaÃÂÃÂÃÂÃÂ®tront automatiquement</p></div>}
+        {pending.length>0 && <div style={{marginBottom:'24px'}}><h2 style={{color:'#ef4444',fontSize:'14px',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'0.5px'}}>⚡ Nouvelles commandes ({pending.length})</h2>{pending.map(o=><OrderCard key={o.ref} order={o}/>)}</div>}
+        {active.length>0 && <div style={{marginBottom:'24px'}}><h2 style={{color:'#f59e0b',fontSize:'14px',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'0.5px'}}>🔄 En cours ({active.length})</h2>{active.map(o=><OrderCard key={o.ref} order={o}/>)}</div>}
+        {done.length>0 && <div><h2 style={{color:'rgba(255,255,255,0.35)',fontSize:'14px',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'0.5px'}}>Terminées</h2>{done.map(o=><OrderCard key={o.ref} order={o}/>)}</div>}
+        {orders.length===0 && <div style={{textAlign:'center',padding:'70px 20px',color:'rgba(255,255,255,0.35)'}}><div style={{fontSize:'52px',marginBottom:'14px'}}>{info.emoji}</div><p style={{fontSize:'16px'}}>Aucune commande pour l'instant</p><p style={{fontSize:'13px',marginTop:'6px'}}>Les nouvelles commandes apparaîtront automatiquement</p></div>}
       </div>
     </div>
   );
@@ -4486,7 +4479,7 @@ function StoreOwnerPage({ params }: { params?: { type?: string } }) {
 function ClerkProviderWithRoutes() {
   return (
     <AuthProvider>
-        <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
         
         
         <Switch>
@@ -4509,12 +4502,11 @@ function ClerkProviderWithRoutes() {
         <FloatingAssistantWidget />
         <FloatingWAButton />
       </QueryClientProvider>
-    
     </AuthProvider>
   );
 }
 
-// ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Visit tracker (fire once per session) ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
+// ─── Visit tracker (fire once per session) ────────────────────────────────
 (() => {
   try {
     let sid = localStorage.getItem('bridge_sid');
@@ -4540,7 +4532,7 @@ function ClerkProviderWithRoutes() {
 createRoot(document.getElementById("root")!).render(
   <ErrorBoundary>
     <WouterRouter base={basePath}>
-      <AuthProvider>
+      <ClerkProviderWithRoutes />
     </WouterRouter>
   </ErrorBoundary>
 );
