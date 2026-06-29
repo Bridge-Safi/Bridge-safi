@@ -4190,7 +4190,7 @@ function LeaderboardPage() {
   const { getToken } = useAuth();
 
   React.useEffect(() => {
-    fetch('/api/manager/leaderboard')
+    fetch('/api/game/leaderboard')
       .then(r => r.ok ? r.json() : null)
       .then(data => { if (data?.players) setPlayers(data.players); })
       .catch(() => {})
