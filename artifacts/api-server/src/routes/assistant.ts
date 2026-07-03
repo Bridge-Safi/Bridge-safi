@@ -42,7 +42,7 @@ router.post("/assistant/chat", async (req, res) => {
             ? "Réponds en français (amazigh non disponible en IA)."
             : "Réponds en français.";
     const completion = await getOpenAI().chat.completions.create({
-      model: "llama-3.3-70b-versatile"
+      model: "llama-3.3-70b-versatile",
       max_tokens: 512,
       messages: [
         { role: "system", content: `${BRIDGE_SYSTEM_PROMPT}\n\n${langHint}` },
