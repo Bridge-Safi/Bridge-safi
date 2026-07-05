@@ -56,6 +56,39 @@ function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): nu
 const NEARBY_KM = 2;       // radius to notify first
 const DISPATCH_DELAY = 120_000; // 2 minutes in ms
 
+/**
+ * Relaie une commande de livraison (eats / tabac / pharmacie / fleurs) vers le
+ * systeme de dispatch des Livreurs, deja filtre : livreurs uniquement, jamais
+ * chauffeurs ni moto. Best-effort : n'empeche jamais la creation de la commande.
+ */
+async function forwardOrderToLivreurs(order: any) {
+  const base = process.env.LIVREURS_API_URL;
+  if (!base) return;
+  const secret = process.env.BRIDGE_WEBHOOK_SECRET;
+  try {
+    await fetch(`${base}/orders/inbound`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(secret ? { "x-bridge-secret": secret } : {}),
+      },
+      body: JSON.stringify({
+        customerName: order.customerName,
+        customerPhone: order.customerPhone,
+        deliveryAddress: order.customerAddress,
+        pickupAddress: order.restaurantName || undefined,
+        items: order.items,
+        total: order.total,
+        notes: order.ref ? `Ref Bridge Eats: ${order.ref}` : undefined,
+        source: "bridge-eats",
+        serviceType: order.service,
+      }),
+    });
+  } catch (err) {
+    logger.error({ err }, "Failed to forward order to Livreurs");
+  }
+}
+
 /** Smart dispatch: notify nearby drivers first, then ALL remaining after 2 min.
  *
  *  Bug fix: "far" list only included GPS-tracked drivers. Drivers whose position
@@ -417,6 +450,8 @@ router.post("/orders", async (req, res) => {
           url: "/",
         },
       }).catch(() => {});
+      // Relai vers le système livreurs (dispatch déjà filtré : livreurs uniquement)
+      forwardOrderToLivreurs(order).catch(() => {});
     }
 
     // Notify restaurant via WhatsApp + phone call
