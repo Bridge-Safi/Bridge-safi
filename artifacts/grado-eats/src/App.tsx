@@ -6235,6 +6235,45 @@ useEffect(()=>{
                   </div>
                 </div>
               </div>
+              {/* Row 5: Boulangerie + Souk — nouvelles cartes */}
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
+                <div style={{opacity:0.82,animation:'svcFadeUp 0.45s ease-out 0.32s both'}}>
+                  <div style={{
+                    background:'linear-gradient(145deg,#422006 0%,#A16207 55%,#FACC15 100%)',
+                    borderRadius:16,border:'1.5px solid rgba(250,204,21,0.45)',
+                    boxShadow:'0 8px 32px rgba(161,98,7,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
+                    padding:'12px 8px 8px',display:'flex',flexDirection:'column',alignItems:'center',gap:4,
+                    position:'relative',overflow:'hidden',minHeight:92,
+                  }}>
+                    <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'16px 16px 60% 60%',pointerEvents:'none'}}/>
+                    <div style={{position:'absolute',top:6,right:6,background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'2px 7px',display:'flex',alignItems:'center',gap:4,backdropFilter:'blur(6px)'}}>
+                      <span style={{width:5,height:5,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
+                      <span style={{color:'#fff',fontSize:7,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
+                    </div>
+                    <span style={{fontSize:26,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🥖</span>
+                    <p style={{color:'#fff',fontSize:10,fontWeight:900,letterSpacing:'0.06em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Boulangerie</p>
+                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:8,fontWeight:600,margin:0,textAlign:'center'}}>Pain & pâtisseries</p>
+                  </div>
+                </div>
+                <div style={{opacity:0.82,animation:'svcFadeUp 0.45s ease-out 0.4s both'}}>
+                  <div style={{
+                    background:'linear-gradient(145deg,#3B0764 0%,#7E22CE 55%,#C084FC 100%)',
+                    borderRadius:16,border:'1.5px solid rgba(192,132,252,0.45)',
+                    boxShadow:'0 8px 32px rgba(126,34,206,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
+                    padding:'12px 8px 8px',display:'flex',flexDirection:'column',alignItems:'center',gap:4,
+                    position:'relative',overflow:'hidden',minHeight:92,
+                  }}>
+                    <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'16px 16px 60% 60%',pointerEvents:'none'}}/>
+                    <div style={{position:'absolute',top:6,right:6,background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'2px 7px',display:'flex',alignItems:'center',gap:4,backdropFilter:'blur(6px)'}}>
+                      <span style={{width:5,height:5,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
+                      <span style={{color:'#fff',fontSize:7,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
+                    </div>
+                    <span style={{fontSize:26,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🛍️</span>
+                    <p style={{color:'#fff',fontSize:10,fontWeight:900,letterSpacing:'0.06em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Souk</p>
+                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:8,fontWeight:600,margin:0,textAlign:'center'}}>Vêtements · Parfums · Miel</p>
+                  </div>
+                </div>
+              </div>
             </div>
           );
         })()}
