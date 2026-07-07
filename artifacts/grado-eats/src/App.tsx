@@ -6301,11 +6301,12 @@ useEffect(()=>{
 
         {/* ── AD SLOT — place de publicité ───────────────────────────────────── */}
         <div id="ad-slot" className="w-full mt-5">
-          <div className="rounded-2xl overflow-hidden" style={{border:'1.5px dashed #D9C5A0',background:'rgba(253,252,249,0.7)',minHeight:90,display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <a href="https://grado.safi-bridge.ma" className="block rounded-2xl overflow-hidden" style={{border:'1.5px dashed #D9C5A0',background:'rgba(253,252,249,0.7)',minHeight:90}}>
             {/* PUB_CONTENT_START */}
-            <p className="text-[10px] font-bold tracking-widest uppercase" style={{color:'#C9BFB2'}}>Espace Publicitaire</p>
+            <video src="/pub-video.mp4" autoPlay loop muted playsInline
+              style={{width:'100%',height:'100%',display:'block',objectFit:'cover'}}/>
             {/* PUB_CONTENT_END */}
-          </div>
+          </a>
         </div>
 
       </div>
