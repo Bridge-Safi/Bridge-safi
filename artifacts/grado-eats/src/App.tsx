@@ -6139,30 +6139,30 @@ useEffect(()=>{
                 }}>
                 <div style={{
                   background: item.grad,
-                  borderRadius:24,
+                  borderRadius:16,
                   border:`1.5px solid ${isPressed?'rgba(255,255,255,0.55)':item.border}`,
                   boxShadow: isPressed
                     ? `0 0 0 3px ${item.glow},0 16px 40px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.25)`
                     : `0 8px 32px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.2)`,
-                  padding:'22px 12px 16px',
-                  display:'flex',flexDirection:'column',alignItems:'center',gap:8,
+                  padding:'12px 8px 8px',
+                  display:'flex',flexDirection:'column',alignItems:'center',gap:4,
                   position:'relative',overflow:'hidden',
                   transition:'box-shadow 0.25s,border-color 0.25s',
-                  minHeight:140,
+                  minHeight:92,
                 }}>
                   {/* Glass shine */}
-                  <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'24px 24px 60% 60%',pointerEvents:'none'}}/>
+                  <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'16px 16px 60% 60%',pointerEvents:'none'}}/>
                   {/* Sweep shine on hover */}
                   <div style={{position:'absolute',top:0,bottom:0,width:'40%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.07),transparent)',animation:'svcShine 3.5s ease-in-out infinite',pointerEvents:'none'}}/>
                   {item.pending&&(
-                    <div style={{position:'absolute',top:10,right:isAR?'auto':10,left:isAR?10:'auto',background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'3px 10px',display:'flex',alignItems:'center',gap:5,backdropFilter:'blur(6px)'}}>
-                      <span style={{width:6,height:6,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
-                      <span style={{color:'#fff',fontSize:9,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
+                    <div style={{position:'absolute',top:6,right:isAR?'auto':6,left:isAR?6:'auto',background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'2px 7px',display:'flex',alignItems:'center',gap:4,backdropFilter:'blur(6px)'}}>
+                      <span style={{width:5,height:5,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
+                      <span style={{color:'#fff',fontSize:7,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
                     </div>
                   )}
-                  <span style={{fontSize:44,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))',display:'inline-block',animation:`svcFloat ${3.2+idx*0.35}s ease-in-out ${idx*0.25}s infinite`}}>{item.emoji}</span>
-                  <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.08em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>{item.label}</p>
-                  <p style={{color:'rgba(255,255,255,0.75)',fontSize:10,fontWeight:600,margin:0,textAlign:'center'}}>{item.sub}</p>
+                  <span style={{fontSize:26,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))',display:'inline-block',animation:`svcFloat ${3.2+idx*0.35}s ease-in-out ${idx*0.25}s infinite`}}>{item.emoji}</span>
+                  <p style={{color:'#fff',fontSize:10,fontWeight:900,letterSpacing:'0.06em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>{item.label}</p>
+                  <p style={{color:'rgba(255,255,255,0.75)',fontSize:8,fontWeight:600,margin:0,textAlign:'center'}}>{item.sub}</p>
                 </div>
               </button>
             );
@@ -6180,28 +6180,28 @@ useEffect(()=>{
                   <button onClick={()=>choose('pharmacie')} style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:isPh?'scale(0.97)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',opacity:0.82,animation:'svcFadeUp 0.45s ease-out 0.16s both'}}>
                     <div style={{
                       background:'linear-gradient(145deg,#0C0E2B 0%,#1E1B4B 35%,#312E81 65%,#1D4ED8 100%)',
-                      borderRadius:24,border:`1.5px solid ${isPh?'rgba(255,255,255,0.5)':'rgba(99,102,241,0.5)'}`,
+                      borderRadius:16,border:`1.5px solid ${isPh?'rgba(255,255,255,0.5)':'rgba(99,102,241,0.5)'}`,
                       boxShadow:isPh?'0 0 0 3px rgba(99,102,241,0.5),0 16px 40px rgba(99,102,241,0.4),inset 0 1px 0 rgba(255,255,255,0.2)':'0 8px 32px rgba(30,27,75,0.7),inset 0 1px 0 rgba(255,255,255,0.15)',
-                      padding:'18px 20px',display:'flex',alignItems:'center',gap:16,position:'relative',overflow:'hidden',
+                      padding:'10px 12px',display:'flex',alignItems:'center',gap:10,position:'relative',overflow:'hidden',
                     }}>
-                      <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0) 100%)',borderRadius:'24px 24px 60% 60%',pointerEvents:'none'}}/>
+                      <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0) 100%)',borderRadius:'16px 16px 60% 60%',pointerEvents:'none'}}/>
                       {/* Night stars decoration */}
-                      <div style={{position:'absolute',top:8,right:16,fontSize:10,opacity:0.5}}>✨</div>
-                      <div style={{position:'absolute',top:14,right:32,fontSize:7,opacity:0.3}}>★</div>
-                      <div style={{position:'absolute',top:5,right:48,fontSize:8,opacity:0.4}}>✦</div>
-                      <div style={{background:'rgba(255,255,255,0.1)',borderRadius:16,padding:'10px 12px',flexShrink:0}}>
-                        <span style={{fontSize:36,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.4))'}}>💊</span>
+                      <div style={{position:'absolute',top:6,right:10,fontSize:8,opacity:0.5}}>✨</div>
+                      <div style={{position:'absolute',top:11,right:22,fontSize:6,opacity:0.3}}>★</div>
+                      <div style={{position:'absolute',top:4,right:34,fontSize:7,opacity:0.4}}>✦</div>
+                      <div style={{background:'rgba(255,255,255,0.1)',borderRadius:10,padding:'6px 8px',flexShrink:0}}>
+                        <span style={{fontSize:22,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.4))'}}>💊</span>
                       </div>
                       <div style={{textAlign:'left',flex:1}}>
-                        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
-                          <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.06em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)'}}>Bridge Pharmacie</p>
-                          <span style={{background:'rgba(239,68,68,0.85)',borderRadius:20,padding:'2px 8px',display:'flex',alignItems:'center',gap:4,flexShrink:0}}>
-                            <span style={{width:5,height:5,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
-                            <span style={{color:'#fff',fontSize:8,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
+                        <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:2}}>
+                          <p style={{color:'#fff',fontSize:11,fontWeight:900,letterSpacing:'0.05em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)'}}>Bridge Pharmacie</p>
+                          <span style={{background:'rgba(239,68,68,0.85)',borderRadius:20,padding:'2px 6px',display:'flex',alignItems:'center',gap:3,flexShrink:0}}>
+                            <span style={{width:4,height:4,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
+                            <span style={{color:'#fff',fontSize:7,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
                           </span>
                         </div>
-                        <p style={{color:'rgba(255,255,255,0.8)',fontSize:11,fontWeight:700,margin:'0 0 2px'}}>🌙 Ouverte la nuit · 💊 Disponible 24h/24</p>
-                        <p style={{color:'rgba(255,255,255,0.5)',fontSize:10,margin:0}}>{t.pharmaeSub}</p>
+                        <p style={{color:'rgba(255,255,255,0.8)',fontSize:9,fontWeight:700,margin:'0 0 1px'}}>🌙 Ouverte la nuit · 💊 Disponible 24h/24</p>
+                        <p style={{color:'rgba(255,255,255,0.5)',fontSize:8,margin:0}}>{t.pharmaeSub}</p>
                       </div>
                     </div>
                   </button>
@@ -6210,6 +6210,30 @@ useEffect(()=>{
               {/* Row 3: Fleurs + Tabac */}
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
                 {botItems.map(renderCard)}
+              </div>
+              {/* Row 4: Bridge Supermarché — full width banner */}
+              <div style={{opacity:0.82,animation:'svcFadeUp 0.45s ease-out 0.24s both'}}>
+                <div style={{
+                  background:'linear-gradient(145deg,#3B0A0A 0%,#7F1D1D 45%,#B91C1C 100%)',
+                  borderRadius:16,border:'1.5px solid rgba(239,68,68,0.5)',
+                  boxShadow:'0 6px 20px rgba(127,29,29,0.6),inset 0 1px 0 rgba(255,255,255,0.12)',
+                  padding:'10px 12px',display:'flex',alignItems:'center',gap:10,position:'relative',overflow:'hidden',
+                }}>
+                  <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0) 100%)',borderRadius:'16px 16px 60% 60%',pointerEvents:'none'}}/>
+                  <div style={{background:'rgba(255,255,255,0.1)',borderRadius:10,padding:'6px 8px',flexShrink:0}}>
+                    <span style={{fontSize:22,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.4))'}}>🛒</span>
+                  </div>
+                  <div style={{textAlign:'left',flex:1}}>
+                    <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:2}}>
+                      <p style={{color:'#fff',fontSize:11,fontWeight:900,letterSpacing:'0.05em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)'}}>Bridge Supermarché</p>
+                      <span style={{background:'rgba(239,68,68,0.85)',borderRadius:20,padding:'2px 6px',display:'flex',alignItems:'center',gap:3,flexShrink:0}}>
+                        <span style={{width:4,height:4,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
+                        <span style={{color:'#fff',fontSize:7,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
+                      </span>
+                    </div>
+                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:9,fontWeight:600,margin:0}}>🛒 Courses & essentiels du quotidien</p>
+                  </div>
+                </div>
               </div>
             </div>
           );
