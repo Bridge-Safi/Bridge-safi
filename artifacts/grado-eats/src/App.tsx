@@ -6139,38 +6139,38 @@ useEffect(()=>{
                 }}>
                 <div style={{
                   background: item.grad,
-                  borderRadius:14,
+                  borderRadius:12,
                   border:`1.5px solid ${isPressed?'rgba(255,255,255,0.55)':item.border}`,
                   boxShadow: isPressed
                     ? `0 0 0 3px ${item.glow},0 16px 40px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.25)`
                     : `0 8px 32px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.2)`,
-                  padding:'8px 6px 6px',
-                  display:'flex',flexDirection:'column',alignItems:'center',gap:3,
+                  padding:'10px 4px 6px',
+                  display:'flex',flexDirection:'column',alignItems:'center',gap:2,
                   position:'relative',overflow:'hidden',
                   transition:'box-shadow 0.25s,border-color 0.25s',
-                  minHeight:70,
+                  minHeight:64,
                 }}>
                   {/* Glass shine */}
-                  <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'14px 14px 60% 60%',pointerEvents:'none'}}/>
+                  <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'12px 12px 60% 60%',pointerEvents:'none'}}/>
                   {/* Sweep shine on hover */}
                   <div style={{position:'absolute',top:0,bottom:0,width:'40%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.07),transparent)',animation:'svcShine 3.5s ease-in-out infinite',pointerEvents:'none'}}/>
                   {item.pending&&(
-                    <div style={{position:'absolute',top:4,right:isAR?'auto':4,left:isAR?4:'auto',background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'1px 6px',display:'flex',alignItems:'center',gap:3,backdropFilter:'blur(6px)'}}>
+                    <div style={{position:'absolute',top:3,right:isAR?'auto':3,left:isAR?3:'auto',background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'1px 6px',display:'flex',alignItems:'center',gap:3,backdropFilter:'blur(6px)'}}>
                       <span style={{width:4,height:4,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
                       <span style={{color:'#fff',fontSize:6,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
                     </div>
                   )}
-                  <span style={{fontSize:20,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))',display:'inline-block',animation:`svcFloat ${3.2+idx*0.35}s ease-in-out ${idx*0.25}s infinite`}}>{item.emoji}</span>
-                  <p style={{color:'#fff',fontSize:9,fontWeight:900,letterSpacing:'0.05em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>{item.label}</p>
-                  <p style={{color:'rgba(255,255,255,0.75)',fontSize:7,fontWeight:600,margin:0,textAlign:'center'}}>{item.sub}</p>
+                  <span style={{fontSize:15,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))',display:'inline-block',animation:`svcFloat ${3.2+idx*0.35}s ease-in-out ${idx*0.25}s infinite`}}>{item.emoji}</span>
+                  <p style={{color:'#fff',fontSize:8,fontWeight:900,letterSpacing:'0.04em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>{item.label}</p>
+                  <p style={{color:'rgba(255,255,255,0.75)',fontSize:6,fontWeight:600,margin:0,textAlign:'center'}}>{item.sub}</p>
                 </div>
               </button>
             );
           };
           return(
-            <div style={{display:'flex',flexDirection:'column',gap:'16px',width:'100%',maxWidth:'100%',padding:'0 4px'}}>
+            <div style={{display:'flex',flexDirection:'column',gap:'8px',width:'100%',maxWidth:'100%',padding:'0 4px'}}>
               {/* Row 1: Eats + Taxi */}
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'}}>
                 {topItems.map(renderCard)}
               </div>
               {/* Row 2: Bridge Pharmacie — full width, centered */}
@@ -6180,97 +6180,97 @@ useEffect(()=>{
                   <button onClick={()=>choose('pharmacie')} style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:isPh?'scale(0.97)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',opacity:0.82,animation:'svcFadeUp 0.45s ease-out 0.16s both'}}>
                     <div style={{
                       background:'linear-gradient(145deg,#0C0E2B 0%,#1E1B4B 35%,#312E81 65%,#1D4ED8 100%)',
-                      borderRadius:14,border:`1.5px solid ${isPh?'rgba(255,255,255,0.5)':'rgba(99,102,241,0.5)'}`,
+                      borderRadius:12,border:`1.5px solid ${isPh?'rgba(255,255,255,0.5)':'rgba(99,102,241,0.5)'}`,
                       boxShadow:isPh?'0 0 0 3px rgba(99,102,241,0.5),0 16px 40px rgba(99,102,241,0.4),inset 0 1px 0 rgba(255,255,255,0.2)':'0 8px 32px rgba(30,27,75,0.7),inset 0 1px 0 rgba(255,255,255,0.15)',
-                      padding:'8px 10px',display:'flex',alignItems:'center',gap:8,position:'relative',overflow:'hidden',
+                      padding:'9px 8px',display:'flex',alignItems:'center',gap:6,position:'relative',overflow:'hidden',
                     }}>
-                      <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0) 100%)',borderRadius:'14px 14px 60% 60%',pointerEvents:'none'}}/>
+                      <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0) 100%)',borderRadius:'12px 12px 60% 60%',pointerEvents:'none'}}/>
                       {/* Night stars decoration */}
                       <div style={{position:'absolute',top:5,right:8,fontSize:7,opacity:0.5}}>✨</div>
                       <div style={{position:'absolute',top:9,right:18,fontSize:5,opacity:0.3}}>★</div>
                       <div style={{position:'absolute',top:3,right:28,fontSize:6,opacity:0.4}}>✦</div>
-                      <div style={{background:'rgba(255,255,255,0.1)',borderRadius:8,padding:'5px 6px',flexShrink:0}}>
-                        <span style={{fontSize:18,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.4))'}}>💊</span>
+                      <div style={{background:'rgba(255,255,255,0.1)',borderRadius:8,padding:'4px 5px',flexShrink:0}}>
+                        <span style={{fontSize:14,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.4))'}}>💊</span>
                       </div>
                       <div style={{textAlign:'left',flex:1}}>
-                        <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:1}}>
-                          <p style={{color:'#fff',fontSize:10,fontWeight:900,letterSpacing:'0.04em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)'}}>Bridge Pharmacie</p>
+                        <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:1}}>
+                          <p style={{color:'#fff',fontSize:9,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)'}}>Bridge Pharmacie</p>
                           <span style={{background:'rgba(239,68,68,0.85)',borderRadius:20,padding:'1px 5px',display:'flex',alignItems:'center',gap:2,flexShrink:0}}>
                             <span style={{width:3,height:3,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
                             <span style={{color:'#fff',fontSize:6,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
                           </span>
                         </div>
-                        <p style={{color:'rgba(255,255,255,0.8)',fontSize:8,fontWeight:700,margin:'0 0 1px'}}>🌙 Ouverte la nuit · 💊 Disponible 24h/24</p>
-                        <p style={{color:'rgba(255,255,255,0.5)',fontSize:7,margin:0}}>{t.pharmaeSub}</p>
+                        <p style={{color:'rgba(255,255,255,0.8)',fontSize:7,fontWeight:700,margin:'0 0 1px'}}>🌙 Ouverte la nuit · 💊 Disponible 24h/24</p>
+                        <p style={{color:'rgba(255,255,255,0.5)',fontSize:6,margin:0}}>{t.pharmaeSub}</p>
                       </div>
                     </div>
                   </button>
                 );
               })()}
               {/* Row 3: Fleurs + Tabac */}
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'}}>
                 {botItems.map(renderCard)}
               </div>
               {/* Row 4: Bridge Supermarché — full width banner */}
               <div style={{opacity:0.82,animation:'svcFadeUp 0.45s ease-out 0.24s both'}}>
                 <div style={{
                   background:'linear-gradient(145deg,#3B0A0A 0%,#7F1D1D 45%,#B91C1C 100%)',
-                  borderRadius:14,border:'1.5px solid rgba(239,68,68,0.5)',
+                  borderRadius:12,border:'1.5px solid rgba(239,68,68,0.5)',
                   boxShadow:'0 6px 20px rgba(127,29,29,0.6),inset 0 1px 0 rgba(255,255,255,0.12)',
-                  padding:'8px 10px',display:'flex',alignItems:'center',gap:8,position:'relative',overflow:'hidden',
+                  padding:'9px 8px',display:'flex',alignItems:'center',gap:6,position:'relative',overflow:'hidden',
                 }}>
-                  <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0) 100%)',borderRadius:'14px 14px 60% 60%',pointerEvents:'none'}}/>
-                  <div style={{background:'rgba(255,255,255,0.1)',borderRadius:8,padding:'5px 6px',flexShrink:0}}>
-                    <span style={{fontSize:18,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.4))'}}>🛒</span>
+                  <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0) 100%)',borderRadius:'12px 12px 60% 60%',pointerEvents:'none'}}/>
+                  <div style={{background:'rgba(255,255,255,0.1)',borderRadius:8,padding:'4px 5px',flexShrink:0}}>
+                    <span style={{fontSize:14,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.4))'}}>🛒</span>
                   </div>
                   <div style={{textAlign:'left',flex:1}}>
-                    <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:1}}>
-                      <p style={{color:'#fff',fontSize:10,fontWeight:900,letterSpacing:'0.04em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)'}}>Bridge Supermarché</p>
-                      <span style={{background:'rgba(239,68,68,0.85)',borderRadius:20,padding:'1px 5px',display:'flex',alignItems:'center',gap:2,flexShrink:0}}>
+                    <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:1}}>
+                      <p style={{color:'#fff',fontSize:9,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)'}}>Bridge Supermarché</p>
+                      <span style={{background:'rgba(239,68,68,0.85)',borderRadius:20,padding:'1px 4px',display:'flex',alignItems:'center',gap:2,flexShrink:0}}>
                         <span style={{width:3,height:3,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
                         <span style={{color:'#fff',fontSize:6,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
                       </span>
                     </div>
-                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:7,fontWeight:600,margin:0}}>🛒 Courses & essentiels du quotidien</p>
+                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:6,fontWeight:600,margin:0}}>🛒 Courses & essentiels du quotidien</p>
                   </div>
                 </div>
               </div>
               {/* Row 5: Boulangerie + Souk — nouvelles cartes */}
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'}}>
                 <div style={{opacity:0.82,animation:'svcFadeUp 0.45s ease-out 0.32s both'}}>
                   <div style={{
                     background:'linear-gradient(145deg,#422006 0%,#A16207 55%,#FACC15 100%)',
-                    borderRadius:14,border:'1.5px solid rgba(250,204,21,0.45)',
+                    borderRadius:12,border:'1.5px solid rgba(250,204,21,0.45)',
                     boxShadow:'0 8px 32px rgba(161,98,7,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
-                    padding:'8px 6px 6px',display:'flex',flexDirection:'column',alignItems:'center',gap:3,
-                    position:'relative',overflow:'hidden',minHeight:70,
+                    padding:'10px 4px 6px',display:'flex',flexDirection:'column',alignItems:'center',gap:2,
+                    position:'relative',overflow:'hidden',minHeight:64,
                   }}>
-                    <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'14px 14px 60% 60%',pointerEvents:'none'}}/>
-                    <div style={{position:'absolute',top:4,right:4,background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'1px 6px',display:'flex',alignItems:'center',gap:3,backdropFilter:'blur(6px)'}}>
+                    <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'12px 12px 60% 60%',pointerEvents:'none'}}/>
+                    <div style={{position:'absolute',top:3,right:3,background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'1px 5px',display:'flex',alignItems:'center',gap:2,backdropFilter:'blur(6px)'}}>
                       <span style={{width:4,height:4,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
                       <span style={{color:'#fff',fontSize:6,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
                     </div>
-                    <span style={{fontSize:20,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🥖</span>
-                    <p style={{color:'#fff',fontSize:9,fontWeight:900,letterSpacing:'0.05em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Boulangerie</p>
-                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:7,fontWeight:600,margin:0,textAlign:'center'}}>Pain & pâtisseries</p>
+                    <span style={{fontSize:15,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🥖</span>
+                    <p style={{color:'#fff',fontSize:8,fontWeight:900,letterSpacing:'0.04em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Boulangerie</p>
+                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:6,fontWeight:600,margin:0,textAlign:'center'}}>Pain & pâtisseries</p>
                   </div>
                 </div>
                 <div style={{opacity:0.82,animation:'svcFadeUp 0.45s ease-out 0.4s both'}}>
                   <div style={{
                     background:'linear-gradient(145deg,#3B0764 0%,#7E22CE 55%,#C084FC 100%)',
-                    borderRadius:14,border:'1.5px solid rgba(192,132,252,0.45)',
+                    borderRadius:12,border:'1.5px solid rgba(192,132,252,0.45)',
                     boxShadow:'0 8px 32px rgba(126,34,206,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
-                    padding:'8px 6px 6px',display:'flex',flexDirection:'column',alignItems:'center',gap:3,
-                    position:'relative',overflow:'hidden',minHeight:70,
+                    padding:'10px 4px 6px',display:'flex',flexDirection:'column',alignItems:'center',gap:2,
+                    position:'relative',overflow:'hidden',minHeight:64,
                   }}>
-                    <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'14px 14px 60% 60%',pointerEvents:'none'}}/>
-                    <div style={{position:'absolute',top:4,right:4,background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'1px 6px',display:'flex',alignItems:'center',gap:3,backdropFilter:'blur(6px)'}}>
+                    <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'12px 12px 60% 60%',pointerEvents:'none'}}/>
+                    <div style={{position:'absolute',top:3,right:3,background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'1px 5px',display:'flex',alignItems:'center',gap:2,backdropFilter:'blur(6px)'}}>
                       <span style={{width:4,height:4,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
                       <span style={{color:'#fff',fontSize:6,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
                     </div>
-                    <span style={{fontSize:20,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🛍️</span>
-                    <p style={{color:'#fff',fontSize:9,fontWeight:900,letterSpacing:'0.05em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Souk</p>
-                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:7,fontWeight:600,margin:0,textAlign:'center'}}>Vêtements · Parfums · Miel</p>
+                    <span style={{fontSize:15,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🛍️</span>
+                    <p style={{color:'#fff',fontSize:8,fontWeight:900,letterSpacing:'0.04em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Souk</p>
+                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:6,fontWeight:600,margin:0,textAlign:'center'}}>Vêtements · Parfums · Miel</p>
                   </div>
                 </div>
               </div>
