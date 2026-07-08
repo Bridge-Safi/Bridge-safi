@@ -4443,24 +4443,25 @@ function ProfileModal({lang,profile,onSave,onClose}:{lang:Lang;profile:UserProfi
   // Game ID basé sur le téléphone + première lettre du prénom
   const gameId = getBridgeId(form.phone, form.name);
 
-  // Diamond points from server (anti-cheat)
-  const [gamePoints, setGamePoints] = useState(0);
+  // Diamond points — même source que SharkDiamondWidget/ServiceSelectPage (/api/game/diamonds
+  // + cache locale par user.id), pour ne plus désynchroniser ce nombre du reste de l'app.
+  const [gamePoints, setGamePoints] = useState<number>(()=>{
+    try{return parseInt(localStorage.getItem(`bridge_diamonds_cache_${user?.id||'anon'}`)||'0',10)||0;}catch{return 0;}
+  });
   const [gameTotalEarned, setGameTotalEarned] = useState(0);
 useEffect(() => {
-  const phone = profile?.phone;
-  if (!phone) return;
-  fetch(`https://workspaceapi-server-production-12a5.up.railway.app/api/diamonds?phone=${encodeURIComponent(phone)}`, {
-    headers: { 'x-api-key': 'bridge-safi-2026' }
-  })
+  if(!user?.id) return;
+  getAuthHeaders().then(h=>fetch('/api/game/diamonds',{credentials:'include',headers:h})
     .then(r => r.ok ? r.json() : null)
     .then(d => {
-      if (d && d.found) {
-        setGamePoints(d.diamonds ?? 0);
-        setGameTotalEarned(d.menus_earned ?? 0);
+      if (d && typeof d.diamonds==='number') {
+        setGamePoints(d.diamonds);
+        if(typeof d.menus_earned==='number') setGameTotalEarned(d.menus_earned);
+        try{localStorage.setItem(`bridge_diamonds_cache_${user.id}`,String(d.diamonds));}catch{}
       }
     })
-    .catch(() => {});
-}, [profile?.phone]);
+    .catch(() => {}));
+}, [user?.id, getAuthHeaders]);
   // ── Validation helpers ──────────────────────────────────────────────────────
   const validateName=(v:string)=>v.trim().length>=3&&/\s/.test(v.trim());
   const validatePhone=(v:string)=>{const d=v.replace(/\D/g,'');return (d.length===9&&/^[67]/.test(d))||(d.length===10&&/^0[67]/.test(d))||(d.length===12&&/^212[67]/.test(d));};
@@ -6102,6 +6103,17 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
   const [driverInfo,setDriverInfo]=useState<{name?:string;phone?:string}|null>(null);
   const fClass=fontClass(lang); const isAR=lang==='ar';
 
+  const shareTracking=()=>{
+    const url=typeof window!=='undefined'?window.location.href:'';
+    const phonePart=driverInfo?.phone?(lang==='ar'?` — هاتف السائق: ${driverInfo.phone}`:lang==='en'?` — Driver phone: ${driverInfo.phone}`:` — Tél. livreur : ${driverInfo.phone}`):'';
+    const text=(lang==='ar'?`تتبع طلبي ${orderRef}${phonePart}`:lang==='en'?`Track my order ${orderRef}${phonePart}`:`Suivez ma commande ${orderRef}${phonePart}`);
+    if(typeof navigator!=='undefined'&&(navigator as any).share){
+      (navigator as any).share({title:'Bridge Safi',text,url}).catch(()=>{});
+    } else if(typeof navigator!=='undefined'&&navigator.clipboard){
+      navigator.clipboard.writeText(`${text} : ${url}`).catch(()=>{});
+    }
+  };
+
   useEffect(()=>{
     if(!orderRef) return;
     const trackStageMap:{[k:string]:number}={received:0,preparing:1,on_way:2,delivered:3};
@@ -6190,6 +6202,33 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
           </p>
         </div>
       </div>
+
+      {/* Contact livreur + partage — le client peut partager le suivi et le contact du livreur en cas de souci */}
+      {!isDelivered&&(
+        <div className="rounded-2xl p-3 mb-4 w-full flex items-center gap-3" style={{background:theme.cardBg,border:`1.5px solid ${theme.cardBorder}`}}>
+          <div className="w-9 h-9 rounded-full flex items-center justify-center font-black text-sm flex-shrink-0" style={{background:`linear-gradient(135deg,${theme.accentDark},${theme.accent})`,color:'#fff'}}>
+            {driverInfo?.name?driverInfo.name.trim().charAt(0).toUpperCase():'🛵'}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-wide" style={{color:theme.mutedColor}}>
+              {lang==='ar'?'السائق':lang==='en'?'Driver':'Livreur'}
+            </p>
+            <p className="text-sm font-black truncate" style={{color:theme.textColor}}>
+              {driverInfo?.name||(lang==='ar'?'بانتظار السائق...':lang==='en'?'Waiting for a driver...':'En attente d\'un livreur...')}
+            </p>
+          </div>
+          {driverInfo?.phone&&(
+            <a href={`tel:${driverInfo.phone}`} title={lang==='ar'?'اتصال':lang==='en'?'Call':'Appeler'}
+              className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{background:theme.cardBg,border:`1.5px solid ${theme.cardBorder}`,textDecoration:'none'}}>
+              📞
+            </a>
+          )}
+          <button onClick={shareTracking} title={lang==='ar'?'مشاركة التتبع':lang==='en'?'Share tracking':'Partager le suivi'}
+            className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{background:theme.cardBg,border:`1.5px solid ${theme.cardBorder}`,cursor:'pointer'}}>
+            🔗
+          </button>
+        </div>
+      )}
 
       {/* Stages */}
       <div className="rounded-3xl p-5 mb-4 w-full" style={{background:theme.cardBg,border:`1.5px solid ${theme.cardBorder}`}}>
@@ -6756,18 +6795,35 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
   const effectiveName=profile.name||user?.name||'';
   const effectivePhone=profile.phone||user?.phone||'';
   const initials=(effectiveName||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-  // Diamonds fetch
-const [diamonds, setDiamonds] = useState(0);
-useEffect(()=>{
-  const phone = profile?.phone||user?.phone;
-  if(!phone) return;
-  fetch(`https://workspaceapi-server-production-12a5.up.railway.app/api/diamonds?phone=${encodeURIComponent(phone)}`,{
-    headers:{'x-api-key':'bridge-safi-2026'}
-  })
-    .then(r=>r.ok?r.json():null)
-    .then(d=>{if(d&&d.found)setDiamonds(d.diamonds??0)})
-    .catch(()=>{});
-},[profile?.phone,user?.phone]);
+  // Diamonds — même source que SharkDiamondWidget (/api/game/diamonds + cache locale par user.id)
+  // pour que le compte de diamants soit toujours identique partout dans l'app (avant : cette page
+  // interrogeait une API externe par numéro de téléphone, désynchronisée du reste de l'app).
+  const diamondsCacheKey=`bridge_diamonds_cache_${user?.id||'anon'}`;
+  const [diamonds, setDiamonds] = useState<number>(()=>{
+    try{return parseInt(localStorage.getItem(`bridge_diamonds_cache_${user?.id||'anon'}`)||'0',10)||0;}catch{return 0;}
+  });
+  useEffect(()=>{
+    if(!user?.id) return;
+    getAuthHeaders().then(h=>fetch('/api/game/diamonds',{credentials:'include',headers:h})
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{
+        if(d&&typeof d.diamonds==='number'){
+          setDiamonds(d.diamonds);
+          try{localStorage.setItem(diamondsCacheKey,String(d.diamonds));}catch{}
+        }
+      })
+      .catch(()=>{}));
+  },[user?.id,getAuthHeaders,diamondsCacheKey]);
+  useEffect(()=>{
+    const onStorage=(e:StorageEvent)=>{
+      if(e.key===diamondsCacheKey&&e.newValue){
+        const n=parseInt(e.newValue,10);
+        if(!isNaN(n)&&n>=0) setDiamonds(n);
+      }
+    };
+    window.addEventListener('storage',onStorage);
+    return()=>window.removeEventListener('storage',onStorage);
+  },[diamondsCacheKey]);
   // Compte rapide des commandes récentes (hors taxi/moto) pour le badge du
   // bouton "Suivre mes commandes" — pas d'appel réseau ici, juste le cache local.
   const [recentOrdersCount,setRecentOrdersCount]=useState(0);
@@ -7337,6 +7393,7 @@ function SharkDiamondWidget({onNavigate,profile,lang}:{onNavigate:()=>void;profi
   const getAuthHeaders=useAuthHeaders();
   const cacheKey=`bridge_diamonds_cache_${user?.id||'anon'}`;
   // Initialise from user-specific localStorage cache for instant display, then confirm with server
+  const [showProfile,setShowProfile]=useState(false);
   const [gems,setGems]=useState<number>(()=>{
     try{return parseInt(localStorage.getItem(`bridge_diamonds_cache_${user?.id||'anon'}`)||'0',10)||0;}catch{return 0;}
   });
@@ -7393,7 +7450,8 @@ function SharkDiamondWidget({onNavigate,profile,lang}:{onNavigate:()=>void;profi
   }
 
   return(
-    <button onClick={onNavigate} title={`${bridgeId} — Bridge Game`}
+    <>
+    <button onClick={()=>setShowProfile(true)} title={`${bridgeId} — Mon profil`}
       style={{background:'none',border:'none',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',gap:2,padding:'2px 4px',borderRadius:12}}>
       <div style={{width:32,height:32,borderRadius:'50%',overflow:'hidden',border:'2px solid #D9C5A0',boxShadow:'0 2px 10px rgba(6,95,70,0.35)',background:'#F0EBE1',display:'flex',alignItems:'center',justifyContent:'center'}}>
         {avatarSrc
@@ -7407,6 +7465,41 @@ function SharkDiamondWidget({onNavigate,profile,lang}:{onNavigate:()=>void;profi
       </div>
       <span style={{fontSize:7,fontWeight:900,color:'#065F46',letterSpacing:'0.08em',opacity:0.8}}>{bridgeId}</span>
     </button>
+    {showProfile&&(
+      <div onClick={()=>setShowProfile(false)} style={{position:'fixed',inset:0,zIndex:9999,background:'rgba(4,20,14,0.6)',backdropFilter:'blur(3px)',display:'flex',alignItems:'center',justifyContent:'center',padding:20}}>
+        <div onClick={e=>e.stopPropagation()} style={{width:'100%',maxWidth:340,background:'linear-gradient(160deg,#0B1F16,#04140E)',border:'1.5px solid rgba(217,197,160,0.4)',borderRadius:24,padding:'24px 20px',boxShadow:'0 20px 60px rgba(0,0,0,0.5)'}}>
+          <div style={{display:'flex',flexDirection:'column',alignItems:'center',marginBottom:18}}>
+            <div style={{width:64,height:64,borderRadius:'50%',overflow:'hidden',border:'2.5px solid #D9C5A0',background:'#F0EBE1',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:10}}>
+              {avatarSrc
+                ?<img src={avatarSrc} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+                :(effectiveName?<span style={{fontSize:22,fontWeight:900,color:'#065F46'}}>{initials}</span>:<span style={{fontSize:26}}>👤</span>)
+              }
+            </div>
+            <p style={{color:'#FDFCF9',fontWeight:900,fontSize:16,margin:0}}>{effectiveName||'—'}</p>
+            <p style={{color:'#D9C5A0',fontSize:11,fontWeight:800,letterSpacing:'0.08em',margin:'2px 0 0'}}>{bridgeId}</p>
+          </div>
+          <div style={{display:'flex',flexDirection:'column',gap:10,marginBottom:20}}>
+            <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(217,197,160,0.2)',borderRadius:14,padding:'10px 14px'}}>
+              <p style={{fontSize:9,fontWeight:800,color:'#D9C5A0',letterSpacing:'0.1em',margin:'0 0 3px',textTransform:'uppercase'}}>📞 Téléphone</p>
+              <p style={{fontSize:13,fontWeight:700,color:'#FDFCF9',margin:0}}>{effectivePhone||'Non renseigné'}</p>
+            </div>
+            <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(217,197,160,0.2)',borderRadius:14,padding:'10px 14px'}}>
+              <p style={{fontSize:9,fontWeight:800,color:'#D9C5A0',letterSpacing:'0.1em',margin:'0 0 3px',textTransform:'uppercase'}}>📍 Adresse</p>
+              <p style={{fontSize:13,fontWeight:700,color:'#FDFCF9',margin:0}}>{profile.address||'Non renseignée'}</p>
+            </div>
+            <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(217,197,160,0.2)',borderRadius:14,padding:'10px 14px'}}>
+              <p style={{fontSize:9,fontWeight:800,color:'#D9C5A0',letterSpacing:'0.1em',margin:'0 0 3px',textTransform:'uppercase'}}>💎 Diamants</p>
+              <p style={{fontSize:13,fontWeight:700,color:'#FDFCF9',margin:0}}>{gems.toLocaleString()}</p>
+            </div>
+          </div>
+          <button onClick={()=>setShowProfile(false)}
+            style={{width:'100%',padding:'12px 0',borderRadius:14,border:'1.5px solid rgba(217,197,160,0.4)',background:'rgba(255,255,255,0.06)',color:'#FDFCF9',fontWeight:900,fontSize:13,cursor:'pointer'}}>
+            Fermer
+          </button>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
 
