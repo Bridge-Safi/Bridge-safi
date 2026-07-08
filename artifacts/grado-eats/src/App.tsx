@@ -5853,7 +5853,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
   const [activeStage,setActiveStage]=useState(0);
   const [realPos,setRealPos]=useState<{lat:number;lng:number}|null>(null);
   const [lastSeen,setLastSeen]=useState<number|null>(null);
-  const [driverInfo,setDriverInfo]=useState<{name?:string;phone?:string}|null>(null);
+  const [driverInfo,setDriverInfo]=useState<{name?:string;phone?:string;photo?:string;rating?:number}|null>(null);
   const isAR=lang==='ar'; const fClass=fontClass(lang);
   const displayRef=orderRef||t.orderNum;
 
@@ -5881,7 +5881,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
               setRealPos({lat:data.lat,lng:data.lng});
               setLastSeen(data.updatedAt);
             }
-            if(data.driverName||data.driverPhone) setDriverInfo(prev=>({...prev,name:data.driverName||prev?.name,phone:data.driverPhone||prev?.phone}));
+            if(data.driverName||data.driverPhone||data.driverPhoto||data.driverRating) setDriverInfo(prev=>({...prev,name:data.driverName||prev?.name,phone:data.driverPhone||prev?.phone,photo:data.driverPhoto||prev?.photo,rating:typeof data.driverRating==='number'?data.driverRating:prev?.rating}));
             if(data.status&&trackStageMap[data.status]!==undefined){
               setActiveStage(prev=>Math.max(prev,trackStageMap[data.status]));
             }
@@ -5997,12 +5997,12 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
           </p>
           {driverInfo?.name&&(
             <div className="flex items-center justify-center gap-2 mb-4">
-              <div className="w-9 h-9 rounded-full flex items-center justify-center font-black text-base"
+              <div className="w-9 h-9 rounded-full flex items-center justify-center font-black text-base overflow-hidden"
                 style={{background:'linear-gradient(135deg,#065F46,#059669)',border:'2px solid #D9C5A0',color:'#fff'}}>
-                {driverInfo.name.trim().charAt(0).toUpperCase()}
+                {driverInfo.photo?<img src={driverInfo.photo} alt="" className="w-full h-full object-cover"/>:driverInfo.name.trim().charAt(0).toUpperCase()}
               </div>
-              <p className="text-sm font-black" style={{color:'#065F46'}}>{driverInfo.name}</p>
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{background:'#FEF9EE',border:'1px solid #FDE68A',color:'#92400E'}}>⭐ 4.9</span>
+              <p className="text-sm font-black" style={{color:'#065F46'}}>{driverDisplayName(driverInfo.name)}</p>
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{background:'#FEF9EE',border:'1px solid #FDE68A',color:'#92400E'}}>⭐ {typeof driverInfo.rating==='number'?driverInfo.rating.toFixed(1):'4.9'}</span>
             </div>
           )}
           <button
@@ -6024,7 +6024,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
               {secsAgo!==null&&<span className="text-white/60 text-[9px] ml-auto">il y a {secsAgo}s</span>}
             </div>
           )}
-          <div className="h-[512px]">
+          <div className="h-[380px]">
             <MapContainer center={mapCenter} zoom={16} style={{height:'100%',width:'100%'}} zoomControl attributionControl={false}>
               <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"/>
               <Marker position={[32.3010,-9.2420]} icon={restaurantIcon}><Popup>🥘 Bridge Safi</Popup></Marker>
@@ -6038,15 +6038,15 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
           </div>
           <div className="px-4 py-3" style={{background:'var(--c-bg)'}}>
             <div className="flex items-center gap-3">
-              {/* Avatar with initials or scooter */}
-              <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-black text-lg"
+              {/* Avatar with photo, initials or scooter */}
+              <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-black text-lg overflow-hidden"
                 style={{background:'linear-gradient(135deg,#065F46,#059669)',border:'2px solid #D9C5A0',color:'#fff',fontSize:driverInfo?.name?18:22}}>
-                {driverInfo?.name?driverInfo.name.trim().charAt(0).toUpperCase():'🛵'}
+                {driverInfo?.photo?<img src={driverInfo.photo} alt="" className="w-full h-full object-cover"/>:driverInfo?.name?driverInfo.name.trim().charAt(0).toUpperCase():'🛵'}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <p className="text-sm font-black truncate" style={{color:'var(--c-text)'}}>{driverInfo?.name||t.courierName}</p>
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0" style={{background:'#FEF9EE',border:'1px solid #FDE68A',color:'#92400E'}}>⭐ 4.9</span>
+                  <p className="text-sm font-black truncate" style={{color:'var(--c-text)'}}>{driverDisplayName(driverInfo?.name)||t.courierName}</p>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0" style={{background:'#FEF9EE',border:'1px solid #FDE68A',color:'#92400E'}}>⭐ {typeof driverInfo?.rating==='number'?driverInfo.rating.toFixed(1):'4.9'}</span>
                 </div>
                 <p className="text-[10px]" style={{color:isLive?'#059669':'#9CA3AF'}}>
                   {isLive?'📡 GPS en direct':realPos?'⚠️ Signal perdu':t.trackZone}
@@ -6118,7 +6118,7 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
   const [activeStage,setActiveStage]=useState(0);
   const [realPos,setRealPos]=useState<{lat:number;lng:number}|null>(null);
   const [lastSeen,setLastSeen]=useState<number|null>(null);
-  const [driverInfo,setDriverInfo]=useState<{name?:string;phone?:string}|null>(null);
+  const [driverInfo,setDriverInfo]=useState<{name?:string;phone?:string;photo?:string;rating?:number}|null>(null);
   const fClass=fontClass(lang); const isAR=lang==='ar';
 
   const shareTracking=()=>{
@@ -6149,7 +6149,7 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
           if(data.found){
             const hasRealGPS = Math.abs(data.lat) > 0.001 || Math.abs(data.lng) > 0.001;
             if(hasRealGPS){ setRealPos({lat:data.lat,lng:data.lng}); setLastSeen(data.updatedAt); }
-            if(data.driverName||data.driverPhone) setDriverInfo(prev=>({...prev,name:data.driverName||prev?.name,phone:data.driverPhone||prev?.phone}));
+            if(data.driverName||data.driverPhone||data.driverPhoto||data.driverRating) setDriverInfo(prev=>({...prev,name:data.driverName||prev?.name,phone:data.driverPhone||prev?.phone,photo:data.driverPhoto||prev?.photo,rating:typeof data.driverRating==='number'?data.driverRating:prev?.rating}));
             if(data.status&&trackStageMap[data.status]!==undefined) setActiveStage(prev=>Math.max(prev,trackStageMap[data.status]));
           } else setRealPos(null);
         }
@@ -6224,16 +6224,19 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
       {/* Contact livreur + partage — le client peut partager le suivi et le contact du livreur en cas de souci */}
       {!isDelivered&&(
         <div className="rounded-2xl p-3 mb-4 w-full flex items-center gap-3" style={{background:theme.cardBg,border:`1.5px solid ${theme.cardBorder}`}}>
-          <div className="w-9 h-9 rounded-full flex items-center justify-center font-black text-sm flex-shrink-0" style={{background:`linear-gradient(135deg,${theme.accentDark},${theme.accent})`,color:'#fff'}}>
-            {driverInfo?.name?driverInfo.name.trim().charAt(0).toUpperCase():'🛵'}
+          <div className="w-9 h-9 rounded-full flex items-center justify-center font-black text-sm flex-shrink-0 overflow-hidden" style={{background:`linear-gradient(135deg,${theme.accentDark},${theme.accent})`,color:'#fff'}}>
+            {driverInfo?.photo?<img src={driverInfo.photo} alt="" className="w-full h-full object-cover"/>:driverInfo?.name?driverInfo.name.trim().charAt(0).toUpperCase():'🛵'}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-wide" style={{color:theme.mutedColor}}>
               {lang==='ar'?'السائق':lang==='en'?'Driver':'Livreur'}
             </p>
             <p className="text-sm font-black truncate" style={{color:theme.textColor}}>
-              {driverInfo?.name||(lang==='ar'?'بانتظار السائق...':lang==='en'?'Waiting for a driver...':'En attente d\'un livreur...')}
+              {driverDisplayName(driverInfo?.name)||(lang==='ar'?'بانتظار السائق...':lang==='en'?'Waiting for a driver...':'En attente d\'un livreur...')}
             </p>
+            {typeof driverInfo?.rating==='number'&&(
+              <span className="text-[10px] font-bold" style={{color:theme.mutedColor}}>⭐ {driverInfo.rating.toFixed(1)}</span>
+            )}
           </div>
           {driverInfo?.phone&&(
             <a href={`tel:${driverInfo.phone}`} title={lang==='ar'?'اتصال':lang==='en'?'Call':'Appeler'}
@@ -6286,10 +6289,13 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
           </p>
           {driverInfo?.name&&(
             <div className="flex items-center justify-center gap-2 mb-4">
-              <div className="w-9 h-9 rounded-full flex items-center justify-center font-black text-base" style={{background:`linear-gradient(135deg,${theme.accentDark},${theme.accent})`,color:'#fff'}}>
-                {driverInfo.name.trim().charAt(0).toUpperCase()}
+              <div className="w-9 h-9 rounded-full flex items-center justify-center font-black text-base overflow-hidden" style={{background:`linear-gradient(135deg,${theme.accentDark},${theme.accent})`,color:'#fff'}}>
+                {driverInfo.photo?<img src={driverInfo.photo} alt="" className="w-full h-full object-cover"/>:driverInfo.name.trim().charAt(0).toUpperCase()}
               </div>
-              <p className="text-sm font-black" style={{color:theme.accentLight}}>{driverInfo.name}</p>
+              <p className="text-sm font-black" style={{color:theme.accentLight}}>{driverDisplayName(driverInfo.name)}</p>
+              {typeof driverInfo.rating==='number'&&(
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,color:theme.accentLight}}>⭐ {driverInfo.rating.toFixed(1)}</span>
+              )}
             </div>
           )}
           <button onClick={onNewOrder}
@@ -6324,11 +6330,16 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
           </div>
           <div className="px-4 py-3" style={{background:theme.cardBg}}>
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-black text-lg" style={{background:`linear-gradient(135deg,${theme.accentDark},${theme.accent})`,color:'#fff',fontSize:driverInfo?.name?18:22}}>
-                {driverInfo?.name?driverInfo.name.trim().charAt(0).toUpperCase():'🛵'}
+              <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-black text-lg overflow-hidden" style={{background:`linear-gradient(135deg,${theme.accentDark},${theme.accent})`,color:'#fff',fontSize:driverInfo?.name?18:22}}>
+                {driverInfo?.photo?<img src={driverInfo.photo} alt="" className="w-full h-full object-cover"/>:driverInfo?.name?driverInfo.name.trim().charAt(0).toUpperCase():'🛵'}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-black truncate" style={{color:theme.textColor}}>{driverInfo?.name||(lang==='ar'?'سائق بريدج':lang==='en'?'Bridge Driver':'Livreur Bridge')}</p>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <p className="text-sm font-black truncate" style={{color:theme.textColor}}>{driverDisplayName(driverInfo?.name)||(lang==='ar'?'سائق بريدج':lang==='en'?'Bridge Driver':'Livreur Bridge')}</p>
+                  {typeof driverInfo?.rating==='number'&&(
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0" style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,color:theme.accentLight}}>⭐ {driverInfo.rating.toFixed(1)}</span>
+                  )}
+                </div>
                 <p className="text-[10px]" style={{color:isLive?theme.accentLight:theme.mutedColor}}>
                   {isLive?'📡 GPS en direct':realPos?'⚠️ Signal perdu':'SAFI · PLATEAU'}
                 </p>
