@@ -9983,7 +9983,7 @@ export default function App() {
   // Eats delivery → GPS tracking page
   const handleOrderSuccess=(ref:string)=>{setLastOrderRef(ref);setService('none');setPage('tracking');};
   // Tabac / Fleurs / Pharmacie → simple countdown tracking (no GPS map)
-  const handleSimpleOrderSuccess=(ref:string)=>{setLastOrderRef(ref);setService('none');setPage('simple-tracking');};
+  const handleSimpleOrderSuccess=(ref:string)=>{setLastOrderRef(ref);setService('none');setPage('tracking');};
 
   // App is open to all — only block during initial animated splash (1.5s)
   // No sign-in wall: guests and signed-in users both access the app freely
