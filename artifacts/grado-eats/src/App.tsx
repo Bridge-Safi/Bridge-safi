@@ -5843,6 +5843,232 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
 
 // ─── CONTACT PAGE ─────────────────────────────────────────────────────────────
 
+
+// ─── SERVICE TRACKING VIEW (générique, thémé par service) ─────────────────────
+// Utilisé par Pharmacie/Tabac/Fleurs/Boulangerie/Souk pour un suivi intégré à
+// LEUR PROPRE page (carte GPS en direct + étapes + "Livraison terminée"),
+// sans jamais rediriger le client vers une page globale/Eats.
+interface ServiceTrackTheme {
+  emoji: string;
+  label: string;
+  accent: string;
+  accentDark: string;
+  accentLight: string;
+  cardBg: string;
+  cardBorder: string;
+  textColor: string;
+  mutedColor: string;
+}
+
+function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;lang:Lang;theme:ServiceTrackTheme;onNewOrder:()=>void}) {
+  const [activeStage,setActiveStage]=useState(0);
+  const [realPos,setRealPos]=useState<{lat:number;lng:number}|null>(null);
+  const [lastSeen,setLastSeen]=useState<number|null>(null);
+  const [driverInfo,setDriverInfo]=useState<{name?:string;phone?:string}|null>(null);
+  const fClass=fontClass(lang); const isAR=lang==='ar';
+
+  useEffect(()=>{
+    if(!orderRef) return;
+    const trackStageMap:{[k:string]:number}={received:0,preparing:1,on_way:2,delivered:3};
+    const dbStageMap:{[k:string]:number}={
+      pending:0,pending_payment:0,
+      accepted:1,preparing:1,ready:1,
+      on_the_way:2,on_way:2,
+      delivered:3,completed:3,
+    };
+    const poll=async()=>{
+      try{
+        const res=await fetch(`/api/tracking/${orderRef}`,{cache:'no-store'});
+        if(res.ok){
+          const data=await res.json();
+          if(data.found){
+            const hasRealGPS = Math.abs(data.lat) > 0.001 || Math.abs(data.lng) > 0.001;
+            if(hasRealGPS){ setRealPos({lat:data.lat,lng:data.lng}); setLastSeen(data.updatedAt); }
+            if(data.driverName||data.driverPhone) setDriverInfo(prev=>({...prev,name:data.driverName||prev?.name,phone:data.driverPhone||prev?.phone}));
+            if(data.status&&trackStageMap[data.status]!==undefined) setActiveStage(prev=>Math.max(prev,trackStageMap[data.status]));
+          } else setRealPos(null);
+        }
+        const dbRes=await fetch(`/api/orders/status/${orderRef}`,{cache:'no-store'});
+        if(dbRes.ok){
+          const dbData=await dbRes.json();
+          if(dbData.status&&dbStageMap[dbData.status]!==undefined) setActiveStage(prev=>Math.max(prev,dbStageMap[dbData.status]));
+        }
+      }catch(_){}
+    };
+    poll();
+    const iv=setInterval(poll,3000);
+    return()=>clearInterval(iv);
+  },[orderRef]);
+
+  const isLive=!!(realPos&&lastSeen&&(Date.now()-lastSeen<30000));
+  const SAFI_CENTER:[number,number]=[32.2994,-9.2372];
+  const courierPos:[number,number]=realPos?[realPos.lat,realPos.lng]:SAFI_CENTER;
+  const mapCenter:[number,number]=courierPos;
+
+  const liveIcon=L.divIcon({html:`<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,${theme.accent},${theme.accentDark});border:3px solid #D9C5A0;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 6px ${theme.cardBorder},0 4px 16px rgba(0,0,0,0.5);font-size:18px;animation:pulse 1.5s ease-in-out infinite;">🛵</div>`,className:'',iconSize:[36,36],iconAnchor:[18,18]});
+  const staleIcon=L.divIcon({html:`<div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#9CA3AF,#6B7280);border:3px solid #D9C5A0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.2);font-size:16px;">🛵</div>`,className:'',iconSize:[34,34],iconAnchor:[17,17]});
+
+  const secsAgo=lastSeen?Math.round((Date.now()-lastSeen)/1000):null;
+  const isDelivered=activeStage===3;
+
+  const STAGE_LABELS = lang==='ar'
+    ? ['مستلمة','قيد التحضير','في الطريق','تم التوصيل']
+    : lang==='en'
+    ? ['Received','Preparing','On the way','Delivered']
+    : ['Reçue','En préparation','En chemin','Livrée'];
+  const STAGE_SUB = lang==='ar'
+    ? ['تم تأكيد الطلب','قيد التحضير','في الطريق إليك','بالهناء والشفاء!']
+    : lang==='en'
+    ? ['Order confirmed','Being prepared','Courier en route','Enjoy!']
+    : ['Commande confirmée','En cours de préparation','Votre livreur arrive','Merci !'];
+
+  return (
+    <div className="w-full">
+      {/* Status card */}
+      <div className="rounded-3xl p-4 mb-4 w-full" style={{background:theme.cardBg,border:`1.5px solid ${theme.cardBorder}`}}>
+        <div className="flex items-center justify-between mb-1">
+          <p className="text-[10px] font-bold uppercase tracking-wider" style={{color:theme.mutedColor}}>
+            {lang==='ar'?'حالة طلبك':lang==='en'?'Your order status':'Statut de votre commande'}
+          </p>
+          {!isDelivered&&(
+            <span className="text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-1"
+              style={{background:theme.cardBg,color:isLive?theme.accentLight:'#F59E0B'}}>
+              <span className={`w-1.5 h-1.5 rounded-full ${isLive?'animate-pulse':''} inline-block`} style={{background:isLive?theme.accent:'#F59E0B'}}/>
+              {isLive?(lang==='ar'?'مباشر':lang==='en'?'LIVE':'EN DIRECT'):realPos?'⚠️ Signal faible':'📡 En attente GPS'}
+            </span>
+          )}
+          {isDelivered&&(
+            <span className="text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-1" style={{background:theme.cardBg,color:theme.accentLight}}>
+              <span className="w-1.5 h-1.5 rounded-full inline-block" style={{background:theme.accent}}/>
+              {lang==='ar'?'تم التوصيل':lang==='en'?'Delivered':'Livré ✅'}
+            </span>
+          )}
+        </div>
+        <p className="font-black text-sm" style={{color:theme.accentLight}}>{orderRef}</p>
+        <div className="flex items-center gap-2 mt-2">
+          <span className="text-base">{isDelivered?'✅':'⏱️'}</span>
+          <p className="text-sm font-bold" style={{color:theme.textColor}}>
+            {isDelivered
+              ? <span style={{color:theme.accentLight}}>{lang==='ar'?'تم التوصيل بنجاح':lang==='en'?'Delivered successfully':'Livraison effectuée 🎉'}</span>
+              : <>{lang==='ar'?'وقت الوصول المتوقع':lang==='en'?'Estimated arrival':'Arrivée estimée'}: <span style={{color:theme.accentLight}}>{isLive?'📡 GPS en direct':'En attente du livreur'}</span></>
+            }
+          </p>
+        </div>
+      </div>
+
+      {/* Stages */}
+      <div className="rounded-3xl p-5 mb-4 w-full" style={{background:theme.cardBg,border:`1.5px solid ${theme.cardBorder}`}}>
+        <div className="relative mb-6">
+          <div className="absolute top-4 h-0.5" style={{left:isAR?'auto':'12%',right:isAR?'12%':'auto',width:'76%',background:theme.cardBorder}}/>
+          <div className="absolute top-4 h-0.5 transition-all duration-700" style={{left:isAR?'auto':'12%',right:isAR?'12%':'auto',width:`${(activeStage/3)*76}%`,background:`linear-gradient(to right,${theme.accentDark},${theme.accent})`}}/>
+          <div className={`flex justify-between relative ${isAR?'flex-row-reverse':''}`}>
+            {STAGE_LABELS.map((stage,i)=>(
+              <div key={i} className="flex flex-col items-center" style={{width:'25%'}}>
+                <div className="w-9 h-9 rounded-full flex items-center justify-center font-black text-sm transition-all"
+                  style={{background:i<=activeStage?theme.accent:'rgba(128,128,128,0.15)',color:i<=activeStage?'#fff':theme.mutedColor,border:i===activeStage?`3px solid ${theme.accentLight}`:'3px solid transparent',zIndex:1}}>
+                  {i<activeStage?'✓':['📋','👨‍🍳','🛵','✅'][i]}
+                </div>
+                <p className={`text-[9px] font-black uppercase tracking-tight mt-2 text-center leading-tight ${fClass}`} style={{color:i<=activeStage?theme.accentLight:theme.mutedColor}}>{stage}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-xl p-3 flex items-center gap-3" style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`}}>
+          <div className="text-2xl">{['📋','👨‍🍳','🛵','✅'][activeStage]}</div>
+          <div>
+            <p className="text-sm font-black" style={{color:theme.accentLight}}>{STAGE_LABELS[activeStage]}</p>
+            <p className="text-xs mt-0.5" style={{color:theme.mutedColor}}>{STAGE_SUB[activeStage]}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Delivered card — remplace la carte GPS */}
+      {isDelivered&&(
+        <div className="rounded-3xl p-6 mb-4 text-center w-full" style={{background:theme.cardBg,border:`1.5px solid ${theme.cardBorder}`}}>
+          <div className="text-5xl mb-3">✅</div>
+          <p className="text-lg font-black mb-1" style={{color:theme.accentLight}}>
+            {lang==='ar'?'تم التوصيل بنجاح!':lang==='en'?'Delivered successfully!':'Livraison effectuée !'}
+          </p>
+          <p className="text-xs mb-5" style={{color:theme.mutedColor}}>
+            {lang==='ar'?'شكراً لكم على طلبكم':lang==='en'?'Thank you for your order!':'Merci pour votre commande 🙏'}
+          </p>
+          {driverInfo?.name&&(
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="w-9 h-9 rounded-full flex items-center justify-center font-black text-base" style={{background:`linear-gradient(135deg,${theme.accentDark},${theme.accent})`,color:'#fff'}}>
+                {driverInfo.name.trim().charAt(0).toUpperCase()}
+              </div>
+              <p className="text-sm font-black" style={{color:theme.accentLight}}>{driverInfo.name}</p>
+            </div>
+          )}
+          <button onClick={onNewOrder}
+            className="px-6 py-2.5 rounded-2xl font-black text-sm text-white transition-all active:scale-95"
+            style={{background:`linear-gradient(135deg,${theme.accentDark},${theme.accent})`,border:'none',cursor:'pointer'}}>
+            {lang==='ar'?'طلب جديد':lang==='en'?'New order':'Nouvelle commande'}
+          </button>
+        </div>
+      )}
+
+      {/* Carte GPS en direct — masquée après livraison */}
+      {!isDelivered&&(
+        <div className="rounded-3xl overflow-hidden mb-4 w-full" style={{border:`2px solid ${isLive?theme.accent:theme.cardBorder}`}}>
+          {isLive&&(
+            <div className="px-3 py-1.5 flex items-center gap-2" style={{background:theme.accentDark}}>
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"/>
+              <span className="text-white text-[10px] font-black tracking-wide">GPS EN DIRECT</span>
+              {secsAgo!==null&&<span className="text-white/60 text-[9px] ml-auto">il y a {secsAgo}s</span>}
+            </div>
+          )}
+          <div className="h-[380px]">
+            <MapContainer center={mapCenter} zoom={16} style={{height:'100%',width:'100%'}} zoomControl attributionControl={false}>
+              <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"/>
+              <Marker position={[32.3010,-9.2420]} icon={restaurantIcon}><Popup>{theme.emoji} {theme.label}</Popup></Marker>
+              {realPos&&(
+                <Marker position={courierPos} icon={isLive?liveIcon:staleIcon}>
+                  <Popup>🛵 Livreur — position réelle</Popup>
+                </Marker>
+              )}
+              <MapPanner center={mapCenter}/>
+            </MapContainer>
+          </div>
+          <div className="px-4 py-3" style={{background:theme.cardBg}}>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-black text-lg" style={{background:`linear-gradient(135deg,${theme.accentDark},${theme.accent})`,color:'#fff',fontSize:driverInfo?.name?18:22}}>
+                {driverInfo?.name?driverInfo.name.trim().charAt(0).toUpperCase():'🛵'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-black truncate" style={{color:theme.textColor}}>{driverInfo?.name||(lang==='ar'?'سائق بريدج':lang==='en'?'Bridge Driver':'Livreur Bridge')}</p>
+                <p className="text-[10px]" style={{color:isLive?theme.accentLight:theme.mutedColor}}>
+                  {isLive?'📡 GPS en direct':realPos?'⚠️ Signal perdu':'SAFI · PLATEAU'}
+                </p>
+                {driverInfo?.phone&&<p className="text-[10px] font-semibold mt-0.5" style={{color:theme.mutedColor}}>{driverInfo.phone}</p>}
+              </div>
+              {driverInfo?.phone&&(
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <a href={`tel:${driverInfo.phone}`} className="w-10 h-10 rounded-full flex items-center justify-center" style={{background:theme.cardBg,border:`1.5px solid ${theme.cardBorder}`,textDecoration:'none'}}>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill={theme.accentLight}><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+                  </a>
+                  <a href={`https://wa.me/${driverInfo.phone.replace(/\D/g,'')}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full flex items-center justify-center" style={{background:theme.cardBg,border:`1.5px solid ${theme.cardBorder}`,textDecoration:'none'}}>
+                    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#25D366" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path fill="#25D366" d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.007-1.374l-.359-.214-3.728.977 1-3.647-.234-.374A9.818 9.818 0 112 12c0-5.422 4.396-9.818 9.818-9.818 5.421 0 9.818 4.396 9.818 9.818 0 5.421-4.397 9.818-9.818 9.818z"/></svg>
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!isDelivered&&orderRef&&!isLive&&(
+        <div className="rounded-2xl p-3 mb-4 flex items-start gap-2 w-full" style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`}}>
+          <span className="text-base flex-shrink-0">📡</span>
+          <p className="text-[10px]" style={{color:theme.textColor}}>
+            Le livreur recevra automatiquement son lien GPS — sa position apparaîtra ici dès qu'il démarre.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
   const isAR=lang==='ar'; const fClass=fontClass(lang);
   const arrow=(<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#065F46" strokeWidth="2.5" style={{transform:isAR?'scaleX(-1)':'',flexShrink:0}}><path d="M5 12h14M12 5l7 7-7 7"/></svg>);
@@ -6085,7 +6311,6 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
     localStorage.setItem('bridge_last_ref',orderRef);
     try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'pharmacie',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
-    onOrderSuccess?.(orderRef);
   };
 
   return(
@@ -6198,18 +6423,10 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
           </div>
         )}
 
-        {/* Success */}
+        {/* Success + suivi GPS intégré */}
         {sent&&(
-          <div className="rounded-3xl p-6 text-center w-full" style={{background:'rgba(99,102,241,0.15)',border:'2px solid rgba(99,102,241,0.5)',boxShadow:'0 8px 32px rgba(99,102,241,0.25)'}}>
-            <div className="text-5xl mb-3">✅</div>
-            <p className={`font-black text-base mb-1 ${fClass}`} style={{color:'#A5B4FC'}}>
-              {lang==='ar'?'تم إرسال طلبك!':lang==='en'?'Order placed!':'Commande envoyée !'}
-            </p>
-            <p className="text-2xl font-black tracking-[0.25em] my-2" style={{color:'#818CF8'}}>{orderRef}</p>
-            <p className={`text-[11px] mb-4 ${fClass}`} style={{color:'rgba(165,180,252,0.6)'}}>
-              {lang==='ar'?'سيتصل بك الليبرور قريباً':lang==='en'?'Driver will contact you soon':'Le livreur vous contactera bientôt'}
-            </p>
-          </div>
+          <ServiceTrackingView orderRef={orderRef} lang={lang} onNewOrder={onBack}
+            theme={{emoji:'💊',label:'Bridge Pharmacie',accent:'#6366F1',accentDark:'#4338CA',accentLight:'#A5B4FC',cardBg:'rgba(99,102,241,0.15)',cardBorder:'rgba(99,102,241,0.5)',textColor:'#fff',mutedColor:'rgba(165,180,252,0.6)'}}/>
         )}
 
         {/* Order summary */}
@@ -8166,7 +8383,6 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
     setLastRef(orderRef);
     try{localStorage.setItem('bridge_fleurs_last_ref',orderRef);}catch{}
     setTrackStage(0);setStep('track');
-    onOrderSuccess?.(orderRef);
   };
 
   const nourGrad='linear-gradient(135deg,#BE185D,#EC4899)';
@@ -8425,23 +8641,8 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
                   </div>
                   <span style={{fontSize:32}}>🌹</span>
                 </div>
-                <div className="rounded-2xl p-4 mb-4" style={{background:'white',boxShadow:'0 4px 16px rgba(0,0,0,0.06)',border:'1.5px solid #EDE9FE'}}>
-                  {trackStages.map((stage,i)=>(
-                    <div key={i} className="flex items-center gap-3 mb-3">
-                      <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 font-black text-sm"
-                        style={{background:i<=trackStage?aminaGrad:'#F3F4F6',color:i<=trackStage?'white':'#9CA3AF',boxShadow:i===trackStage?'0 4px 14px rgba(124,58,237,0.4)':'none'}}>
-                        {i<trackStage?'✓':['📋','💐','🛵','✅'][i]}
-                      </div>
-                      <div>
-                        <p className={`text-[12px] font-black ${fClass}`} style={{color:i<=trackStage?'#7C3AED':'#9CA3AF'}}>{stage}</p>
-                        {i===trackStage&&<p className="text-[10px] font-semibold" style={{color:'#A855F7'}}>● En cours…</p>}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <button onClick={()=>setStep('florist')} className="w-full py-3 rounded-2xl font-black text-sm text-white transition-all active:scale-95" style={{background:nourGrad,border:'none',cursor:'pointer'}}>
-                  {lang==='ar'?'+ حجز جديد':lang==='en'?'+ New Reservation':'+ Nouvelle réservation'}
-                </button>
+                <ServiceTrackingView orderRef={lastRef} lang={lang} onNewOrder={()=>setStep('florist')}
+                  theme={{emoji:'💐',label:'Bridge Fleurs',accent:'#A855F7',accentDark:'#7C3AED',accentLight:'#7C3AED',cardBg:'white',cardBorder:'#EDE9FE',textColor:'#4C1D95',mutedColor:'#9CA3AF'}}/>
               </div>
             )}
           </div>
@@ -8665,7 +8866,6 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
     localStorage.setItem('bridge_last_ref',orderRef);
     try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'tabac',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
-    onOrderSuccess?.(orderRef);
   };
 
   const catTabs:{key:'premium'|'intl'|'local';label:string;emoji:string}[]=[
@@ -8816,23 +9016,10 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           </div>
         )}
 
-        {/* Success */}
+        {/* Success + suivi GPS intégré */}
         {sent&&(
-          <div className="rounded-3xl p-6 text-center w-full" style={{background:'#F0FDF4',border:'2px solid #059669',boxShadow:'0 8px 32px rgba(5,150,105,0.18)'}}>
-            <div className="text-5xl mb-3">✅</div>
-            <p className={`font-black text-base mb-1 ${fClass}`} style={{color:'#065F46'}}>
-              {lang==='ar'?'تم إرسال طلبك!':lang==='en'?'Order placed!':'Commande envoyée !'}
-            </p>
-            <p className="text-2xl font-black tracking-[0.25em] my-2" style={{color:'#B45309'}}>{orderRef}</p>
-            <p className={`text-[11px] mb-4 ${fClass}`} style={{color:'#6B7280'}}>
-              {lang==='ar'?'سيتصل بك الليبرور قريباً':lang==='en'?'The driver will contact you soon':'Le livreur vous contactera bientôt'}
-            </p>
-            <button onClick={()=>onOrderSuccess?.(orderRef)}
-              className={`w-full py-3 rounded-2xl font-black text-sm text-white active:scale-95 transition-all ${fClass}`}
-              style={{background:'#065F46',boxShadow:'0 4px 14px rgba(6,95,70,0.35)'}}>
-              📍 {lang==='ar'?'متابعة الطلب':lang==='en'?'Track order':'Suivre ma commande'}
-            </button>
-          </div>
+          <ServiceTrackingView orderRef={orderRef} lang={lang} onNewOrder={onBack}
+            theme={{emoji:'🚬',label:'Bridge Tabac',accent:'#B45309',accentDark:'#78350F',accentLight:'#FCD34D',cardBg:'var(--c-card)',cardBorder:'var(--c-border)',textColor:'var(--c-text)',mutedColor:'#9CA3AF'}}/>
         )}
 
         {/* ── Frais obligatoires ── */}
@@ -9114,7 +9301,6 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
     localStorage.setItem('bridge_last_ref',orderRef);
     try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'boulangerie',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
-    onOrderSuccess?.(orderRef);
   };
 
   return(
@@ -9222,16 +9408,8 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
         )}
 
         {sent&&(
-          <div className="rounded-3xl p-6 text-center w-full" style={{background:'rgba(161,98,7,0.2)',border:'2px solid rgba(250,204,21,0.5)',boxShadow:'0 8px 32px rgba(161,98,7,0.35)'}}>
-            <div className="text-5xl mb-3">✅</div>
-            <p className={`font-black text-base mb-1 ${fClass}`} style={{color:'#FDE68A'}}>
-              {lang==='ar'?'تم إرسال طلبك!':lang==='en'?'Order placed!':'Commande envoyée !'}
-            </p>
-            <p className="text-2xl font-black tracking-[0.25em] my-2" style={{color:'#FACC15'}}>{orderRef}</p>
-            <p className={`text-[11px] mb-4 ${fClass}`} style={{color:'rgba(253,230,138,0.6)'}}>
-              {lang==='ar'?'سيتصل بك الليبرور قريباً':lang==='en'?'Driver will contact you soon':'Le livreur vous contactera bientôt'}
-            </p>
-          </div>
+          <ServiceTrackingView orderRef={orderRef} lang={lang} onNewOrder={onBack}
+            theme={{emoji:'🥖',label:'Bridge Boulangerie',accent:'#FACC15',accentDark:'#A16207',accentLight:'#FDE68A',cardBg:'rgba(161,98,7,0.2)',cardBorder:'rgba(250,204,21,0.5)',textColor:'#FEF3C7',mutedColor:'rgba(253,230,138,0.6)'}}/>
         )}
 
         {!sent&&cartCount>0&&(
@@ -9449,7 +9627,6 @@ function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{on
     localStorage.setItem('bridge_last_ref',orderRef);
     try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'souk',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
-    onOrderSuccess?.(orderRef);
   };
 
   return(
@@ -9549,16 +9726,8 @@ function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{on
         )}
 
         {sent&&(
-          <div className="rounded-3xl p-6 text-center w-full" style={{background:'rgba(126,34,206,0.2)',border:'2px solid rgba(192,132,252,0.5)',boxShadow:'0 8px 32px rgba(126,34,206,0.35)'}}>
-            <div className="text-5xl mb-3">✅</div>
-            <p className={`font-black text-base mb-1 ${fClass}`} style={{color:'#E9D5FF'}}>
-              {lang==='ar'?'تم إرسال طلبك!':lang==='en'?'Order placed!':'Commande envoyée !'}
-            </p>
-            <p className="text-2xl font-black tracking-[0.25em] my-2" style={{color:'#C084FC'}}>{orderRef}</p>
-            <p className={`text-[11px] mb-4 ${fClass}`} style={{color:'rgba(233,213,255,0.6)'}}>
-              {lang==='ar'?'سيتصل بك الليبرور قريباً':lang==='en'?'Driver will contact you soon':'Le livreur vous contactera bientôt'}
-            </p>
-          </div>
+          <ServiceTrackingView orderRef={orderRef} lang={lang} onNewOrder={onBack}
+            theme={{emoji:'🛍️',label:'Bridge Souk',accent:'#C084FC',accentDark:'#7E22CE',accentLight:'#E9D5FF',cardBg:'rgba(126,34,206,0.2)',cardBorder:'rgba(192,132,252,0.5)',textColor:'#F3E8FF',mutedColor:'rgba(233,213,255,0.6)'}}/>
         )}
 
         {!sent&&cartCount>0&&(
