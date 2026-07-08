@@ -3294,7 +3294,317 @@ const RESTAURANTS: Restaurant[] = [
         {id:"lilo_14_1",names:_n("Eau Minérale Naturelle Sidi Ali 50 cL"),price:10,photo:_gp("")},
       ]},
     ],
-  },];
+  },
+  {
+    id:"bocadillos-a-75-chamali-asf",name:"bocadillos A 75 chamali",
+    tagline:_n("bocadillos A 75 chamali · Safi"),
+    logo:"\u{1F96A}",cover:_gp(""),
+    cuisine:_n("Bocadillos & Tacos"),tags:["sandwich","tacos"],
+    rating:0,deliveryTime:"55–70",minOrder:30,
+    address:'Safi, Maroc',
+    categories:[
+      {id:"topdesvent_0",emoji:"\u{1F96A}",names:_n("Top des ventes"),items:[
+        {id:"boca_0_0",names:_n("Bocadillos Chamali"),price:37,photo:_gp("")},
+        {id:"boca_0_1",names:_n("Bocadillos Chaud Poulet"),price:36,photo:_gp("")},
+        {id:"boca_0_2",names:_n("Tacos Crispy"),price:40,photo:_gp("")},
+      ]},
+      {id:"bocadillos_1",emoji:"\u{1F96A}",names:_n("Bocadillos"),items:[
+        {id:"boca_1_0",names:_n("Bocadillos Chamali"),price:37,photo:_gp("")},
+        {id:"boca_1_1",names:_n("Bocadillos Françaissa"),price:33,photo:_gp("")},
+        {id:"boca_1_2",names:_n("Bocadillos Thon"),price:28,photo:_gp("")},
+        {id:"boca_1_3",names:_n("Bocadillos Tortilla"),price:27,photo:_gp("")},
+        {id:"boca_1_4",names:_n("Bocadillos Mortadelle"),price:23,photo:_gp("")},
+        {id:"boca_1_5",names:_n("Bocadillos Oeuf"),price:20,photo:_gp("")},
+      ]},
+      {id:"tacos_2",emoji:"\u{1F32E}",names:_n("Tacos"),items:[
+        {id:"boca_2_0",names:_n("Tacos Gratiné"),price:53,photo:_gp("")},
+        {id:"boca_2_1",names:_n("Tacos Viande Hachée"),price:47,photo:_gp("")},
+        {id:"boca_2_2",names:_n("Tacos Mixte"),price:47,photo:_gp("")},
+        {id:"boca_2_3",names:_n("Tacos Fruits De Mer"),price:47,photo:_gp("")},
+        {id:"boca_2_4",names:_n("Tacos Poulet"),price:40,photo:_gp("")},
+        {id:"boca_2_5",names:_n("Tacos Crispy"),price:40,photo:_gp("")},
+      ]},
+      {id:"burgers_3",emoji:"\u{1F354}",names:_n("Burgers"),items:[
+        {id:"boca_3_0",names:_n("Burger Big Chicken"),price:47,photo:_gp("")},
+        {id:"boca_3_1",names:_n("Burger Big Tasty"),price:47,photo:_gp("")},
+      ]},
+      {id:"jus_4",emoji:"\u{1F9C3}",names:_n("Jus Traditionnels"),items:[
+        {id:"boca_4_0",names:_n("Jus D'Ananas"),price:31,photo:_gp("")},
+        {id:"boca_4_1",names:_n("Jus D'Avocat"),price:31,photo:_gp("")},
+        {id:"boca_4_2",names:_n("Jus De Mangue"),price:31,photo:_gp("")},
+        {id:"boca_4_3",names:_n("Jus D'Orange Frais"),price:23,photo:_gp("")},
+      ]},
+      {id:"boissons_5",emoji:"\u{1F964}",names:_n("Boissons"),items:[
+        {id:"boca_5_0",names:_n("Coca-Cola 33cl Canette"),price:10,photo:_gp("")},
+        {id:"boca_5_1",names:_n("Fanta Orange 33cl Canette"),price:10,photo:_gp("")},
+      ]},
+    ],
+  },
+  {
+    id:"la-loge-asf",name:"La Loge",
+    tagline:_n("La Loge · Safi"),
+    logo:"☕",cover:_gp(""),
+    cuisine:_n("Café & Boissons"),tags:["coffee","cafe","breakfast"],
+    rating:0,deliveryTime:"55–70",minOrder:30,
+    address:'Safi, Maroc',
+    categories:[
+      {id:"topdesvent_0",emoji:"\u{1F9C7}",names:_n("Top des ventes"),items:[
+        {id:"logeasf_0_0",names:_n("Gaufre La Loge"),price:37,photo:_gp("")},
+        {id:"logeasf_0_1",names:_n("Milkshake Strawberry"),price:30,photo:_gp("")},
+      ]},
+      {id:"gaufres_1",emoji:"\u{1F9C7}",names:_n("Gaufres"),items:[
+        {id:"logeasf_1_0",names:_n("Gaufre La Loge"),price:37,photo:_gp("")},
+        {id:"logeasf_1_1",names:_n("Gaufre Nutella Kitkat"),price:34,photo:_gp("")},
+        {id:"logeasf_1_2",names:_n("Gaufre Nutella & Noix"),price:28,photo:_gp("")},
+        {id:"logeasf_1_3",names:_n("Gaufre Nutella"),price:26,photo:_gp("")},
+        {id:"logeasf_1_4",names:_n("Gaufre Miel & Noix"),price:26,photo:_gp("")},
+      ]},
+      {id:"boissonschaudes_2",emoji:"☕",names:_n("Boissons Chaudes"),items:[
+        {id:"logeasf_2_0",names:_n("Royal Chocolat"),price:27,photo:_gp("")},
+        {id:"logeasf_2_1",names:_n("Cappuccino"),price:24,photo:_gp("")},
+        {id:"logeasf_2_2",names:_n("Espresso La Loge"),price:20,photo:_gp("")},
+        {id:"logeasf_2_3",names:_n("Café Lacté"),price:18,photo:_gp("")},
+        {id:"logeasf_2_4",names:_n("Thé Marocain"),price:17,photo:_gp("")},
+      ]},
+      {id:"milkshakes_3",emoji:"\u{1F964}",names:_n("Milkshake & Smoothies"),items:[
+        {id:"logeasf_3_0",names:_n("Milkshake Nutella & Banana"),price:34,photo:_gp("")},
+        {id:"logeasf_3_1",names:_n("Milkshake Strawberry"),price:30,photo:_gp("")},
+        {id:"logeasf_3_2",names:_n("Smoothie Sweet La Loge"),price:30,photo:_gp("")},
+        {id:"logeasf_3_3",names:_n("Smoothie Vital"),price:27,photo:_gp("")},
+      ]},
+      {id:"boissonsfroides_4",emoji:"\u{1F9CA}",names:_n("Boissons Froides"),items:[
+        {id:"logeasf_4_0",names:_n("Pina Colada"),price:32,photo:_gp("")},
+        {id:"logeasf_4_1",names:_n("Bubble Tea"),price:32,photo:_gp("")},
+        {id:"logeasf_4_2",names:_n("Iced Coffee"),price:26,photo:_gp("")},
+      ]},
+    ],
+  },
+  {
+    id:"caramel-salon-de-the-asf",name:"Caramel Salon De Thé",
+    tagline:_n("Caramel Salon De Thé · Safi"),
+    logo:"\u{1F36F}",cover:_gp(""),
+    cuisine:_n("Crêpes, Brunch & Bubble Tea"),tags:["sweets","breakfast"],
+    rating:0,deliveryTime:"45–60",minOrder:35,
+    address:'Safi, Maroc',
+    categories:[
+      {id:"topdesvent_0",emoji:"\u{1F36F}",names:_n("Top des ventes"),items:[
+        {id:"caram_0_0",names:_n("Crêpe Charcuterie De Dinde Fumée Et Fromage"),price:40.5,photo:_gp("")},
+        {id:"caram_0_1",names:_n("Dubaï Kunafa Pistachio Crêpe"),price:59,photo:_gp("")},
+        {id:"caram_0_2",names:_n("Dubai Chocolate Crepe"),price:49,photo:_gp("")},
+      ]},
+      {id:"brunchs_1",emoji:"\u{1F373}",names:_n("Brunchs"),items:[
+        {id:"caram_1_0",names:_n("Chamali"),price:63,photo:_gp("")},
+        {id:"caram_1_1",names:_n("Le Healthy"),price:63,photo:_gp("")},
+        {id:"caram_1_2",names:_n("Le Caramel"),price:58.5,photo:_gp("")},
+        {id:"caram_1_3",names:_n("Chakchouka"),price:58.5,photo:_gp("")},
+        {id:"caram_1_4",names:_n("Twin Egg Burger"),price:58.5,photo:_gp("")},
+      ]},
+      {id:"crepesdubai_2",emoji:"\u{1F36B}",names:_n("Crêpes Dubaï"),items:[
+        {id:"caram_2_0",names:_n("Dubaï Kunafa Pistachio Crêpe"),price:59,photo:_gp("")},
+        {id:"caram_2_1",names:_n("Dubai Chocolate Crepe"),price:49,photo:_gp("")},
+        {id:"caram_2_2",names:_n("Crêpe Tagliatelles Oreo"),price:42,photo:_gp("")},
+        {id:"caram_2_3",names:_n("Dubaï Kunafa Lotus Crêpe"),price:40.5,photo:_gp("")},
+      ]},
+      {id:"crepessucrees_3",emoji:"\u{1F36B}",names:_n("Crêpes Sucrées"),items:[
+        {id:"caram_3_0",names:_n("Crêpe Maison"),price:44.1,photo:_gp("")},
+        {id:"caram_3_1",names:_n("Crêpe Spécial Caramel"),price:44.1,photo:_gp("")},
+        {id:"caram_3_2",names:_n("Crêpe Nutella Banane"),price:31.5,photo:_gp("")},
+        {id:"caram_3_3",names:_n("Crêpe Au Caramel"),price:31.5,photo:_gp("")},
+        {id:"caram_3_4",names:_n("Crêpe Nutella"),price:27,photo:_gp("")},
+      ]},
+      {id:"crepessalees_4",emoji:"\u{1F9C0}",names:_n("Crêpes Salées"),items:[
+        {id:"caram_4_0",names:_n("Crêpe Œuf Fromage Charcuterie Champignons"),price:44.1,photo:_gp("")},
+        {id:"caram_4_1",names:_n("Crêpe Charcuterie De Dinde Fumée Et Fromage"),price:40.5,photo:_gp("")},
+        {id:"caram_4_2",names:_n("Crêpe Au Fromage"),price:35.1,photo:_gp("")},
+      ]},
+      {id:"bubbletea_5",emoji:"\u{1F9CB}",names:_n("Bubble Tea & Matcha"),items:[
+        {id:"caram_5_0",names:_n("Bubbles Blueberry Booba"),price:49.5,photo:_gp("")},
+        {id:"caram_5_1",names:_n("Matcha Latte Booba"),price:40.5,photo:_gp("")},
+        {id:"caram_5_2",names:_n("Bubble Tea Booba Original"),price:37.8,photo:_gp("")},
+        {id:"caram_5_3",names:_n("Matcha Latte"),price:28.8,photo:_gp("")},
+      ]},
+      {id:"boissonschaudes_6",emoji:"☕",names:_n("Boissons Chaudes"),items:[
+        {id:"caram_6_0",names:_n("Illy"),price:23.4,photo:_gp("")},
+        {id:"caram_6_1",names:_n("Café Latte"),price:16.2,photo:_gp("")},
+        {id:"caram_6_2",names:_n("Thé Marocain"),price:16.2,photo:_gp("")},
+      ]},
+      {id:"gaufres_7",emoji:"\u{1F9C7}",names:_n("Gaufres"),items:[
+        {id:"caram_7_0",names:_n("Gaufre Kounafa Pistache"),price:52.2,photo:_gp("")},
+        {id:"caram_7_1",names:_n("Gaufre Aux Triples Chocolat"),price:43.2,photo:_gp("")},
+        {id:"caram_7_2",names:_n("Gaufre Au Miel"),price:28.8,photo:_gp("")},
+      ]},
+      {id:"delicesmarocains_8",emoji:"\u{1F36F}",names:_n("Délices Marocains"),items:[
+        {id:"caram_8_0",names:_n("Baghrir Amlou Banane"),price:31.5,photo:_gp("")},
+        {id:"caram_8_1",names:_n("Assortiment Beldi"),price:26.1,photo:_gp("")},
+      ]},
+    ],
+  },
+  {
+    id:"emeraude-asf",name:"Emeraude",
+    tagline:_n("Emeraude · Safi"),
+    logo:"\u{1F957}",cover:_gp(""),
+    cuisine:_n("Salades, Pizza & Pâtes"),tags:["moroccan","pizza","seafood"],
+    rating:0,deliveryTime:"45–60",minOrder:35,
+    address:'Safi, Maroc',
+    categories:[
+      {id:"topdesvent_0",emoji:"\u{1F957}",names:_n("Top des ventes"),items:[
+        {id:"emer_0_0",names:_n("Sandwich Fruits De Mer"),price:65,photo:_gp("")},
+        {id:"emer_0_1",names:_n("Pizza Suprême Poulet"),price:80,photo:_gp("")},
+        {id:"emer_0_2",names:_n("Lasagne Bolognaise"),price:85,photo:_gp("")},
+      ]},
+      {id:"salades_1",emoji:"\u{1F957}",names:_n("Salades"),items:[
+        {id:"emer_1_0",names:_n("Salade Émeraude"),price:90,photo:_gp("")},
+        {id:"emer_1_1",names:_n("Salade Pêcheur"),price:85,photo:_gp("")},
+        {id:"emer_1_2",names:_n("Salade Avocat Crevette"),price:78,photo:_gp("")},
+        {id:"emer_1_3",names:_n("Salade César"),price:65,photo:_gp("")},
+        {id:"emer_1_4",names:_n("Salade Marocaine"),price:35,photo:_gp("")},
+      ]},
+      {id:"plats_2",emoji:"\u{1F35B}",names:_n("Plats"),items:[
+        {id:"emer_2_0",names:_n("Brochettes Mixtes"),price:110,photo:_gp("")},
+        {id:"emer_2_1",names:_n("Paella"),price:99,photo:_gp("")},
+        {id:"emer_2_2",names:_n("Brochettes Viande Hachée"),price:95,photo:_gp("")},
+        {id:"emer_2_3",names:_n("Émincé De Poulet"),price:85,photo:_gp("")},
+      ]},
+      {id:"pizzas_3",emoji:"\u{1F355}",names:_n("Pizzas"),items:[
+        {id:"emer_3_0",names:_n("Pizza Fruits De Mer"),price:95,photo:_gp("")},
+        {id:"emer_3_1",names:_n("Pizza Suprême Poulet"),price:80,photo:_gp("")},
+        {id:"emer_3_2",names:_n("Pizza 4 Fromages"),price:80,photo:_gp("")},
+        {id:"emer_3_3",names:_n("Pizza Margherita"),price:50,photo:_gp("")},
+      ]},
+      {id:"pates_4",emoji:"\u{1F35D}",names:_n("Pâtes"),items:[
+        {id:"emer_4_0",names:_n("Pâtes Fruits De Mer"),price:95,photo:_gp("")},
+        {id:"emer_4_1",names:_n("Bolognaise"),price:85,photo:_gp("")},
+        {id:"emer_4_2",names:_n("Carbonara"),price:70,photo:_gp("")},
+      ]},
+      {id:"tacos_5",emoji:"\u{1F32E}",names:_n("Tacos"),items:[
+        {id:"emer_5_0",names:_n("Tacos Fruits De Mer"),price:75,photo:_gp("")},
+        {id:"emer_5_1",names:_n("Tacos Mixte"),price:55,photo:_gp("")},
+        {id:"emer_5_2",names:_n("Tacos Poulet"),price:45,photo:_gp("")},
+      ]},
+      {id:"boissons_6",emoji:"\u{1F964}",names:_n("Boissons"),items:[
+        {id:"emer_6_0",names:_n("Coca Cola 25cl Canette"),price:10,photo:_gp("")},
+        {id:"emer_6_1",names:_n("Hawaï Tropical 25cl Canette"),price:10,photo:_gp("")},
+      ]},
+    ],
+  },
+  {
+    id:"restaurant-4-saisons-miftah-asf",name:"Restaurant 4 Saisons Miftah Al Kheir",
+    tagline:_n("Restaurant 4 Saisons Miftah Al Kheir · Safi"),
+    logo:"\u{1F355}",cover:_gp(""),
+    cuisine:_n("Pizza, Tacos & Poulet Rôti"),tags:["pizza","fast-food"],
+    rating:0,deliveryTime:"55–70",minOrder:35,
+    address:'Safi, Maroc',
+    categories:[
+      {id:"topdesvent_0",emoji:"\u{1F32E}",names:_n("Top des ventes"),items:[
+        {id:"r4sm_0_0",names:_n("Tacos Poulet + Soda"),price:44.1,photo:_gp("")},
+        {id:"r4sm_0_1",names:_n("Pasticcio Poulet + Soda"),price:44.1,photo:_gp("")},
+        {id:"r4sm_0_2",names:_n("Sandwich Crispy"),price:45,photo:_gp("")},
+      ]},
+      {id:"pouletroti_1",emoji:"\u{1F357}",names:_n("Poulet Rôti"),items:[
+        {id:"r4sm_1_0",names:_n("1 Poulet Rôti Entier"),price:220,photo:_gp("")},
+        {id:"r4sm_1_1",names:_n("1/2 Poulet Rôti"),price:110,photo:_gp("")},
+        {id:"r4sm_1_2",names:_n("1/4 Poulet Rôti"),price:55,photo:_gp("")},
+      ]},
+      {id:"sandwich_2",emoji:"\u{1F96A}",names:_n("Sandwich"),items:[
+        {id:"r4sm_2_0",names:_n("Sandwich Turks"),price:60,photo:_gp("")},
+        {id:"r4sm_2_1",names:_n("Sandwich 4 Saisons"),price:52,photo:_gp("")},
+        {id:"r4sm_2_2",names:_n("Sandwich Poulet"),price:45,photo:_gp("")},
+        {id:"r4sm_2_3",names:_n("Sandwich Crispy"),price:45,photo:_gp("")},
+      ]},
+      {id:"tacos_3",emoji:"\u{1F32E}",names:_n("Tacos"),items:[
+        {id:"r4sm_3_0",names:_n("Tacos 4 Saisons"),price:45,photo:_gp("")},
+        {id:"r4sm_3_1",names:_n("Tacos Cordon Bleu"),price:45,photo:_gp("")},
+        {id:"r4sm_3_2",names:_n("Tacos Poulet"),price:40,photo:_gp("")},
+      ]},
+      {id:"pizza_4",emoji:"\u{1F355}",names:_n("Pizza"),items:[
+        {id:"r4sm_4_0",names:_n("Pizza 4 Saisons"),price:70,photo:_gp("")},
+        {id:"r4sm_4_1",names:_n("Pizza Royal"),price:60,photo:_gp("")},
+        {id:"r4sm_4_2",names:_n("Pizza Margarita"),price:35,photo:_gp("")},
+      ]},
+      {id:"jus_5",emoji:"\u{1F9C3}",names:_n("Jus & Cocktails"),items:[
+        {id:"r4sm_5_0",names:_n("Jus Orange"),price:40,photo:_gp("")},
+        {id:"r4sm_5_1",names:_n("Zaazaa 4 Saisons"),price:40,photo:_gp("")},
+      ]},
+    ],
+  },
+  {
+    id:"snack-mazar-2-asf",name:"Snack MAZAR 2",
+    tagline:_n("Snack MAZAR 2 · Safi"),
+    logo:"\u{1F32E}",cover:_gp(""),
+    cuisine:_n("Tacos, Wraps & Pizza"),tags:["tacos","sandwich"],
+    rating:0,deliveryTime:"45–60",minOrder:30,
+    address:'Safi, Maroc',
+    categories:[
+      {id:"topdesvent_0",emoji:"\u{1F32E}",names:_n("Top des ventes"),items:[
+        {id:"mazar_0_0",names:_n("Tacos Chicken"),price:43,photo:_gp("")},
+        {id:"mazar_0_1",names:_n("Tacos Mixte"),price:45,photo:_gp("")},
+        {id:"mazar_0_2",names:_n("Pasticcio Chicken"),price:40,photo:_gp("")},
+      ]},
+      {id:"tacos_1",emoji:"\u{1F32E}",names:_n("Tacos"),items:[
+        {id:"mazar_1_0",names:_n("Tacos Cordon Bleu"),price:48,photo:_gp("")},
+        {id:"mazar_1_1",names:_n("Tacos Mazar"),price:48,photo:_gp("")},
+        {id:"mazar_1_2",names:_n("Tacos Mixte"),price:45,photo:_gp("")},
+        {id:"mazar_1_3",names:_n("Tacos Chicken"),price:43,photo:_gp("")},
+      ]},
+      {id:"burgers_2",emoji:"\u{1F354}",names:_n("Burgers"),items:[
+        {id:"mazar_2_0",names:_n("Big Burger"),price:50,photo:_gp("")},
+        {id:"mazar_2_1",names:_n("Cheese Burger"),price:37,photo:_gp("")},
+      ]},
+      {id:"wraps_3",emoji:"\u{1F32F}",names:_n("Wraps"),items:[
+        {id:"mazar_3_0",names:_n("Wrap Cordon Bleu"),price:48,photo:_gp("")},
+        {id:"mazar_3_1",names:_n("Wrap Mazar"),price:48,photo:_gp("")},
+        {id:"mazar_3_2",names:_n("Wrap Chicken"),price:43,photo:_gp("")},
+      ]},
+      {id:"pizzas_4",emoji:"\u{1F355}",names:_n("Pizzas"),items:[
+        {id:"mazar_4_0",names:_n("Pizza Mazar"),price:60,photo:_gp("")},
+        {id:"mazar_4_1",names:_n("Pizza Quatres Fromages"),price:45,photo:_gp("")},
+        {id:"mazar_4_2",names:_n("Pizza Margherita"),price:35,photo:_gp("")},
+      ]},
+      {id:"jus_5",emoji:"\u{1F9C3}",names:_n("Jus"),items:[
+        {id:"mazar_5_0",names:_n("Zaazaa"),price:48,photo:_gp("")},
+        {id:"mazar_5_1",names:_n("Jus D'Orange"),price:21,photo:_gp("")},
+      ]},
+    ],
+  },
+  {
+    id:"snack-saida-asf",name:"Snack Saida",
+    tagline:_n("Snack Saida · Safi"),
+    logo:"\u{1F357}",cover:_gp(""),
+    cuisine:_n("Poulet, Pizza & Tacos"),tags:["chicken","pizza"],
+    rating:0,deliveryTime:"40–55",minOrder:35,
+    address:'Safi, Maroc',
+    categories:[
+      {id:"topdesvent_0",emoji:"\u{1F32E}",names:_n("Top des ventes"),items:[
+        {id:"saida_0_0",names:_n("Tacos XXL"),price:60,photo:_gp("")},
+        {id:"saida_0_1",names:_n("Tacos Mixte"),price:40,photo:_gp("")},
+        {id:"saida_0_2",names:_n("Pizza Royale + Soda"),price:55,photo:_gp("")},
+      ]},
+      {id:"poulet_1",emoji:"\u{1F357}",names:_n("Poulet"),items:[
+        {id:"saida_1_0",names:_n("Poulet Complet + Salade + 1L Coca"),price:190,photo:_gp("")},
+        {id:"saida_1_1",names:_n("1/2 Poulet + Salade Variée"),price:75,photo:_gp("")},
+        {id:"saida_1_2",names:_n("1/4 Poulet"),price:35,photo:_gp("")},
+      ]},
+      {id:"pizzas_2",emoji:"\u{1F355}",names:_n("Pizzas"),items:[
+        {id:"saida_2_0",names:_n("Pizza Chawarma"),price:45,photo:_gp("")},
+        {id:"saida_2_1",names:_n("Pizza 4 Saisons"),price:45,photo:_gp("")},
+        {id:"saida_2_2",names:_n("Pizza Margarita"),price:35,photo:_gp("")},
+      ]},
+      {id:"tacos_3",emoji:"\u{1F32E}",names:_n("Tacos"),items:[
+        {id:"saida_3_0",names:_n("Tacos XXL"),price:60,photo:_gp("")},
+        {id:"saida_3_1",names:_n("Tacos Cordon Bleu"),price:45,photo:_gp("")},
+        {id:"saida_3_2",names:_n("Tacos Mixte"),price:40,photo:_gp("")},
+      ]},
+      {id:"chawarmas_4",emoji:"\u{1F32F}",names:_n("Chawarmas"),items:[
+        {id:"saida_4_0",names:_n("Chawarma Plat Mixte"),price:45,photo:_gp("")},
+        {id:"saida_4_1",names:_n("Chawarma Fromage"),price:35,photo:_gp("")},
+      ]},
+      {id:"jus_5",emoji:"\u{1F9C3}",names:_n("Jus"),items:[
+        {id:"saida_5_0",names:_n("Jus D'Ananas"),price:25,photo:_gp("")},
+        {id:"saida_5_1",names:_n("Salade De Fruits"),price:20,photo:_gp("")},
+      ]},
+    ],
+  },
+];
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
@@ -5634,33 +5944,33 @@ const PHARMA_CATALOG:MedEntry[]=[
 function MedItem({med,qty,isNight,nightSurcharge,effectivePrice,onAdd,onRem}:{med:MedEntry;qty:number;isNight:boolean;nightSurcharge:number;effectivePrice:number;onAdd:()=>void;onRem:()=>void}) {
   const [imgOk,setImgOk]=useState(!!med.img);
   return(
-    <div className="flex items-center gap-3 rounded-2xl px-3 py-2.5"
+    <div className="flex flex-col gap-2 rounded-2xl p-3"
       style={{background:qty>0?'rgba(99,102,241,0.18)':'rgba(255,255,255,0.04)',border:`1.5px solid ${qty>0?'rgba(99,102,241,0.5)':'rgba(165,180,252,0.15)'}`,transition:'all 0.15s'}}>
-      <div style={{width:40,height:52,borderRadius:8,flexShrink:0,overflow:'hidden',boxShadow:'0 2px 8px rgba(0,0,0,0.35)'}}>
+      <div style={{width:'100%',height:84,borderRadius:12,flexShrink:0,overflow:'hidden',boxShadow:'0 2px 10px rgba(0,0,0,0.35)'}}>
         {med.img&&imgOk?(
           <img src={med.img} alt={med.name} onError={()=>setImgOk(false)} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
         ):(
-          <div style={{width:'100%',height:'100%',background:'rgba(99,102,241,0.25)',border:'1px solid rgba(165,180,252,0.25)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}>
+          <div style={{width:'100%',height:'100%',background:'rgba(99,102,241,0.25)',border:'1px solid rgba(165,180,252,0.25)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:36}}>
             {med.emoji}
           </div>
         )}
       </div>
-      <div style={{flex:1,minWidth:0}}>
-        <p className="font-black text-[12px] truncate" style={{color:'#E0E7FF'}}>{med.name}</p>
-        <p className="text-[10px]" style={{color:'rgba(165,180,252,0.55)'}}>{med.desc}</p>
-        <div className="flex items-center gap-1.5 mt-0.5">
-          <span className="text-[11px] font-black" style={{color:'#A5B4FC'}}>{effectivePrice} DH</span>
+      <div style={{minWidth:0}}>
+        <p className="font-black text-[14px] leading-tight" style={{color:'#E0E7FF'}}>{med.name}</p>
+        <p className="text-[11px] mt-0.5" style={{color:'rgba(165,180,252,0.55)',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{med.desc}</p>
+        <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+          <span className="text-[13px] font-black" style={{color:'#A5B4FC'}}>{effectivePrice} DH</span>
           {isNight&&<span style={{background:'rgba(251,191,36,0.15)',border:'1px solid rgba(251,191,36,0.4)',borderRadius:4,padding:'0 4px',fontSize:9,color:'#F59E0B',fontWeight:700}}>🌙 +{nightSurcharge}</span>}
         </div>
       </div>
-      <div className="flex items-center gap-1.5 flex-shrink-0">
+      <div className="flex items-center justify-end gap-2 flex-shrink-0 mt-auto">
         {qty>0&&(
           <>
-            <button onClick={onRem} style={{width:28,height:28,borderRadius:'50%',border:'none',background:'rgba(99,102,241,0.25)',color:'#A5B4FC',fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
-            <span className="font-black text-sm w-5 text-center" style={{color:'#fff'}}>{qty}</span>
+            <button onClick={onRem} style={{width:32,height:32,borderRadius:'50%',border:'none',background:'rgba(99,102,241,0.25)',color:'#A5B4FC',fontWeight:900,fontSize:18,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
+            <span className="font-black text-base w-5 text-center" style={{color:'#fff'}}>{qty}</span>
           </>
         )}
-        <button onClick={onAdd} style={{width:28,height:28,borderRadius:'50%',border:'none',background:'#6366F1',color:'white',fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>+</button>
+        <button onClick={onAdd} style={{width:32,height:32,borderRadius:'50%',border:'none',background:'#6366F1',color:'white',fontWeight:900,fontSize:18,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>+</button>
       </div>
     </div>
   );
@@ -5825,8 +6135,8 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
               ))}
             </div>
 
-            {/* Items list */}
-            <div className="flex flex-col gap-2">
+            {/* Items grid — 2 par ligne */}
+            <div className="grid grid-cols-2 gap-2.5">
               {visibleMeds.map(med=>(
                 <MedItem key={med.id} med={med} qty={medQty(med.id)} isNight={isNight} nightSurcharge={NIGHT_SURCHARGE} effectivePrice={medPrice(med)} onAdd={()=>addMed(med.id)} onRem={()=>remMed(med.id)}/>
               ))}
@@ -5975,8 +6285,8 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
 
 // ─── SERVICE SELECT PAGE ──────────────────────────────────────────────────────
 
-function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:{onSelect:(s:'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie')=>void;onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void}) {
-  const [pressed,setPressed]=useState<'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'|null>(null);
+function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:{onSelect:(s:'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk')=>void;onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void}) {
+  const [pressed,setPressed]=useState<'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk'|null>(null);
   const [showProfile,setShowProfile]=useState(false);
   const pubVideoRef=useRef<HTMLVideoElement>(null);
   const [pubMuted,setPubMuted]=useState(true);
@@ -5985,7 +6295,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
   const getAuthHeaders=useAuthHeaders();
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
-  const choose=(s:'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie')=>{setPressed(s);setTimeout(()=>onSelect(s),320);};
+  const choose=(s:'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk')=>{setPressed(s);setTimeout(()=>onSelect(s),320);};
   // Avatar: custom upload > Clerk photo > initials
   const avatarSrc=profile.avatar||user?.imageUrl||null;
   const initials=(profile.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
@@ -6257,44 +6567,36 @@ useEffect(()=>{
                   </div>
                 </div>
               </div>
-              {/* Row 5: Boulangerie + Souk — nouvelles cartes */}
+              {/* Row 5: Boulangerie + Souk — nouvelles cartes (actives) */}
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
-                <div style={{opacity:0.82,animation:'svcFadeUp 0.45s ease-out 0.32s both'}}>
+                <button onClick={()=>choose('boulangerie')} style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:pressed==='boulangerie'?'scale(0.94)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',animation:'svcFadeUp 0.45s ease-out 0.32s both'}}>
                   <div style={{
                     background:'linear-gradient(145deg,#422006 0%,#A16207 55%,#FACC15 100%)',
-                    borderRadius:18,border:'1.5px solid rgba(250,204,21,0.45)',
-                    boxShadow:'0 8px 32px rgba(161,98,7,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
+                    borderRadius:18,border:`1.5px solid ${pressed==='boulangerie'?'rgba(255,255,255,0.55)':'rgba(250,204,21,0.45)'}`,
+                    boxShadow:pressed==='boulangerie'?'0 0 0 3px rgba(250,204,21,0.5),0 16px 40px rgba(250,204,21,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 8px 32px rgba(161,98,7,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
                     padding:'18px 8px 14px',display:'flex',flexDirection:'column',alignItems:'center',gap:5,
                     position:'relative',overflow:'hidden',minHeight:92,
                   }}>
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
-                    <div style={{position:'absolute',top:3,right:3,background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'2px 6px',display:'flex',alignItems:'center',gap:2,backdropFilter:'blur(6px)'}}>
-                      <span style={{width:4,height:4,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
-                      <span style={{color:'#fff',fontSize:6,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
-                    </div>
                     <span style={{fontSize:30,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🥖</span>
                     <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Boulangerie</p>
                     <p style={{color:'rgba(255,255,255,0.75)',fontSize:9,fontWeight:600,margin:0,textAlign:'center'}}>Pain & pâtisseries</p>
                   </div>
-                </div>
-                <div style={{opacity:0.82,animation:'svcFadeUp 0.45s ease-out 0.4s both'}}>
+                </button>
+                <button onClick={()=>choose('souk')} style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:pressed==='souk'?'scale(0.94)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',animation:'svcFadeUp 0.45s ease-out 0.4s both'}}>
                   <div style={{
                     background:'linear-gradient(145deg,#3B0764 0%,#7E22CE 55%,#C084FC 100%)',
-                    borderRadius:18,border:'1.5px solid rgba(192,132,252,0.45)',
-                    boxShadow:'0 8px 32px rgba(126,34,206,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
+                    borderRadius:18,border:`1.5px solid ${pressed==='souk'?'rgba(255,255,255,0.55)':'rgba(192,132,252,0.45)'}`,
+                    boxShadow:pressed==='souk'?'0 0 0 3px rgba(192,132,252,0.5),0 16px 40px rgba(192,132,252,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 8px 32px rgba(126,34,206,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
                     padding:'18px 8px 14px',display:'flex',flexDirection:'column',alignItems:'center',gap:5,
                     position:'relative',overflow:'hidden',minHeight:92,
                   }}>
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
-                    <div style={{position:'absolute',top:3,right:3,background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'2px 6px',display:'flex',alignItems:'center',gap:2,backdropFilter:'blur(6px)'}}>
-                      <span style={{width:4,height:4,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
-                      <span style={{color:'#fff',fontSize:6,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
-                    </div>
                     <span style={{fontSize:30,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🛍️</span>
                     <p style={{color:'#fff',fontSize:12,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Souk</p>
                     <p style={{color:'rgba(255,255,255,0.75)',fontSize:9,fontWeight:600,margin:0,textAlign:'center'}}>Vêtements · Parfums · Miel</p>
                   </div>
-                </div>
+                </button>
               </div>
             </div>
           );
@@ -8640,6 +8942,692 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   );
 }
 
+// ─── LOCATION PICKER MAP (GPS) ────────────────────────────────────────────────
+
+function LocationPickerMap({pos,onChange}:{pos:{lat:number;lng:number};onChange:(p:{lat:number;lng:number})=>void}) {
+  const pinIcon=L.divIcon({className:'',html:'<div style="font-size:32px;line-height:1;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.6))">📍</div>',iconSize:[34,34],iconAnchor:[17,34]});
+  function ClickCapture() {
+    useMapEvents({click(e){onChange({lat:e.latlng.lat,lng:e.latlng.lng});}});
+    return null;
+  }
+  return(
+    <MapContainer center={[pos.lat,pos.lng]} zoom={14} style={{width:'100%',height:'100%'}} zoomControl={false} attributionControl={false}>
+      <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"/>
+      <ClickCapture/>
+      <Marker position={[pos.lat,pos.lng]} icon={pinIcon} draggable
+        eventHandlers={{dragend:(e:any)=>{const m=e.target;const ll=m.getLatLng();onChange({lat:ll.lat,lng:ll.lng});}}}/>
+    </MapContainer>
+  );
+}
+
+// ─── BRIDGE BOULANGERIE — catalogue ───────────────────────────────────────────
+
+interface BoulItem {id:string;name:string;desc:string;price:number;cat:'viennoiseries'|'patisserie'|'sale'|'cafeteria'|'jus';emoji:string;}
+const BOULANGERIE_CATALOG:BoulItem[]=[
+  {id:'bv1',name:'Croissant Pur Beurre',       desc:'Viennoiserie feuilletée',        price:8,  cat:'viennoiseries', emoji:'🥐'},
+  {id:'bv2',name:'Pain Au Chocolat',           desc:'Viennoiserie pur beurre',        price:9,  cat:'viennoiseries', emoji:'🥐'},
+  {id:'bv3',name:'Mini Pain Au Chocolat',      desc:'Format mini, la pièce',          price:6,  cat:'viennoiseries', emoji:'🥐'},
+  {id:'bv4',name:'Chausson Aux Pommes',        desc:'Pâte feuilletée, pommes',        price:8,  cat:'viennoiseries', emoji:'🥐'},
+  {id:'bv5',name:'Mini Chausson Aux Amandes',  desc:'Format mini, la pièce',          price:8,  cat:'viennoiseries', emoji:'🥐'},
+  {id:'bp1',name:"Trompe L'œil Mangue",        desc:'Entremets frais du jour',        price:32, cat:'patisserie',    emoji:'🍰'},
+  {id:'bp2',name:'Royal Chocolat',             desc:'Mousse chocolat, croustillant',  price:32, cat:'patisserie',    emoji:'🍫'},
+  {id:'bp3',name:'Forêt-Noire (Part)',         desc:'Chocolat, cerises, chantilly',   price:29, cat:'patisserie',    emoji:'🍰'},
+  {id:'bp4',name:'Cheesecake Citron (Part)',   desc:'Part individuelle',              price:29, cat:'patisserie',    emoji:'🍰'},
+  {id:'bp5',name:'Pecaramel',                  desc:'Praliné, caramel, noisette',     price:29, cat:'patisserie',    emoji:'🍮'},
+  {id:'bp6',name:'Tarte Aux Poires',           desc:'Pâtisserie fraîche du jour',     price:26, cat:'patisserie',    emoji:'🍰'},
+  {id:'bs1',name:'Croissant Jambon Fromage',   desc:'Snack salé du jour',             price:22, cat:'sale',          emoji:'🧀'},
+  {id:'bs2',name:'Pain Traditionnel',          desc:'Khobz frais du four',            price:4,  cat:'sale',          emoji:'🍞'},
+  {id:'bs3',name:'Batbout ×4',                 desc:'Petits pains marocains',         price:12, cat:'sale',          emoji:'🫓'},
+  {id:'bc1',name:'Espresso',                   desc:'Café italien',                   price:17, cat:'cafeteria',     emoji:'☕'},
+  {id:'bc2',name:'Cappuccino',                 desc:'Espresso, lait moussé',          price:22, cat:'cafeteria',     emoji:'☕'},
+  {id:'bc3',name:'Café Crème',                 desc:'Espresso, lait chaud',           price:21, cat:'cafeteria',     emoji:'☕'},
+  {id:'bc4',name:'Chocolat Fondu',             desc:'Chocolat chaud gourmand',        price:26, cat:'cafeteria',     emoji:'🍫'},
+  {id:'bj1',name:"Jus D'Orange Frais",         desc:'Pressé minute',                  price:21, cat:'jus',           emoji:'🍊'},
+  {id:'bj2',name:"Jus D'Avocat",               desc:'Onctueux, sucré',                price:31, cat:'jus',           emoji:'🥑'},
+  {id:'bj3',name:'Panaché',                    desc:'Fruits de saison',               price:28, cat:'jus',           emoji:'🥤'},
+];
+
+function BoulangerieItem({it,qty,effectivePrice,onAdd,onRem}:{it:BoulItem;qty:number;effectivePrice:number;onAdd:()=>void;onRem:()=>void}) {
+  return(
+    <div className="flex flex-col gap-2 rounded-2xl p-3"
+      style={{background:qty>0?'rgba(250,204,21,0.16)':'rgba(255,255,255,0.04)',border:`1.5px solid ${qty>0?'rgba(250,204,21,0.5)':'rgba(250,204,21,0.15)'}`,transition:'all 0.15s'}}>
+      <div style={{width:'100%',height:84,borderRadius:12,flexShrink:0,overflow:'hidden',background:'rgba(250,204,21,0.15)',border:'1px solid rgba(250,204,21,0.2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:36}}>
+        {it.emoji}
+      </div>
+      <div style={{minWidth:0}}>
+        <p className="font-black text-[14px] leading-tight" style={{color:'#FEF3C7'}}>{it.name}</p>
+        <p className="text-[11px] mt-0.5" style={{color:'rgba(254,243,199,0.55)',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{it.desc}</p>
+        <span className="text-[13px] font-black" style={{color:'#FACC15'}}>{effectivePrice} DH</span>
+      </div>
+      <div className="flex items-center justify-end gap-2 flex-shrink-0 mt-auto">
+        {qty>0&&(
+          <>
+            <button onClick={onRem} style={{width:32,height:32,borderRadius:'50%',border:'none',background:'rgba(250,204,21,0.25)',color:'#FDE68A',fontWeight:900,fontSize:18,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
+            <span className="font-black text-base w-5 text-center" style={{color:'#fff'}}>{qty}</span>
+          </>
+        )}
+        <button onClick={onAdd} style={{width:32,height:32,borderRadius:'50%',border:'none',background:'#A16207',color:'white',fontWeight:900,fontSize:18,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>+</button>
+      </div>
+    </div>
+  );
+}
+
+function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void;onOrderSuccess?:(ref:string)=>void}) {
+  const fClass=fontClass(lang); const isAR=lang==='ar';
+  const [,navigateBoul]=useLocation();
+
+  const DELIV_FEE_BOUL=12;
+  const SVC_FEE_BOUL=5;
+
+  const [boulCart,setBoulCart]=useState<{id:string;qty:number}[]>([]);
+  const [boulCat,setBoulCat]=useState<BoulItem['cat']>('viennoiseries');
+  const [boulSearch,setBoulSearch]=useState('');
+  const [delivMode,setDelivMode]=useState<'delivery'|'collect'>('delivery');
+  const [name,setName]=useState(profile.name??'');
+  const [addr,setAddr]=useState(profile.address??'');
+  const [phone,setPhone]=useState(profile.phone??'');
+  const [boulPos,setBoulPos]=useState<{lat:number;lng:number}>({lat:32.2994,lng:-9.2372});
+  const [err,setErr]=useState('');
+  const [sending,setSending]=useState(false);
+  const [sent,setSent]=useState(false);
+  const [orderRef]=useState(()=>`BOUL-${Math.floor(1000+Math.random()*9000)}`);
+  const [payMethod,setPayMethod]=useState<PayMethodType>(null);
+  const [showQR,setShowQR]=useState(false);
+  const {user:boulUser}=useUser();
+  const getAuthHeadersBoul=useAuthHeaders();
+  const [boulGems,setBoulGems]=useState(0);
+  const [boulGemMAD,setBoulGemMAD]=useState(0);
+  const maxBoulGemMAD=Math.floor(boulGems/200);
+
+  useEffect(()=>{
+    if(!boulUser?.id) return;
+    getAuthHeadersBoul().then(h=>fetch('/api/game/diamonds',{credentials:'include',headers:h})
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{if(d&&typeof d.diamonds==='number')setBoulGems(d.diamonds);})
+      .catch(()=>{}));
+  },[boulUser?.id,getAuthHeadersBoul]);
+
+  const addBoul=(id:string)=>setBoulCart(c=>{const ex=c.find(x=>x.id===id);return ex?c.map(x=>x.id===id?{...x,qty:x.qty+1}:x):[...c,{id,qty:1}];});
+  const remBoul=(id:string)=>setBoulCart(c=>{const ex=c.find(x=>x.id===id);if(!ex)return c;if(ex.qty===1)return c.filter(x=>x.id!==id);return c.map(x=>x.id===id?{...x,qty:x.qty-1}:x);});
+  const boulQty=(id:string)=>boulCart.find(x=>x.id===id)?.qty??0;
+  const cartSubtotal=boulCart.reduce((s,ci)=>{const it=BOULANGERIE_CATALOG.find(f=>f.id===ci.id);return s+(it?it.price*ci.qty:0);},0);
+  const cartTotal=cartSubtotal+(delivMode==='delivery'?DELIV_FEE_BOUL:0)+SVC_FEE_BOUL-boulGemMAD;
+  const cartCount=boulCart.reduce((s,ci)=>s+ci.qty,0);
+
+  const visibleItems=BOULANGERIE_CATALOG.filter(it=>
+    it.cat===boulCat&&(boulSearch===''||it.name.toLowerCase().includes(boulSearch.toLowerCase()))
+  );
+
+  const catTabs:{key:BoulItem['cat'];label:string;emoji:string}[]=[
+    {key:'viennoiseries', label:lang==='ar'?'معجنات':lang==='en'?'Pastries':'Viennoiseries', emoji:'🥐'},
+    {key:'patisserie',    label:lang==='ar'?'حلويات':lang==='en'?'Cakes':'Pâtisserie',        emoji:'🍰'},
+    {key:'sale',          label:lang==='ar'?'مالح':lang==='en'?'Savoury':'Salé',              emoji:'🧀'},
+    {key:'cafeteria',     label:lang==='ar'?'قهوة':lang==='en'?'Coffee':'Cafeteria',          emoji:'☕'},
+    {key:'jus',           label:lang==='ar'?'عصير':lang==='en'?'Juice':'Jus',                emoji:'🍊'},
+  ];
+
+  const inputCls=`w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all ${fClass}`;
+  const inputStyle=(hasErr:boolean):React.CSSProperties=>({background:'rgba(255,255,255,0.07)',border:`1.5px solid ${hasErr?'#EF4444':'rgba(250,204,21,0.25)'}`,color:'#fff'});
+
+  const handleWalletPay=async(type:'apple'|'google')=>{
+    if(!name.trim()||!phone.trim()||(delivMode==='delivery'&&!addr.trim())){setErr('*');return;}
+    const payLabel=type==='apple'?'Apple Pay':'Google Pay';
+    const methods=type==='apple'
+      ?[{supportedMethods:'https://apple.com/apple-pay',data:{version:3,merchantIdentifier:'merchant.ma.safi-bridge',merchantCapabilities:['supports3DS'],supportedNetworks:['visa','masterCard'],countryCode:'MA'}}]
+      :[{supportedMethods:'https://google.com/pay',data:{apiVersion:2,apiVersionMinor:0,merchantInfo:{merchantName:'Bridge Safi'},allowedPaymentMethods:[{type:'CARD',parameters:{allowedAuthMethods:['PAN_ONLY','CRYPTOGRAM_3DS'],allowedCardNetworks:['MASTERCARD','VISA']},tokenizationSpecification:{type:'PAYMENT_GATEWAY',parameters:{gateway:'example',gatewayMerchantId:'bridge-safi'}}}]}}];
+    const details={total:{label:'Bridge Boulangerie · Safi',amount:{currency:'MAD',value:String(cartTotal)}}};
+    try{
+      if(typeof PaymentRequest==='undefined') throw new Error('unsupported');
+      const pr=new PaymentRequest(methods,details);
+      const canMake=await pr.canMakePayment().catch(()=>false);
+      if(!canMake) throw new Error('unavailable');
+      const response=await pr.show();
+      await response.complete('success');
+      setPayMethod(type);
+      await handleSend(payLabel);
+    }catch{setPayMethod('cash');}
+  };
+
+  const handleSend=async(payLabel?:string)=>{
+    if(!name.trim()||!phone.trim()||(delivMode==='delivery'&&!addr.trim())){setErr('*');return;}
+    setSending(true);
+    const deliveryAddress=delivMode==='delivery'?`${addr.trim()}, Safi, Maroc (GPS: ${boulPos.lat.toFixed(5)},${boulPos.lng.toFixed(5)})`:'Bridge Boulangerie — Retrait sur place';
+    const driverTrackUrl=`${window.location.origin}/driver/${orderRef}`;
+    const payInfo=payLabel?payLabel:payMethod==='qr'?'QR Code':payMethod==='cash'?'Espèces':payMethod==='apple'?'Apple Pay':payMethod==='google'?'Google Pay':'Espèces';
+    const itemsList=boulCart.map(ci=>{const it=BOULANGERIE_CATALOG.find(f=>f.id===ci.id)!;return `${it.name} ×${ci.qty} (${it.price*ci.qty} DH)`;}).join('\\n');
+    const notesStr=`🥐 Bridge Boulangerie\\n${itemsList||'Commande générale'}\\n—\\nSous-total: ${cartSubtotal} DH\\nLivraison: ${delivMode==='delivery'?DELIV_FEE_BOUL:0} DH\\nService: ${SVC_FEE_BOUL} DH\\nTotal: ${cartTotal} DH\\n💳 ${payInfo}\\n👤 ${name.trim()} — ${phone.trim()}`;
+    const apiItems=boulCart.length>0
+      ?boulCart.map(ci=>{const it=BOULANGERIE_CATALOG.find(f=>f.id===ci.id)!;return {name:it.name,qty:ci.qty,price:it.price};})
+      :[{name:'🥐 Commande Bridge Boulangerie',qty:1,price:0}];
+    try{
+      await fetch('/api/orders/inbound',{method:'POST',headers:{'Content-Type':'application/json','x-bridge-secret':'bridge-safi-8b269bba03fd8c0205116f3f'},
+        body:JSON.stringify({customerName:name.trim(),customerPhone:phone.trim(),deliveryAddress,pickupAddress:'Bridge Boulangerie — Safi',items:apiItems,total:cartTotal,source:'Bridge Boulangerie',paymentMethod:payInfo}),
+      }).catch(()=>{});
+      await fetch(`${DRIVER_APP_URL}/api/deliveries`,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({trackingNumber:orderRef,customerName:name.trim(),customerPhone:phone.trim(),pickupAddress:'Bridge Boulangerie — Safi',deliveryAddress,priority:'normal',notes:notesStr,driverTrackUrl}),
+      }).catch(()=>{});
+    }finally{setSending(false);}
+    if(boulGemMAD>0){getAuthHeadersBoul().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:boulGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${boulUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
+    await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ref:orderRef,service:'boulangerie',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:'Bridge Boulangerie'}),
+    }).catch(()=>{});
+    localStorage.setItem('bridge_last_ref',orderRef);
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'boulangerie',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    setSent(true);
+    onOrderSuccess?.(orderRef);
+  };
+
+  return(
+    <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`}
+      dir={isAR?'rtl':'ltr'}
+      style={{background:'linear-gradient(160deg,#1C0F02 0%,#422006 40%,#78350F 70%,#0F172A 100%)',color:'#fff',minHeight:'100dvh'}}>
+
+      <div style={{position:'fixed',top:16,left:isAR?'auto':16,right:isAR?16:'auto',zIndex:50}}>
+        <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(250,204,21,0.14)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:18}}>←</button>
+      </div>
+      <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
+        <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(250,204,21,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#FDE68A',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
+        <SharkDiamondWidget onNavigate={()=>navigateBoul('/game')} profile={profile}/>
+      </div>
+
+      <div className={`flex flex-col items-center px-5 pt-20 pb-12 max-w-2xl mx-auto w-full gap-4 ${fClass}`}>
+
+        <div className="text-center">
+          <h1 className={`font-black text-xl tracking-wider mb-0.5 ${fClass}`} style={{color:'#FDE68A'}}>BRIDGE BOULANGERIE</h1>
+          <p className="text-[10px] tracking-widest font-bold" style={{color:'rgba(253,230,138,0.6)'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
+        </div>
+
+        {!sent&&(
+          <div className="w-full">
+            <input value={boulSearch} onChange={e=>setBoulSearch(e.target.value)}
+              placeholder={lang==='ar'?'بحث…':lang==='en'?'Search…':'Rechercher…'}
+              className={`w-full px-4 py-2.5 rounded-xl text-sm outline-none mb-3 ${fClass}`}
+              style={{background:'rgba(250,204,21,0.08)',border:'1.5px solid rgba(250,204,21,0.2)',color:'#fff'}}/>
+
+            <div className="flex gap-1.5 mb-3 overflow-x-auto pb-1" style={{scrollbarWidth:'none'}}>
+              {catTabs.map(tab=>(
+                <button key={tab.key} onClick={()=>{setBoulCat(tab.key);setBoulSearch('');}}
+                  className="flex-shrink-0 py-2 px-3 rounded-xl font-black text-[10px] transition-all active:scale-95"
+                  style={{background:boulCat===tab.key?'#A16207':'rgba(250,204,21,0.08)',color:boulCat===tab.key?'white':'rgba(253,230,138,0.6)',border:`1.5px solid ${boulCat===tab.key?'#A16207':'rgba(250,204,21,0.2)'}`,letterSpacing:'0.04em',whiteSpace:'nowrap'}}>
+                  {tab.emoji} {tab.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5">
+              {visibleItems.map(it=>(
+                <BoulangerieItem key={it.id} it={it} qty={boulQty(it.id)} effectivePrice={it.price} onAdd={()=>addBoul(it.id)} onRem={()=>remBoul(it.id)}/>
+              ))}
+            </div>
+
+            {cartCount>0&&(
+              <div className="mt-3 rounded-2xl p-3" style={{background:'rgba(161,98,7,0.2)',border:'1.5px solid rgba(250,204,21,0.4)'}}>
+                <p className="font-black text-[11px] mb-1.5" style={{color:'#FDE68A'}}>🛒 {cartCount} {lang==='ar'?'منتج':lang==='en'?'item(s)':'produit(s)'} sélectionné(s)</p>
+                {boulCart.map(ci=>{const it=BOULANGERIE_CATALOG.find(f=>f.id===ci.id)!;return(
+                  <div key={ci.id} className="flex justify-between text-[11px]" style={{color:'rgba(253,230,138,0.7)'}}>
+                    <span>{it.name} ×{ci.qty}</span><span className="font-bold">{it.price*ci.qty} DH</span>
+                  </div>
+                );})}
+              </div>
+            )}
+          </div>
+        )}
+
+        {!sent&&(
+          <div className="flex gap-2 w-full">
+            {([
+              {key:'delivery'as const,label:lang==='ar'?'توصيل':lang==='en'?'Delivery':'Livraison',desc:lang==='ar'?'إلى بابك':lang==='en'?'To your door':'À votre porte',color:'#FACC15'},
+              {key:'collect'as const,label:lang==='ar'?'استلام':lang==='en'?'Collect':'Retrait',desc:lang==='ar'?'من المحل':lang==='en'?'From bakery':'De la boulangerie',color:'#A16207'},
+            ]).map(opt=>{
+              const sel=delivMode===opt.key;
+              return(
+                <button key={opt.key} onClick={()=>{setDelivMode(opt.key);setErr('');}}
+                  className="flex-1 rounded-2xl p-3 text-left transition-all duration-200 active:scale-95"
+                  style={{background:sel?'rgba(250,204,21,0.18)':'rgba(255,255,255,0.04)',border:`2px solid ${sel?opt.color:'rgba(250,204,21,0.15)'}`}}>
+                  <p className={`font-black text-[11px] leading-tight ${fClass}`} style={{color:opt.color}}>{opt.label}</p>
+                  <p className={`text-[9px] mt-0.5 ${fClass}`} style={{color:'rgba(253,230,138,0.4)'}}>{opt.desc}</p>
+                  {sel&&<div className="mt-1.5 w-3 h-3 rounded-full flex items-center justify-center" style={{background:opt.color}}>
+                    <svg width="7" height="7" viewBox="0 0 10 10" fill="white"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>
+                  </div>}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {!sent&&(
+          <div className="w-full flex flex-col gap-3">
+            <div>
+              <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:'#FDE68A'}}>👤 {lang==='ar'?'الاسم':lang==='en'?'Name':'Nom'}</p>
+              <input className={inputCls} style={inputStyle(!!err&&!name.trim())} placeholder={lang==='ar'?'اسمك الكامل…':lang==='en'?'Your name…':'Votre nom…'} value={name} onChange={e=>{setName(e.target.value);setErr('');}}/>
+            </div>
+            {delivMode==='delivery'&&(
+              <>
+                <AddressAutocomplete label={`📍 ${lang==='ar'?'العنوان':lang==='en'?'Address':'Adresse'}`} value={addr} onChange={v=>{setAddr(v);setErr('');}}
+                  placeholder={lang==='ar'?'عنوان التوصيل…':lang==='en'?'Delivery address…':'Adresse de livraison…'} lang={lang} error={!!err&&!addr.trim()}/>
+                <div>
+                  <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:'#FDE68A'}}>🗺️ {lang==='ar'?'اضبط موقعك على الخريطة':lang==='en'?'Fine-tune your location':'Ajustez votre position sur la carte'}</p>
+                  <div style={{width:'100%',height:160,borderRadius:16,overflow:'hidden',border:'1.5px solid rgba(250,204,21,0.3)'}}>
+                    <LocationPickerMap pos={boulPos} onChange={setBoulPos}/>
+                  </div>
+                </div>
+              </>
+            )}
+            <div>
+              <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:'#FDE68A'}}>📞 {lang==='ar'?'الهاتف':lang==='en'?'Phone':'Téléphone'}</p>
+              <input className={inputCls} style={inputStyle(!!err&&!phone.trim())} placeholder="06XXXXXXXX" value={phone} type="tel" onChange={e=>{setPhone(e.target.value);setErr('');}}/>
+            </div>
+            {err&&<p className={`text-xs font-bold ${fClass}`} style={{color:'#EF4444'}}>⚠️ {lang==='ar'?'يرجى ملء جميع الحقول':lang==='en'?'Please fill all fields':'Veuillez remplir tous les champs'}</p>}
+          </div>
+        )}
+
+        {sent&&(
+          <div className="rounded-3xl p-6 text-center w-full" style={{background:'rgba(161,98,7,0.2)',border:'2px solid rgba(250,204,21,0.5)',boxShadow:'0 8px 32px rgba(161,98,7,0.35)'}}>
+            <div className="text-5xl mb-3">✅</div>
+            <p className={`font-black text-base mb-1 ${fClass}`} style={{color:'#FDE68A'}}>
+              {lang==='ar'?'تم إرسال طلبك!':lang==='en'?'Order placed!':'Commande envoyée !'}
+            </p>
+            <p className="text-2xl font-black tracking-[0.25em] my-2" style={{color:'#FACC15'}}>{orderRef}</p>
+            <p className={`text-[11px] mb-4 ${fClass}`} style={{color:'rgba(253,230,138,0.6)'}}>
+              {lang==='ar'?'سيتصل بك الليبرور قريباً':lang==='en'?'Driver will contact you soon':'Le livreur vous contactera bientôt'}
+            </p>
+          </div>
+        )}
+
+        {!sent&&cartCount>0&&(
+          <div className="w-full rounded-2xl p-4" style={{background:'rgba(255,255,255,0.04)',border:'1.5px solid rgba(250,204,21,0.15)'}}>
+            <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#FDE68A'}}>🧾 {lang==='ar'?'الفاتورة':lang==='en'?'Summary':'Récapitulatif'}</p>
+            {cartSubtotal>0&&<div className="flex justify-between text-[12px] mb-1.5"><span style={{color:'rgba(253,230,138,0.5)'}}>{lang==='ar'?'المجموع':lang==='en'?'Subtotal':'Sous-total'}</span><span className="font-bold" style={{color:'#FEF3C7'}}>{cartSubtotal} DH</span></div>}
+            {delivMode==='delivery'&&<div className="flex justify-between text-[12px] mb-1.5"><span style={{color:'rgba(253,230,138,0.5)'}}>🛵 {lang==='ar'?'توصيل':lang==='en'?'Delivery':'Livraison'}</span><span className="font-bold" style={{color:'#FDE68A'}}>{DELIV_FEE_BOUL} DH</span></div>}
+            <div className="flex justify-between text-[12px] mb-2"><span style={{color:'rgba(253,230,138,0.5)'}}>⚙️ {lang==='ar'?'رسوم الخدمة':lang==='en'?'Service fee':'Frais de service'}</span><span className="font-bold" style={{color:'#FDE68A'}}>{SVC_FEE_BOUL} DH</span></div>
+            {boulGemMAD>0&&<div className="flex justify-between text-[12px] mb-2"><span style={{color:'#4ADE80'}}>💎 Réduction</span><span className="font-bold" style={{color:'#4ADE80'}}>-{boulGemMAD} DH</span></div>}
+            <div className="flex justify-between items-center pt-2" style={{borderTop:'1.5px solid rgba(250,204,21,0.15)'}}><span className="font-black text-sm" style={{color:'#FEF3C7'}}>TOTAL</span><span className="font-black text-lg" style={{color:'#FACC15'}}>{cartTotal} DH</span></div>
+          </div>
+        )}
+
+        {!sent&&(
+          <div className={`w-full rounded-2xl p-4 ${fClass}`} style={{background:'linear-gradient(135deg,#0A1A12,#0D2E1A)',border:'1px solid rgba(74,222,128,0.3)'}}>
+            <p className="text-[11px] font-black mb-1.5" style={{color:'#D9C5A0'}}>💎 {lang==='ar'?'خصم بالماسات':lang==='en'?'Diamond discount':'Réduction Diamants'}</p>
+            {boulGems>0?(
+              <>
+                <p className="text-[10px] mb-2" style={{color:'rgba(255,255,255,0.6)',fontWeight:600}}>{boulGems.toLocaleString()} 💎 = {maxBoulGemMAD} MAD</p>
+                {boulGemMAD>0?(
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold" style={{color:'#4ADE80'}}>✓ -{boulGemMAD} MAD appliqué</span>
+                    <button onClick={()=>setBoulGemMAD(0)} className="text-[9px] font-bold px-2 py-1 rounded-lg" style={{background:'rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.5)',border:'none',cursor:'pointer'}}>✕</button>
+                  </div>
+                ):(
+                  <div className="flex gap-2 flex-wrap">
+                    {[1,2,5,maxBoulGemMAD].filter((v,i,a)=>v>0&&a.indexOf(v)===i&&v<=maxBoulGemMAD).map(mad=>(
+                      <button key={mad} onClick={()=>setBoulGemMAD(mad)} className="px-3 py-1 rounded-xl font-black text-[10px] active:scale-95 transition-all"
+                        style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.5)',color:'#4ADE80',cursor:'pointer'}}>
+                        -{mad} MAD
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
+            ):(
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-[10px]" style={{color:'rgba(255,255,255,0.4)'}}>{lang==='ar'?'لا ماسات — العب لتربح!':lang==='en'?'No diamonds — play to earn!':'Pas de diamants — jouez !'}</p>
+                <button onClick={()=>navigateBoul('/game')} className="text-[9px] font-black px-2.5 py-1 rounded-xl" style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.4)',color:'#4ADE80',cursor:'pointer',flexShrink:0}}>🎮 Game</button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {!sent&&(
+          <div className="w-full rounded-2xl p-4" style={{background:'rgba(255,255,255,0.04)',border:'1.5px solid rgba(250,204,21,0.15)'}}>
+            <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#FDE68A'}}>💳 {lang==='ar'?'طريقة الدفع':lang==='en'?'Payment':'Mode de paiement'}</p>
+            <SharedPaymentOptions lang={lang} selected={payMethod} onSelect={setPayMethod} showCash showCard={false} onWalletPay={handleWalletPay}/>
+          </div>
+        )}
+
+        {!sent&&(
+          <button onClick={()=>{if(payMethod==='qr'){handleSend().then(()=>setShowQR(true));}else handleSend();}}
+            disabled={sending}
+            className={`w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 active:scale-95 transition-all ${fClass}`}
+            style={{background:sending?'#9CA3AF':'#A16207',boxShadow:sending?'none':'0 6px 20px rgba(161,98,7,0.4)',cursor:sending?'not-allowed':'pointer'}}>
+            {sending?(
+              <><span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin"/>{lang==='ar'?'جارٍ الإرسال…':lang==='en'?'Sending…':'Envoi en cours…'}</>
+            ):(
+              <><span>🛵</span>{lang==='ar'?'تأكيد الطلب':lang==='en'?'Place order':'Commander'}</>
+            )}
+          </button>
+        )}
+        {showQR&&<QRPayModal lang={lang} onClose={()=>setShowQR(false)} onConfirm={()=>setShowQR(false)}/>}
+      </div>
+    </div>
+  );
+}
+
+// ─── BRIDGE SOUK — catalogue ───────────────────────────────────────────────────
+
+interface SoukItem {id:string;name:string;desc:string;price:number;cat:'vetements'|'parfums'|'miel'|'artisanat';emoji:string;}
+const SOUK_CATALOG:SoukItem[]=[
+  {id:'sv1',name:'Djellaba Homme Classique',   desc:'Coton, plusieurs tailles',           price:250, cat:'vetements', emoji:'🥻'},
+  {id:'sv2',name:'Djellaba Femme Brodée',      desc:'Broderie artisanale',                price:320, cat:'vetements', emoji:'👗'},
+  {id:'sv3',name:'Caftan Soirée',              desc:'Tissu satin, sur-mesure possible',   price:450, cat:'vetements', emoji:'👘'},
+  {id:'sv4',name:'Babouches Cuir',             desc:'Cuir véritable, artisanat local',    price:120, cat:'vetements', emoji:'👡'},
+  {id:'sv5',name:'Foulard Soie Brodé',         desc:'Motifs traditionnels',               price:90,  cat:'vetements', emoji:'🧣'},
+  {id:'sp1',name:'Parfum Oud Royal',           desc:'Essence concentrée 30ml',            price:180, cat:'parfums',   emoji:'🧴'},
+  {id:'sp2',name:'Eau De Musc Blanc',          desc:'Flacon 15ml',                        price:90,  cat:'parfums',   emoji:'🧴'},
+  {id:'sp3',name:'Bakhour Traditionnel',       desc:'Encens marocain, boîte',             price:60,  cat:'parfums',   emoji:'🕯️'},
+  {id:'sp4',name:'Huile D\'Argan Cosmétique',  desc:'Pure, pressée à froid, 100ml',       price:75,  cat:'parfums',   emoji:'🌿'},
+  {id:'sm1',name:'Miel De Thym',               desc:'100% naturel, pot 500g',             price:110, cat:'miel',      emoji:'🍯'},
+  {id:'sm2',name:"Miel D'Eucalyptus",          desc:'Pot 500g',                           price:95,  cat:'miel',      emoji:'🍯'},
+  {id:'sm3',name:'Amlou Artisanal',            desc:'Amande, argan, miel — pot 250g',     price:85,  cat:'miel',      emoji:'🍯'},
+  {id:'sm4',name:'Miel De Fleurs D\'Oranger',  desc:'Pot 500g',                           price:105, cat:'miel',      emoji:'🍯'},
+  {id:'sa1',name:'Plateau Argent Gravé',       desc:'Artisanat de Safi',                  price:280, cat:'artisanat', emoji:'🎨'},
+  {id:'sa2',name:'Poterie Safi Peinte',        desc:'Pièce unique, faite main',           price:150, cat:'artisanat', emoji:'🏺'},
+  {id:'sa3',name:'Tapis Berbère Petit Format', desc:'Laine, tissage traditionnel',        price:380, cat:'artisanat', emoji:'🧶'},
+  {id:'sa4',name:'Lanterne Marocaine',         desc:'Fer forgé et verre coloré',          price:160, cat:'artisanat', emoji:'🏮'},
+];
+
+function SoukItemCard({it,qty,effectivePrice,onAdd,onRem}:{it:SoukItem;qty:number;effectivePrice:number;onAdd:()=>void;onRem:()=>void}) {
+  return(
+    <div className="flex flex-col gap-2 rounded-2xl p-3"
+      style={{background:qty>0?'rgba(192,132,252,0.16)':'rgba(255,255,255,0.04)',border:`1.5px solid ${qty>0?'rgba(192,132,252,0.5)':'rgba(192,132,252,0.15)'}`,transition:'all 0.15s'}}>
+      <div style={{width:'100%',height:84,borderRadius:12,flexShrink:0,overflow:'hidden',background:'rgba(192,132,252,0.15)',border:'1px solid rgba(192,132,252,0.2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:36}}>
+        {it.emoji}
+      </div>
+      <div style={{minWidth:0}}>
+        <p className="font-black text-[14px] leading-tight" style={{color:'#F3E8FF'}}>{it.name}</p>
+        <p className="text-[11px] mt-0.5" style={{color:'rgba(243,232,255,0.55)',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{it.desc}</p>
+        <span className="text-[13px] font-black" style={{color:'#C084FC'}}>{effectivePrice} DH</span>
+      </div>
+      <div className="flex items-center justify-end gap-2 flex-shrink-0 mt-auto">
+        {qty>0&&(
+          <>
+            <button onClick={onRem} style={{width:32,height:32,borderRadius:'50%',border:'none',background:'rgba(192,132,252,0.25)',color:'#E9D5FF',fontWeight:900,fontSize:18,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
+            <span className="font-black text-base w-5 text-center" style={{color:'#fff'}}>{qty}</span>
+          </>
+        )}
+        <button onClick={onAdd} style={{width:32,height:32,borderRadius:'50%',border:'none',background:'#7E22CE',color:'white',fontWeight:900,fontSize:18,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>+</button>
+      </div>
+    </div>
+  );
+}
+
+function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void;onOrderSuccess?:(ref:string)=>void}) {
+  const fClass=fontClass(lang); const isAR=lang==='ar';
+  const [,navigateSouk]=useLocation();
+
+  const DELIV_FEE_SOUK=15;
+  const SVC_FEE_SOUK=6;
+
+  const [soukCart,setSoukCart]=useState<{id:string;qty:number}[]>([]);
+  const [soukCat,setSoukCat]=useState<SoukItem['cat']>('vetements');
+  const [soukSearch,setSoukSearch]=useState('');
+  const [delivMode,setDelivMode]=useState<'delivery'|'collect'>('delivery');
+  const [name,setName]=useState(profile.name??'');
+  const [addr,setAddr]=useState(profile.address??'');
+  const [phone,setPhone]=useState(profile.phone??'');
+  const [err,setErr]=useState('');
+  const [sending,setSending]=useState(false);
+  const [sent,setSent]=useState(false);
+  const [orderRef]=useState(()=>`SOUK-${Math.floor(1000+Math.random()*9000)}`);
+  const [payMethod,setPayMethod]=useState<PayMethodType>(null);
+  const [showQR,setShowQR]=useState(false);
+  const {user:soukUser}=useUser();
+  const getAuthHeadersSouk=useAuthHeaders();
+  const [soukGems,setSoukGems]=useState(0);
+  const [soukGemMAD,setSoukGemMAD]=useState(0);
+  const maxSoukGemMAD=Math.floor(soukGems/200);
+
+  useEffect(()=>{
+    if(!soukUser?.id) return;
+    getAuthHeadersSouk().then(h=>fetch('/api/game/diamonds',{credentials:'include',headers:h})
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{if(d&&typeof d.diamonds==='number')setSoukGems(d.diamonds);})
+      .catch(()=>{}));
+  },[soukUser?.id,getAuthHeadersSouk]);
+
+  const addSouk=(id:string)=>setSoukCart(c=>{const ex=c.find(x=>x.id===id);return ex?c.map(x=>x.id===id?{...x,qty:x.qty+1}:x):[...c,{id,qty:1}];});
+  const remSouk=(id:string)=>setSoukCart(c=>{const ex=c.find(x=>x.id===id);if(!ex)return c;if(ex.qty===1)return c.filter(x=>x.id!==id);return c.map(x=>x.id===id?{...x,qty:x.qty-1}:x);});
+  const soukQty=(id:string)=>soukCart.find(x=>x.id===id)?.qty??0;
+  const cartSubtotal=soukCart.reduce((s,ci)=>{const it=SOUK_CATALOG.find(f=>f.id===ci.id);return s+(it?it.price*ci.qty:0);},0);
+  const cartTotal=cartSubtotal+(delivMode==='delivery'?DELIV_FEE_SOUK:0)+SVC_FEE_SOUK-soukGemMAD;
+  const cartCount=soukCart.reduce((s,ci)=>s+ci.qty,0);
+
+  const visibleItems=SOUK_CATALOG.filter(it=>
+    it.cat===soukCat&&(soukSearch===''||it.name.toLowerCase().includes(soukSearch.toLowerCase()))
+  );
+
+  const catTabs:{key:SoukItem['cat'];label:string;emoji:string}[]=[
+    {key:'vetements', label:lang==='ar'?'ملابس':lang==='en'?'Clothes':'Vêtements',   emoji:'👗'},
+    {key:'parfums',   label:lang==='ar'?'عطور':lang==='en'?'Perfumes':'Parfums',     emoji:'🧴'},
+    {key:'miel',      label:lang==='ar'?'عسل':lang==='en'?'Honey':'Miel',           emoji:'🍯'},
+    {key:'artisanat', label:lang==='ar'?'حرف يدوية':lang==='en'?'Crafts':'Artisanat',emoji:'🎨'},
+  ];
+
+  const inputCls=`w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all ${fClass}`;
+  const inputStyle=(hasErr:boolean):React.CSSProperties=>({background:'rgba(255,255,255,0.07)',border:`1.5px solid ${hasErr?'#EF4444':'rgba(192,132,252,0.25)'}`,color:'#fff'});
+
+  const handleWalletPay=async(type:'apple'|'google')=>{
+    if(!name.trim()||!phone.trim()||(delivMode==='delivery'&&!addr.trim())){setErr('*');return;}
+    const payLabel=type==='apple'?'Apple Pay':'Google Pay';
+    const methods=type==='apple'
+      ?[{supportedMethods:'https://apple.com/apple-pay',data:{version:3,merchantIdentifier:'merchant.ma.safi-bridge',merchantCapabilities:['supports3DS'],supportedNetworks:['visa','masterCard'],countryCode:'MA'}}]
+      :[{supportedMethods:'https://google.com/pay',data:{apiVersion:2,apiVersionMinor:0,merchantInfo:{merchantName:'Bridge Safi'},allowedPaymentMethods:[{type:'CARD',parameters:{allowedAuthMethods:['PAN_ONLY','CRYPTOGRAM_3DS'],allowedCardNetworks:['MASTERCARD','VISA']},tokenizationSpecification:{type:'PAYMENT_GATEWAY',parameters:{gateway:'example',gatewayMerchantId:'bridge-safi'}}}]}}];
+    const details={total:{label:'Bridge Souk · Safi',amount:{currency:'MAD',value:String(cartTotal)}}};
+    try{
+      if(typeof PaymentRequest==='undefined') throw new Error('unsupported');
+      const pr=new PaymentRequest(methods,details);
+      const canMake=await pr.canMakePayment().catch(()=>false);
+      if(!canMake) throw new Error('unavailable');
+      const response=await pr.show();
+      await response.complete('success');
+      setPayMethod(type);
+      await handleSend(payLabel);
+    }catch{setPayMethod('cash');}
+  };
+
+  const handleSend=async(payLabel?:string)=>{
+    if(!name.trim()||!phone.trim()||(delivMode==='delivery'&&!addr.trim())){setErr('*');return;}
+    setSending(true);
+    const deliveryAddress=delivMode==='delivery'?`${addr.trim()}, Safi, Maroc`:'Bridge Souk — Retrait sur place';
+    const driverTrackUrl=`${window.location.origin}/driver/${orderRef}`;
+    const payInfo=payLabel?payLabel:payMethod==='qr'?'QR Code':payMethod==='cash'?'Espèces':payMethod==='apple'?'Apple Pay':payMethod==='google'?'Google Pay':'Espèces';
+    const itemsList=soukCart.map(ci=>{const it=SOUK_CATALOG.find(f=>f.id===ci.id)!;return `${it.name} ×${ci.qty} (${it.price*ci.qty} DH)`;}).join('\\n');
+    const notesStr=`🛍️ Bridge Souk\\n${itemsList||'Commande générale'}\\n—\\nSous-total: ${cartSubtotal} DH\\nLivraison: ${delivMode==='delivery'?DELIV_FEE_SOUK:0} DH\\nService: ${SVC_FEE_SOUK} DH\\nTotal: ${cartTotal} DH\\n💳 ${payInfo}\\n👤 ${name.trim()} — ${phone.trim()}`;
+    const apiItems=soukCart.length>0
+      ?soukCart.map(ci=>{const it=SOUK_CATALOG.find(f=>f.id===ci.id)!;return {name:it.name,qty:ci.qty,price:it.price};})
+      :[{name:'🛍️ Commande Bridge Souk',qty:1,price:0}];
+    try{
+      await fetch('/api/orders/inbound',{method:'POST',headers:{'Content-Type':'application/json','x-bridge-secret':'bridge-safi-8b269bba03fd8c0205116f3f'},
+        body:JSON.stringify({customerName:name.trim(),customerPhone:phone.trim(),deliveryAddress,pickupAddress:'Bridge Souk — Safi',items:apiItems,total:cartTotal,source:'Bridge Souk',paymentMethod:payInfo}),
+      }).catch(()=>{});
+      await fetch(`${DRIVER_APP_URL}/api/deliveries`,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({trackingNumber:orderRef,customerName:name.trim(),customerPhone:phone.trim(),pickupAddress:'Bridge Souk — Safi',deliveryAddress,priority:'normal',notes:notesStr,driverTrackUrl}),
+      }).catch(()=>{});
+    }finally{setSending(false);}
+    if(soukGemMAD>0){getAuthHeadersSouk().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:soukGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${soukUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
+    await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ref:orderRef,service:'souk',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:'Bridge Souk'}),
+    }).catch(()=>{});
+    localStorage.setItem('bridge_last_ref',orderRef);
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'souk',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    setSent(true);
+    onOrderSuccess?.(orderRef);
+  };
+
+  return(
+    <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`}
+      dir={isAR?'rtl':'ltr'}
+      style={{background:'linear-gradient(160deg,#1A0630 0%,#3B0764 40%,#581C87 70%,#0F172A 100%)',color:'#fff',minHeight:'100dvh'}}>
+
+      <div style={{position:'fixed',top:16,left:isAR?'auto':16,right:isAR?16:'auto',zIndex:50}}>
+        <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(192,132,252,0.14)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:18}}>←</button>
+      </div>
+      <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
+        <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(192,132,252,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#E9D5FF',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
+        <SharkDiamondWidget onNavigate={()=>navigateSouk('/game')} profile={profile}/>
+      </div>
+
+      <div className={`flex flex-col items-center px-5 pt-20 pb-12 max-w-2xl mx-auto w-full gap-4 ${fClass}`}>
+
+        <div className="text-center">
+          <h1 className={`font-black text-xl tracking-wider mb-0.5 ${fClass}`} style={{color:'#E9D5FF'}}>BRIDGE SOUK</h1>
+          <p className="text-[10px] tracking-widest font-bold" style={{color:'rgba(233,213,255,0.6)'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
+        </div>
+
+        {!sent&&(
+          <div className="w-full">
+            <input value={soukSearch} onChange={e=>setSoukSearch(e.target.value)}
+              placeholder={lang==='ar'?'بحث…':lang==='en'?'Search…':'Rechercher…'}
+              className={`w-full px-4 py-2.5 rounded-xl text-sm outline-none mb-3 ${fClass}`}
+              style={{background:'rgba(192,132,252,0.08)',border:'1.5px solid rgba(192,132,252,0.2)',color:'#fff'}}/>
+
+            <div className="flex gap-1.5 mb-3 overflow-x-auto pb-1" style={{scrollbarWidth:'none'}}>
+              {catTabs.map(tab=>(
+                <button key={tab.key} onClick={()=>{setSoukCat(tab.key);setSoukSearch('');}}
+                  className="flex-shrink-0 py-2 px-3 rounded-xl font-black text-[10px] transition-all active:scale-95"
+                  style={{background:soukCat===tab.key?'#7E22CE':'rgba(192,132,252,0.08)',color:soukCat===tab.key?'white':'rgba(233,213,255,0.6)',border:`1.5px solid ${soukCat===tab.key?'#7E22CE':'rgba(192,132,252,0.2)'}`,letterSpacing:'0.04em',whiteSpace:'nowrap'}}>
+                  {tab.emoji} {tab.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5">
+              {visibleItems.map(it=>(
+                <SoukItemCard key={it.id} it={it} qty={soukQty(it.id)} effectivePrice={it.price} onAdd={()=>addSouk(it.id)} onRem={()=>remSouk(it.id)}/>
+              ))}
+            </div>
+
+            {cartCount>0&&(
+              <div className="mt-3 rounded-2xl p-3" style={{background:'rgba(126,34,206,0.2)',border:'1.5px solid rgba(192,132,252,0.4)'}}>
+                <p className="font-black text-[11px] mb-1.5" style={{color:'#E9D5FF'}}>🛒 {cartCount} {lang==='ar'?'منتج':lang==='en'?'item(s)':'produit(s)'} sélectionné(s)</p>
+                {soukCart.map(ci=>{const it=SOUK_CATALOG.find(f=>f.id===ci.id)!;return(
+                  <div key={ci.id} className="flex justify-between text-[11px]" style={{color:'rgba(233,213,255,0.7)'}}>
+                    <span>{it.name} ×{ci.qty}</span><span className="font-bold">{it.price*ci.qty} DH</span>
+                  </div>
+                );})}
+              </div>
+            )}
+          </div>
+        )}
+
+        {!sent&&(
+          <div className="flex gap-2 w-full">
+            {([
+              {key:'delivery'as const,label:lang==='ar'?'توصيل':lang==='en'?'Delivery':'Livraison',desc:lang==='ar'?'إلى بابك':lang==='en'?'To your door':'À votre porte',color:'#C084FC'},
+              {key:'collect'as const,label:lang==='ar'?'استلام':lang==='en'?'Collect':'Retrait',desc:lang==='ar'?'من المحل':lang==='en'?'From the shop':'De la boutique',color:'#7E22CE'},
+            ]).map(opt=>{
+              const sel=delivMode===opt.key;
+              return(
+                <button key={opt.key} onClick={()=>{setDelivMode(opt.key);setErr('');}}
+                  className="flex-1 rounded-2xl p-3 text-left transition-all duration-200 active:scale-95"
+                  style={{background:sel?'rgba(192,132,252,0.18)':'rgba(255,255,255,0.04)',border:`2px solid ${sel?opt.color:'rgba(192,132,252,0.15)'}`}}>
+                  <p className={`font-black text-[11px] leading-tight ${fClass}`} style={{color:opt.color}}>{opt.label}</p>
+                  <p className={`text-[9px] mt-0.5 ${fClass}`} style={{color:'rgba(233,213,255,0.4)'}}>{opt.desc}</p>
+                  {sel&&<div className="mt-1.5 w-3 h-3 rounded-full flex items-center justify-center" style={{background:opt.color}}>
+                    <svg width="7" height="7" viewBox="0 0 10 10" fill="white"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>
+                  </div>}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {!sent&&(
+          <div className="w-full flex flex-col gap-3">
+            <div>
+              <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:'#E9D5FF'}}>👤 {lang==='ar'?'الاسم':lang==='en'?'Name':'Nom'}</p>
+              <input className={inputCls} style={inputStyle(!!err&&!name.trim())} placeholder={lang==='ar'?'اسمك الكامل…':lang==='en'?'Your name…':'Votre nom…'} value={name} onChange={e=>{setName(e.target.value);setErr('');}}/>
+            </div>
+            {delivMode==='delivery'&&(
+              <AddressAutocomplete label={`📍 ${lang==='ar'?'العنوان':lang==='en'?'Address':'Adresse'}`} value={addr} onChange={v=>{setAddr(v);setErr('');}}
+                placeholder={lang==='ar'?'عنوان التوصيل…':lang==='en'?'Delivery address…':'Adresse de livraison…'} lang={lang} error={!!err&&!addr.trim()}/>
+            )}
+            <div>
+              <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:'#E9D5FF'}}>📞 {lang==='ar'?'الهاتف':lang==='en'?'Phone':'Téléphone'}</p>
+              <input className={inputCls} style={inputStyle(!!err&&!phone.trim())} placeholder="06XXXXXXXX" value={phone} type="tel" onChange={e=>{setPhone(e.target.value);setErr('');}}/>
+            </div>
+            {err&&<p className={`text-xs font-bold ${fClass}`} style={{color:'#EF4444'}}>⚠️ {lang==='ar'?'يرجى ملء جميع الحقول':lang==='en'?'Please fill all fields':'Veuillez remplir tous les champs'}</p>}
+          </div>
+        )}
+
+        {sent&&(
+          <div className="rounded-3xl p-6 text-center w-full" style={{background:'rgba(126,34,206,0.2)',border:'2px solid rgba(192,132,252,0.5)',boxShadow:'0 8px 32px rgba(126,34,206,0.35)'}}>
+            <div className="text-5xl mb-3">✅</div>
+            <p className={`font-black text-base mb-1 ${fClass}`} style={{color:'#E9D5FF'}}>
+              {lang==='ar'?'تم إرسال طلبك!':lang==='en'?'Order placed!':'Commande envoyée !'}
+            </p>
+            <p className="text-2xl font-black tracking-[0.25em] my-2" style={{color:'#C084FC'}}>{orderRef}</p>
+            <p className={`text-[11px] mb-4 ${fClass}`} style={{color:'rgba(233,213,255,0.6)'}}>
+              {lang==='ar'?'سيتصل بك الليبرور قريباً':lang==='en'?'Driver will contact you soon':'Le livreur vous contactera bientôt'}
+            </p>
+          </div>
+        )}
+
+        {!sent&&cartCount>0&&(
+          <div className="w-full rounded-2xl p-4" style={{background:'rgba(255,255,255,0.04)',border:'1.5px solid rgba(192,132,252,0.15)'}}>
+            <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#E9D5FF'}}>🧾 {lang==='ar'?'الفاتورة':lang==='en'?'Summary':'Récapitulatif'}</p>
+            {cartSubtotal>0&&<div className="flex justify-between text-[12px] mb-1.5"><span style={{color:'rgba(233,213,255,0.5)'}}>{lang==='ar'?'المجموع':lang==='en'?'Subtotal':'Sous-total'}</span><span className="font-bold" style={{color:'#F3E8FF'}}>{cartSubtotal} DH</span></div>}
+            {delivMode==='delivery'&&<div className="flex justify-between text-[12px] mb-1.5"><span style={{color:'rgba(233,213,255,0.5)'}}>🛵 {lang==='ar'?'توصيل':lang==='en'?'Delivery':'Livraison'}</span><span className="font-bold" style={{color:'#E9D5FF'}}>{DELIV_FEE_SOUK} DH</span></div>}
+            <div className="flex justify-between text-[12px] mb-2"><span style={{color:'rgba(233,213,255,0.5)'}}>⚙️ {lang==='ar'?'رسوم الخدمة':lang==='en'?'Service fee':'Frais de service'}</span><span className="font-bold" style={{color:'#E9D5FF'}}>{SVC_FEE_SOUK} DH</span></div>
+            {soukGemMAD>0&&<div className="flex justify-between text-[12px] mb-2"><span style={{color:'#4ADE80'}}>💎 Réduction</span><span className="font-bold" style={{color:'#4ADE80'}}>-{soukGemMAD} DH</span></div>}
+            <div className="flex justify-between items-center pt-2" style={{borderTop:'1.5px solid rgba(192,132,252,0.15)'}}><span className="font-black text-sm" style={{color:'#F3E8FF'}}>TOTAL</span><span className="font-black text-lg" style={{color:'#C084FC'}}>{cartTotal} DH</span></div>
+          </div>
+        )}
+
+        {!sent&&(
+          <div className={`w-full rounded-2xl p-4 ${fClass}`} style={{background:'linear-gradient(135deg,#0A1A12,#0D2E1A)',border:'1px solid rgba(74,222,128,0.3)'}}>
+            <p className="text-[11px] font-black mb-1.5" style={{color:'#D9C5A0'}}>💎 {lang==='ar'?'خصم بالماسات':lang==='en'?'Diamond discount':'Réduction Diamants'}</p>
+            {soukGems>0?(
+              <>
+                <p className="text-[10px] mb-2" style={{color:'rgba(255,255,255,0.6)',fontWeight:600}}>{soukGems.toLocaleString()} 💎 = {maxSoukGemMAD} MAD</p>
+                {soukGemMAD>0?(
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold" style={{color:'#4ADE80'}}>✓ -{soukGemMAD} MAD appliqué</span>
+                    <button onClick={()=>setSoukGemMAD(0)} className="text-[9px] font-bold px-2 py-1 rounded-lg" style={{background:'rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.5)',border:'none',cursor:'pointer'}}>✕</button>
+                  </div>
+                ):(
+                  <div className="flex gap-2 flex-wrap">
+                    {[1,2,5,maxSoukGemMAD].filter((v,i,a)=>v>0&&a.indexOf(v)===i&&v<=maxSoukGemMAD).map(mad=>(
+                      <button key={mad} onClick={()=>setSoukGemMAD(mad)} className="px-3 py-1 rounded-xl font-black text-[10px] active:scale-95 transition-all"
+                        style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.5)',color:'#4ADE80',cursor:'pointer'}}>
+                        -{mad} MAD
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
+            ):(
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-[10px]" style={{color:'rgba(255,255,255,0.4)'}}>{lang==='ar'?'لا ماسات — العب لتربح!':lang==='en'?'No diamonds — play to earn!':'Pas de diamants — jouez !'}</p>
+                <button onClick={()=>navigateSouk('/game')} className="text-[9px] font-black px-2.5 py-1 rounded-xl" style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.4)',color:'#4ADE80',cursor:'pointer',flexShrink:0}}>🎮 Game</button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {!sent&&(
+          <div className="w-full rounded-2xl p-4" style={{background:'rgba(255,255,255,0.04)',border:'1.5px solid rgba(192,132,252,0.15)'}}>
+            <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#E9D5FF'}}>💳 {lang==='ar'?'طريقة الدفع':lang==='en'?'Payment':'Mode de paiement'}</p>
+            <SharedPaymentOptions lang={lang} selected={payMethod} onSelect={setPayMethod} showCash showCard={false} onWalletPay={handleWalletPay}/>
+          </div>
+        )}
+
+        {!sent&&(
+          <button onClick={()=>{if(payMethod==='qr'){handleSend().then(()=>setShowQR(true));}else handleSend();}}
+            disabled={sending}
+            className={`w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 active:scale-95 transition-all ${fClass}`}
+            style={{background:sending?'#9CA3AF':'#7E22CE',boxShadow:sending?'none':'0 6px 20px rgba(126,34,206,0.4)',cursor:sending?'not-allowed':'pointer'}}>
+            {sending?(
+              <><span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin"/>{lang==='ar'?'جارٍ الإرسال…':lang==='en'?'Sending…':'Envoi en cours…'}</>
+            ):(
+              <><span>🛵</span>{lang==='ar'?'تأكيد الطلب':lang==='en'?'Place order':'Commander'}</>
+            )}
+          </button>
+        )}
+        {showQR&&<QRPayModal lang={lang} onClose={()=>setShowQR(false)} onConfirm={()=>setShowQR(false)}/>}
+      </div>
+    </div>
+  );
+}
+
 // ─── HUB PAGE — écran principal (2 grands boutons) ───────────────────────────
 
 function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
@@ -8891,7 +9879,7 @@ function loadNav() {
   try {
     const raw=localStorage.getItem(NAV_KEY);
     if(!raw) return null;
-    return JSON.parse(raw) as {lang:Lang;service:'none'|'delivery'|'taxi'|'taxi-select'|'moto'|'tabac'|'fleurs'|'pharmacie';page:Page;restaurantId:string|null};
+    return JSON.parse(raw) as {lang:Lang;service:'none'|'delivery'|'taxi'|'taxi-select'|'moto'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk';page:Page;restaurantId:string|null};
   } catch { return null; }
 }
 
@@ -8918,7 +9906,7 @@ export default function App() {
   // splashDone becomes true after 3s; we also wait for Clerk to load
   const [splashDone,setSplashDone] = useState(false);
   const [mode,setMode]             = useState<'hub'|'services'>('hub');
-  const [service,setService]       = useState<'none'|'delivery'|'taxi'|'taxi-select'|'moto'|'tabac'|'fleurs'|'pharmacie'>(saved?.service??'none');
+  const [service,setService]       = useState<'none'|'delivery'|'taxi'|'taxi-select'|'moto'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk'>(saved?.service??'none');
   const [cart,setCart]         = useState<CartItem[]>([]);
   const [showCart,setShowCart] = useState(false);
   const [showProfile,setShowProfile] = useState(false);
@@ -9025,6 +10013,8 @@ export default function App() {
   if(service==='tabac') return <DarkModeCtx.Provider value={dv}><TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
   if(service==='fleurs') return <DarkModeCtx.Provider value={dv}><FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
   if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
+  if(service==='boulangerie') return <DarkModeCtx.Provider value={dv}><BoulangeriePage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
+  if(service==='souk') return <DarkModeCtx.Provider value={dv}><SoukPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={
