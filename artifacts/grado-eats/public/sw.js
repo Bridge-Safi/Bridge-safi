@@ -1,4 +1,4 @@
-const CACHE = 'bridge-safi-v12';
+const CACHE = 'bridge-safi-v13';
 const ASSETS = ['/', '/manifest.json', '/logo.jpeg', '/logo_splash.jpeg', '/logo_delivery.jpeg', '/logo_taxi.jpeg'];
 
 self.addEventListener('install', e => {
