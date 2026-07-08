@@ -10,14 +10,33 @@
   "scope": "/",
   "lang": "fr",
   "dir": "ltr",
-  "categories": ["food", "lifestyle", "shopping"],
+  "categories": [
+    "food",
+    "lifestyle",
+    "shopping"
+  ],
   "id": "ma.safi-bridge.app",
   "related_applications": [],
   "prefer_related_applications": false,
   "icons": [
-    { "src": "/logo_bridge_192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/logo_bridge_512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/logo_bridge_512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/logo_bridge_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo_bridge_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo_bridge_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "screenshots": [
     {
@@ -34,28 +53,36 @@
       "short_name": "Livraison",
       "description": "Commander une livraison de repas",
       "url": "/?service=delivery",
-      "icons": [{ "src": "/logo_delivery.jpeg", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "/logo_delivery.jpeg",
+          "sizes": "96x96"
+        }
+      ]
     },
     {
       "name": "Bridge Taxi",
       "short_name": "Taxi",
       "description": "Réserver un taxi",
       "url": "/?service=taxi",
-      "icons": [{ "src": "/logo_taxi.jpeg", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "/logo_taxi.jpeg",
+          "sizes": "96x96"
+        }
+      ]
     },
     {
       "name": "Bridge Tabac",
       "short_name": "Tabac",
       "description": "Commander du tabac",
       "url": "/?service=tabac",
-      "icons": [{ "src": "/bridge-tabac-logo.jpeg", "sizes": "96x96" }]
-    },
-    {
-      "name": "Bridge Moto Taxi",
-      "short_name": "Moto Taxi",
-      "description": "Panneau chauffeur moto taxi",
-      "url": "/dispatch",
-      "icons": [{ "src": "/logo_taxi.jpeg", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "/bridge-tabac-logo.jpeg",
+          "sizes": "96x96"
+        }
+      ]
     }
   ]
 }
