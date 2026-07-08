@@ -450,8 +450,15 @@ router.post("/orders", async (req, res) => {
           url: "/",
         },
       }).catch(() => {});
-      // Relai vers le système livreurs (dispatch déjà filtré : livreurs uniquement)
-      forwardOrderToLivreurs(order).catch(() => {});
+      // ⚠️ forwardOrderToLivreurs() DÉSACTIVÉ : chaque page de service (Eats,
+      // Tabac, Pharmacie, Fleurs, Boulangerie, Souk) poste déjà DIRECTEMENT
+      // sa propre commande à Livreurs (DRIVER_APP_URL/api/deliveries) avec
+      // trackingNumber = order.ref — c'est cette commande-là qui a le bon
+      // suivi/GPS. Ce forward créait une DEUXIÈME commande fantôme avec un
+      // trackingNumber différent (donc jamais suivie côté client), et pour
+      // Boulangerie/Souk elle atterrissait mal étiquetée "Bridge Eats" côté
+      // Livreurs (serviceType non reconnu -> fallback "eats").
+      // forwardOrderToLivreurs(order).catch(() => {});
     }
 
     // Notify restaurant via WhatsApp + phone call
