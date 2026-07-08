@@ -8027,14 +8027,22 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
     const offeredPrice=parseFloat(prixProposeMoto)||0;
     const finalPrice=Math.max(0,offeredPrice-motoGemMAD);
     const payInfoMoto=motoPayMethod==='qr'?'QR Code':motoPayMethod==='cash'?'Espèces':motoPayMethod==='apple'?'Apple Pay':motoPayMethod==='google'?'Google Pay':'Espèces';
+    // Le back-end Livreurs (chauffeurs/motards) distingue les livreurs par
+    // vehicleType 'car' | 'moto' UNIQUEMENT — jamais 'taxi'. Avant ce fix, une
+    // course "Taxi Confort" envoyait vehicleType:'taxi', qui ne correspondait
+    // JAMAIS au vehicleType 'car' des chauffeurs → la course n'était donc
+    // jamais dispatchée à aucun chauffeur. On traduit ici 'taxi' → 'car' au
+    // moment de l'appel réseau, tout en gardant 'taxi' partout ailleurs
+    // (historique client, préfixe de référence, couleurs UI).
+    const apiVehicleType:'car'|'moto'=isTaxi?'car':'moto';
     try{
       await fetch(`/api/tracking/${ref}`,{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({clientLat:clientPos?.lat,clientLng:clientPos?.lng,clientAddress:pickup,destination:destination.trim(),customerName:name.trim(),customerPhone:phone.trim(),vehicleType,passengers:isTaxi?undefined:1,clientPrice:offeredPrice||undefined}),
+        body:JSON.stringify({clientLat:clientPos?.lat,clientLng:clientPos?.lng,clientAddress:pickup,destination:destination.trim(),customerName:name.trim(),customerPhone:phone.trim(),vehicleType:apiVehicleType,passengers:isTaxi?undefined:1,clientPrice:offeredPrice||undefined}),
       }).catch(()=>{});
       await fetch(`${DRIVER_APP_URL}/api/trips`,{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({trackingNumber:ref,passengerName:name.trim(),passengerPhone:phone.trim(),pickupAddress:pickup,dropoffAddress:destination.trim(),vehicleType,passengers:isTaxi?undefined:1,fare:finalPrice||undefined,paymentMethod:payInfoMoto,driverTrackUrl,status:'scheduled'}),
+        body:JSON.stringify({trackingNumber:ref,passengerName:name.trim(),passengerPhone:phone.trim(),pickupAddress:pickup,dropoffAddress:destination.trim(),vehicleType:apiVehicleType,passengers:isTaxi?undefined:1,fare:finalPrice||undefined,paymentMethod:payInfoMoto,driverTrackUrl,status:'scheduled'}),
       }).catch(()=>{});
     }finally{setSending(false);}
     if(motoGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:motoGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${motoUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
