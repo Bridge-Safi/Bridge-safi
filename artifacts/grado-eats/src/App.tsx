@@ -6598,7 +6598,7 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
       </div>
       <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
         <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(165,180,252,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#A5B4FC',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
-        <SharkDiamondWidget onNavigate={()=>navigatePharm('/game')} profile={profile} lang={lang}/>
+        <SharkDiamondWidget onNavigate={()=>navigatePharm('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
       </div>
 
       {/* Content */}
@@ -7387,7 +7387,7 @@ function TaxiMap({driverPos,clientPos,fakeVehicles}:{driverPos:{lat:number;lng:n
 // ─── TAXI PAGE ────────────────────────────────────────────────────────────────
 
 // ─── SHARK DIAMOND WIDGET ────────────────────────────────────────────────────
-function SharkDiamondWidget({onNavigate,profile,lang}:{onNavigate:()=>void;profile:UserProfile;lang?:Lang}) {
+function SharkDiamondWidget({onNavigate,profile,lang,saveProfile}:{onNavigate:()=>void;profile:UserProfile;lang?:Lang;saveProfile:(p:UserProfile)=>void}) {
   const {user}=useUser();
   const {isSignedIn}=useAuth();
   const getAuthHeaders=useAuthHeaders();
@@ -7465,40 +7465,7 @@ function SharkDiamondWidget({onNavigate,profile,lang}:{onNavigate:()=>void;profi
       </div>
       <span style={{fontSize:7,fontWeight:900,color:'#065F46',letterSpacing:'0.08em',opacity:0.8}}>{bridgeId}</span>
     </button>
-    {showProfile&&(
-      <div onClick={()=>setShowProfile(false)} style={{position:'fixed',inset:0,zIndex:9999,background:'rgba(4,20,14,0.6)',backdropFilter:'blur(3px)',display:'flex',alignItems:'center',justifyContent:'center',padding:20}}>
-        <div onClick={e=>e.stopPropagation()} style={{width:'100%',maxWidth:340,background:'linear-gradient(160deg,#0B1F16,#04140E)',border:'1.5px solid rgba(217,197,160,0.4)',borderRadius:24,padding:'24px 20px',boxShadow:'0 20px 60px rgba(0,0,0,0.5)'}}>
-          <div style={{display:'flex',flexDirection:'column',alignItems:'center',marginBottom:18}}>
-            <div style={{width:64,height:64,borderRadius:'50%',overflow:'hidden',border:'2.5px solid #D9C5A0',background:'#F0EBE1',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:10}}>
-              {avatarSrc
-                ?<img src={avatarSrc} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
-                :(effectiveName?<span style={{fontSize:22,fontWeight:900,color:'#065F46'}}>{initials}</span>:<span style={{fontSize:26}}>👤</span>)
-              }
-            </div>
-            <p style={{color:'#FDFCF9',fontWeight:900,fontSize:16,margin:0}}>{effectiveName||'—'}</p>
-            <p style={{color:'#D9C5A0',fontSize:11,fontWeight:800,letterSpacing:'0.08em',margin:'2px 0 0'}}>{bridgeId}</p>
-          </div>
-          <div style={{display:'flex',flexDirection:'column',gap:10,marginBottom:20}}>
-            <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(217,197,160,0.2)',borderRadius:14,padding:'10px 14px'}}>
-              <p style={{fontSize:9,fontWeight:800,color:'#D9C5A0',letterSpacing:'0.1em',margin:'0 0 3px',textTransform:'uppercase'}}>📞 Téléphone</p>
-              <p style={{fontSize:13,fontWeight:700,color:'#FDFCF9',margin:0}}>{effectivePhone||'Non renseigné'}</p>
-            </div>
-            <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(217,197,160,0.2)',borderRadius:14,padding:'10px 14px'}}>
-              <p style={{fontSize:9,fontWeight:800,color:'#D9C5A0',letterSpacing:'0.1em',margin:'0 0 3px',textTransform:'uppercase'}}>📍 Adresse</p>
-              <p style={{fontSize:13,fontWeight:700,color:'#FDFCF9',margin:0}}>{profile.address||'Non renseignée'}</p>
-            </div>
-            <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(217,197,160,0.2)',borderRadius:14,padding:'10px 14px'}}>
-              <p style={{fontSize:9,fontWeight:800,color:'#D9C5A0',letterSpacing:'0.1em',margin:'0 0 3px',textTransform:'uppercase'}}>💎 Diamants</p>
-              <p style={{fontSize:13,fontWeight:700,color:'#FDFCF9',margin:0}}>{gems.toLocaleString()}</p>
-            </div>
-          </div>
-          <button onClick={()=>setShowProfile(false)}
-            style={{width:'100%',padding:'12px 0',borderRadius:14,border:'1.5px solid rgba(217,197,160,0.4)',background:'rgba(255,255,255,0.06)',color:'#FDFCF9',fontWeight:900,fontSize:13,cursor:'pointer'}}>
-            Fermer
-          </button>
-        </div>
-      </div>
-    )}
+    {showProfile&&<ProfileModal lang={lang||'fr'} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
     </>
   );
 }
@@ -8820,7 +8787,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
       </div>
       <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
         <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(124,58,237,0.15)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#7C3AED',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
-        <SharkDiamondWidget onNavigate={()=>navigateFleur('/game')} profile={profile} lang={lang}/>
+        <SharkDiamondWidget onNavigate={()=>navigateFleur('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
       </div>
 
       <div className="flex-1 overflow-y-auto pb-36">
@@ -9317,7 +9284,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
       </div>
       <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
         <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(120,53,15,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--c-text)',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
-        <SharkDiamondWidget onNavigate={()=>navigateTabac('/game')} profile={profile} lang={lang}/>
+        <SharkDiamondWidget onNavigate={()=>navigateTabac('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
       </div>
 
       {/* Content */}
@@ -9719,7 +9686,7 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
       </div>
       <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
         <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(250,204,21,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#FDE68A',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
-        <SharkDiamondWidget onNavigate={()=>navigateBoul('/game')} profile={profile} lang={lang}/>
+        <SharkDiamondWidget onNavigate={()=>navigateBoul('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
       </div>
 
       <div className={`flex flex-col items-center px-5 pt-20 pb-12 max-w-2xl mx-auto w-full gap-4 ${fClass}`}>
@@ -10048,7 +10015,7 @@ function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{on
       </div>
       <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
         <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(192,132,252,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#E9D5FF',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
-        <SharkDiamondWidget onNavigate={()=>navigateSouk('/game')} profile={profile} lang={lang}/>
+        <SharkDiamondWidget onNavigate={()=>navigateSouk('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
       </div>
 
       <div className={`flex flex-col items-center px-5 pt-20 pb-12 max-w-2xl mx-auto w-full gap-4 ${fClass}`}>
@@ -10512,7 +10479,7 @@ function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
         </div>
         <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
           <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.14)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#E9D5FF',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
-          <SharkDiamondWidget onNavigate={()=>navigateMkt('/game')} profile={profile} lang={lang}/>
+          <SharkDiamondWidget onNavigate={()=>navigateMkt('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
         </div>
 
         <div className={`flex flex-col items-center px-6 pt-24 pb-12 max-w-md mx-auto w-full gap-3 relative`} style={{zIndex:1}}>
@@ -10549,7 +10516,7 @@ function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
       </div>
       <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
         <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.14)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:theme!.accentLight,fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
-        <SharkDiamondWidget onNavigate={()=>navigateMkt('/game')} profile={profile} lang={lang}/>
+        <SharkDiamondWidget onNavigate={()=>navigateMkt('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
       </div>
 
       <div className={`flex flex-col items-center px-5 pt-20 pb-12 max-w-2xl mx-auto w-full gap-4 ${fClass}`}>
