@@ -6737,8 +6737,8 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
 
 // ─── SERVICE SELECT PAGE ──────────────────────────────────────────────────────
 
-function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:{onSelect:(s:'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk')=>void;onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void}) {
-  const [pressed,setPressed]=useState<'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk'|null>(null);
+function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:{onSelect:(s:'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk'|'supermarche')=>void;onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void}) {
+  const [pressed,setPressed]=useState<'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk'|'supermarche'|null>(null);
   const [showProfile,setShowProfile]=useState(false);
   const pubVideoRef=useRef<HTMLVideoElement>(null);
   const [pubMuted,setPubMuted]=useState(true);
@@ -6747,7 +6747,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
   const getAuthHeaders=useAuthHeaders();
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
-  const choose=(s:'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk')=>{setPressed(s);setTimeout(()=>onSelect(s),320);};
+  const choose=(s:'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk'|'supermarche')=>{setPressed(s);setTimeout(()=>onSelect(s),320);};
   // Avatar: custom upload > Clerk photo > initials
   const avatarSrc=profile.avatar||user?.imageUrl||null;
   // Le profil local (onboarding) peut être vide même si le compte est bien connecté —
@@ -7042,12 +7042,12 @@ useEffect(()=>{
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
                 {botItems.map(renderCard)}
               </div>
-              {/* Row 4: Bridge Supermarché — full width banner */}
-              <div style={{opacity:0.82,animation:'svcFadeUp 0.45s ease-out 0.24s both'}}>
+              {/* Row 4: Bridge Supermarché — carte active (Marjane/Carrefour/Bim) */}
+              <button onClick={()=>choose('supermarche')} style={{background:'none',border:'none',cursor:'pointer',padding:0,width:'100%',transform:pressed==='supermarche'?'scale(0.94)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',animation:'svcFadeUp 0.45s ease-out 0.24s both'}}>
                 <div style={{
-                  background:'linear-gradient(145deg,#3B0A0A 0%,#7F1D1D 45%,#B91C1C 100%)',
-                  borderRadius:18,border:'1.5px solid rgba(239,68,68,0.5)',
-                  boxShadow:'0 6px 20px rgba(127,29,29,0.6),inset 0 1px 0 rgba(255,255,255,0.12)',
+                  background:'linear-gradient(145deg,#0B0F2E 0%,#2E1065 55%,#7C3AED 100%)',
+                  borderRadius:18,border:`1.5px solid ${pressed==='supermarche'?'rgba(255,255,255,0.55)':'rgba(139,92,246,0.5)'}`,
+                  boxShadow:pressed==='supermarche'?'0 0 0 3px rgba(139,92,246,0.5),0 16px 40px rgba(139,92,246,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 6px 20px rgba(46,16,101,0.6),inset 0 1px 0 rgba(255,255,255,0.12)',
                   padding:'14px 12px',display:'flex',alignItems:'center',gap:10,position:'relative',overflow:'hidden',
                 }}>
                   <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
@@ -7057,15 +7057,12 @@ useEffect(()=>{
                   <div style={{textAlign:'left',flex:1}}>
                     <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:1}}>
                       <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.02em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)'}}>Bridge Supermarché</p>
-                      <span style={{background:'rgba(239,68,68,0.85)',borderRadius:20,padding:'1px 4px',display:'flex',alignItems:'center',gap:2,flexShrink:0}}>
-                        <span style={{width:3,height:3,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
-                        <span style={{color:'#fff',fontSize:6,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
-                      </span>
                     </div>
-                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:8,fontWeight:600,margin:0}}>🛒 Courses & essentiels du quotidien</p>
+                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:8,fontWeight:600,margin:0}}>🛒 Marjane · Carrefour · Bim — livrés chez vous</p>
                   </div>
+                  <div style={{color:'rgba(255,255,255,0.5)',fontSize:18,flexShrink:0}}>›</div>
                 </div>
-              </div>
+              </button>
               {/* Row 5: Boulangerie + Souk — nouvelles cartes (actives) */}
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
                 <button onClick={()=>choose('boulangerie')} style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:pressed==='boulangerie'?'scale(0.94)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',animation:'svcFadeUp 0.45s ease-out 0.32s both'}}>
@@ -10116,6 +10113,490 @@ function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{on
   );
 }
 
+// ─── BRIDGE SUPERMARCHÉ — Marjane · Carrefour · Bim ─────────────────────────
+interface MarketItem {id:string;name:string;desc:string;price:number;cat:'fruits'|'boucherie'|'laitier'|'boissons'|'epicerie'|'snacking'|'sucre'|'surgeles';emoji:string;}
+
+const MARJANE_CATALOG:MarketItem[]=[
+  {id:"mrj0",name:"Banane 1Kg",desc:"Fruit frais",price:21.9,cat:"fruits",emoji:"🍌"},
+  {id:"mrj1",name:"Kiwi Moyen Calibre 500g",desc:"Fruit frais",price:26.9,cat:"fruits",emoji:"🥝"},
+  {id:"mrj2",name:"Viande Hachée De Bœuf 500g",desc:"Boucherie fraîche",price:54.9,cat:"boucherie",emoji:"🥩"},
+  {id:"mrj3",name:"Viande Hachée Maigre De Bœuf 500g",desc:"Boucherie fraîche",price:64.9,cat:"boucherie",emoji:"🥩"},
+  {id:"mrj4",name:"Viande Hachée De Dinde Nature 500g",desc:"Volaille fraîche",price:22.9,cat:"boucherie",emoji:"🍗"},
+  {id:"mrj5",name:"Filets De Dinde 500g",desc:"Volaille fraîche",price:22.9,cat:"boucherie",emoji:"🍗"},
+  {id:"mrj6",name:"Poulet Entier ~1,25Kg - Filière M",desc:"Volaille fraîche",price:37.5,cat:"boucherie",emoji:"🍗"},
+  {id:"mrj7",name:"Yaourt À Boire Grenadine 8x165g - Raïbi Jamila",desc:"Produit laitier",price:18.95,cat:"laitier",emoji:"🥛"},
+  {id:"mrj8",name:"Dessert Vanille Liégeois 200g - Omira Milchi",desc:"Dessert lacté",price:8.5,cat:"laitier",emoji:"🍮"},
+  {id:"mrj9",name:"Tranche Fromage Fondu Light x12 200g - Or Blanc",desc:"Fromage fondu",price:19.5,cat:"laitier",emoji:"🧀"},
+  {id:"mrj10",name:"Fromage Râpé Emmental 100g - Or Blanc",desc:"Fromage râpé",price:18.5,cat:"laitier",emoji:"🧀"},
+  {id:"mrj11",name:"Tranche Fromage Fondu Mozzarella x12 200g - Or Blanc",desc:"Fromage fondu",price:19.5,cat:"laitier",emoji:"🧀"},
+  {id:"mrj12",name:"Fromage Frais Nature Sucré 8x80g - Gervais",desc:"Fromage frais",price:18.95,cat:"laitier",emoji:"🧀"},
+  {id:"mrj13",name:"Fromage Frais Sucré 8x80g - Perly",desc:"Fromage frais",price:23.95,cat:"laitier",emoji:"🧀"},
+  {id:"mrj14",name:"Fromage Frais Nature 8x80g - Perly",desc:"Fromage frais",price:23.95,cat:"laitier",emoji:"🧀"},
+  {id:"mrj15",name:"Fromage Frais À Tartiner 2x190g - Jebli",desc:"Fromage à tartiner",price:23.5,cat:"laitier",emoji:"🧀"},
+  {id:"mrj16",name:"Beurre Doux Frais 1kg - Jaouda",desc:"Beurre",price:86.9,cat:"laitier",emoji:"🧈"},
+  {id:"mrj17",name:"Beurre Doux En Plaquette 200g - Badaouia",desc:"Beurre",price:19.95,cat:"laitier",emoji:"🧈"},
+  {id:"mrj18",name:"Plateau Œufs Frais x30 - Natur Œuf",desc:"Œufs frais",price:18.95,cat:"laitier",emoji:"🥚"},
+  {id:"mrj19",name:"Salim Lait Entier UHT 6x500ml",desc:"Lait UHT",price:36.0,cat:"laitier",emoji:"🥛"},
+  {id:"mrj20",name:"Bahia Eau De Table 5L",desc:"Eau de table",price:8.95,cat:"boissons",emoji:"💧"},
+  {id:"mrj21",name:"Aïn Saïss Eau Minérale 5L",desc:"Eau minérale",price:11.2,cat:"boissons",emoji:"💧"},
+  {id:"mrj22",name:"Aïn Atlas Eau Minérale 1,5L",desc:"Eau minérale",price:3.95,cat:"boissons",emoji:"💧"},
+  {id:"mrj23",name:"Aquafina Eau De Table 33cl",desc:"Eau de table",price:1.5,cat:"boissons",emoji:"💧"},
+  {id:"mrj24",name:"Sidi Ali Eau Minérale 2L",desc:"Eau minérale",price:4.95,cat:"boissons",emoji:"💧"},
+  {id:"mrj25",name:"Jus De Fruits Orange Fraise 900ml - Chergui",desc:"Jus au lait de fruits",price:11.95,cat:"boissons",emoji:"🧃"},
+  {id:"mrj26",name:"Sel De Cuisine Iodé 1Kg - Ceberos",desc:"Épicerie salée",price:10.95,cat:"epicerie",emoji:"🧂"},
+  {id:"mrj27",name:"Sauce Algérienne 290g - Star",desc:"Sauce condiment",price:21.95,cat:"epicerie",emoji:"🫙"},
+  {id:"mrj28",name:"Champignons Émincés 3x185g - Marjane",desc:"Conserve légumes",price:23.5,cat:"epicerie",emoji:"🍄"},
+  {id:"mrj29",name:"Crunchips Fromage Oignon 2x100g - Lorenz",desc:"Chips apéritif",price:24.37,cat:"snacking",emoji:"🥔"},
+  {id:"mrj30",name:"Nouilles Piquantes Poulet 4 Fromages 145g - Samyang",desc:"Nouilles instantanées",price:17.5,cat:"snacking",emoji:"🍜"},
+  {id:"mrj31",name:"Chips En Tuiles Paprika 165g - Pringles",desc:"Chips",price:21.9,cat:"snacking",emoji:"🥔"},
+  {id:"mrj32",name:"Chips En Tuiles Crème Oignon 165g - Pringles",desc:"Chips",price:21.95,cat:"snacking",emoji:"🥔"},
+  {id:"mrj33",name:"Chips En Tuiles Barbecue 165g - Pringles",desc:"Chips",price:21.9,cat:"snacking",emoji:"🥔"},
+  {id:"mrj34",name:"Pack Génoises Chocolat 10x39g - Kinder Délice",desc:"Gâteau individuel",price:49.95,cat:"sucre",emoji:"🍰"},
+  {id:"mrj35",name:"Pommes Frites 7/7 1Kg - Clock",desc:"Frites surgelées",price:22.95,cat:"surgeles",emoji:"🍟"},
+];
+
+const CARREFOUR_CATALOG:MarketItem[]=[
+  {id:"crf0",name:"Oignon Rouge 6 Pièces - Filière Qualité",desc:"Légume frais",price:17.95,cat:"fruits",emoji:"🧅"},
+  {id:"crf1",name:"Kiwi 500g",desc:"Fruit frais",price:11.48,cat:"fruits",emoji:"🥝"},
+  {id:"crf2",name:"Poire Barquette 500g",desc:"Fruit frais",price:11.95,cat:"fruits",emoji:"🍐"},
+  {id:"crf3",name:"Tomate Cerise Mixte Carton 9x250g - Azura",desc:"Légume frais",price:8.95,cat:"fruits",emoji:"🍅"},
+  {id:"crf4",name:"Tomate Cerise Mélangée Barquette 250g - Azura",desc:"Légume frais",price:4.95,cat:"fruits",emoji:"🍅"},
+  {id:"crf5",name:"Tomate Cerise All Orange Barquette 250g",desc:"Légume frais",price:4.95,cat:"fruits",emoji:"🍅"},
+  {id:"crf6",name:"Noix De Coco À La Pièce",desc:"Fruit frais",price:12.95,cat:"fruits",emoji:"🥥"},
+  {id:"crf7",name:"Viande Hachée De Dinde Nature 500g",desc:"Volaille fraîche",price:25.95,cat:"boucherie",emoji:"🍗"},
+  {id:"crf8",name:"Filet De Dinde 500g",desc:"Volaille fraîche",price:24.45,cat:"boucherie",emoji:"🍗"},
+  {id:"crf9",name:"Filets De Poulet Barquette 500g",desc:"Volaille fraîche",price:33.95,cat:"boucherie",emoji:"🍗"},
+  {id:"crf10",name:"Filet De Poulet 500g",desc:"Volaille fraîche",price:32.95,cat:"boucherie",emoji:"🍗"},
+  {id:"crf11",name:"Poulet Entier Au Kg",desc:"Volaille fraîche",price:29.9,cat:"boucherie",emoji:"🍗"},
+  {id:"crf12",name:"Viande Hachée De Bœuf Nature 500g",desc:"Boucherie fraîche",price:64.45,cat:"boucherie",emoji:"🥩"},
+  {id:"crf13",name:"Brochettes De Filet De Dinde 500g",desc:"Volaille fraîche",price:25.95,cat:"boucherie",emoji:"🍢"},
+  {id:"crf14",name:"Crevettes Rouges 100/200 800g - Landauer",desc:"Fruits de mer",price:38.9,cat:"boucherie",emoji:"🍤"},
+  {id:"crf15",name:"Pack Fromage Frais Sans Sucre 8x85g - Perly",desc:"Fromage frais",price:19.95,cat:"laitier",emoji:"🧀"},
+  {id:"crf16",name:"Gouda Nature 100g - Acheese",desc:"Fromage",price:11.0,cat:"laitier",emoji:"🧀"},
+  {id:"crf17",name:"Fromage Tranches Spécial 24 Tranches - Viva",desc:"Fromage fondu",price:17.95,cat:"laitier",emoji:"🧀"},
+  {id:"crf18",name:"Jaouda Jben Fromage À Tartiner 2x160g",desc:"Fromage à tartiner",price:19.95,cat:"laitier",emoji:"🧀"},
+  {id:"crf19",name:"Fromage Emmental Classique 200g - Carrefour",desc:"Fromage",price:33.95,cat:"laitier",emoji:"🧀"},
+  {id:"crf20",name:"Mozzarella Goût Edam Bloc 100g - Cocina Viva",desc:"Fromage",price:5.9,cat:"laitier",emoji:"🧀"},
+  {id:"crf21",name:"Pack Fromage Frais Sucré 8x110g - Gervais",desc:"Fromage frais",price:19.95,cat:"laitier",emoji:"🧀"},
+  {id:"crf22",name:"Oeufs Twimen Plateau 15 Unités",desc:"Œufs frais",price:11.95,cat:"laitier",emoji:"🥚"},
+  {id:"crf23",name:"Œufs Twimen Plateau 30 Unités",desc:"Œufs frais",price:19.5,cat:"laitier",emoji:"🥚"},
+  {id:"crf24",name:"Pack Lait UHT Entier 1L x6 - Jaouda",desc:"Lait UHT",price:61.95,cat:"laitier",emoji:"🥛"},
+  {id:"crf25",name:"Matinales Œufs Fermiers x6",desc:"Œufs fermiers",price:22.95,cat:"laitier",emoji:"🥚"},
+  {id:"crf26",name:"Eau Minérale Aïn Saïss 2L",desc:"Eau minérale",price:4.95,cat:"boissons",emoji:"💧"},
+  {id:"crf27",name:"Thon À L'Huile Végétale 3x80g - Tam",desc:"Conserve poisson",price:26.9,cat:"epicerie",emoji:"🐟"},
+  {id:"crf28",name:"Sel De Cuisine Iodé 1Kg - Ceberos",desc:"Épicerie salée",price:10.5,cat:"epicerie",emoji:"🧂"},
+  {id:"crf29",name:"Pringles Chips Barbecue 165g",desc:"Chips",price:23.95,cat:"snacking",emoji:"🥔"},
+  {id:"crf30",name:"Pringles Crème Sure Et Oignon 165g",desc:"Chips",price:21.95,cat:"snacking",emoji:"🥔"},
+  {id:"crf31",name:"Madeleine Longue Marbrée 250g - Pâtisserie Tradition",desc:"Gâteau",price:22.95,cat:"sucre",emoji:"🧁"},
+  {id:"crf32",name:"Magnum Double Chocolat 90ml",desc:"Glace bâtonnet",price:17.95,cat:"surgeles",emoji:"🍦"},
+  {id:"crf33",name:"Bâtonnets Glace À L'Eau 8x480ml - Ice Jets Carrefour",desc:"Glace",price:25.9,cat:"surgeles",emoji:"🧊"},
+  {id:"crf34",name:"Frites 9/9 1kg - Fun Fries",desc:"Frites surgelées",price:22.95,cat:"surgeles",emoji:"🍟"},
+];
+
+const BIM_CATALOG:MarketItem[]=[
+  {id:"bim0",name:"Pomme De Terre 1kg",desc:"Légume frais",price:4.9,cat:"fruits",emoji:"🥔"},
+  {id:"bim1",name:"Carotte 1kg",desc:"Légume frais",price:4.5,cat:"fruits",emoji:"🥕"},
+  {id:"bim2",name:"Orange 1kg",desc:"Fruit frais",price:6.9,cat:"fruits",emoji:"🍊"},
+  {id:"bim3",name:"Pomme Golden 1kg",desc:"Fruit frais",price:9.9,cat:"fruits",emoji:"🍎"},
+  {id:"bim4",name:"Oignon 1kg",desc:"Légume frais",price:4.9,cat:"fruits",emoji:"🧅"},
+  {id:"bim5",name:"Poulet Entier Au Kg",desc:"Volaille fraîche",price:28.9,cat:"boucherie",emoji:"🍗"},
+  {id:"bim6",name:"Escalope De Dinde 500g",desc:"Volaille",price:26.9,cat:"boucherie",emoji:"🍗"},
+  {id:"bim7",name:"Viande Hachée De Bœuf 500g",desc:"Boucherie",price:59.9,cat:"boucherie",emoji:"🥩"},
+  {id:"bim8",name:"Merguez 500g",desc:"Charcuterie fraîche",price:34.9,cat:"boucherie",emoji:"🌭"},
+  {id:"bim9",name:"Lait Demi-Écrémé UHT 1L",desc:"Lait UHT",price:8.5,cat:"laitier",emoji:"🥛"},
+  {id:"bim10",name:"Yaourt Nature Pack 8x100g",desc:"Yaourt",price:14.9,cat:"laitier",emoji:"🥛"},
+  {id:"bim11",name:"Fromage Fondu En Portions x8",desc:"Fromage",price:15.9,cat:"laitier",emoji:"🧀"},
+  {id:"bim12",name:"Beurre Doux 250g",desc:"Beurre",price:22.9,cat:"laitier",emoji:"🧈"},
+  {id:"bim13",name:"Œufs Plateau x30",desc:"Œufs frais",price:29.9,cat:"laitier",emoji:"🥚"},
+  {id:"bim14",name:"Eau Minérale 1,5L",desc:"Eau minérale",price:3.5,cat:"boissons",emoji:"💧"},
+  {id:"bim15",name:"Jus D'Orange 1L",desc:"Jus de fruits",price:12.9,cat:"boissons",emoji:"🧃"},
+  {id:"bim16",name:"Soda Cola 2L",desc:"Boisson gazeuse",price:9.9,cat:"boissons",emoji:"🥤"},
+  {id:"bim17",name:"Huile De Table 1L",desc:"Huile de cuisson",price:22.9,cat:"epicerie",emoji:"🫒"},
+  {id:"bim18",name:"Riz Blanc 1kg",desc:"Féculent",price:12.9,cat:"epicerie",emoji:"🍚"},
+  {id:"bim19",name:"Pâtes 500g",desc:"Pâtes alimentaires",price:6.9,cat:"epicerie",emoji:"🍝"},
+  {id:"bim20",name:"Sucre Blanc 2kg",desc:"Épicerie sucrée",price:18.9,cat:"epicerie",emoji:"🧂"},
+  {id:"bim21",name:"Farine 1kg",desc:"Farine de blé",price:7.9,cat:"epicerie",emoji:"🌾"},
+  {id:"bim22",name:"Thon À L'Huile 3x80g",desc:"Conserve poisson",price:22.9,cat:"epicerie",emoji:"🐟"},
+  {id:"bim23",name:"Chips Nature 150g",desc:"Snack salé",price:11.9,cat:"snacking",emoji:"🥔"},
+  {id:"bim24",name:"Biscuits Petit Beurre 300g",desc:"Biscuiterie",price:9.9,cat:"snacking",emoji:"🍪"},
+  {id:"bim25",name:"Cacahuètes Salées 200g",desc:"Snack apéritif",price:13.9,cat:"snacking",emoji:"🥜"},
+  {id:"bim26",name:"Chocolat Au Lait Tablette 100g",desc:"Chocolaterie",price:8.9,cat:"sucre",emoji:"🍫"},
+  {id:"bim27",name:"Bonbons Assortis 200g",desc:"Confiserie",price:12.9,cat:"sucre",emoji:"🍬"},
+  {id:"bim28",name:"Gâteau Fourré Chocolat x6",desc:"Biscuiterie",price:10.9,cat:"sucre",emoji:"🍩"},
+  {id:"bim29",name:"Légumes Surgelés Mélange 1kg",desc:"Surgelés",price:16.9,cat:"surgeles",emoji:"🥦"},
+  {id:"bim30",name:"Frites Surgelées 1kg",desc:"Surgelés",price:19.9,cat:"surgeles",emoji:"🍟"},
+];
+
+type MarketStoreId='marjane'|'carrefour'|'bim';
+interface MarketStoreTheme{id:MarketStoreId;label:string;emoji:string;accent:string;accentDark:string;accentLight:string;ring:string;grad:string;cardBg:string;cardBorder:string;textColor:string;mutedColor:string;}
+const MARKET_STORES:MarketStoreTheme[]=[
+  {id:'marjane',  label:'Marjane',   emoji:'🛒',accent:'#059669',accentDark:'#065F46',accentLight:'#6EE7B7',ring:'rgba(5,150,105,0.55)',  grad:'linear-gradient(145deg,#022c22 0%,#065F46 45%,#059669 100%)', cardBg:'rgba(5,150,105,0.16)', cardBorder:'rgba(52,211,153,0.4)', textColor:'#D1FAE5', mutedColor:'rgba(209,250,229,0.6)'},
+  {id:'carrefour',label:'Carrefour', emoji:'🅲',accent:'#2563EB',accentDark:'#1E3A8A',accentLight:'#93C5FD',ring:'rgba(37,99,235,0.55)',  grad:'linear-gradient(145deg,#0B1533 0%,#1E3A8A 45%,#2563EB 100%)', cardBg:'rgba(37,99,235,0.16)', cardBorder:'rgba(147,197,253,0.4)', textColor:'#DBEAFE', mutedColor:'rgba(219,234,254,0.6)'},
+  {id:'bim',      label:'Bim',       emoji:'🟡',accent:'#EAB308',accentDark:'#854D0E',accentLight:'#FDE68A',ring:'rgba(234,179,8,0.55)',  grad:'linear-gradient(145deg,#3B0A0A 0%,#7F1D1D 45%,#EAB308 100%)', cardBg:'rgba(234,179,8,0.18)', cardBorder:'rgba(253,230,138,0.45)', textColor:'#FEF9C3', mutedColor:'rgba(254,249,195,0.6)'},
+];
+const MARKET_CAT_TABS:{key:MarketItem['cat'];label:string;emoji:string}[]=[
+  {key:'fruits',    label:'Fruits & Légumes',  emoji:'🍎'},
+  {key:'boucherie', label:'Boucherie',         emoji:'🥩'},
+  {key:'laitier',   label:'Laitier & Œufs',    emoji:'🧀'},
+  {key:'boissons',  label:'Boissons',          emoji:'💧'},
+  {key:'epicerie',  label:'Épicerie',          emoji:'🧂'},
+  {key:'snacking',  label:'Snacking',          emoji:'🍟'},
+  {key:'sucre',     label:'Sucré',             emoji:'🍫'},
+  {key:'surgeles',  label:'Surgelés',          emoji:'🧊'},
+];
+
+function MarketItemCard({it,qty,theme,onAdd,onRem}:{it:MarketItem;qty:number;theme:MarketStoreTheme;onAdd:()=>void;onRem:()=>void}) {
+  return(
+    <div className="flex flex-col gap-2 rounded-2xl p-3"
+      style={{background:qty>0?theme.cardBg:'rgba(255,255,255,0.04)',border:`1.5px solid ${qty>0?theme.cardBorder:'rgba(255,255,255,0.12)'}`,transition:'all 0.15s'}}>
+      <div style={{width:'100%',height:76,borderRadius:12,flexShrink:0,overflow:'hidden',background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:32}}>
+        {it.emoji}
+      </div>
+      <div style={{minWidth:0}}>
+        <p className="font-black text-[13px] leading-tight" style={{color:theme.textColor}}>{it.name}</p>
+        <p className="text-[10px] mt-0.5" style={{color:theme.mutedColor,display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{it.desc}</p>
+        <span className="text-[13px] font-black" style={{color:theme.accentLight}}>{it.price} DH</span>
+      </div>
+      <div className="flex items-center justify-end gap-2 flex-shrink-0 mt-auto">
+        {qty>0&&(
+          <>
+            <button onClick={onRem} style={{width:30,height:30,borderRadius:'50%',border:'none',background:theme.cardBg,color:theme.textColor,fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
+            <span className="font-black text-sm w-5 text-center" style={{color:'#fff'}}>{qty}</span>
+          </>
+        )}
+        <button onClick={onAdd} style={{width:30,height:30,borderRadius:'50%',border:'none',background:theme.accent,color:'white',fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>+</button>
+      </div>
+    </div>
+  );
+}
+
+function SupermarcheStoreCircle({store,index,onSelect}:{store:MarketStoreTheme;index:number;onSelect:()=>void}) {
+  const [pressed,setPressed]=useState(false);
+  return(
+    <button
+      onClick={()=>{setPressed(true);setTimeout(onSelect,220);}}
+      style={{background:'none',border:'none',cursor:'pointer',padding:0,width:'100%',display:'flex',alignItems:'center',gap:16,
+        animation:`marketFadeUp 0.5s ease-out ${index*0.12}s both`,transform:pressed?'scale(0.94)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)'}}>
+      <div style={{position:'relative',width:88,height:88,flexShrink:0}}>
+        <div style={{position:'absolute',inset:-6,borderRadius:'50%',background:`radial-gradient(circle,${store.ring} 0%,transparent 70%)`,animation:'marketPulseRing 2.4s ease-in-out infinite',animationDelay:`${index*0.3}s`}}/>
+        <div style={{position:'absolute',inset:0,borderRadius:'50%',background:store.grad,border:`2.5px solid ${store.accentLight}`,boxShadow:`0 8px 28px ${store.ring}`,display:'flex',alignItems:'center',justifyContent:'center',animation:'marketFloat 3.6s ease-in-out infinite',animationDelay:`${index*0.4}s`}}>
+          <span style={{fontSize:38,filter:'drop-shadow(0 3px 8px rgba(0,0,0,0.4))'}}>{store.emoji}</span>
+        </div>
+        <div style={{position:'absolute',top:-2,right:-2,fontSize:14,animation:'marketSparkle 1.8s ease-in-out infinite',animationDelay:`${index*0.5}s`}}>✨</div>
+      </div>
+      <div style={{textAlign:'left',flex:1}}>
+        <p className="font-black" style={{fontSize:18,color:'#fff',margin:'0 0 3px',letterSpacing:'0.01em'}}>{store.label}</p>
+        <p style={{fontSize:11,color:'rgba(255,255,255,0.55)',fontWeight:700,margin:0}}>Découvrir les produits →</p>
+      </div>
+      <div style={{color:store.accentLight,fontSize:24,flexShrink:0}}>›</div>
+    </button>
+  );
+}
+
+function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void;onOrderSuccess?:(ref:string)=>void}) {
+  const fClass=fontClass(lang); const isAR=lang==='ar';
+  const [,navigateMkt]=useLocation();
+  const [store,setStore]=useState<'select'|MarketStoreId>('select');
+  const theme=store!=='select'?MARKET_STORES.find(s=>s.id===store)!:null;
+  const activeCatalog:MarketItem[]=store==='marjane'?MARJANE_CATALOG:store==='carrefour'?CARREFOUR_CATALOG:store==='bim'?BIM_CATALOG:[];
+  const storeLabel=theme?`Bridge Supermarché — ${theme.label}`:'Bridge Supermarché';
+
+  const DELIV_FEE_MKT=15;
+  const SVC_FEE_MKT=6;
+
+  const [mktCart,setMktCart]=useState<{id:string;qty:number}[]>([]);
+  const [mktCat,setMktCat]=useState<MarketItem['cat']>('fruits');
+  const [mktSearch,setMktSearch]=useState('');
+  const [name,setName]=useState(profile.name??'');
+  const [addr,setAddr]=useState(profile.address??'');
+  const [phone,setPhone]=useState(profile.phone??'');
+  const [mktPos,setMktPos]=useState<{lat:number;lng:number}>({lat:32.2994,lng:-9.2372});
+  const [err,setErr]=useState('');
+  const [sending,setSending]=useState(false);
+  const [sent,setSent]=useState(false);
+  const [orderRef]=useState(()=>`MKT-${Math.floor(1000+Math.random()*9000)}`);
+  const [payMethod,setPayMethod]=useState<PayMethodType>(null);
+  const [showQR,setShowQR]=useState(false);
+  const {user:mktUser}=useUser();
+  const getAuthHeadersMkt=useAuthHeaders();
+  const [mktGems,setMktGems]=useState(0);
+  const [mktGemMAD,setMktGemMAD]=useState(0);
+  const maxMktGemMAD=Math.floor(mktGems/200);
+
+  useEffect(()=>{
+    if(!mktUser?.id) return;
+    getAuthHeadersMkt().then(h=>fetch('/api/game/diamonds',{credentials:'include',headers:h})
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{if(d&&typeof d.diamonds==='number')setMktGems(d.diamonds);})
+      .catch(()=>{}));
+  },[mktUser?.id,getAuthHeadersMkt]);
+
+  const addMkt=(id:string)=>setMktCart(c=>{const ex=c.find(x=>x.id===id);return ex?c.map(x=>x.id===id?{...x,qty:x.qty+1}:x):[...c,{id,qty:1}];});
+  const remMkt=(id:string)=>setMktCart(c=>{const ex=c.find(x=>x.id===id);if(!ex)return c;if(ex.qty===1)return c.filter(x=>x.id!==id);return c.map(x=>x.id===id?{...x,qty:x.qty-1}:x);});
+  const mktQty=(id:string)=>mktCart.find(x=>x.id===id)?.qty??0;
+  const cartSubtotal=mktCart.reduce((s,ci)=>{const it=activeCatalog.find(f=>f.id===ci.id);return s+(it?it.price*ci.qty:0);},0);
+  const cartTotal=Math.max(0,cartSubtotal+DELIV_FEE_MKT+SVC_FEE_MKT-mktGemMAD);
+  const cartCount=mktCart.reduce((s,ci)=>s+ci.qty,0);
+
+  const visibleItems=activeCatalog.filter(it=>
+    it.cat===mktCat&&(mktSearch===''||it.name.toLowerCase().includes(mktSearch.toLowerCase()))
+  );
+
+  const inputCls=`w-full px-4 py-3 rounded-xl text-sm font-medium outline-none transition-all ${fClass}`;
+  const inputStyle=(hasErr:boolean):React.CSSProperties=>({background:'rgba(255,255,255,0.07)',border:`1.5px solid ${hasErr?'#EF4444':'rgba(255,255,255,0.2)'}`,color:'#fff'});
+
+  const handleWalletPay=async(type:'apple'|'google')=>{
+    if(!name.trim()||!phone.trim()||!addr.trim()){setErr('*');return;}
+    const payLabel=type==='apple'?'Apple Pay':'Google Pay';
+    const methods=type==='apple'
+      ?[{supportedMethods:'https://apple.com/apple-pay',data:{version:3,merchantIdentifier:'merchant.ma.safi-bridge',merchantCapabilities:['supports3DS'],supportedNetworks:['visa','masterCard'],countryCode:'MA'}}]
+      :[{supportedMethods:'https://google.com/pay',data:{apiVersion:2,apiVersionMinor:0,merchantInfo:{merchantName:'Bridge Safi'},allowedPaymentMethods:[{type:'CARD',parameters:{allowedAuthMethods:['PAN_ONLY','CRYPTOGRAM_3DS'],allowedCardNetworks:['MASTERCARD','VISA']},tokenizationSpecification:{type:'PAYMENT_GATEWAY',parameters:{gateway:'example',gatewayMerchantId:'bridge-safi'}}}]}}];
+    const details={total:{label:`${storeLabel} · Safi`,amount:{currency:'MAD',value:String(cartTotal)}}};
+    try{
+      if(typeof PaymentRequest==='undefined') throw new Error('unsupported');
+      const pr=new PaymentRequest(methods,details);
+      const canMake=await pr.canMakePayment().catch(()=>false);
+      if(!canMake) throw new Error('unavailable');
+      const response=await pr.show();
+      await response.complete('success');
+      setPayMethod(type);
+      await handleSend(payLabel);
+    }catch{setPayMethod('cash');}
+  };
+
+  const handleSend=async(payLabel?:string)=>{
+    if(!name.trim()||!phone.trim()||!addr.trim()){setErr('*');return;}
+    setSending(true);
+    const deliveryAddress=`${addr.trim()}, Safi, Maroc (GPS: ${mktPos.lat.toFixed(5)},${mktPos.lng.toFixed(5)})`;
+    const driverTrackUrl=`${window.location.origin}/driver/${orderRef}`;
+    const payInfo=payLabel?payLabel:payMethod==='qr'?'QR Code':payMethod==='cash'?'Espèces':payMethod==='apple'?'Apple Pay':payMethod==='google'?'Google Pay':'Espèces';
+    const itemsList=mktCart.map(ci=>{const it=activeCatalog.find(f=>f.id===ci.id)!;return `${it.name} ×${ci.qty} (${it.price*ci.qty} DH)`;}).join('\\n');
+    const notesStr=`🛒 ${storeLabel}\\n${itemsList||'Commande générale'}\\n—\\nSous-total: ${cartSubtotal} DH\\nLivraison: ${DELIV_FEE_MKT} DH\\nService: ${SVC_FEE_MKT} DH\\nTotal: ${cartTotal} DH\\n💳 ${payInfo}\\n👤 ${name.trim()} — ${phone.trim()}`;
+    const apiItems=mktCart.length>0
+      ?mktCart.map(ci=>{const it=activeCatalog.find(f=>f.id===ci.id)!;return {name:it.name,qty:ci.qty,price:it.price};})
+      :[{name:`🛒 Commande ${storeLabel}`,qty:1,price:0}];
+    try{
+      await fetch('/api/orders/inbound',{method:'POST',headers:{'Content-Type':'application/json','x-bridge-secret':'bridge-safi-8b269bba03fd8c0205116f3f'},
+        body:JSON.stringify({customerName:name.trim(),customerPhone:phone.trim(),deliveryAddress,pickupAddress:`${storeLabel} — Safi`,items:apiItems,total:cartTotal,source:storeLabel,paymentMethod:payInfo}),
+      }).catch(()=>{});
+      await fetch(`${DRIVER_APP_URL}/api/deliveries`,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({trackingNumber:orderRef,customerName:name.trim(),customerPhone:phone.trim(),pickupAddress:`${storeLabel} — Safi`,deliveryAddress,priority:'normal',notes:notesStr,driverTrackUrl}),
+      }).catch(()=>{});
+    }finally{setSending(false);}
+    if(mktGemMAD>0){getAuthHeadersMkt().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:mktGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${mktUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
+    await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ref:orderRef,service:'supermarche',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:'delivery',paymentMethod:payInfo,restaurantName:storeLabel}),
+    }).catch(()=>{});
+    localStorage.setItem('bridge_last_ref',orderRef);
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'supermarche',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),restaurantName:storeLabel});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    setSent(true);
+  };
+
+  // ── Écran 1 : choix du magasin (3 cercles) ──────────────────────────────
+  if(store==='select'){
+    return(
+      <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`}
+        dir={isAR?'rtl':'ltr'}
+        style={{background:'linear-gradient(160deg,#0B0F2E 0%,#1B1140 45%,#2E1065 100%)',color:'#fff',minHeight:'100dvh',position:'relative',overflow:'hidden'}}>
+        <style>{`
+          @keyframes marketFadeUp{0%{opacity:0;transform:translateY(20px);}100%{opacity:1;transform:translateY(0);}}
+          @keyframes marketFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+          @keyframes marketPulseRing{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:0.9;transform:scale(1.12);}}
+          @keyframes marketSparkle{0%,100%{opacity:0.3;transform:scale(0.9) rotate(0deg);}50%{opacity:1;transform:scale(1.15) rotate(20deg);}}
+          @keyframes marketBgDrift{0%{transform:translate(0,0);}50%{transform:translate(-14px,10px);}100%{transform:translate(0,0);}}
+        `}</style>
+        <div className="pointer-events-none select-none" style={{position:'absolute',inset:0,overflow:'hidden',zIndex:0}}>
+          <div style={{position:'absolute',left:'-15%',top:'8%',width:280,height:280,background:'radial-gradient(circle,rgba(139,92,246,0.35) 0%,transparent 70%)',borderRadius:'50%',filter:'blur(50px)',animation:'marketBgDrift 10s ease-in-out infinite'}}/>
+          <div style={{position:'absolute',right:'-10%',top:'35%',width:260,height:260,background:'radial-gradient(circle,rgba(56,189,248,0.25) 0%,transparent 70%)',borderRadius:'50%',filter:'blur(50px)',animation:'marketBgDrift 12s ease-in-out infinite 1.5s'}}/>
+          <div style={{position:'absolute',left:'8%',bottom:'6%',width:220,height:220,background:'radial-gradient(circle,rgba(234,179,8,0.2) 0%,transparent 70%)',borderRadius:'50%',filter:'blur(45px)',animation:'marketBgDrift 9s ease-in-out infinite 0.8s'}}/>
+          {['🛒','🛍️','🥖','🍎','🧃','🧴'].map((e,i)=>(
+            <span key={i} style={{position:'absolute',left:`${8+i*16}%`,top:`${12+(i%3)*26}%`,fontSize:26,opacity:0.12,animation:`marketFloat ${4+i*0.6}s ease-in-out infinite`}}>{e}</span>
+          ))}
+        </div>
+
+        <div style={{position:'fixed',top:16,left:isAR?'auto':16,right:isAR?16:'auto',zIndex:50}}>
+          <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.12)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:18}}>←</button>
+        </div>
+        <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
+          <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.14)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#E9D5FF',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
+          <SharkDiamondWidget onNavigate={()=>navigateMkt('/game')} profile={profile} lang={lang}/>
+        </div>
+
+        <div className={`flex flex-col items-center px-6 pt-24 pb-12 max-w-md mx-auto w-full gap-3 relative`} style={{zIndex:1}}>
+          <div className="text-center mb-2">
+            <p style={{fontSize:34,marginBottom:4}}>🛒✨</p>
+            <h1 className={`font-black text-2xl tracking-wider mb-1 ${fClass}`} style={{color:'#fff',textShadow:'0 2px 12px rgba(139,92,246,0.6)'}}>BRIDGE SUPERMARCHÉ</h1>
+            <p className="text-[11px] tracking-widest font-bold" style={{color:'rgba(233,213,255,0.6)'}}>CHOISISSEZ VOTRE MAGASIN · SAFI</p>
+          </div>
+
+          <div className="w-full flex flex-col gap-4 mt-3">
+            {MARKET_STORES.map((s,i)=>(
+              <div key={s.id} style={{background:'rgba(255,255,255,0.05)',border:'1.5px solid rgba(255,255,255,0.12)',borderRadius:22,padding:'14px 16px',backdropFilter:'blur(10px)'}}>
+                <SupermarcheStoreCircle store={s} index={i} onSelect={()=>{setStore(s.id);setMktCat('fruits');setMktCart([]);}}/>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-center mt-4" style={{fontSize:10,color:'rgba(233,213,255,0.4)',fontWeight:600}}>
+            🚚 Livraison à domicile · 💎 Réduction diamants · 📍 Suivi GPS en direct
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Écran 2 : catalogue + checkout (magasin choisi) ─────────────────────
+  return(
+    <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`}
+      dir={isAR?'rtl':'ltr'}
+      style={{background:theme!.grad,color:'#fff',minHeight:'100dvh'}}>
+
+      <div style={{position:'fixed',top:16,left:isAR?'auto':16,right:isAR?16:'auto',zIndex:50}}>
+        <button onClick={()=>{if(sent){onBack();}else{setStore('select');}}} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.14)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:18}}>←</button>
+      </div>
+      <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
+        <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.14)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:theme!.accentLight,fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
+        <SharkDiamondWidget onNavigate={()=>navigateMkt('/game')} profile={profile} lang={lang}/>
+      </div>
+
+      <div className={`flex flex-col items-center px-5 pt-20 pb-12 max-w-2xl mx-auto w-full gap-4 ${fClass}`}>
+
+        <div className="text-center">
+          <p style={{fontSize:26}}>{theme!.emoji}</p>
+          <h1 className={`font-black text-xl tracking-wider mb-0.5 ${fClass}`} style={{color:theme!.accentLight}}>{storeLabel.toUpperCase()}</h1>
+          <p className="text-[10px] tracking-widest font-bold" style={{color:theme!.mutedColor}}>SAFI · MAROC · آسفي</p>
+        </div>
+
+        {!sent&&(
+          <div className="w-full">
+            <input value={mktSearch} onChange={e=>setMktSearch(e.target.value)}
+              placeholder={lang==='ar'?'بحث…':lang==='en'?'Search…':'Rechercher un produit…'}
+              className={`w-full px-4 py-2.5 rounded-xl text-sm outline-none mb-3 ${fClass}`}
+              style={{background:'rgba(255,255,255,0.08)',border:`1.5px solid ${theme!.cardBorder}`,color:'#fff'}}/>
+
+            <div className="flex gap-1.5 mb-3 overflow-x-auto pb-1" style={{scrollbarWidth:'none'}}>
+              {MARKET_CAT_TABS.map(tab=>(
+                <button key={tab.key} onClick={()=>{setMktCat(tab.key);setMktSearch('');}}
+                  className="flex-shrink-0 py-2 px-3 rounded-xl font-black text-[10px] transition-all active:scale-95"
+                  style={{background:mktCat===tab.key?theme!.accent:'rgba(255,255,255,0.08)',color:mktCat===tab.key?'white':theme!.mutedColor,border:`1.5px solid ${mktCat===tab.key?theme!.accent:theme!.cardBorder}`,letterSpacing:'0.04em',whiteSpace:'nowrap'}}>
+                  {tab.emoji} {tab.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5">
+              {visibleItems.map(it=>(
+                <MarketItemCard key={it.id} it={it} qty={mktQty(it.id)} theme={theme!} onAdd={()=>addMkt(it.id)} onRem={()=>remMkt(it.id)}/>
+              ))}
+            </div>
+
+            {cartCount>0&&(
+              <div className="mt-3 rounded-2xl p-3" style={{background:theme!.cardBg,border:`1.5px solid ${theme!.cardBorder}`}}>
+                <p className="font-black text-[11px] mb-1.5" style={{color:theme!.accentLight}}>🛒 {cartCount} {lang==='ar'?'منتج':lang==='en'?'item(s)':'produit(s)'} sélectionné(s)</p>
+                {mktCart.map(ci=>{const it=activeCatalog.find(f=>f.id===ci.id)!;return(
+                  <div key={ci.id} className="flex justify-between text-[11px]" style={{color:theme!.mutedColor}}>
+                    <span>{it.name} ×{ci.qty}</span><span className="font-bold">{it.price*ci.qty} DH</span>
+                  </div>
+                );})}
+              </div>
+            )}
+          </div>
+        )}
+
+        {!sent&&(
+          <div className="w-full flex flex-col gap-3">
+            <div>
+              <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:theme!.accentLight}}>👤 {lang==='ar'?'الاسم':lang==='en'?'Name':'Nom'}</p>
+              <input className={inputCls} style={inputStyle(!!err&&!name.trim())} placeholder={lang==='ar'?'اسمك الكامل…':lang==='en'?'Your name…':'Votre nom…'} value={name} onChange={e=>{setName(e.target.value);setErr('');}}/>
+            </div>
+            <AddressAutocomplete label={`📍 ${lang==='ar'?'العنوان':lang==='en'?'Address':'Adresse'}`} value={addr} onChange={v=>{setAddr(v);setErr('');}}
+              placeholder={lang==='ar'?'عنوان التوصيل…':lang==='en'?'Delivery address…':'Adresse de livraison…'} lang={lang} error={!!err&&!addr.trim()}/>
+            <div>
+              <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:theme!.accentLight}}>🗺️ {lang==='ar'?'اضبط موقعك على الخريطة':lang==='en'?'Fine-tune your location':'Ajustez votre position sur la carte'}</p>
+              <div style={{width:'100%',height:160,borderRadius:16,overflow:'hidden',border:`1.5px solid ${theme!.cardBorder}`}}>
+                <LocationPickerMap pos={mktPos} onChange={setMktPos}/>
+              </div>
+            </div>
+            <div>
+              <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:theme!.accentLight}}>📞 {lang==='ar'?'الهاتف':lang==='en'?'Phone':'Téléphone'}</p>
+              <input className={inputCls} style={inputStyle(!!err&&!phone.trim())} placeholder="06XXXXXXXX" value={phone} type="tel" onChange={e=>{setPhone(e.target.value);setErr('');}}/>
+            </div>
+            {err&&<p className={`text-xs font-bold ${fClass}`} style={{color:'#EF4444'}}>⚠️ {lang==='ar'?'يرجى ملء جميع الحقول':lang==='en'?'Please fill all fields':'Veuillez remplir tous les champs'}</p>}
+          </div>
+        )}
+
+        {sent&&(
+          <ServiceTrackingView orderRef={orderRef} lang={lang} onNewOrder={()=>{setSent(false);setStore('select');setMktCart([]);}}
+            theme={{emoji:theme!.emoji,label:storeLabel,accent:theme!.accent,accentDark:theme!.accentDark,accentLight:theme!.accentLight,cardBg:theme!.cardBg,cardBorder:theme!.cardBorder,textColor:theme!.textColor,mutedColor:theme!.mutedColor}}/>
+        )}
+
+        {!sent&&cartCount>0&&(
+          <div className="w-full rounded-2xl p-4" style={{background:'rgba(255,255,255,0.05)',border:`1.5px solid ${theme!.cardBorder}`}}>
+            <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:theme!.accentLight}}>🧾 {lang==='ar'?'الفاتورة':lang==='en'?'Summary':'Récapitulatif'}</p>
+            {cartSubtotal>0&&<div className="flex justify-between text-[12px] mb-1.5"><span style={{color:theme!.mutedColor}}>{lang==='ar'?'المجموع':lang==='en'?'Subtotal':'Sous-total'}</span><span className="font-bold" style={{color:theme!.textColor}}>{cartSubtotal} DH</span></div>}
+            <div className="flex justify-between text-[12px] mb-1.5"><span style={{color:theme!.mutedColor}}>🛵 {lang==='ar'?'توصيل':lang==='en'?'Delivery':'Livraison'}</span><span className="font-bold" style={{color:theme!.accentLight}}>{DELIV_FEE_MKT} DH</span></div>
+            <div className="flex justify-between text-[12px] mb-2"><span style={{color:theme!.mutedColor}}>⚙️ {lang==='ar'?'رسوم الخدمة':lang==='en'?'Service fee':'Frais de service'}</span><span className="font-bold" style={{color:theme!.accentLight}}>{SVC_FEE_MKT} DH</span></div>
+            {mktGemMAD>0&&<div className="flex justify-between text-[12px] mb-2"><span style={{color:'#4ADE80'}}>💎 Réduction</span><span className="font-bold" style={{color:'#4ADE80'}}>-{mktGemMAD} DH</span></div>}
+            <div className="flex justify-between items-center pt-2" style={{borderTop:`1.5px solid ${theme!.cardBorder}`}}><span className="font-black text-sm" style={{color:theme!.textColor}}>TOTAL</span><span className="font-black text-lg" style={{color:theme!.accentLight}}>{cartTotal} DH</span></div>
+          </div>
+        )}
+
+        {!sent&&(
+          <div className={`w-full rounded-2xl p-4 ${fClass}`} style={{background:'linear-gradient(135deg,#0A1A12,#0D2E1A)',border:'1px solid rgba(74,222,128,0.3)'}}>
+            <p className="text-[11px] font-black mb-1.5" style={{color:'#D9C5A0'}}>💎 {lang==='ar'?'خصم بالماسات':lang==='en'?'Diamond discount':'Réduction Diamants'}</p>
+            {mktGems>0?(
+              <>
+                <p className="text-[10px] mb-2" style={{color:'rgba(255,255,255,0.6)',fontWeight:600}}>{mktGems.toLocaleString()} 💎 = {maxMktGemMAD} MAD</p>
+                {mktGemMAD>0?(
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold" style={{color:'#4ADE80'}}>✓ -{mktGemMAD} MAD appliqué</span>
+                    <button onClick={()=>setMktGemMAD(0)} className="text-[9px] font-bold px-2 py-1 rounded-lg" style={{background:'rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.5)',border:'none',cursor:'pointer'}}>✕</button>
+                  </div>
+                ):(
+                  <div className="flex gap-2 flex-wrap">
+                    {[1,2,5,maxMktGemMAD].filter((v,i,a)=>v>0&&a.indexOf(v)===i&&v<=maxMktGemMAD).map(mad=>(
+                      <button key={mad} onClick={()=>setMktGemMAD(mad)} className="px-3 py-1 rounded-xl font-black text-[10px] active:scale-95 transition-all"
+                        style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.5)',color:'#4ADE80',cursor:'pointer'}}>
+                        -{mad} MAD
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
+            ):(
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-[10px]" style={{color:'rgba(255,255,255,0.4)'}}>{lang==='ar'?'لا ماسات — العب لتربح!':lang==='en'?'No diamonds — play to earn!':'Pas de diamants — jouez !'}</p>
+                <button onClick={()=>navigateMkt('/game')} className="text-[9px] font-black px-2.5 py-1 rounded-xl" style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.4)',color:'#4ADE80',cursor:'pointer',flexShrink:0}}>🎮 Game</button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {!sent&&(
+          <div className="w-full rounded-2xl p-4" style={{background:'rgba(255,255,255,0.05)',border:`1.5px solid ${theme!.cardBorder}`}}>
+            <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:theme!.accentLight}}>💳 {lang==='ar'?'طريقة الدفع':lang==='en'?'Payment':'Mode de paiement'}</p>
+            <SharedPaymentOptions lang={lang} selected={payMethod} onSelect={setPayMethod} showCash showCard={false} onWalletPay={handleWalletPay}/>
+          </div>
+        )}
+
+        {!sent&&(
+          <button onClick={()=>{if(payMethod==='qr'){handleSend().then(()=>setShowQR(true));}else handleSend();}}
+            disabled={sending}
+            className={`w-full py-4 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 active:scale-95 transition-all ${fClass}`}
+            style={{background:sending?'#9CA3AF':theme!.accent,boxShadow:sending?'none':`0 6px 20px ${theme!.ring}`,cursor:sending?'not-allowed':'pointer'}}>
+            {sending?(
+              <><span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin"/>{lang==='ar'?'جارٍ الإرسال…':lang==='en'?'Sending…':'Envoi en cours…'}</>
+            ):(
+              <><span>🛵</span>{lang==='ar'?'تأكيد الطلب':lang==='en'?'Place order':'Commander'}</>
+            )}
+          </button>
+        )}
+        {showQR&&<QRPayModal lang={lang} onClose={()=>setShowQR(false)} onConfirm={()=>setShowQR(false)}/>}
+      </div>
+    </div>
+  );
+}
+
 // ─── HUB PAGE — écran principal (2 grands boutons) ───────────────────────────
 
 function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
@@ -10275,7 +10756,7 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
 // ─── HISTORY PAGE ─────────────────────────────────────────────────────────────
 type HistoryEntry = {
   ref: string;
-  type: 'eats'|'tabac'|'pharmacie'|'fleurs'|'taxi'|'moto';
+  type: 'eats'|'tabac'|'pharmacie'|'fleurs'|'boulangerie'|'souk'|'supermarche'|'taxi'|'moto';
   date: string;
   total?: number;
   destination?: string;
@@ -10296,6 +10777,9 @@ export function HistoryPageRoute() {
     tabac:{icon:'🚬',label:'Bridge Tabac',color:'#6B7280'},
     pharmacie:{icon:'💊',label:'Bridge Pharmacie',color:'#7C3AED'},
     fleurs:{icon:'🌹',label:'Bridge Fleurs',color:'#DB2777'},
+    boulangerie:{icon:'🥖',label:'Bridge Boulangerie',color:'#A16207'},
+    souk:{icon:'🛍️',label:'Bridge Souk',color:'#7E22CE'},
+    supermarche:{icon:'🛒',label:'Bridge Supermarché',color:'#7C3AED'},
     taxi:{icon:'🚖',label:'Bridge Taxi',color:'#B45309'},
     moto:{icon:'🛵',label:'Bridge Moto',color:'#9A3412'},
   };
@@ -10365,7 +10849,7 @@ export function HistoryPageRoute() {
 
 
 // ─── MES COMMANDES — suivi en direct de toutes les commandes (hors taxi/moto) ──
-type ServiceThemeKey = 'eats'|'pharmacie'|'tabac'|'fleurs'|'boulangerie'|'souk';
+type ServiceThemeKey = 'eats'|'pharmacie'|'tabac'|'fleurs'|'boulangerie'|'souk'|'supermarche';
 const ORDER_THEMES: Record<ServiceThemeKey, ServiceTrackTheme & {icon:string;label:string}> = {
   eats:        {icon:'🍔',label:'Bridge Eats',        emoji:'🍔',accent:'#059669',accentDark:'#065F46',accentLight:'#6EE7B7',cardBg:'var(--c-card)',cardBorder:'var(--c-border)',textColor:'var(--c-text)',mutedColor:'#9CA3AF'},
   pharmacie:   {icon:'💊',label:'Bridge Pharmacie',   emoji:'💊',accent:'#6366F1',accentDark:'#4338CA',accentLight:'#A5B4FC',cardBg:'rgba(99,102,241,0.15)',cardBorder:'rgba(99,102,241,0.5)',textColor:'#fff',mutedColor:'rgba(165,180,252,0.6)'},
@@ -10373,6 +10857,7 @@ const ORDER_THEMES: Record<ServiceThemeKey, ServiceTrackTheme & {icon:string;lab
   fleurs:      {icon:'🌹',label:'Bridge Fleurs',      emoji:'💐',accent:'#A855F7',accentDark:'#7C3AED',accentLight:'#7C3AED',cardBg:'white',cardBorder:'#EDE9FE',textColor:'#4C1D95',mutedColor:'#9CA3AF'},
   boulangerie: {icon:'🥖',label:'Bridge Boulangerie', emoji:'🥖',accent:'#FACC15',accentDark:'#A16207',accentLight:'#FDE68A',cardBg:'rgba(161,98,7,0.2)',cardBorder:'rgba(250,204,21,0.5)',textColor:'#FEF3C7',mutedColor:'rgba(253,230,138,0.6)'},
   souk:        {icon:'🛍️',label:'Bridge Souk',        emoji:'🛍️',accent:'#C084FC',accentDark:'#7E22CE',accentLight:'#E9D5FF',cardBg:'rgba(126,34,206,0.2)',cardBorder:'rgba(192,132,252,0.5)',textColor:'#F3E8FF',mutedColor:'rgba(233,213,255,0.6)'},
+  supermarche: {icon:'🛒',label:'Bridge Supermarché',   emoji:'🛒',accent:'#8B5CF6',accentDark:'#5B21B6',accentLight:'#C4B5FD',cardBg:'rgba(139,92,246,0.2)',cardBorder:'rgba(196,181,253,0.5)',textColor:'#EDE9FE',mutedColor:'rgba(237,233,254,0.6)'},
 };
 
 type MyOrderEntry = HistoryEntry & { liveStatus?: string; etaLabel?: string };
@@ -10513,7 +10998,7 @@ function loadNav() {
   try {
     const raw=localStorage.getItem(NAV_KEY);
     if(!raw) return null;
-    return JSON.parse(raw) as {lang:Lang;service:'none'|'delivery'|'taxi'|'taxi-select'|'moto'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk';page:Page;restaurantId:string|null};
+    return JSON.parse(raw) as {lang:Lang;service:'none'|'delivery'|'taxi'|'taxi-select'|'moto'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk'|'supermarche';page:Page;restaurantId:string|null};
   } catch { return null; }
 }
 
@@ -10540,7 +11025,7 @@ export default function App() {
   // splashDone becomes true after 3s; we also wait for Clerk to load
   const [splashDone,setSplashDone] = useState(false);
   const [mode,setMode]             = useState<'hub'|'services'>('hub');
-  const [service,setService]       = useState<'none'|'delivery'|'taxi'|'taxi-select'|'moto'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk'>(saved?.service??'none');
+  const [service,setService]       = useState<'none'|'delivery'|'taxi'|'taxi-select'|'moto'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk'|'supermarche'>(saved?.service??'none');
   const [cart,setCart]         = useState<CartItem[]>([]);
   const [showCart,setShowCart] = useState(false);
   const [showProfile,setShowProfile] = useState(false);
@@ -10649,6 +11134,7 @@ export default function App() {
   if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
   if(service==='boulangerie') return <DarkModeCtx.Provider value={dv}><BoulangeriePage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
   if(service==='souk') return <DarkModeCtx.Provider value={dv}><SoukPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
+  if(service==='supermarche') return <DarkModeCtx.Provider value={dv}><SupermarchePage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={
