@@ -6310,10 +6310,10 @@ useEffect(()=>{
 
         {/* ── AD SLOT — place de publicité ───────────────────────────────────── */}
         <div id="ad-slot" className="w-full mt-5" style={{position:'relative'}}>
-          <a href="https://grado.safi-bridge.ma" className="block rounded-2xl overflow-hidden" style={{border:'1.5px dashed #D9C5A0',background:'rgba(253,252,249,0.7)',minHeight:90}}>
+          <a href="https://grado.safi-bridge.ma" className="block rounded-2xl overflow-hidden" style={{border:'1.5px dashed #D9C5A0',background:'rgba(253,252,249,0.7)'}}>
             {/* PUB_CONTENT_START */}
             <video ref={pubVideoRef} src="/pub-video.mp4" autoPlay loop muted playsInline
-              style={{width:'100%',height:'100%',display:'block',objectFit:'cover'}}/>
+              style={{width:'100%',height:'160px',display:'block',objectFit:'cover'}}/>
             {/* PUB_CONTENT_END */}
           </a>
           {/* Bouton son — reste fixe même si la vidéo change, masque aussi le watermark IA */}
