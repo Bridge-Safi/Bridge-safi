@@ -15,9 +15,9 @@ async function seedMissionsIfEmpty() {
   await db.insert(missionsTable).values([
     { type: 'video',     title: '🎬 Pub vidéo courte (30s)',         description: 'Regarde une publicité de 30 secondes',                           rewardDiamonds: 600,    dailyLimit: 5,  durationSeconds: 30,  sortOrder: 1,  active: true },
     { type: 'video',     title: '🎬 Pub vidéo longue (60s)',          description: 'Regarde une publicité de 60 secondes pour plus de diamants',      rewardDiamonds: 1000,   dailyLimit: 3,  durationSeconds: 60,  sortOrder: 2,  active: true },
-    { type: 'social',    title: '📸 Suivre Bridge sur Instagram',     description: 'Suis la page officielle Bridge Safi sur Instagram',               rewardDiamonds: 300,    dailyLimit: 1,  externalUrl: 'https://instagram.com/bridgesafi', sortOrder: 3, active: true },
-    { type: 'social',    title: '📺 S\'abonner à Bridge YouTube',     description: 'Abonne-toi à la chaîne YouTube de Bridge Safi',                   rewardDiamonds: 400,    dailyLimit: 1,  externalUrl: 'https://youtube.com/@bridgesafi',  sortOrder: 4, active: true },
-    { type: 'social',    title: '👍 Rejoindre Bridge Facebook',       description: 'Rejoins et aime la page Facebook de Bridge Safi',                 rewardDiamonds: 200,    dailyLimit: 1,  externalUrl: 'https://facebook.com/bridgesafi',  sortOrder: 5, active: true },
+    { type: 'social',    title: '📸 Suivre Bridge sur Instagram',     description: 'Suis la page officielle Bridge Safi sur Instagram',               rewardDiamonds: 300,    dailyLimit: 1,  externalUrl: 'https://www.instagram.com/bridge_safi?igsh=MTk2bGJmcmYwNnc4MQ%3D%3D&utm_source=qr', sortOrder: 3, active: true },
+    { type: 'social',    title: '📺 S\'abonner à Bridge YouTube',     description: 'Abonne-toi à la chaîne YouTube de Bridge Safi',                   rewardDiamonds: 400,    dailyLimit: 1,  externalUrl: 'https://youtube.com/@bridgegrado?si=_yn1ODkvcyKfGW77',  sortOrder: 4, active: true },
+    { type: 'social',    title: '👍 Rejoindre Bridge Facebook',       description: 'Rejoins et aime la page Facebook de Bridge Safi',                 rewardDiamonds: 200,    dailyLimit: 1,  externalUrl: 'https://www.facebook.com/share/1DJ2fW6wM8/?mibextid=wwXIfr',  sortOrder: 5, active: true },
     { type: 'offerwall', title: '📱 Télécharger un jeu partenaire',   description: 'Télécharge et atteins le niveau 5 d\'un jeu partenaire — 15 DH offerts !', rewardDiamonds: 20000, dailyLimit: 1, sortOrder: 6, active: true },
     { type: 'survey',    title: '📊 Sondage rapide (2-3 min)',        description: 'Réponds à un sondage pour gagner le maximum de diamants',          rewardDiamonds: 2400,   dailyLimit: 1,  sortOrder: 7, active: true },
     { type: 'fortune',   title: '🎡 Roue de la fortune',              description: 'Tente ta chance à la roue — regarde une pub et gagne des diamants',rewardDiamonds: 6,      dailyLimit: 10, durationSeconds: 15,  sortOrder: 8, active: true },
@@ -25,6 +25,25 @@ async function seedMissionsIfEmpty() {
   logger.info("Missions seeded");
 }
 seedMissionsIfEmpty().catch(err => logger.error({ err }, "Failed to seed missions"));
+
+// ── Corrige les URLs des missions sociales même si déjà seedées en base ──────
+// (le seed ne tourne qu'une fois quand la table est vide — si les missions
+// existent déjà avec les anciennes URLs placeholder, il faut les corriger ici)
+async function fixSocialMissionUrls() {
+  const fixes: { title: string; externalUrl: string }[] = [
+    { title: '📸 Suivre Bridge sur Instagram', externalUrl: 'https://www.instagram.com/bridge_safi?igsh=MTk2bGJmcmYwNnc4MQ%3D%3D&utm_source=qr' },
+    { title: '📺 S\'abonner à Bridge YouTube', externalUrl: 'https://youtube.com/@bridgegrado?si=_yn1ODkvcyKfGW77' },
+    { title: '👍 Rejoindre Bridge Facebook', externalUrl: 'https://www.facebook.com/share/1DJ2fW6wM8/?mibextid=wwXIfr' },
+  ];
+  for (const fix of fixes) {
+    try {
+      await db.update(missionsTable).set({ externalUrl: fix.externalUrl }).where(eq(missionsTable.title, fix.title));
+    } catch (err) {
+      logger.error({ err, title: fix.title }, "Failed to fix social mission URL");
+    }
+  }
+}
+fixSocialMissionUrls().catch(err => logger.error({ err }, "Failed to fix social mission URLs"));
 
 // GET /api/missions — list all active missions + today completions for user
 router.get("/missions", async (req, res) => {
