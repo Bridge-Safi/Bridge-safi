@@ -6324,7 +6324,7 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
       </div>
       <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
         <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(165,180,252,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#A5B4FC',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
-        <SharkDiamondWidget onNavigate={()=>navigatePharm('/game')} profile={profile}/>
+        <SharkDiamondWidget onNavigate={()=>navigatePharm('/game')} profile={profile} lang={lang}/>
       </div>
 
       {/* Content */}
@@ -7099,16 +7099,23 @@ function TaxiMap({driverPos,clientPos,fakeVehicles}:{driverPos:{lat:number;lng:n
 // ─── TAXI PAGE ────────────────────────────────────────────────────────────────
 
 // ─── SHARK DIAMOND WIDGET ────────────────────────────────────────────────────
-function SharkDiamondWidget({onNavigate,profile}:{onNavigate:()=>void;profile:UserProfile}) {
+function SharkDiamondWidget({onNavigate,profile,lang}:{onNavigate:()=>void;profile:UserProfile;lang?:Lang}) {
   const {user}=useUser();
+  const {isSignedIn}=useAuth();
   const getAuthHeaders=useAuthHeaders();
   const cacheKey=`bridge_diamonds_cache_${user?.id||'anon'}`;
   // Initialise from user-specific localStorage cache for instant display, then confirm with server
   const [gems,setGems]=useState<number>(()=>{
     try{return parseInt(localStorage.getItem(`bridge_diamonds_cache_${user?.id||'anon'}`)||'0',10)||0;}catch{return 0;}
   });
-  const bridgeId=getBridgeId(profile.phone, profile.name);
+  // Le profil local (onboarding) peut être vide même si le compte est bien connecté —
+  // on utilise les vraies infos du compte (bridge-auth) en repli, comme sur ServiceSelectPage,
+  // pour ne jamais afficher un avatar/ID cassé ("BR-???????") tant que la personne est connectée.
+  const effectiveName=profile.name||user?.name||'';
+  const effectivePhone=profile.phone||user?.phone||'';
+  const bridgeId=getBridgeId(effectivePhone, effectiveName);
   const avatarSrc=profile.avatar||user?.imageUrl||null;
+  const initials=(effectiveName||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
 
   // Fetch authoritative count from server — always override local cache for this user
   useEffect(()=>{
@@ -7135,13 +7142,31 @@ function SharkDiamondWidget({onNavigate,profile}:{onNavigate:()=>void;profile:Us
     window.addEventListener('storage',onStorage);
     return()=>window.removeEventListener('storage',onStorage);
   },[cacheKey]);
+
+  // Pas connecté : on ne montre jamais l'avatar/ID factice, juste "Se connecter".
+  if(!isSignedIn){
+    return(
+      <button onClick={()=>window.location.href='/sign-in'}
+        style={{
+          background:'linear-gradient(135deg,rgba(6,95,70,0.92),rgba(4,55,38,0.95))',
+          color:'#FDFCF9',border:'1.5px solid rgba(217,197,160,0.55)',
+          boxShadow:'0 4px 14px rgba(6,95,70,0.35)',borderRadius:14,
+          padding:'6px 11px',fontSize:9,fontWeight:900,letterSpacing:'0.03em',
+          display:'flex',alignItems:'center',gap:4,cursor:'pointer',whiteSpace:'nowrap' as const,
+        }}>
+        <span style={{fontSize:11}}>✦</span>
+        {lang==='ar'?'تسجيل الدخول':lang==='amz'?'ⴰⴽⵛⵎ':'Se connecter'}
+      </button>
+    );
+  }
+
   return(
     <button onClick={onNavigate} title={`${bridgeId} — Bridge Game`}
       style={{background:'none',border:'none',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',gap:2,padding:'2px 4px',borderRadius:12}}>
       <div style={{width:32,height:32,borderRadius:'50%',overflow:'hidden',border:'2px solid #D9C5A0',boxShadow:'0 2px 10px rgba(6,95,70,0.35)',background:'#F0EBE1',display:'flex',alignItems:'center',justifyContent:'center'}}>
         {avatarSrc
           ?<img src={avatarSrc} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
-          :<span style={{fontSize:14}}>👤</span>
+          :(effectiveName?<span style={{fontSize:11,fontWeight:900,color:'#065F46',lineHeight:1}}>{initials}</span>:<span style={{fontSize:14}}>👤</span>)
         }
       </div>
       <div style={{display:'flex',alignItems:'center',gap:2,background:'rgba(254,252,232,0.95)',border:'1px solid #FDE047',borderRadius:8,padding:'1px 5px'}}>
@@ -8462,7 +8487,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
       </div>
       <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
         <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(124,58,237,0.15)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#7C3AED',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
-        <SharkDiamondWidget onNavigate={()=>navigateFleur('/game')} profile={profile}/>
+        <SharkDiamondWidget onNavigate={()=>navigateFleur('/game')} profile={profile} lang={lang}/>
       </div>
 
       <div className="flex-1 overflow-y-auto pb-36">
@@ -8959,7 +8984,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
       </div>
       <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
         <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(120,53,15,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--c-text)',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
-        <SharkDiamondWidget onNavigate={()=>navigateTabac('/game')} profile={profile}/>
+        <SharkDiamondWidget onNavigate={()=>navigateTabac('/game')} profile={profile} lang={lang}/>
       </div>
 
       {/* Content */}
@@ -9361,7 +9386,7 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
       </div>
       <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
         <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(250,204,21,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#FDE68A',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
-        <SharkDiamondWidget onNavigate={()=>navigateBoul('/game')} profile={profile}/>
+        <SharkDiamondWidget onNavigate={()=>navigateBoul('/game')} profile={profile} lang={lang}/>
       </div>
 
       <div className={`flex flex-col items-center px-5 pt-20 pb-12 max-w-2xl mx-auto w-full gap-4 ${fClass}`}>
@@ -9687,7 +9712,7 @@ function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{on
       </div>
       <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
         <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(192,132,252,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#E9D5FF',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
-        <SharkDiamondWidget onNavigate={()=>navigateSouk('/game')} profile={profile}/>
+        <SharkDiamondWidget onNavigate={()=>navigateSouk('/game')} profile={profile} lang={lang}/>
       </div>
 
       <div className={`flex flex-col items-center px-5 pt-20 pb-12 max-w-2xl mx-auto w-full gap-4 ${fClass}`}>
