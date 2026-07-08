@@ -18,6 +18,8 @@ interface TrackPos {
   destination?: string;
   driverName?: string;
   driverPhone?: string;
+  driverPhoto?: string;
+  driverRating?: number;
   customerName?: string;
   customerPhone?: string;
   clientPrice?: number;
@@ -136,7 +138,7 @@ router.post("/tracking/:ref", (req, res) => {
 // Driver → push position / update status
 router.put("/tracking/:ref", (req, res) => {
   const { ref } = req.params;
-  const { lat, lng, heading, speed, eta, status, driverName, driverPhone, driverPrice } = req.body;
+  const { lat, lng, heading, speed, eta, status, driverName, driverPhone, driverPhoto, driverRating, driverPrice } = req.body;
   const existing = positions.get(ref);
   if (lat !== undefined && lng !== undefined &&
       (typeof lat !== "number" || typeof lng !== "number")) {
@@ -153,6 +155,8 @@ router.put("/tracking/:ref", (req, res) => {
     ...(status ? { status } : {}),
     ...(driverName ? { driverName } : {}),
     ...(driverPhone ? { driverPhone } : {}),
+    ...(driverPhoto ? { driverPhoto } : {}),
+    ...(typeof driverRating === 'number' ? { driverRating } : {}),
     ...(typeof driverPrice === 'number' ? { driverPrice } : {}),
     updatedAt: Date.now(),
   };
