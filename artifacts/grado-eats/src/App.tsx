@@ -6515,11 +6515,16 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
   const choose=(s:'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk')=>{setPressed(s);setTimeout(()=>onSelect(s),320);};
   // Avatar: custom upload > Clerk photo > initials
   const avatarSrc=profile.avatar||user?.imageUrl||null;
-  const initials=(profile.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  // Le profil local (onboarding) peut être vide même si le compte est bien connecté —
+  // on utilise les vraies infos du compte (bridge-auth) en repli pour ne jamais afficher
+  // un ID/avatar cassé ("BR-???????") tant que la personne est réellement connectée.
+  const effectiveName=profile.name||user?.name||'';
+  const effectivePhone=profile.phone||user?.phone||'';
+  const initials=(effectiveName||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   // Diamonds fetch
 const [diamonds, setDiamonds] = useState(0);
 useEffect(()=>{
-  const phone = profile?.phone;
+  const phone = profile?.phone||user?.phone;
   if(!phone) return;
   fetch(`https://workspaceapi-server-production-12a5.up.railway.app/api/diamonds?phone=${encodeURIComponent(phone)}`,{
     headers:{'x-api-key':'bridge-safi-2026'}
@@ -6527,7 +6532,19 @@ useEffect(()=>{
     .then(r=>r.ok?r.json():null)
     .then(d=>{if(d&&d.found)setDiamonds(d.diamonds??0)})
     .catch(()=>{});
-},[profile?.phone]);
+},[profile?.phone,user?.phone]);
+  // Compte rapide des commandes récentes (hors taxi/moto) pour le badge du
+  // bouton "Suivre mes commandes" — pas d'appel réseau ici, juste le cache local.
+  const [recentOrdersCount,setRecentOrdersCount]=useState(0);
+  useEffect(()=>{
+    try{
+      const raw=localStorage.getItem('bridge_history');
+      const arr:{type:string;date:string}[]=raw?JSON.parse(raw):[];
+      const THREE_H=3*60*60*1000;
+      const recent=arr.filter(e=>e.type!=='taxi'&&e.type!=='moto'&&(Date.now()-new Date(e.date).getTime())<THREE_H);
+      setRecentOrdersCount(recent.length);
+    }catch{}
+  },[]);
  
 
   return(
@@ -6581,7 +6598,7 @@ useEffect(()=>{
         </div>
         <div style={{background:'rgba(6,95,70,0.12)',border:'1px solid rgba(6,95,70,0.3)',borderRadius:6,padding:'2px 5px'}}>
           <span style={{fontSize:7,fontWeight:900,color:'#065F46',letterSpacing:'0.06em'}}>
-            {getBridgeId(profile.phone, profile.name)}
+            {getBridgeId(effectivePhone, effectiveName)}
           </span>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:3,background:'#FEF9C3',border:'1px solid #FDE047',borderRadius:8,padding:'2px 6px',boxShadow:'0 1px 4px rgba(0,0,0,0.08)'}}>
@@ -6718,6 +6735,36 @@ useEffect(()=>{
           };
           return(
             <div style={{display:'flex',flexDirection:'column',gap:'16px',width:'100%',maxWidth:'100%',padding:'0 8px'}}>
+              {/* SUIVRE MES COMMANDES — juste au-dessus des services */}
+              <button onClick={()=>navigate('/mes-commandes')}
+                style={{
+                  display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,
+                  width:'100%',padding:'14px 18px',borderRadius:18,cursor:'pointer',
+                  background:'linear-gradient(145deg,#0a0a0a 0%,#161616 55%,#0a0a0a 100%)',
+                  border:'1.5px solid rgba(217,197,160,0.4)',
+                  boxShadow:'0 8px 28px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.08)',
+                }}>
+                <div style={{display:'flex',alignItems:'center',gap:10,minWidth:0}}>
+                  <div style={{width:38,height:38,borderRadius:12,background:'rgba(16,185,129,0.15)',border:'1px solid rgba(16,185,129,0.35)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,flexShrink:0}}>📦</div>
+                  <div style={{textAlign:'left',minWidth:0}}>
+                    <p style={{color:'#fff',fontSize:14,fontWeight:900,margin:0}} className={fClass}>
+                      {lang==='ar'?'تتبع طلباتي':lang==='en'?'Track my orders':'Suivre mes commandes'}
+                    </p>
+                    <p style={{color:'rgba(255,255,255,0.55)',fontSize:9,fontWeight:600,margin:'2px 0 0'}} className={fClass}>
+                      {lang==='ar'?'GPS مباشر · وقت الوصول':lang==='en'?'Live GPS · arrival time':'GPS en direct · heure d\'arrivée'}
+                    </p>
+                  </div>
+                </div>
+                {recentOrdersCount>0 ? (
+                  <span style={{background:'#10B981',color:'#04140D',fontSize:11,fontWeight:900,borderRadius:20,padding:'4px 10px',display:'flex',alignItems:'center',gap:4,flexShrink:0}}>
+                    <span style={{width:6,height:6,borderRadius:'50%',background:'#04140D',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
+                    {recentOrdersCount}
+                  </span>
+                ) : (
+                  <span style={{color:'rgba(255,255,255,0.35)',fontSize:14,flexShrink:0}}>{isAR?'←':'→'}</span>
+                )}
+              </button>
+
               {/* Row 1: Eats + Taxi */}
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
                 {topItems.map(renderCard)}
@@ -8382,6 +8429,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
     }finally{setSending(false);}
     setLastRef(orderRef);
     try{localStorage.setItem('bridge_fleurs_last_ref',orderRef);}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'fleurs',date:new Date().toISOString(),total:cartTotal,address:delivAddr,name:resName.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setTrackStage(0);setStep('track');
   };
 
@@ -10044,6 +10092,152 @@ export function HistoryPageRoute() {
   );
 }
 
+
+// ─── MES COMMANDES — suivi en direct de toutes les commandes (hors taxi/moto) ──
+type ServiceThemeKey = 'eats'|'pharmacie'|'tabac'|'fleurs'|'boulangerie'|'souk';
+const ORDER_THEMES: Record<ServiceThemeKey, ServiceTrackTheme & {icon:string;label:string}> = {
+  eats:        {icon:'🍔',label:'Bridge Eats',        emoji:'🍔',accent:'#059669',accentDark:'#065F46',accentLight:'#6EE7B7',cardBg:'var(--c-card)',cardBorder:'var(--c-border)',textColor:'var(--c-text)',mutedColor:'#9CA3AF'},
+  pharmacie:   {icon:'💊',label:'Bridge Pharmacie',   emoji:'💊',accent:'#6366F1',accentDark:'#4338CA',accentLight:'#A5B4FC',cardBg:'rgba(99,102,241,0.15)',cardBorder:'rgba(99,102,241,0.5)',textColor:'#fff',mutedColor:'rgba(165,180,252,0.6)'},
+  tabac:       {icon:'🚬',label:'Bridge Tabac',       emoji:'🚬',accent:'#B45309',accentDark:'#78350F',accentLight:'#FCD34D',cardBg:'var(--c-card)',cardBorder:'var(--c-border)',textColor:'var(--c-text)',mutedColor:'#9CA3AF'},
+  fleurs:      {icon:'🌹',label:'Bridge Fleurs',      emoji:'💐',accent:'#A855F7',accentDark:'#7C3AED',accentLight:'#7C3AED',cardBg:'white',cardBorder:'#EDE9FE',textColor:'#4C1D95',mutedColor:'#9CA3AF'},
+  boulangerie: {icon:'🥖',label:'Bridge Boulangerie', emoji:'🥖',accent:'#FACC15',accentDark:'#A16207',accentLight:'#FDE68A',cardBg:'rgba(161,98,7,0.2)',cardBorder:'rgba(250,204,21,0.5)',textColor:'#FEF3C7',mutedColor:'rgba(253,230,138,0.6)'},
+  souk:        {icon:'🛍️',label:'Bridge Souk',        emoji:'🛍️',accent:'#C084FC',accentDark:'#7E22CE',accentLight:'#E9D5FF',cardBg:'rgba(126,34,206,0.2)',cardBorder:'rgba(192,132,252,0.5)',textColor:'#F3E8FF',mutedColor:'rgba(233,213,255,0.6)'},
+};
+
+type MyOrderEntry = HistoryEntry & { liveStatus?: string; etaLabel?: string };
+
+// Projette une heure d'arrivée exacte (horloge, pas un compte à rebours) à partir
+// de l'âge de la commande et de son statut — mêmes fenêtres que le reste de l'app
+// (15 min préparation, 10 min trajet une fois "en route").
+function projectArrival(orderDate: string, status: string): string | null {
+  const DELIVERED = ['delivered','completed'];
+  if (DELIVERED.includes(status)) return null;
+  const ON_WAY = ['on_the_way','on_way'];
+  const now = Date.now();
+  let target: number;
+  if (ON_WAY.includes(status)) {
+    target = now + 10*60*1000;
+  } else {
+    const orderTime = new Date(orderDate).getTime();
+    target = orderTime + 25*60*1000;
+    if (target < now) target = now + 5*60*1000; // sécurité si déjà "en retard" sur l'estimation
+  }
+  const d = new Date(target);
+  return d.toLocaleTimeString('fr-MA',{hour:'2-digit',minute:'2-digit'});
+}
+
+export function MyOrdersPageRoute() {
+  const [,navigate]=useLocation();
+  const {dark}=useDark();
+  const [lang]=useState<Lang>(()=>{try{const r=localStorage.getItem('bridge_nav');return r?JSON.parse(r).lang??'fr':'fr';}catch{return 'fr';}});
+  const [entries,setEntries]=useState<MyOrderEntry[]>(()=>{
+    try{
+      const raw=localStorage.getItem('bridge_history');
+      const arr:HistoryEntry[]=raw?JSON.parse(raw):[];
+      return arr.filter(e=>e.type!=='taxi'&&e.type!=='moto') as MyOrderEntry[];
+    }catch{return [];}
+  });
+  const [openRef,setOpenRef]=useState<string|null>(null);
+
+  // Un seul fetch de statut par commande récente (pas de polling en boucle ici —
+  // le polling live GPS se fait dans la vue détail via ServiceTrackingView).
+  useEffect(()=>{
+    const THREE_H=3*60*60*1000;
+    entries.forEach((e,i)=>{
+      if(Date.now()-new Date(e.date).getTime()>THREE_H) return;
+      fetch(`/api/orders/status/${e.ref}`,{cache:'no-store'})
+        .then(r=>r.ok?r.json():null)
+        .then(d=>{
+          if(!d?.status) return;
+          setEntries(prev=>{
+            const next=[...prev];
+            const idx=next.findIndex(x=>x.ref===e.ref);
+            if(idx===-1) return prev;
+            next[idx]={...next[idx],liveStatus:d.status,etaLabel:projectArrival(next[idx].date,d.status)??undefined};
+            return next;
+          });
+        })
+        .catch(()=>{});
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]);
+
+  const openEntry = entries.find(e=>e.ref===openRef);
+  const openTheme = openEntry ? (ORDER_THEMES[openEntry.type as ServiceThemeKey] ?? ORDER_THEMES.eats) : null;
+
+  const fmtDate=(iso:string)=>{
+    try{const d=new Date(iso);return d.toLocaleDateString('fr-MA',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}catch{return iso;}
+  };
+
+  const STATUS_LABEL:Record<string,string>={
+    pending:'En attente', pending_payment:'En attente de paiement', accepted:'Acceptée',
+    preparing:'En préparation', ready:'Prête', on_the_way:'En route', on_way:'En route',
+    delivered:'Livrée ✅', completed:'Livrée ✅', cancelled:'Annulée', refused:'Refusée',
+  };
+
+  return (
+    <div style={{background:'#0a0a0a',minHeight:'100dvh',fontFamily:'system-ui,sans-serif'}}>
+      <style>{`@keyframes mofadeIn{0%{opacity:0;transform:translateY(10px);}100%{opacity:1;transform:translateY(0);}}`}</style>
+      {/* Header */}
+      <div style={{background:'#111111',padding:'52px 20px 14px',borderBottom:'1px solid #2a2a2a',position:'sticky',top:0,zIndex:10,display:'flex',alignItems:'center',gap:12}}>
+        <button onClick={()=>navigate('/')} style={{background:'none',border:'none',fontSize:20,cursor:'pointer',color:'#fff',padding:'4px 8px',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36,borderRadius:'50%',flexShrink:0}}>←</button>
+        <div style={{flex:1}}>
+          <p style={{fontSize:9,fontWeight:800,letterSpacing:'0.2em',color:'#9CA3AF',margin:'0 0 1px'}}>BRIDGE SAFI</p>
+          <h1 style={{fontSize:'1.1rem',fontWeight:900,color:'#fff',margin:0}}>📦 Mes commandes</h1>
+        </div>
+        <span style={{fontSize:11,color:'#9CA3AF',fontWeight:700}}>{entries.length}</span>
+      </div>
+
+      {/* Content */}
+      <div style={{padding:'16px',maxWidth:480,margin:'0 auto',boxSizing:'border-box' as const}}>
+        {entries.length===0?(
+          <div style={{textAlign:'center',padding:'80px 20px',animation:'mofadeIn 0.4s ease-out'}}>
+            <div style={{fontSize:60,marginBottom:14}}>📭</div>
+            <p style={{fontWeight:800,fontSize:17,color:'#fff',margin:'0 0 8px'}}>Aucune commande pour l'instant</p>
+            <p style={{color:'#9CA3AF',fontSize:13,margin:'0 0 28px'}}>Vos commandes Eats, Pharmacie, Tabac, Fleurs, Boulangerie et Souk apparaîtront ici avec leur suivi en direct</p>
+            <button onClick={()=>navigate('/')} style={{padding:'12px 24px',borderRadius:14,border:'none',background:'linear-gradient(135deg,#065F46,#34D399)',color:'#fff',fontWeight:900,fontSize:14,cursor:'pointer'}}>
+              Découvrir les services
+            </button>
+          </div>
+        ):entries.map((e,i)=>{
+          const th=ORDER_THEMES[e.type as ServiceThemeKey]??ORDER_THEMES.eats;
+          const isDelivered=e.liveStatus==='delivered'||e.liveStatus==='completed';
+          return(
+            <button key={i} onClick={()=>setOpenRef(e.ref)}
+              style={{display:'block',width:'100%',textAlign:'left' as const,background:'#161616',borderRadius:16,padding:'14px 16px',marginBottom:10,border:'1px solid #2a2a2a',boxShadow:'0 2px 8px rgba(0,0,0,0.3)',animation:`mofadeIn 0.3s ease-out ${i*0.04}s both`,cursor:'pointer'}}>
+              <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:e.liveStatus?8:0}}>
+                <div style={{width:42,height:42,borderRadius:12,background:th.accent+'22',display:'flex',alignItems:'center',justifyContent:'center',fontSize:21,flexShrink:0,border:`1px solid ${th.accent}44`}}>{th.icon}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <p style={{fontWeight:900,fontSize:14,color:'#fff',margin:'0 0 2px'}}>{th.label}</p>
+                  <p style={{fontSize:10,color:'#9CA3AF',margin:0}}>{fmtDate(e.date)} · {e.ref}</p>
+                </div>
+                {(e.total??0)>0&&<p style={{fontWeight:900,fontSize:14,color:th.accent,margin:0,flexShrink:0}}>{e.total} DH</p>}
+              </div>
+              {e.liveStatus&&(
+                <div style={{fontSize:11,fontWeight:700,borderRadius:10,padding:'8px 12px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:6,background:'#0a0a0a',border:'1px solid #2a2a2a'}}>
+                  <span style={{color:isDelivered?'#34D399':'#fff'}}>
+                    {isDelivered?'✅ ':'⏱️ '}{STATUS_LABEL[e.liveStatus]??e.liveStatus}
+                  </span>
+                  {e.etaLabel&&<span style={{color:'#9CA3AF'}}>Arrivée ≈ {e.etaLabel}</span>}
+                </div>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Détail plein écran — suivi GPS complet de la commande sélectionnée */}
+      {openEntry&&openTheme&&(
+        <div className="fixed inset-0 z-[90] overflow-y-auto" style={{background:'#0a0a0a'}}>
+          <div style={{padding:'52px 16px 24px',maxWidth:480,margin:'0 auto'}}>
+            <button onClick={()=>setOpenRef(null)} style={{background:'rgba(255,255,255,0.08)',border:'none',borderRadius:20,padding:'8px 16px',color:'#fff',fontSize:12,fontWeight:800,cursor:'pointer',marginBottom:16,display:'flex',alignItems:'center',gap:6}}>← Retour</button>
+            <ServiceTrackingView orderRef={openEntry.ref} lang={lang} onNewOrder={()=>setOpenRef(null)} theme={openTheme}/>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 function loadNav() {
   try {
     const raw=localStorage.getItem(NAV_KEY);

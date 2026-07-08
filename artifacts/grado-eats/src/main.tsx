@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { AuthProvider, useAuth, useBridgeAuth, useUser } from './bridge-auth';
 import { Switch, Route, useLocation, Router as WouterRouter } from 'wouter';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
-import App, { HistoryPageRoute } from "./App";
+import App, { HistoryPageRoute, MyOrdersPageRoute } from "./App";
 import "./index.css";
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -4490,6 +4490,7 @@ function ClerkProviderWithRoutes() {
           <Route path="/missions" component={MissionsPage} />
           <Route path="/assistant" component={BridgeAssistantPage} />
           <Route path="/history" component={HistoryPageRoute} />
+          <Route path="/mes-commandes" component={MyOrdersPageRoute} />
           <Route path="/dispatch" component={DispatchPage} />
           <Route path="/driver/:ref" component={DriverTrackerPage} />
           <Route path="/resto" component={RestaurantOwnerPage} />
