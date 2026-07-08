@@ -144,6 +144,7 @@ function DeliveryMap({onSet,onAddress,pin}:{
   pin:[number,number]|null;
 }) {
   const [geocoding,setGeocoding]=useState(false);
+  const [gettingGPS,setGettingGPS]=useState(false);
 
   const handlePick=async(lat:number,lng:number)=>{
     const inside=pointInPolygon(lat,lng,DELIVERY_ZONE);
@@ -152,6 +153,16 @@ function DeliveryMap({onSet,onAddress,pin}:{
     const addr=await reverseGeocode(lat,lng);
     setGeocoding(false);
     if(addr) onAddress(addr);
+  };
+
+  const useMyGPS=()=>{
+    if(!navigator.geolocation){return;}
+    setGettingGPS(true);
+    navigator.geolocation.getCurrentPosition(
+      pos=>{handlePick(pos.coords.latitude,pos.coords.longitude).finally(()=>setGettingGPS(false));},
+      ()=>setGettingGPS(false),
+      {enableHighAccuracy:true,timeout:8000}
+    );
   };
 
   return (
@@ -165,6 +176,13 @@ function DeliveryMap({onSet,onAddress,pin}:{
         <MapClickLayer onPick={handlePick}/>
         {pin&&<DraggablePin pos={pin} onDragEnd={handlePick}/>}
       </MapContainer>
+      <button type="button" onClick={useMyGPS} disabled={gettingGPS}
+        style={{position:'absolute',top:8,right:8,zIndex:1000,padding:'7px 11px',borderRadius:10,border:'none',
+          background:gettingGPS?'rgba(6,95,70,0.6)':'#065F46',color:'#fff',fontWeight:900,fontSize:11,
+          cursor:gettingGPS?'not-allowed':'pointer',display:'flex',alignItems:'center',gap:5,boxShadow:'0 3px 10px rgba(0,0,0,0.3)'}}>
+        {gettingGPS?<span style={{animation:'spin 1s linear infinite',display:'inline-block'}}>⟳</span>:<span>🎯</span>}
+        {gettingGPS?'Détection…':'Ma position GPS'}
+      </button>
       {geocoding&&(
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-bold text-white flex items-center gap-1.5"
           style={{background:'rgba(6,95,70,0.85)',backdropFilter:'blur(4px)',zIndex:1000}}>
@@ -9534,18 +9552,37 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
 // ─── LOCATION PICKER MAP (GPS) ────────────────────────────────────────────────
 
 function LocationPickerMap({pos,onChange}:{pos:{lat:number;lng:number};onChange:(p:{lat:number;lng:number})=>void}) {
+  const [gettingGPS,setGettingGPS]=useState(false);
   const pinIcon=L.divIcon({className:'',html:'<div style="font-size:32px;line-height:1;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.6))">📍</div>',iconSize:[34,34],iconAnchor:[17,34]});
   function ClickCapture() {
     useMapEvents({click(e){onChange({lat:e.latlng.lat,lng:e.latlng.lng});}});
     return null;
   }
+  const useMyGPS=()=>{
+    if(!navigator.geolocation){return;}
+    setGettingGPS(true);
+    navigator.geolocation.getCurrentPosition(
+      p=>{onChange({lat:p.coords.latitude,lng:p.coords.longitude});setGettingGPS(false);},
+      ()=>setGettingGPS(false),
+      {enableHighAccuracy:true,timeout:8000}
+    );
+  };
   return(
-    <MapContainer center={[pos.lat,pos.lng]} zoom={14} style={{width:'100%',height:'100%'}} zoomControl={false} attributionControl={false}>
-      <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"/>
-      <ClickCapture/>
-      <Marker position={[pos.lat,pos.lng]} icon={pinIcon} draggable
-        eventHandlers={{dragend:(e:any)=>{const m=e.target;const ll=m.getLatLng();onChange({lat:ll.lat,lng:ll.lng});}}}/>
-    </MapContainer>
+    <div style={{position:'relative',width:'100%',height:'100%'}}>
+      <MapContainer center={[pos.lat,pos.lng]} zoom={14} style={{width:'100%',height:'100%'}} zoomControl={false} attributionControl={false}>
+        <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"/>
+        <ClickCapture/>
+        <Marker position={[pos.lat,pos.lng]} icon={pinIcon} draggable
+          eventHandlers={{dragend:(e:any)=>{const m=e.target;const ll=m.getLatLng();onChange({lat:ll.lat,lng:ll.lng});}}}/>
+      </MapContainer>
+      <button type="button" onClick={useMyGPS} disabled={gettingGPS}
+        style={{position:'absolute',top:8,right:8,zIndex:1000,padding:'6px 10px',borderRadius:10,border:'none',
+          background:gettingGPS?'rgba(6,95,70,0.6)':'#065F46',color:'#fff',fontWeight:900,fontSize:10,
+          cursor:gettingGPS?'not-allowed':'pointer',display:'flex',alignItems:'center',gap:4,boxShadow:'0 3px 10px rgba(0,0,0,0.35)'}}>
+        {gettingGPS?<span style={{animation:'spin 1s linear infinite',display:'inline-block'}}>⟳</span>:<span>🎯</span>}
+        {gettingGPS?'Détection…':'Ma position'}
+      </button>
+    </div>
   );
 }
 
