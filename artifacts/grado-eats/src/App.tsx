@@ -3438,34 +3438,34 @@ function RestaurantCard({r,lang,t,onClick,compact=false}:{r:Restaurant;lang:Lang
       <button onClick={onClick}
         className="w-full text-left rounded-2xl overflow-hidden transition-all active:scale-95"
         style={{background:'var(--c-bg)',border:`1.5px solid ${isFeatured?'#D9C5A0':'#E5E1D8'}`,boxShadow:'0 4px 14px rgba(0,0,0,0.08)'}}>
-        <div className="relative h-28 overflow-hidden">
+        <div className="relative h-36 overflow-hidden">
           <img src={r.cover} alt={r.name} className="w-full h-full object-cover" loading="lazy"/>
           <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.9) 0%,rgba(4,55,38,0.05) 60%,transparent 100%)'}}/>
-          <div className="absolute top-2 left-2 w-8 h-8 rounded-xl flex items-center justify-center text-lg"
+          <div className="absolute top-2.5 left-2.5 w-10 h-10 rounded-xl flex items-center justify-center text-2xl"
             style={{background:'rgba(253,252,249,0.95)',backdropFilter:'blur(8px)',boxShadow:'0 2px 8px rgba(0,0,0,0.15)'}}>
             {_ue(r.logo)}
           </div>
           {isFeatured&&(
-            <div className="absolute top-2 right-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full" style={{background:'#D9C5A0'}}>
-              <span className="text-[9px]">⭐</span>
-              <span className="text-[9px] font-black" style={{color:'#065F46'}}>#1</span>
+            <div className="absolute top-2.5 right-2.5 flex items-center gap-0.5 px-2 py-1 rounded-full" style={{background:'#D9C5A0'}}>
+              <span className="text-[10px]">⭐</span>
+              <span className="text-[10px] font-black" style={{color:'#065F46'}}>#1</span>
             </div>
           )}
-          <div className="absolute bottom-0 left-0 right-0 px-2.5 pb-2">
-            <h3 className={`font-black text-white text-xs leading-tight mb-0.5 ${fClass}`}>{r.name}</h3>
-            <p className={`text-white/65 text-[10px] leading-tight line-clamp-1 ${fClass}`}>{r.tagline[lang]}</p>
+          <div className="absolute bottom-0 left-0 right-0 px-3 pb-2.5">
+            <h3 className={`font-black text-white text-sm leading-tight mb-0.5 ${fClass}`}>{r.name}</h3>
+            <p className={`text-white/65 text-[11px] leading-tight line-clamp-1 ${fClass}`}>{r.tagline[lang]}</p>
           </div>
         </div>
-        <div className="px-2.5 py-2 flex items-center justify-between gap-1">
+        <div className="px-3 py-2.5 flex items-center justify-between gap-1">
           <div className="flex items-center gap-1 flex-wrap">
-            <span className="text-yellow-400 text-xs">★</span>
-            <span className="text-[10px] font-black" style={{color:'var(--c-text)'}}>{r.rating}</span>
+            <span className="text-yellow-400 text-sm">★</span>
+            <span className="text-xs font-black" style={{color:'var(--c-text)'}}>{r.rating}</span>
             <div className="w-0.5 h-0.5 rounded-full mx-0.5" style={{background:'#D9C5A0'}}/>
-            <span className="text-[10px]" style={{color:'#6B7280'}}>⏱{_ue(r.deliveryTime)}{t.delivMin}</span>
+            <span className="text-xs" style={{color:'#6B7280'}}>⏱{_ue(r.deliveryTime)}{t.delivMin}</span>
           </div>
-          <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{background:'#F0FDF4'}}>
+          <div className="flex items-center gap-1 px-2 py-1 rounded-full flex-shrink-0" style={{background:'#F0FDF4'}}>
             <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"/>
-            <span className="text-[9px] font-black" style={{color:'#065F46'}}>{t.openNow}</span>
+            <span className="text-[10px] font-black" style={{color:'#065F46'}}>{t.openNow}</span>
           </div>
         </div>
       </button>
@@ -3762,8 +3762,20 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
   const fClass=fontClass(lang);
   const [activeFilter,setActiveFilter]=useState<FilterId>('all');
 
+  // Ordre aléatoire des restaurants (sauf McDo, toujours en tête) — stable pendant la session
+  const shuffledRestaurants = useMemo(() => {
+    const mcdo = RESTAURANTS.find(r => r.id === 'mcdonalds-safi');
+    const others = RESTAURANTS.filter(r => r.id !== 'mcdonalds-safi');
+    const arr = [...others];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return mcdo ? [mcdo, ...arr] : arr;
+  }, []);
+
   const filtered = activeFilter==='all'
-    ? RESTAURANTS
+    ? shuffledRestaurants
     : RESTAURANTS.filter(r=>r.tags.includes(activeFilter));
 
   return (
@@ -3813,7 +3825,7 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
         )}
       </div>
 
-      {/* Restaurant cards — 2-column grid, featured full-width */}
+      {/* Restaurant cards — 1 par ligne, McDo en grande carte, le reste en taille moyenne */}
       {filtered.length===0
         ? (
           <div className="mx-5 py-10 flex flex-col items-center gap-3 rounded-2xl" style={{background:'#F0EDE6'}}>
@@ -3827,11 +3839,12 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
           </div>
         )
         : (
-          <div className="tv-grid px-4 grid grid-cols-2 gap-3 mb-6">
-            {filtered.map(r=>{
-              const isFeatured=r.id==='mcdonalds-safi' && activeFilter==='all';
+          <div className="tv-grid px-4 flex flex-col gap-3 mb-6">
+            {filtered.map((r,idx)=>{
+              // Une grande carte toutes les 5 : McDo en 1er, puis un resto au hasard tous les 5
+              const isFeatured=activeFilter==='all' && idx%5===0;
               return(
-                <div key={r.id} className={isFeatured?'col-span-2':''}>
+                <div key={r.id}>
                   <RestaurantCard r={r} lang={lang} t={t} onClick={()=>onSelectRestaurant(r)} compact={!isFeatured}/>
                 </div>
               );
@@ -6055,16 +6068,9 @@ useEffect(()=>{
   <div className={`absolute top-3 z-50 ${isAR?'right-3':'left-3'}`}>
     <button
     onClick={() => window.location.href = '/sign-in'}
-      style={{
-        background:'linear-gradient(135deg,rgba(6,95,70,0.92),rgba(4,55,38,0.95))',
-        backdropFilter:'blur(12px)',color:'#FDFCF9',
-        border:'1.5px solid rgba(217,197,160,0.55)',
-        boxShadow:'0 4px 16px rgba(6,95,70,0.35),inset 0 1px 0 rgba(255,255,255,0.15)',
-        borderRadius:20,padding:'8px 18px',fontSize:11,fontWeight:900,
-        letterSpacing:'0.04em',display:'flex',alignItems:'center',gap:6,cursor:'pointer',
-      }}
+      className="text-xs font-black px-3 py-1.5 rounded-full"
+      style={{background:'#065F46', color:'white', border:'1px solid #D9C5A0', boxShadow:'0 2px 8px rgba(6,95,70,0.3)'}}
     >
-      <span style={{fontSize:12}}>✦</span>
       {lang==='ar'?'تسجيل الدخول':lang==='amz'?'ⴰⴽⵛⵎ':'Se connecter'}
     </button>
   </div>
@@ -6148,16 +6154,16 @@ useEffect(()=>{
                 }}>
                 <div style={{
                   background: item.grad,
-                  borderRadius:18,
+                  borderRadius:10,
                   border:`1.5px solid ${isPressed?'rgba(255,255,255,0.55)':item.border}`,
                   boxShadow: isPressed
                     ? `0 0 0 3px ${item.glow},0 16px 40px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.25)`
                     : `0 8px 32px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.2)`,
-                  padding:'18px 8px 14px',
-                  display:'flex',flexDirection:'column',alignItems:'center',gap:5,
+                  padding:'6px 3px 4px',
+                  display:'flex',flexDirection:'column',alignItems:'center',gap:2,
                   position:'relative',overflow:'hidden',
                   transition:'box-shadow 0.25s,border-color 0.25s',
-                  minHeight:92,
+                  minHeight:52,
                 }}>
                   {/* Glass shine */}
                   <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
@@ -6169,17 +6175,17 @@ useEffect(()=>{
                       <span style={{color:'#fff',fontSize:7,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
                     </div>
                   )}
-                  <span style={{fontSize:30,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))',display:'inline-block',animation:`svcFloat ${3.2+idx*0.35}s ease-in-out ${idx*0.25}s infinite`}}>{item.emoji}</span>
-                  <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>{item.label}</p>
+                  <span style={{fontSize:22,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))',display:'inline-block',animation:`svcFloat ${3.2+idx*0.35}s ease-in-out ${idx*0.25}s infinite`}}>{item.emoji}</span>
+                  <p style={{color:'#fff',fontSize:12,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>{item.label}</p>
                   <p style={{color:'rgba(255,255,255,0.75)',fontSize:9,fontWeight:600,margin:0,textAlign:'center'}}>{item.sub}</p>
                 </div>
               </button>
             );
           };
           return(
-            <div style={{display:'flex',flexDirection:'column',gap:'16px',width:'100%',maxWidth:'100%',padding:'0 8px'}}>
+            <div style={{display:'flex',flexDirection:'column',gap:'8px',width:'100%',maxWidth:'100%',padding:'0 4px'}}>
               {/* Row 1: Eats + Taxi */}
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'}}>
                 {topItems.map(renderCard)}
               </div>
               {/* Row 2: Bridge Pharmacie — full width, centered */}
@@ -6189,9 +6195,9 @@ useEffect(()=>{
                   <button onClick={()=>choose('pharmacie')} style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:isPh?'scale(0.97)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',opacity:0.82,animation:'svcFadeUp 0.45s ease-out 0.16s both'}}>
                     <div style={{
                       background:'linear-gradient(145deg,#0C0E2B 0%,#1E1B4B 35%,#312E81 65%,#1D4ED8 100%)',
-                      borderRadius:18,border:`1.5px solid ${isPh?'rgba(255,255,255,0.5)':'rgba(99,102,241,0.5)'}`,
+                      borderRadius:10,border:`1.5px solid ${isPh?'rgba(255,255,255,0.5)':'rgba(99,102,241,0.5)'}`,
                       boxShadow:isPh?'0 0 0 3px rgba(99,102,241,0.5),0 16px 40px rgba(99,102,241,0.4),inset 0 1px 0 rgba(255,255,255,0.2)':'0 8px 32px rgba(30,27,75,0.7),inset 0 1px 0 rgba(255,255,255,0.15)',
-                      padding:'14px 12px',display:'flex',alignItems:'center',gap:10,position:'relative',overflow:'hidden',
+                      padding:'6px 8px',display:'flex',alignItems:'center',gap:6,position:'relative',overflow:'hidden',
                     }}>
                       <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
                       {/* Night stars decoration */}
@@ -6199,7 +6205,7 @@ useEffect(()=>{
                       <div style={{position:'absolute',top:9,right:18,fontSize:5,opacity:0.3}}>★</div>
                       <div style={{position:'absolute',top:3,right:28,fontSize:6,opacity:0.4}}>✦</div>
                       <div style={{background:'rgba(255,255,255,0.1)',borderRadius:8,padding:'4px 5px',flexShrink:0}}>
-                        <span style={{fontSize:28,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.4))'}}>💊</span>
+                        <span style={{fontSize:20,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.4))'}}>💊</span>
                       </div>
                       <div style={{textAlign:'left',flex:1}}>
                         <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:1}}>
@@ -6217,16 +6223,16 @@ useEffect(()=>{
                 );
               })()}
               {/* Row 3: Fleurs + Tabac */}
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'}}>
                 {botItems.map(renderCard)}
               </div>
               {/* Row 4: Bridge Supermarché — full width banner */}
               <div style={{opacity:0.82,animation:'svcFadeUp 0.45s ease-out 0.24s both'}}>
                 <div style={{
                   background:'linear-gradient(145deg,#3B0A0A 0%,#7F1D1D 45%,#B91C1C 100%)',
-                  borderRadius:18,border:'1.5px solid rgba(239,68,68,0.5)',
+                  borderRadius:10,border:'1.5px solid rgba(239,68,68,0.5)',
                   boxShadow:'0 6px 20px rgba(127,29,29,0.6),inset 0 1px 0 rgba(255,255,255,0.12)',
-                  padding:'14px 12px',display:'flex',alignItems:'center',gap:10,position:'relative',overflow:'hidden',
+                  padding:'9px 8px',display:'flex',alignItems:'center',gap:6,position:'relative',overflow:'hidden',
                 }}>
                   <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
                   <div style={{background:'rgba(255,255,255,0.1)',borderRadius:8,padding:'4px 5px',flexShrink:0}}>
@@ -6245,39 +6251,39 @@ useEffect(()=>{
                 </div>
               </div>
               {/* Row 5: Boulangerie + Souk — nouvelles cartes */}
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'}}>
                 <div style={{opacity:0.82,animation:'svcFadeUp 0.45s ease-out 0.32s both'}}>
                   <div style={{
                     background:'linear-gradient(145deg,#422006 0%,#A16207 55%,#FACC15 100%)',
-                    borderRadius:18,border:'1.5px solid rgba(250,204,21,0.45)',
+                    borderRadius:10,border:'1.5px solid rgba(250,204,21,0.45)',
                     boxShadow:'0 8px 32px rgba(161,98,7,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
-                    padding:'18px 8px 14px',display:'flex',flexDirection:'column',alignItems:'center',gap:5,
-                    position:'relative',overflow:'hidden',minHeight:92,
+                    padding:'6px 3px 4px',display:'flex',flexDirection:'column',alignItems:'center',gap:2,
+                    position:'relative',overflow:'hidden',minHeight:52,
                   }}>
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
                     <div style={{position:'absolute',top:3,right:3,background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'2px 6px',display:'flex',alignItems:'center',gap:2,backdropFilter:'blur(6px)'}}>
                       <span style={{width:4,height:4,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
                       <span style={{color:'#fff',fontSize:6,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
                     </div>
-                    <span style={{fontSize:30,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🥖</span>
-                    <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Boulangerie</p>
+                    <span style={{fontSize:22,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🥖</span>
+                    <p style={{color:'#fff',fontSize:12,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Boulangerie</p>
                     <p style={{color:'rgba(255,255,255,0.75)',fontSize:9,fontWeight:600,margin:0,textAlign:'center'}}>Pain & pâtisseries</p>
                   </div>
                 </div>
                 <div style={{opacity:0.82,animation:'svcFadeUp 0.45s ease-out 0.4s both'}}>
                   <div style={{
                     background:'linear-gradient(145deg,#3B0764 0%,#7E22CE 55%,#C084FC 100%)',
-                    borderRadius:18,border:'1.5px solid rgba(192,132,252,0.45)',
+                    borderRadius:10,border:'1.5px solid rgba(192,132,252,0.45)',
                     boxShadow:'0 8px 32px rgba(126,34,206,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
-                    padding:'18px 8px 14px',display:'flex',flexDirection:'column',alignItems:'center',gap:5,
-                    position:'relative',overflow:'hidden',minHeight:92,
+                    padding:'6px 3px 4px',display:'flex',flexDirection:'column',alignItems:'center',gap:2,
+                    position:'relative',overflow:'hidden',minHeight:52,
                   }}>
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
                     <div style={{position:'absolute',top:3,right:3,background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'2px 6px',display:'flex',alignItems:'center',gap:2,backdropFilter:'blur(6px)'}}>
                       <span style={{width:4,height:4,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
                       <span style={{color:'#fff',fontSize:6,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
                     </div>
-                    <span style={{fontSize:30,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🛍️</span>
+                    <span style={{fontSize:22,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🛍️</span>
                     <p style={{color:'#fff',fontSize:12,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Souk</p>
                     <p style={{color:'rgba(255,255,255,0.75)',fontSize:9,fontWeight:600,margin:0,textAlign:'center'}}>Vêtements · Parfums · Miel</p>
                   </div>
@@ -6289,7 +6295,7 @@ useEffect(()=>{
 
         {/* ── GAME BANNER — entre grille et pub ─────────────────────────────── */}
         <button onClick={()=>navigate('/game')}
-          className="w-full mt-12 transition-all active:scale-95"
+          className="w-full mt-7 transition-all active:scale-95"
           style={{background:'linear-gradient(135deg,#071A10,#0D3020)',border:'1.5px solid rgba(74,222,128,0.35)',borderRadius:20,padding:'14px 18px',boxShadow:'0 6px 28px rgba(6,95,70,0.45)',cursor:'pointer',display:'flex',alignItems:'center',gap:14,textAlign:'left'}}>
           {/* Shark avatar */}
           <div style={{width:52,height:52,borderRadius:'50%',overflow:'hidden',border:'2px solid #D9C5A0',flexShrink:0,boxShadow:'0 0 16px rgba(74,222,128,0.4)'}}>
@@ -6310,10 +6316,10 @@ useEffect(()=>{
 
         {/* ── AD SLOT — place de publicité ───────────────────────────────────── */}
         <div id="ad-slot" className="w-full mt-5" style={{position:'relative'}}>
-          <a href="https://grado.safi-bridge.ma" className="block rounded-2xl overflow-hidden" style={{border:'1.5px dashed #D9C5A0',background:'rgba(253,252,249,0.7)'}}>
+          <a href="https://grado.safi-bridge.ma" className="block rounded-2xl overflow-hidden" style={{border:'1.5px dashed #D9C5A0',background:'rgba(253,252,249,0.7)',minHeight:90}}>
             {/* PUB_CONTENT_START */}
             <video ref={pubVideoRef} src="/pub-video.mp4" autoPlay loop muted playsInline
-              style={{width:'100%',height:'160px',display:'block',objectFit:'cover'}}/>
+              style={{width:'100%',height:'100%',display:'block',objectFit:'cover'}}/>
             {/* PUB_CONTENT_END */}
           </a>
           {/* Bouton son — reste fixe même si la vidéo change, masque aussi le watermark IA */}
