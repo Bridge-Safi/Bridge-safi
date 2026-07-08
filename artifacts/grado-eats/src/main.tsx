@@ -211,6 +211,9 @@ function SignInPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [staySignedIn, setStaySignedIn] = useState(()=>{
+    try{return localStorage.getItem(STAY_KEY)!=='0';}catch{return true;}
+  });
   const isEmailId = identifier.includes('@');
   useEffect(()=>{if(isLoaded&&isSignedIn) navigate(basePath||'/');},[isLoaded,isSignedIn]);
   const handleSubmit = async (e: React.FormEvent) => {
@@ -218,7 +221,7 @@ function SignInPage() {
     if(!identifier.trim()){setError('Numéro ou email requis.');return;}
     if(!password){setError('Mot de passe requis.');return;}
     setLoading(true); setError('');
-    try{await signIn(identifier.trim(),password); navigate(basePath||'/');}
+    try{await signIn(identifier.trim(),password,staySignedIn); navigate(basePath||'/');}
     catch(err:any){setError(err.message||'Identifiants incorrects.');}
     setLoading(false);
   };
@@ -240,6 +243,11 @@ function SignInPage() {
           autoComplete="username" type={isEmailId?'email':'tel'} />
         <FocusInput label="Mot de passe" type="password" value={password} onChange={setPassword}
           placeholder="••••••••" autoComplete="current-password" />
+        <label style={{display:'flex',alignItems:'center',gap:8,margin:'0.5rem 0 0.25rem',cursor:'pointer',userSelect:'none'}}>
+          <input type="checkbox" checked={staySignedIn} onChange={e=>setStaySignedIn(e.target.checked)}
+            style={{width:16,height:16,accentColor:'#065F46',cursor:'pointer'}} />
+          <span style={{fontSize:'0.8rem',color:'#374151',fontWeight:600}}>Rester connecté sur cet appareil</span>
+        </label>
         {error && <div style={errStyle}>{error}</div>}
         <button type="submit" style={{...btn,opacity:loading?0.7:1,marginTop:14}} disabled={loading}>
           {loading?'Connexion...':'Connexion →'}
@@ -422,6 +430,7 @@ function SignUpPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [staySignedIn, setStaySignedIn] = useState(true);
   const isEmailId = identifier.includes('@');
   useEffect(()=>{if(isLoaded&&isSignedIn) navigate(basePath||'/');},[isLoaded,isSignedIn]);
   const handleSubmit = async (e: React.FormEvent) => {
@@ -429,7 +438,7 @@ function SignUpPage() {
     if(!identifier.trim()){setError('Numéro ou email requis.');return;}
     if(password.length<8){setError('Mot de passe trop faible (8 car. min.).');return;}
     setLoading(true); setError('');
-    try{await signUp(identifier.trim(),password,name.trim()); navigate(basePath||'/');}
+    try{await signUp(identifier.trim(),password,name.trim(),staySignedIn); navigate(basePath||'/');}
     catch(err:any){setError(err.message||'Erreur lors de la création du compte.');}
     setLoading(false);
   };
@@ -445,6 +454,11 @@ function SignUpPage() {
           placeholder="Votre prénom" autoComplete="name" />
         <FocusInput label="Mot de passe * (8 car. min.)" type="password" value={password} onChange={setPassword}
           placeholder="••••••••" autoComplete="new-password" />
+        <label style={{display:'flex',alignItems:'center',gap:8,margin:'0.5rem 0 0.25rem',cursor:'pointer',userSelect:'none'}}>
+          <input type="checkbox" checked={staySignedIn} onChange={e=>setStaySignedIn(e.target.checked)}
+            style={{width:16,height:16,accentColor:'#065F46',cursor:'pointer'}} />
+          <span style={{fontSize:'0.8rem',color:'#374151',fontWeight:600}}>Rester connecté sur cet appareil</span>
+        </label>
         {error && <div style={errStyle}>{error}</div>}
         <button type="submit" style={{...btn}}>Créer mon compte →</button>
       </form>

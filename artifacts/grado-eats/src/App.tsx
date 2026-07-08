@@ -5860,7 +5860,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
   // Poll GPS tracking store + DB status every 3 seconds
   useEffect(()=>{
     if(!orderRef) return;
-    const trackStageMap:{[k:string]:number}={received:0,preparing:1,on_way:2,delivered:3};
+    const trackStageMap:{[k:string]:number}={received:0,preparing:1,on_way:2,on_the_way:2,delivered:3};
     const dbStageMap:{[k:string]:number}={
       pending:0,pending_payment:0,
       accepted:1,preparing:1,ready:1,
@@ -6134,7 +6134,7 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
 
   useEffect(()=>{
     if(!orderRef) return;
-    const trackStageMap:{[k:string]:number}={received:0,preparing:1,on_way:2,delivered:3};
+    const trackStageMap:{[k:string]:number}={received:0,preparing:1,on_way:2,on_the_way:2,delivered:3};
     const dbStageMap:{[k:string]:number}={
       pending:0,pending_payment:0,
       accepted:1,preparing:1,ready:1,
@@ -11603,6 +11603,10 @@ export function MyOrdersPageRoute() {
           <h1 style={{fontSize:'1.1rem',fontWeight:900,color:'#fff',margin:0}}>📦 Mes commandes</h1>
         </div>
         <span style={{fontSize:11,color:'#9CA3AF',fontWeight:700}}>{entries.length}</span>
+        <a href="https://wa.me/212764794856?text=Bonjour%2C+j%27ai+besoin+d%27aide+avec+ma+commande" target="_blank" rel="noopener noreferrer"
+          style={{display:'flex',alignItems:'center',gap:5,background:'rgba(37,211,102,0.15)',border:'1px solid rgba(37,211,102,0.4)',borderRadius:20,padding:'6px 12px',color:'#25D366',fontSize:11,fontWeight:800,textDecoration:'none',flexShrink:0}}>
+          💬 Aide
+        </a>
       </div>
 
       {/* Content */}
