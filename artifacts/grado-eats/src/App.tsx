@@ -5965,6 +5965,8 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
 function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:{onSelect:(s:'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie')=>void;onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void}) {
   const [pressed,setPressed]=useState<'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'|null>(null);
   const [showProfile,setShowProfile]=useState(false);
+  const pubVideoRef=useRef<HTMLVideoElement>(null);
+  const [pubMuted,setPubMuted]=useState(true);
   const [,navigate]=useLocation();
   const { user } = useUser(); const { isSignedIn } = useAuth();
   const getAuthHeaders=useAuthHeaders();
@@ -6300,13 +6302,19 @@ useEffect(()=>{
         </button>
 
         {/* ── AD SLOT — place de publicité ───────────────────────────────────── */}
-        <div id="ad-slot" className="w-full mt-5">
+        <div id="ad-slot" className="w-full mt-5" style={{position:'relative'}}>
           <a href="https://grado.safi-bridge.ma" className="block rounded-2xl overflow-hidden" style={{border:'1.5px dashed #D9C5A0',background:'rgba(253,252,249,0.7)',minHeight:90}}>
             {/* PUB_CONTENT_START */}
-            <video src="/pub-video.mp4" autoPlay loop muted playsInline
+            <video ref={pubVideoRef} src="/pub-video.mp4" autoPlay loop muted playsInline
               style={{width:'100%',height:'100%',display:'block',objectFit:'cover'}}/>
             {/* PUB_CONTENT_END */}
           </a>
+          {/* Bouton son — reste fixe même si la vidéo change, masque aussi le watermark IA */}
+          <button
+            onClick={(e)=>{e.preventDefault();e.stopPropagation();const v=pubVideoRef.current;if(v){v.muted=!v.muted;setPubMuted(v.muted);}}}
+            style={{position:'absolute',top:8,right:8,width:30,height:30,borderRadius:'50%',background:'rgba(0,0,0,0.55)',backdropFilter:'blur(4px)',border:'1px solid rgba(255,255,255,0.35)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',zIndex:2,padding:0}}>
+            <span style={{fontSize:14,lineHeight:1}}>{pubMuted?'🔇':'🔊'}</span>
+          </button>
         </div>
 
       </div>
