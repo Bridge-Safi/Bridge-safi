@@ -11747,10 +11747,35 @@ type HistoryEntry = {
 export function HistoryPageRoute() {
   const [,navigate]=useLocation();
   const {dark}=useDark();
+  const { isSignedIn } = useUser();
+  const { getToken } = useAuth();
   const [lang]=useState<Lang>(()=>{try{const r=localStorage.getItem(NAV_KEY);return r?JSON.parse(r).lang??'fr':'fr';}catch{return 'fr';}});
   const [entries,setEntries]=useState<HistoryEntry[]>(()=>{
     try{const r=localStorage.getItem('bridge_history');return r?JSON.parse(r):[];}catch{return [];}
   });
+
+  // Compte connecté → historique propre à ce compte, servi depuis le serveur
+  // (voir MyOrdersPageRoute pour le détail du bug corrigé). Persiste après
+  // déconnexion : reconnecter le même compte réaffiche le même historique.
+  useEffect(()=>{
+    if(!isSignedIn) return;
+    let cancelled=false;
+    (async()=>{
+      try{
+        const token=await getToken();
+        if(!token) return;
+        const r=await fetch('/api/orders/mine',{headers:{Authorization:`Bearer ${token}`},cache:'no-store'});
+        if(!r.ok) return;
+        const data=await r.json();
+        const serverEntries:HistoryEntry[]=(data.orders||[]).map((o:any)=>({
+          ref:o.ref,type:o.service==='delivery'?'eats':o.service,date:o.createdAt,total:o.total,
+          address:o.customerAddress,restaurantName:o.restaurantName??undefined,
+        }));
+        if(!cancelled) setEntries(serverEntries);
+      }catch{}
+    })();
+    return ()=>{cancelled=true;};
+  },[isSignedIn]);
   const typeInfo:{[k:string]:{icon:string;label:string;color:string}}={
     eats:{icon:'🍔',label:'Bridge Eats',color:'#DC2626'},
     tabac:{icon:'🚬',label:'Bridge Tabac',color:'#6B7280'},
@@ -11864,6 +11889,8 @@ function projectArrival(orderDate: string, status: string): string | null {
 export function MyOrdersPageRoute() {
   const [,navigate]=useLocation();
   const {dark}=useDark();
+  const { isSignedIn } = useUser();
+  const { getToken } = useAuth();
   const [lang,setLang]=useState<Lang>(()=>{try{const r=localStorage.getItem(NAV_KEY);return r?JSON.parse(r).lang??'fr':'fr';}catch{return 'fr';}});
   const cycleLang=()=>setLang(l=>{
     const next=LANG_CYCLE[(LANG_CYCLE.indexOf(l)+1)%LANG_CYCLE.length];
@@ -11879,6 +11906,32 @@ export function MyOrdersPageRoute() {
     }catch{return [];}
   });
   const [openRef,setOpenRef]=useState<string|null>(null);
+
+  // Compte connecté → l'historique vient du serveur (propre à CE compte, via
+  // son numéro de téléphone), et non plus du localStorage de l'appareil.
+  // Corrige le bug "tous les clients voient le même historique" (appareil
+  // partagé) : chaque compte ne voit désormais que ses propres commandes,
+  // et cet historique reste disponible même après déconnexion/reconnexion
+  // (il est stocké côté serveur, pas perdu à la déconnexion).
+  useEffect(()=>{
+    if(!isSignedIn) return;
+    let cancelled=false;
+    (async()=>{
+      try{
+        const token=await getToken();
+        if(!token) return;
+        const r=await fetch('/api/orders/mine',{headers:{Authorization:`Bearer ${token}`},cache:'no-store'});
+        if(!r.ok) return;
+        const data=await r.json();
+        const serverEntries:MyOrderEntry[]=(data.orders||[]).map((o:any)=>({
+          ref:o.ref,type:o.service==='delivery'?'eats':o.service,date:o.createdAt,total:o.total,
+          address:o.customerAddress,restaurantName:o.restaurantName??undefined,
+        })).filter((e:MyOrderEntry)=>e.type!=='taxi'&&e.type!=='moto');
+        if(!cancelled) setEntries(serverEntries);
+      }catch{}
+    })();
+    return ()=>{cancelled=true;};
+  },[isSignedIn]);
 
   // Un seul fetch de statut par commande récente (pas de polling en boucle ici —
   // le polling live GPS se fait dans la vue détail via ServiceTrackingView).

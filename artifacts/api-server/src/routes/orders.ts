@@ -6,6 +6,8 @@ import { getDriverPositions, syncTrackingStatus } from "./tracking";
 import { addSSEClient, removeSSEClient, broadcastOrder } from "../lib/sse";
 import { logger } from "../lib/logger";
 import { notifyRestaurant } from "../lib/notify-restaurant";
+import { pool } from "@workspace/db";
+import { verifyJWT, normalizePhone } from "./auth";
 
 // ── Auth keys (env vars — ne jamais hardcoder en production) ─────────────────
 const DRIVER_KEY           = process.env.DRIVER_KEY           ?? "BRIDGE-DRIVER-2025";
@@ -320,7 +322,7 @@ router.post("/orders/inbound", async (req, res) => {
       ref,
       service: "delivery",
       customerName,
-      customerPhone,
+      customerPhone: normalizePhone(customerPhone),
       customerAddress: deliveryAddress,
       items,
       total: Number(total),
@@ -450,6 +452,50 @@ router.post("/orders/:ref/cancel", async (req, res) => {
   }
 });
 
+// ── Historique / suivi du compte connecté ("Suivre mes commandes") ─────────
+// Bug corrigé : l'historique client était stocké uniquement en localStorage
+// (clé "bridge_history"), donc partagé par TOUT appareil/navigateur, quel
+// que soit le client réellement connecté (plusieurs clients sur le même
+// téléphone/PC voyaient les commandes des uns et des autres). Cette route
+// retourne désormais l'historique réel, propre à chaque compte, en filtrant
+// les commandes par le numéro de téléphone associé au compte authentifié.
+router.get("/orders/mine", async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith("Bearer ")) { res.status(401).json({ error: "Non authentifié" }); return; }
+    const payload = verifyJWT(authHeader.slice(7));
+    if (!payload?.sub) { res.status(401).json({ error: "Token invalide ou expiré" }); return; }
+
+    const userResult = await pool.query("SELECT phone FROM users WHERE id = $1", [payload.sub]);
+    const phone = userResult.rows[0]?.phone as string | null | undefined;
+    if (!phone) { res.json({ orders: [] }); return; }
+
+    const normalized = normalizePhone(phone);
+    // Compare on the last 9 digits (Moroccan national number, sans indicatif)
+    // pour retrouver aussi les commandes passées avant ce correctif, quand
+    // customerPhone n'était pas encore normalisé à l'écriture (espaces,
+    // "06...", "+212...", "00212..." mélangés).
+    const last9 = normalized.replace(/\D/g, "").slice(-9);
+    const orders = await db.select({
+      ref: ordersTable.ref,
+      service: ordersTable.service,
+      status: ordersTable.status,
+      total: ordersTable.total,
+      restaurantName: ordersTable.restaurantName,
+      customerAddress: ordersTable.customerAddress,
+      createdAt: ordersTable.createdAt,
+    }).from(ordersTable)
+      .where(sqlRaw`regexp_replace(${ordersTable.customerPhone}, '\D', '', 'g') LIKE ${'%' + last9}`)
+      .orderBy(desc(ordersTable.createdAt))
+      .limit(100);
+
+    res.json({ orders });
+  } catch (err) {
+    logger.error({ err }, "Failed to fetch account order history");
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+});
+
 router.get("/orders", requireDriverKey, async (req, res) => {
   try {
     const { status, service } = req.query;
@@ -515,7 +561,7 @@ router.post("/orders", async (req, res) => {
       ref,
       service,
       customerName,
-      customerPhone,
+      customerPhone: normalizePhone(customerPhone),
       customerAddress,
       items,
       total: Number(total),

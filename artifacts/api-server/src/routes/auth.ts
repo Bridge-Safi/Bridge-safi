@@ -57,7 +57,7 @@ function isEmail(v: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 }
 
-function normalizePhone(raw: string): string {
+export function normalizePhone(raw: string): string {
   let p = raw.trim().replace(/[\s\-().]/g, "");
   if (p.startsWith("00212")) p = "+" + p.slice(2);
   else if (p.startsWith("212") && p.length >= 12) p = "+" + p;

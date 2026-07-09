@@ -1,0 +1,1 @@
+- [Bridge Safi auth & order history](bridge-safi-auth-and-history.md) — custom JWT auth (no Clerk), order history must be account-scoped server-side, not localStorage.
