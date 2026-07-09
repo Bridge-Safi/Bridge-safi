@@ -29,6 +29,13 @@ function signJWT(payload: Record<string, unknown>, expiresInDays = 30): string {
   return `${header}.${claims}.${sig}`;
 }
 
+function getAuthedUserId(req: any): string | null {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith("Bearer ")) return null;
+  const payload = verifyJWT(authHeader.slice(7));
+  return payload?.sub || null;
+}
+
 export function verifyJWT(token: string): Record<string, any> | null {
   const parts = token.split(".");
   if (parts.length !== 3) return null;
@@ -150,6 +157,33 @@ router.get("/auth/me", async (req, res) => {
     const imageUrl = profile.rows[0]?.avatar_data ? `/api/profile/avatar/${encodeURIComponent(u.id)}` : "";
     res.json({ id: u.id, phone: u.phone || null, email: u.email || null, name: u.name || "", role: u.role || "client", imageUrl });
   } catch (err) { logger.error({ err }, "/auth/me error"); res.status(500).json({ error: "Erreur serveur" }); }
+});
+
+// ── Changer le mot de passe (utilisateur connecté, connaît son mot de passe actuel) ──
+// Root cause du bug "changer le mot de passe ne marche pas" : le frontend appelait
+// user.updatePassword(...) — une méthode Clerk qui n'existe plus depuis le passage
+// à bridge-auth.tsx (l'objet BridgeUser est un simple objet de données, sans
+// méthodes). L'appel plantait silencieusement et retombait sur le message
+// générique "Mot de passe actuel incorrect", même quand le mot de passe était bon.
+router.post("/auth/change-password", async (req, res) => {
+  const userId = getAuthedUserId(req);
+  if (!userId) { res.status(401).json({ error: "Non authentifié" }); return; }
+  const { currentPassword, newPassword } = req.body as { currentPassword?: string; newPassword?: string };
+  if (!currentPassword || !newPassword) { res.status(400).json({ error: "Mot de passe actuel et nouveau mot de passe requis" }); return; }
+  if (newPassword.length < 8) { res.status(400).json({ error: "Mot de passe trop faible (8 caractères min.)" }); return; }
+  try {
+    const result = await pool.query("SELECT salt, password_hash FROM users WHERE id = $1", [userId]);
+    if (result.rows.length === 0) { res.status(404).json({ error: "Compte introuvable" }); return; }
+    const u = result.rows[0];
+    if (hashPassword(currentPassword, u.salt) !== u.password_hash) {
+      res.status(401).json({ error: "Mot de passe actuel incorrect." }); return;
+    }
+    const newSalt = randomUUID();
+    const newHash = hashPassword(newPassword, newSalt);
+    await pool.query("UPDATE users SET password_hash = $1, salt = $2 WHERE id = $3", [newHash, newSalt, userId]);
+    logger.info({ userId }, "Password changed");
+    res.json({ ok: true });
+  } catch (err) { logger.error({ err }, "change-password error"); res.status(500).json({ error: "Erreur serveur. Réessayez." }); }
 });
 
 export default router;
