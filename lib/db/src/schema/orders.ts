@@ -16,6 +16,10 @@ export const ordersTable = pgTable("orders", {
   restaurantName: text("restaurant_name"),
   status: text("status").notNull().default("pending"),
   driverName: text("driver_name"),
+  driverRating: real("driver_rating"),
+  driverComment: text("driver_comment"),
+  reportedIssue: text("reported_issue"),
+  reportedAt: timestamp("reported_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
