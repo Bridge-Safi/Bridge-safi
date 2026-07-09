@@ -33,6 +33,22 @@ async function fixOrdersTotalColumnType() {
 }
 fixOrdersTotalColumnType();
 
+// ── Note chauffeur + signalement de problème ────────────────────────────────
+// Ajoute les colonnes nécessaires si elles n'existent pas encore (même
+// pattern idempotent que fixOrdersTotalColumnType — voir plus haut).
+async function ensureDriverRatingColumns() {
+  try {
+    await db.execute(sqlRaw`ALTER TABLE orders ADD COLUMN IF NOT EXISTS driver_rating REAL`);
+    await db.execute(sqlRaw`ALTER TABLE orders ADD COLUMN IF NOT EXISTS driver_comment TEXT`);
+    await db.execute(sqlRaw`ALTER TABLE orders ADD COLUMN IF NOT EXISTS reported_issue TEXT`);
+    await db.execute(sqlRaw`ALTER TABLE orders ADD COLUMN IF NOT EXISTS reported_at TIMESTAMP`);
+    logger.info("orders driver_rating/driver_comment/reported_issue columns verified");
+  } catch (err) {
+    logger.error({ err }, "Failed to ensure driver rating columns");
+  }
+}
+ensureDriverRatingColumns();
+
 /** Middleware — vérifie que le livreur envoie la bonne clé (header ou query) */
 function requireDriverKey(req: Request, res: Response, next: NextFunction): void {
   const key = (req.headers["x-driver-key"] as string | undefined)
@@ -353,10 +369,52 @@ router.get("/orders/status/:ref", async (req, res) => {
       status: ordersTable.status,
       updatedAt: ordersTable.updatedAt,
       service: ordersTable.service,
+      driverRating: ordersTable.driverRating,
     }).from(ordersTable).where(eq(ordersTable.ref, ref));
     if (!order) { res.status(404).json({ error: "Commande introuvable" }); return; }
-    res.json({ ref: order.ref, status: order.status, updatedAt: order.updatedAt, service: order.service });
+    res.json({ ref: order.ref, status: order.status, updatedAt: order.updatedAt, service: order.service, alreadyRated: order.driverRating != null });
   } catch (err) {
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+});
+
+// ── Note / commentaire livreur + signalement d'un problème (client) ─────────
+// Public (comme /orders/status/:ref) : le client note son propre livreur
+// après livraison, en option laisse un commentaire, et/ou signale un souci
+// (colis manquant, retard, comportement...) même sans mettre de note.
+router.post("/orders/:ref/rating", async (req, res) => {
+  try {
+    const ref = String(req.params.ref);
+    const { stars, comment, reportReason } = req.body ?? {};
+
+    if (stars !== undefined && stars !== null) {
+      const n = Number(stars);
+      if (!Number.isFinite(n) || n < 1 || n > 5) {
+        res.status(400).json({ error: "La note doit être entre 1 et 5" });
+        return;
+      }
+    }
+    if (stars == null && !reportReason) {
+      res.status(400).json({ error: "Merci de donner une note ou de signaler un problème" });
+      return;
+    }
+
+    const [order] = await db.select({ id: ordersTable.id }).from(ordersTable).where(eq(ordersTable.ref, ref));
+    if (!order) { res.status(404).json({ error: "Commande introuvable" }); return; }
+
+    const patch: Record<string, unknown> = { updatedAt: new Date() };
+    if (stars != null) patch.driverRating = Number(stars);
+    if (typeof comment === "string" && comment.trim()) patch.driverComment = comment.trim().slice(0, 500);
+    if (typeof reportReason === "string" && reportReason.trim()) {
+      patch.reportedIssue = reportReason.trim().slice(0, 500);
+      patch.reportedAt = new Date();
+    }
+
+    await db.update(ordersTable).set(patch).where(eq(ordersTable.ref, ref));
+    logger.info({ ref, stars, reported: !!reportReason }, "Order rating/report saved");
+    res.json({ ok: true });
+  } catch (err) {
+    logger.error({ err }, "Failed to save order rating");
     res.status(500).json({ error: "Erreur serveur" });
   }
 });
