@@ -7009,11 +7009,11 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
         {/* 2×2 service grid — Glassmorphism iOS 18 */}
         {(()=>{
           const topItems=[
-            {key:'delivery' as const, label:'Bridge Eats',  sub:t.deliverySub, emoji:'🛵',
+            {key:'delivery' as const, label:'Bridge Eats',  sub:t.deliverySub, emoji:'🍕🍔',
              pending:false, active:true,
              grad:'linear-gradient(145deg,#064E3B 0%,#065F46 45%,#059669 100%)',
              glow:'rgba(5,150,105,0.55)', border:'rgba(52,211,153,0.45)'},
-            {key:'taxi'     as const, label:'Bridge Taxi',  sub:t.taxiSub,     emoji:'🚖',
+            {key:'taxi'     as const, label:'Bridge Taxi',  sub:t.taxiSub,     emoji:'🚖🛵',
              pending:true,
              grad:'linear-gradient(145deg,#78350F 0%,#B45309 55%,#F59E0B 100%)',
              glow:'rgba(245,158,11,0.45)', border:'rgba(251,191,36,0.45)'},
@@ -7148,9 +7148,9 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
               {/* Row 4: Bridge Supermarché — carte active (Marjane/Carrefour/Bim) */}
               <button onClick={()=>choose('supermarche')} style={{background:'none',border:'none',cursor:'pointer',padding:0,width:'100%',transform:pressed==='supermarche'?'scale(0.94)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',animation:'svcFadeUp 0.45s ease-out 0.24s both'}}>
                 <div style={{
-                  background:'linear-gradient(145deg,#0B0F2E 0%,#2E1065 55%,#7C3AED 100%)',
-                  borderRadius:18,border:`1.5px solid ${pressed==='supermarche'?'rgba(255,255,255,0.55)':'rgba(139,92,246,0.5)'}`,
-                  boxShadow:pressed==='supermarche'?'0 0 0 3px rgba(139,92,246,0.5),0 16px 40px rgba(139,92,246,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 6px 20px rgba(46,16,101,0.6),inset 0 1px 0 rgba(255,255,255,0.12)',
+                  background:'linear-gradient(145deg,#450A0A 0%,#7F1D1D 55%,#EF4444 100%)',
+                  borderRadius:18,border:`1.5px solid ${pressed==='supermarche'?'rgba(255,255,255,0.55)':'rgba(239,68,68,0.5)'}`,
+                  boxShadow:pressed==='supermarche'?'0 0 0 3px rgba(239,68,68,0.5),0 16px 40px rgba(239,68,68,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 6px 20px rgba(127,29,29,0.6),inset 0 1px 0 rgba(255,255,255,0.12)',
                   padding:'14px 12px',display:'flex',alignItems:'center',gap:10,position:'relative',overflow:'hidden',
                 }}>
                   <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
@@ -8563,8 +8563,8 @@ function SplashScreen() {
   const [progress,setProgress]=useState(0);
   const [phase,setPhase]=useState(0); // 0-3 cycling through services
   const services=[
-    {icon:'🛵',label:'Bridge Eats',color:'#4ADE80'},
-    {icon:'🚖',label:'Bridge Taxi',color:'#FDE047'},
+    {icon:'🍕🍔',label:'Bridge Eats',color:'#4ADE80'},
+    {icon:'🚖🛵',label:'Bridge Taxi',color:'#FDE047'},
     {icon:'🚬',label:'Bridge Tabac',color:'#FB923C'},
     {icon:'🌹',label:'Bridge Fleurs',color:'#F472B6'},
   ];
@@ -11095,7 +11095,7 @@ function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
     return(
       <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`}
         dir={isAR?'rtl':'ltr'}
-        style={{background:'linear-gradient(160deg,#0B0F2E 0%,#1B1140 45%,#2E1065 100%)',color:'#fff',minHeight:'100dvh',position:'relative',overflow:'hidden'}}>
+        style={{background:'linear-gradient(160deg,#2E0A0A 0%,#450A0A 45%,#7F1D1D 100%)',color:'#fff',minHeight:'100dvh',position:'relative',overflow:'hidden'}}>
         <style>{`
           @keyframes marketFadeUp{0%{opacity:0;transform:translateY(20px);}100%{opacity:1;transform:translateY(0);}}
           @keyframes marketFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
@@ -11104,7 +11104,7 @@ function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
           @keyframes marketBgDrift{0%{transform:translate(0,0);}50%{transform:translate(-14px,10px);}100%{transform:translate(0,0);}}
         `}</style>
         <div className="pointer-events-none select-none" style={{position:'absolute',inset:0,overflow:'hidden',zIndex:0}}>
-          <div style={{position:'absolute',left:'-15%',top:'8%',width:280,height:280,background:'radial-gradient(circle,rgba(139,92,246,0.35) 0%,transparent 70%)',borderRadius:'50%',filter:'blur(50px)',animation:'marketBgDrift 10s ease-in-out infinite'}}/>
+          <div style={{position:'absolute',left:'-15%',top:'8%',width:280,height:280,background:'radial-gradient(circle,rgba(239,68,68,0.35) 0%,transparent 70%)',borderRadius:'50%',filter:'blur(50px)',animation:'marketBgDrift 10s ease-in-out infinite'}}/>
           <div style={{position:'absolute',right:'-10%',top:'35%',width:260,height:260,background:'radial-gradient(circle,rgba(56,189,248,0.25) 0%,transparent 70%)',borderRadius:'50%',filter:'blur(50px)',animation:'marketBgDrift 12s ease-in-out infinite 1.5s'}}/>
           <div style={{position:'absolute',left:'8%',bottom:'6%',width:220,height:220,background:'radial-gradient(circle,rgba(234,179,8,0.2) 0%,transparent 70%)',borderRadius:'50%',filter:'blur(45px)',animation:'marketBgDrift 9s ease-in-out infinite 0.8s'}}/>
           {['🛒','🛍️','🥖','🍎','🧃','🧴'].map((e,i)=>(
@@ -11123,7 +11123,7 @@ function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
         <div className={`flex flex-col items-center px-6 pt-24 pb-12 max-w-md mx-auto w-full gap-3 relative`} style={{zIndex:1}}>
           <div className="text-center mb-2">
             <p style={{fontSize:34,marginBottom:4}}>🛒✨</p>
-            <h1 className={`font-black text-2xl tracking-wider mb-1 ${fClass}`} style={{color:'#fff',textShadow:'0 2px 12px rgba(139,92,246,0.6)'}}>BRIDGE SUPERMARCHÉ</h1>
+            <h1 className={`font-black text-2xl tracking-wider mb-1 ${fClass}`} style={{color:'#fff',textShadow:'0 2px 12px rgba(239,68,68,0.6)'}}>BRIDGE SUPERMARCHÉ</h1>
             <p className="text-[11px] tracking-widest font-bold" style={{color:'rgba(233,213,255,0.6)'}}>CHOISISSEZ VOTRE MAGASIN · SAFI</p>
           </div>
 
@@ -11477,7 +11477,7 @@ export function HistoryPageRoute() {
     fleurs:{icon:'🌹',label:'Bridge Fleurs',color:'#DB2777'},
     boulangerie:{icon:'🥖',label:'Bridge Boulangerie',color:'#A16207'},
     souk:{icon:'🛍️',label:'Bridge Souk',color:'#7E22CE'},
-    supermarche:{icon:'🛒',label:'Bridge Supermarché',color:'#7C3AED'},
+    supermarche:{icon:'🛒',label:'Bridge Supermarché',color:'#EF4444'},
     taxi:{icon:'🚖',label:'Bridge Taxi',color:'#B45309'},
     moto:{icon:'🛵',label:'Bridge Moto',color:'#9A3412'},
   };
@@ -11555,7 +11555,7 @@ const ORDER_THEMES: Record<ServiceThemeKey, ServiceTrackTheme & {icon:string;lab
   fleurs:      {icon:'🌹',label:'Bridge Fleurs',      emoji:'💐',accent:'#A855F7',accentDark:'#7C3AED',accentLight:'#7C3AED',cardBg:'white',cardBorder:'#EDE9FE',textColor:'#4C1D95',mutedColor:'#9CA3AF'},
   boulangerie: {icon:'🥖',label:'Bridge Boulangerie', emoji:'🥖',accent:'#FACC15',accentDark:'#A16207',accentLight:'#FDE68A',cardBg:'rgba(161,98,7,0.2)',cardBorder:'rgba(250,204,21,0.5)',textColor:'#FEF3C7',mutedColor:'rgba(253,230,138,0.6)'},
   souk:        {icon:'🛍️',label:'Bridge Souk',        emoji:'🛍️',accent:'#C084FC',accentDark:'#7E22CE',accentLight:'#E9D5FF',cardBg:'rgba(126,34,206,0.2)',cardBorder:'rgba(192,132,252,0.5)',textColor:'#F3E8FF',mutedColor:'rgba(233,213,255,0.6)'},
-  supermarche: {icon:'🛒',label:'Bridge Supermarché',   emoji:'🛒',accent:'#8B5CF6',accentDark:'#5B21B6',accentLight:'#C4B5FD',cardBg:'rgba(139,92,246,0.2)',cardBorder:'rgba(196,181,253,0.5)',textColor:'#EDE9FE',mutedColor:'rgba(237,233,254,0.6)'},
+  supermarche: {icon:'🛒',label:'Bridge Supermarché',   emoji:'🛒',accent:'#EF4444',accentDark:'#991B1B',accentLight:'#FCA5A5',cardBg:'rgba(239,68,68,0.2)',cardBorder:'rgba(252,165,165,0.5)',textColor:'#FEE2E2',mutedColor:'rgba(254,226,226,0.6)'},
 };
 
 type MyOrderEntry = HistoryEntry & { liveStatus?: string; etaLabel?: string };
