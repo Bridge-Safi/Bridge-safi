@@ -6072,9 +6072,10 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{background:'#FEF9EE',border:'1px solid #FDE68A',color:'#92400E'}}>⭐ {typeof driverInfo.rating==='number'?driverInfo.rating.toFixed(1):'4.9'}</span>
             </div>
           )}
+          <DriverRatingBox orderRef={orderRef} lang={lang} accent="#065F46" accentDark="#059669" textColor="#065F46" mutedColor="#059669" cardBg="rgba(255,255,255,0.7)" cardBorder="#86EFAC"/>
           <button
             onClick={()=>{window.location.href='/';}}
-            className="px-6 py-2.5 rounded-2xl font-black text-sm text-white transition-all active:scale-95"
+            className="px-6 py-2.5 rounded-2xl font-black text-sm text-white transition-all active:scale-95 mt-4"
             style={{background:'linear-gradient(135deg,#065F46,#059669)',border:'none',cursor:'pointer',boxShadow:'0 4px 14px rgba(5,150,105,0.35)'}}>
             {lang==='ar'?'طلب جديد':lang==='en'?'New order':'Nouvelle commande'}
           </button>
@@ -6158,6 +6159,120 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
         </div>
       )}
       <AdSlot />
+    </div>
+  );
+}
+
+// ─── NOTE / COMMENTAIRE LIVREUR + SIGNALER UN PROBLÈME ────────────────────────
+// Widget générique affiché sur la carte "Livraison terminée" (Eats + les 5
+// autres services via ServiceTrackingView + Suivre mes commandes). Le client
+// peut noter le livreur (1 à 5 étoiles) avec un commentaire optionnel, et/ou
+// signaler un problème indépendamment de la note. Persiste côté serveur
+// (orders.driver_rating / driver_comment / reported_issue) — /api/orders/status
+// renvoie alreadyRated pour ne plus réafficher le widget après un reload.
+function DriverRatingBox({orderRef,lang,accent,accentDark,textColor,mutedColor,cardBg,cardBorder}:{orderRef:string;lang:Lang;accent:string;accentDark:string;textColor:string;mutedColor:string;cardBg:string;cardBorder:string}) {
+  const [checking,setChecking]=useState(true);
+  const [rated,setRated]=useState(false);
+  const [stars,setStars]=useState(0);
+  const [comment,setComment]=useState('');
+  const [sending,setSending]=useState(false);
+  const [showReport,setShowReport]=useState(false);
+  const [reportReason,setReportReason]=useState('');
+  const [reported,setReported]=useState(false);
+
+  useEffect(()=>{
+    let cancelled=false;
+    if(!orderRef){ setChecking(false); return; }
+    fetch(`/api/orders/status/${orderRef}`,{cache:'no-store'}).then(r=>r.ok?r.json():null).then(d=>{
+      if(!cancelled&&d?.alreadyRated) setRated(true);
+    }).catch(()=>{}).finally(()=>{if(!cancelled) setChecking(false);});
+    return()=>{cancelled=true;};
+  },[orderRef]);
+
+  const L = lang==='ar'
+    ? {title:'قيّم سائقك',sub:'رأيك يساعدنا على تحسين الخدمة',placeholder:'تعليق؟ (اختياري)',send:'إرسال',thanks:'شكراً على ملاحظاتك! ⭐',report:'الإبلاغ عن مشكلة',reportTitle:'ما هي المشكلة؟',reportPlaceholder:'صف المشكلة...',reportSend:'إرسال البلاغ',reportThanks:'تم إرسال البلاغ، شكراً.',cancel:'إلغاء',reasons:['تأخير','سلوك غير لائق','نقص في الطلب','أخرى']}
+    : lang==='amz'
+    ? {title:'Sekked amaddaz-ik',sub:'Tikti-inek tessefrak tanfa',placeholder:'Awennit? (d afrayan)',send:'Azen',thanks:'Tanemmirt! ⭐',report:'Mmel ugur',reportTitle:'Mad ugur?',reportPlaceholder:'Glem ugur...',reportSend:'Azen ugur',reportThanks:'Yettwazen, tanemmirt.',cancel:'Sefsex',reasons:['Alwexer','Askasi','Ayla yextin','Wayeḍ']}
+    : lang==='en'
+    ? {title:'Rate your driver',sub:'Your feedback helps us improve',placeholder:'A comment? (optional)',send:'Send',thanks:'Thanks for your feedback! ⭐',report:'Report a problem',reportTitle:"What's the problem?",reportPlaceholder:'Describe the issue...',reportSend:'Send report',reportThanks:'Report sent, thank you.',cancel:'Cancel',reasons:['Late delivery','Bad behavior','Missing item','Other']}
+    : {title:'Notez votre livreur',sub:'Votre avis nous aide à améliorer le service',placeholder:'Un commentaire ? (optionnel)',send:'Envoyer',thanks:'Merci pour votre retour ! ⭐',report:'Signaler un problème',reportTitle:'Quel est le problème ?',reportPlaceholder:'Décrivez le problème...',reportSend:'Envoyer le signalement',reportThanks:'Signalement envoyé, merci.',cancel:'Annuler',reasons:['Retard','Comportement','Article manquant','Autre']};
+
+  const submitRating=async()=>{
+    if(stars<1||sending) return;
+    setSending(true);
+    try{
+      await fetch(`/api/orders/${orderRef}/rating`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({stars,comment:comment.trim()||undefined})});
+      setRated(true);
+    }catch{} finally{setSending(false);}
+  };
+  const submitReport=async()=>{
+    if(!reportReason.trim()||sending) return;
+    setSending(true);
+    try{
+      await fetch(`/api/orders/${orderRef}/rating`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reportReason:reportReason.trim()})});
+      setReported(true); setShowReport(false);
+    }catch{} finally{setSending(false);}
+  };
+
+  if(checking||!orderRef) return null;
+
+  return (
+    <div className="rounded-2xl p-4 mt-3 w-full text-left" style={{background:cardBg,border:`1px solid ${cardBorder}`}}>
+      {!rated ? (
+        <>
+          <p className="text-sm font-black mb-1 text-center" style={{color:textColor}}>{L.title}</p>
+          <p className="text-[11px] mb-3 text-center" style={{color:mutedColor}}>{L.sub}</p>
+          <div className="flex items-center justify-center gap-1.5 mb-3">
+            {[1,2,3,4,5].map(n=>(
+              <button key={n} onClick={()=>setStars(n)} style={{background:'none',border:'none',cursor:'pointer',fontSize:26,padding:2,filter:n<=stars?'none':'grayscale(1) opacity(0.35)'}}>⭐</button>
+            ))}
+          </div>
+          {stars>0&&(
+            <>
+              <textarea value={comment} onChange={e=>setComment(e.target.value)} placeholder={L.placeholder} rows={2}
+                className="w-full rounded-xl p-2.5 text-xs mb-2" style={{background:cardBg,border:`1px solid ${cardBorder}`,color:textColor,resize:'none' as const}}/>
+              <button onClick={submitRating} disabled={sending}
+                className="w-full py-2.5 rounded-xl font-black text-sm text-white transition-all active:scale-95"
+                style={{background:`linear-gradient(135deg,${accentDark},${accent})`,border:'none',cursor:'pointer',opacity:sending?0.6:1}}>
+                {L.send}
+              </button>
+            </>
+          )}
+        </>
+      ) : (
+        <p className="text-center text-sm font-bold py-1" style={{color:textColor}}>{L.thanks}</p>
+      )}
+
+      {!reported ? (
+        <div className="mt-3 pt-3" style={{borderTop:`1px solid ${cardBorder}`}}>
+          {!showReport ? (
+            <button onClick={()=>setShowReport(true)} className="text-[11px] font-bold" style={{background:'none',border:'none',cursor:'pointer',color:'#EF4444',textDecoration:'underline'}}>
+              ⚠️ {L.report}
+            </button>
+          ) : (
+            <div>
+              <p className="text-xs font-bold mb-2" style={{color:textColor}}>{L.reportTitle}</p>
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {L.reasons.map(r=>(
+                  <button key={r} onClick={()=>setReportReason(r)}
+                    className="text-[10px] font-bold px-2.5 py-1 rounded-full"
+                    style={{background:reportReason===r?'#EF4444':cardBg,color:reportReason===r?'#fff':mutedColor,border:`1px solid ${cardBorder}`,cursor:'pointer'}}>
+                    {r}
+                  </button>
+                ))}
+              </div>
+              <textarea value={reportReason} onChange={e=>setReportReason(e.target.value)} placeholder={L.reportPlaceholder} rows={2}
+                className="w-full rounded-xl p-2.5 text-xs mb-2" style={{background:cardBg,border:`1px solid ${cardBorder}`,color:textColor,resize:'none' as const}}/>
+              <div className="flex gap-2">
+                <button onClick={()=>{setShowReport(false);setReportReason('');}} className="flex-1 py-2 rounded-xl font-bold text-xs" style={{background:cardBg,border:`1px solid ${cardBorder}`,color:mutedColor,cursor:'pointer'}}>{L.cancel}</button>
+                <button onClick={submitReport} disabled={!reportReason.trim()||sending} className="flex-1 py-2 rounded-xl font-black text-xs text-white" style={{background:'#EF4444',border:'none',cursor:'pointer',opacity:(!reportReason.trim()||sending)?0.5:1}}>{L.reportSend}</button>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <p className="text-center text-[11px] font-bold pt-3 mt-3" style={{borderTop:`1px solid ${cardBorder}`,color:'#EF4444'}}>✅ {L.reportThanks}</p>
+      )}
     </div>
   );
 }
@@ -6365,8 +6480,9 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
               )}
             </div>
           )}
+          <DriverRatingBox orderRef={orderRef} lang={lang} accent={theme.accent} accentDark={theme.accentDark} textColor={theme.textColor} mutedColor={theme.mutedColor} cardBg={theme.cardBg} cardBorder={theme.cardBorder}/>
           <button onClick={onNewOrder}
-            className="px-6 py-2.5 rounded-2xl font-black text-sm text-white transition-all active:scale-95"
+            className="px-6 py-2.5 rounded-2xl font-black text-sm text-white transition-all active:scale-95 mt-4"
             style={{background:`linear-gradient(135deg,${theme.accentDark},${theme.accent})`,border:'none',cursor:'pointer'}}>
             {lang==='ar'?'طلب جديد':lang==='en'?'New order':'Nouvelle commande'}
           </button>
