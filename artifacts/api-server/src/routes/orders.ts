@@ -11,6 +11,28 @@ import { notifyRestaurant } from "../lib/notify-restaurant";
 const DRIVER_KEY           = process.env.DRIVER_KEY           ?? "BRIDGE-DRIVER-2025";
 const BRIDGE_INBOUND_SECRET = process.env.BRIDGE_INBOUND_SECRET ?? "bridge-safi-8b269bba03fd8c0205116f3f";
 
+// ── Fix schema drift: colonne "total" en integer au lieu de real ────────────
+// Root cause du bug "confirmation de livraison ne marche pas côté Eats et
+// Supermarché" : POST /orders renvoyait 500 dès que "total" avait une
+// décimale (ex: 42.9 DH), car la vraie colonne Postgres était restée en
+// integer alors que le schéma Drizzle déclare "real" depuis longtemps —
+// la migration n'avait jamais été appliquée en prod. Résultat : la commande
+// n'était JAMAIS enregistrée dans ordersTable, donc la page de suivi client
+// ne trouvait jamais le statut "delivered" (elle restait bloquée sur
+// "en attente d'un livreur"), même si le livreur avait bien confirmé la
+// livraison de son côté. Tabac/Pharmacie/Boulangerie/Souk n'étaient presque
+// jamais touchés car leurs totaux tombent souvent sur des DH ronds.
+// Idempotent : si la colonne est déjà "real", cette commande ne fait rien.
+async function fixOrdersTotalColumnType() {
+  try {
+    await db.execute(sqlRaw`ALTER TABLE orders ALTER COLUMN total TYPE real USING total::real`);
+    logger.info("orders.total column type verified/fixed (real)");
+  } catch (err) {
+    logger.error({ err }, "Failed to fix orders.total column type");
+  }
+}
+fixOrdersTotalColumnType();
+
 /** Middleware — vérifie que le livreur envoie la bonne clé (header ou query) */
 function requireDriverKey(req: Request, res: Response, next: NextFunction): void {
   const key = (req.headers["x-driver-key"] as string | undefined)
