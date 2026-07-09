@@ -5921,6 +5921,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
   const [realPos,setRealPos]=useState<{lat:number;lng:number}|null>(null);
   const [lastSeen,setLastSeen]=useState<number|null>(null);
   const [driverInfo,setDriverInfo]=useState<{name?:string;phone?:string;photo?:string;rating?:number}|null>(null);
+  const [orderCancelled,setOrderCancelled]=useState(false);
   const isAR=lang==='ar'; const fClass=fontClass(lang);
   const displayRef=orderRef||t.orderNum;
 
@@ -5961,6 +5962,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
         const dbRes=await fetch(`/api/orders/status/${orderRef}`,{cache:'no-store'});
         if(dbRes.ok){
           const dbData=await dbRes.json();
+          if(dbData.status==='cancelled') setOrderCancelled(true);
           if(dbData.status&&dbStageMap[dbData.status]!==undefined){
             setActiveStage(prev=>Math.max(prev,dbStageMap[dbData.status]));
           }
@@ -5992,6 +5994,27 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
 
   const secsAgo=lastSeen?Math.round((Date.now()-lastSeen)/1000):null;
   const isDelivered=activeStage===3;
+
+  if(orderCancelled){
+    return (
+      <div className="px-5">
+        <div className="rounded-3xl p-6 text-center" style={{background:'#FEF2F2',border:'1.5px solid #FECACA'}}>
+          <div className="text-5xl mb-3">❌</div>
+          <p className="text-lg font-black mb-1" style={{color:'#B91C1C'}}>
+            {lang==='ar'?'تم إلغاء الطلب':lang==='en'?'Order cancelled':'Commande annulée'}
+          </p>
+          <p className="text-xs mb-5" style={{color:'#DC2626'}}>
+            {lang==='ar'?'تم إلغاء طلبك بنجاح.':lang==='en'?'Your order has been cancelled.':'Votre commande a bien été annulée.'}
+          </p>
+          <button onClick={()=>{window.location.href='/';}}
+            className="px-6 py-2.5 rounded-2xl font-black text-sm text-white transition-all active:scale-95"
+            style={{background:'#DC2626',border:'none',cursor:'pointer'}}>
+            {lang==='ar'?'العودة للرئيسية':lang==='en'?'Back home':'Retour à l\'accueil'}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-5">
@@ -6158,6 +6181,9 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
           </p>
         </div>
       )}
+      {!isDelivered&&orderRef&&(
+        <CancelOrderButton orderRef={orderRef} lang={lang} textColor="#065F46" mutedColor="#059669" cardBg="var(--c-bg)" cardBorder="var(--c-border)" onCancelled={()=>setOrderCancelled(true)}/>
+      )}
       <AdSlot />
     </div>
   );
@@ -6170,6 +6196,59 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
 // signaler un problème indépendamment de la note. Persiste côté serveur
 // (orders.driver_rating / driver_comment / reported_issue) — /api/orders/status
 // renvoie alreadyRated pour ne plus réafficher le widget après un reload.
+// ─── ANNULER LA COMMANDE (client) ──────────────────────────────────────────
+// Bouton générique affiché tant que la commande n'est pas livrée. Le serveur
+// est seul juge de la fenêtre d'annulation (statut encore "pending" à
+// "ready" — refusé dès que le livreur est "on_the_way"), donc ce composant
+// ne duplique pas cette logique côté client : il tente l'annulation et
+// affiche l'erreur du serveur si c'est trop tard.
+function CancelOrderButton({orderRef,lang,textColor,mutedColor,cardBg,cardBorder,onCancelled}:{orderRef:string;lang:Lang;textColor:string;mutedColor:string;cardBg:string;cardBorder:string;onCancelled:()=>void}) {
+  const [confirming,setConfirming]=useState(false);
+  const [sending,setSending]=useState(false);
+  const [error,setError]=useState<string|null>(null);
+
+  const L = lang==='ar'
+    ? {btn:'إلغاء الطلب',confirm:'هل تريد فعلاً إلغاء هذا الطلب؟',yes:'نعم، إلغاء',no:'تراجع',tooLate:'لا يمكن إلغاء هذا الطلب — السائق في الطريق بالفعل. اتصل بالدعم إذا لزم الأمر.',generic:'حدث خطأ، حاول مرة أخرى.'}
+    : lang==='amz'
+    ? {btn:'Sefsex asuter',confirm:'Tebɣiḍ ad tsefsxeḍ asuter-agi?',yes:'Yah, sefsex',no:'Uɣal',tooLate:'Ur yezmir ara ad yettwasefsex — amaddaz yella deg webrid. Nermes tallelt ma yella yehwaj.',generic:'Yella ugur, ɛreḍ tikkelt-nniḍen.'}
+    : lang==='en'
+    ? {btn:'Cancel order',confirm:'Are you sure you want to cancel this order?',yes:'Yes, cancel',no:'Never mind',tooLate:'This order can no longer be cancelled — the driver is already on the way. Contact support if needed.',generic:'Something went wrong, please try again.'}
+    : {btn:'Annuler la commande',confirm:'Voulez-vous vraiment annuler cette commande ?',yes:'Oui, annuler',no:'Ne pas annuler',tooLate:'Cette commande ne peut plus être annulée — le livreur est déjà en route. Contactez l\'assistance si besoin.',generic:'Une erreur est survenue, réessayez.'};
+
+  const doCancel=async()=>{
+    if(sending) return;
+    setSending(true); setError(null);
+    try{
+      const r=await fetch(`/api/orders/${orderRef}/cancel`,{method:'POST'});
+      const d=await r.json().catch(()=>({}));
+      if(r.ok){ onCancelled(); }
+      else { setError(d?.error||L.generic); setConfirming(false); }
+    }catch{ setError(L.generic); setConfirming(false); }
+    finally{ setSending(false); }
+  };
+
+  if(!confirming){
+    return (
+      <div className="mt-3">
+        {error&&<p className="text-[11px] font-bold mb-2 text-center" style={{color:'#EF4444'}}>{error}</p>}
+        <button onClick={()=>{setConfirming(true);setError(null);}}
+          className="w-full py-2.5 rounded-xl font-bold text-xs" style={{background:cardBg,border:`1px solid ${cardBorder}`,color:'#EF4444',cursor:'pointer'}}>
+          ✕ {L.btn}
+        </button>
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-2xl p-4 mt-3" style={{background:cardBg,border:'1px solid #EF4444'}}>
+      <p className="text-xs font-bold mb-3 text-center" style={{color:textColor}}>{L.confirm}</p>
+      <div className="flex gap-2">
+        <button onClick={()=>setConfirming(false)} className="flex-1 py-2 rounded-xl font-bold text-xs" style={{background:cardBg,border:`1px solid ${cardBorder}`,color:mutedColor,cursor:'pointer'}}>{L.no}</button>
+        <button onClick={doCancel} disabled={sending} className="flex-1 py-2 rounded-xl font-black text-xs text-white" style={{background:'#EF4444',border:'none',cursor:'pointer',opacity:sending?0.6:1}}>{L.yes}</button>
+      </div>
+    </div>
+  );
+}
+
 function DriverRatingBox({orderRef,lang,accent,accentDark,textColor,mutedColor,cardBg,cardBorder}:{orderRef:string;lang:Lang;accent:string;accentDark:string;textColor:string;mutedColor:string;cardBg:string;cardBorder:string}) {
   const [checking,setChecking]=useState(true);
   const [rated,setRated]=useState(false);
@@ -6301,6 +6380,7 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
   const [realPos,setRealPos]=useState<{lat:number;lng:number}|null>(null);
   const [lastSeen,setLastSeen]=useState<number|null>(null);
   const [driverInfo,setDriverInfo]=useState<{name?:string;phone?:string;photo?:string;rating?:number}|null>(null);
+  const [orderCancelled,setOrderCancelled]=useState(false);
   const fClass=fontClass(lang); const isAR=lang==='ar';
 
   const shareTracking=()=>{
@@ -6338,6 +6418,7 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
         const dbRes=await fetch(`/api/orders/status/${orderRef}`,{cache:'no-store'});
         if(dbRes.ok){
           const dbData=await dbRes.json();
+          if(dbData.status==='cancelled') setOrderCancelled(true);
           if(dbData.status&&dbStageMap[dbData.status]!==undefined) setActiveStage(prev=>Math.max(prev,dbStageMap[dbData.status]));
         }
       }catch(_){}
@@ -6368,6 +6449,27 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
     : lang==='en'
     ? ['Order confirmed','Being prepared','Courier en route','Enjoy!']
     : ['Commande confirmée','En cours de préparation','Votre livreur arrive','Merci !'];
+
+  if(orderCancelled){
+    return (
+      <div className="w-full">
+        <div className="rounded-3xl p-6 text-center w-full" style={{background:theme.cardBg,border:'1.5px solid #EF4444'}}>
+          <div className="text-5xl mb-3">❌</div>
+          <p className="text-lg font-black mb-1" style={{color:'#EF4444'}}>
+            {lang==='ar'?'تم إلغاء الطلب':lang==='en'?'Order cancelled':'Commande annulée'}
+          </p>
+          <p className="text-xs mb-5" style={{color:theme.mutedColor}}>
+            {lang==='ar'?'تم إلغاء طلبك بنجاح.':lang==='en'?'Your order has been cancelled.':'Votre commande a bien été annulée.'}
+          </p>
+          <button onClick={onNewOrder}
+            className="px-6 py-2.5 rounded-2xl font-black text-sm text-white transition-all active:scale-95"
+            style={{background:'#EF4444',border:'none',cursor:'pointer'}}>
+            {lang==='ar'?'العودة':lang==='en'?'Back':'Retour'}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
@@ -6550,6 +6652,9 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
             Le livreur recevra automatiquement son lien GPS — sa position apparaîtra ici dès qu'il démarre.
           </p>
         </div>
+      )}
+      {!isDelivered&&orderRef&&(
+        <CancelOrderButton orderRef={orderRef} lang={lang} textColor={theme.textColor} mutedColor={theme.mutedColor} cardBg={theme.cardBg} cardBorder={theme.cardBorder} onCancelled={()=>setOrderCancelled(true)}/>
       )}
     </div>
   );
