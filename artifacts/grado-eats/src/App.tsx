@@ -4520,14 +4520,24 @@ useEffect(() => {
     if(newPwd!==confirmPwd){setPwdErr(t.pwdMismatch);return;}
     setPwdLoading(true);setPwdErr('');
     try{
-      await user!.updatePassword({currentPassword:currentPwd,newPassword:newPwd,signOutOfOtherSessions:false});
-      setPwdOk(true);setCurrentPwd('');setNewPwd('');setConfirmPwd('');
-      setTimeout(()=>{setPwdOk(false);setPwdOpen(false);},2500);
+      const _ah=await getAuthHeaders();
+      const r=await fetch('/api/auth/change-password',{
+        method:'POST',credentials:'include',
+        headers:{..._ah,'Content-Type':'application/json'},
+        body:JSON.stringify({currentPassword:currentPwd,newPassword:newPwd}),
+      });
+      const d=await r.json().catch(()=>({error:''}));
+      if(!r.ok){
+        const msg=(d.error||'').toLowerCase();
+        if(msg.includes('incorrect')) setPwdErr(t.pwdWrong);
+        else if(msg.includes('faible')||msg.includes('password')) setPwdErr(t.pwdWeak);
+        else setPwdErr(d.error||t.pwdWrong);
+      } else {
+        setPwdOk(true);setCurrentPwd('');setNewPwd('');setConfirmPwd('');
+        setTimeout(()=>{setPwdOk(false);setPwdOpen(false);},2500);
+      }
     }catch(err:any){
-      const msg=err?.errors?.[0]?.longMessage||err?.errors?.[0]?.message||'';
-      if(msg.toLowerCase().includes('incorrect')||msg.toLowerCase().includes('current')) setPwdErr(t.pwdWrong);
-      else if(msg.toLowerCase().includes('password')) setPwdErr(t.pwdWeak);
-      else setPwdErr(msg||t.pwdWrong);
+      setPwdErr(t.pwdWrong);
     }
     setPwdLoading(false);
   };
