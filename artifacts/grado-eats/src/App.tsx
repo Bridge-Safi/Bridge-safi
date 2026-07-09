@@ -4335,6 +4335,7 @@ type FilterId = typeof CUISINE_FILTERS[number]['id'];
 function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectRestaurant:(r:Restaurant)=>void}) {
   const fClass=fontClass(lang);
   const [activeFilter,setActiveFilter]=useState<FilterId>('all');
+  const [searchQuery,setSearchQuery]=useState('');
 
   // Ordre aléatoire des restaurants (sauf McDo, toujours en tête) — stable pendant la session
   const shuffledRestaurants = useMemo(() => {
@@ -4348,9 +4349,22 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
     return mcdo ? [mcdo, ...arr] : arr;
   }, []);
 
-  const filtered = activeFilter==='all'
+  // Recherche : nom du restaurant, tagline, cuisine, ET chaque produit/snack de son menu
+  // (le client tape "burger" ou "tacos" et voit tous les restaurants qui en vendent, pas seulement par nom)
+  const normalize=(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const q=normalize(searchQuery.trim());
+  const matchesSearch=(r:Restaurant):boolean=>{
+    if(!q) return true;
+    if(normalize(r.name).includes(q)) return true;
+    if(normalize(r.tagline?.[lang]||r.tagline?.fr||'').includes(q)) return true;
+    if(normalize(r.cuisine?.[lang]||r.cuisine?.fr||'').includes(q)) return true;
+    return r.categories.some(cat=>cat.items.some(it=>normalize(it.names?.[lang]||it.names?.fr||'').includes(q)));
+  };
+
+  const filtered = (activeFilter==='all'
     ? shuffledRestaurants
-    : RESTAURANTS.filter(r=>r.tags.includes(activeFilter));
+    : RESTAURANTS.filter(r=>r.tags.includes(activeFilter))
+  ).filter(matchesSearch);
 
   return (
     <div>
@@ -4364,6 +4378,31 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
           <p className="text-white/75 text-xs">{t.heroSub}</p>
         </div>
       </section>
+
+      {/* Barre de recherche — restaurants, snacks, produits du menu */}
+      <div className="px-5 mb-4">
+        <div style={{position:'relative'}}>
+          <span style={{position:'absolute',left:14,top:'50%',transform:'translateY(-50%)',fontSize:16,pointerEvents:'none',opacity:0.55}}>🔍</span>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={e=>setSearchQuery(e.target.value)}
+            placeholder={lang==='ar'?'ابحث عن مطعم أو طبق…':lang==='en'?'Search a restaurant or dish…':'Rechercher un restaurant, snack, plat…'}
+            className={fClass}
+            style={{width:'100%',padding:'12px 14px 12px 40px',borderRadius:16,border:'none',
+              background:'var(--c-card)',color:'var(--c-text)',fontSize:13,fontWeight:600,
+              boxShadow:'0 3px 14px rgba(6,95,70,0.12)',outline:'none'}}
+          />
+          {searchQuery && (
+            <button onClick={()=>setSearchQuery('')} aria-label="Effacer"
+              style={{position:'absolute',right:10,top:'50%',transform:'translateY(-50%)',
+                background:'rgba(0,0,0,0.08)',border:'none',borderRadius:'50%',width:22,height:22,
+                display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',fontSize:12,color:'#374151'}}>
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* Category filter chips */}
       <div className="mb-5" style={{overflowX:'auto',WebkitOverflowScrolling:'touch',scrollbarWidth:'none'}}>
@@ -8768,6 +8807,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
 }) {
   const [,navigateFleur]=useLocation();
   const [activeFlorist,setActiveFlorist]=useState<'nour'|'amina'|null>(null);
+  const [fleurSearch,setFleurSearch]=useState('');
   const [cart,setCart]=useState<{id:string;qty:number}[]>([]);
   const [step,setStep]=useState<'florist'|'catalog'|'checkout'|'track'>('florist');
   const [lastRef,setLastRef]=useState<string>(()=>localStorage.getItem('bridge_fleurs_last_ref')||'');
@@ -8784,7 +8824,10 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   const isAR=lang==='ar'; const fClass=fontClass(lang);
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
 
-  const catalogItems=activeFlorist?FLEURS_CATALOG.filter(f=>f.florist===activeFlorist):[];
+  const catalogItemsAll=activeFlorist?FLEURS_CATALOG.filter(f=>f.florist===activeFlorist):[];
+  const catalogItems=fleurSearch.trim()
+    ? catalogItemsAll.filter(f=>(f.names?.[lang]||f.names?.fr||'').toLowerCase().includes(fleurSearch.trim().toLowerCase()))
+    : catalogItemsAll;
   const addItem=(id:string)=>setCart(c=>{const ex=c.find(x=>x.id===id);return ex?c.map(x=>x.id===id?{...x,qty:x.qty+1}:x):[...c,{id,qty:1}];});
   const removeItem=(id:string)=>setCart(c=>{const ex=c.find(x=>x.id===id);if(!ex)return c;if(ex.qty===1)return c.filter(x=>x.id!==id);return c.map(x=>x.id===id?{...x,qty:x.qty-1}:x);});
   const cartTotal=cart.reduce((s,ci)=>{const p=FLEURS_CATALOG.find(f=>f.id===ci.id);return s+(p?p.price*ci.qty:0);},0);
@@ -8944,8 +8987,15 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
                   <p className="text-[11px] font-semibold" style={{color:'#9CA3AF'}}>{catalogItems.length} {lang==='ar'?'منتج':lang==='en'?'products':'produits'}</p>
                 </div>
               </div>
+              <div style={{position:'relative',marginTop:12}}>
+                <span style={{position:'absolute',left:14,top:'50%',transform:'translateY(-50%)',fontSize:15,opacity:0.5}}>🔍</span>
+                <input type="text" value={fleurSearch} onChange={e=>setFleurSearch(e.target.value)}
+                  placeholder={lang==='ar'?'بحث عن باقة…':lang==='en'?'Search a bouquet…':'Rechercher un bouquet…'}
+                  style={{width:'100%',padding:'11px 14px 11px 38px',borderRadius:14,border:`1.5px solid ${activeBorder}`,
+                    background:'white',color:'#374151',fontSize:13,fontWeight:600,outline:'none'}}/>
+              </div>
             </div>
-            <div className="px-5">
+            <div className="px-5" style={{marginTop:12}}>
               <div className="grid grid-cols-2 gap-3">
                 {catalogItems.map(item=>{
                   const inCart=cart.find(c=>c.id===item.id);
