@@ -438,6 +438,12 @@ router.post("/orders/:ref/cancel", async (req, res) => {
     logger.info({ ref }, "Order cancelled by customer");
     try { broadcastOrder({ type: "ORDER_CANCELLED", orderId: order.id, ref: order.ref }); } catch {}
     res.json({ ok: true });
+
+    // Notifie Livreurs : la commande disparaît de la liste du livreur (0dh,
+    // pas de calcul de trajet) + push "Commande annulée" au livreur assigné
+    // s'il y en avait déjà un. Best-effort, ne bloque jamais la réponse client.
+    fetch(`https://livreur.safi-bridge.ma/api/tracking/${ref}/cancel`, { method: "POST" })
+      .catch((err) => logger.warn({ err, ref }, "Failed to notify Livreurs of cancellation"));
   } catch (err) {
     logger.error({ err }, "Failed to cancel order");
     res.status(500).json({ error: "Erreur serveur" });
