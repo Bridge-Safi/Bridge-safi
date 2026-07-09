@@ -11526,7 +11526,7 @@ type HistoryEntry = {
 export function HistoryPageRoute() {
   const [,navigate]=useLocation();
   const {dark}=useDark();
-  const [lang]=useState<Lang>(()=>{try{const r=localStorage.getItem('bridge_nav');return r?JSON.parse(r).lang??'fr':'fr';}catch{return 'fr';}});
+  const [lang]=useState<Lang>(()=>{try{const r=localStorage.getItem(NAV_KEY);return r?JSON.parse(r).lang??'fr':'fr';}catch{return 'fr';}});
   const [entries,setEntries]=useState<HistoryEntry[]>(()=>{
     try{const r=localStorage.getItem('bridge_history');return r?JSON.parse(r):[];}catch{return [];}
   });
@@ -11643,7 +11643,13 @@ function projectArrival(orderDate: string, status: string): string | null {
 export function MyOrdersPageRoute() {
   const [,navigate]=useLocation();
   const {dark}=useDark();
-  const [lang]=useState<Lang>(()=>{try{const r=localStorage.getItem('bridge_nav');return r?JSON.parse(r).lang??'fr':'fr';}catch{return 'fr';}});
+  const [lang,setLang]=useState<Lang>(()=>{try{const r=localStorage.getItem(NAV_KEY);return r?JSON.parse(r).lang??'fr':'fr';}catch{return 'fr';}});
+  const cycleLang=()=>setLang(l=>{
+    const next=LANG_CYCLE[(LANG_CYCLE.indexOf(l)+1)%LANG_CYCLE.length];
+    try{const raw=localStorage.getItem(NAV_KEY);const parsed=raw?JSON.parse(raw):{};localStorage.setItem(NAV_KEY,JSON.stringify({...parsed,lang:next}));}catch{}
+    return next;
+  });
+  const MYORD_LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
   const [entries,setEntries]=useState<MyOrderEntry[]>(()=>{
     try{
       const raw=localStorage.getItem('bridge_history');
@@ -11700,6 +11706,7 @@ export function MyOrdersPageRoute() {
           <h1 style={{fontSize:'1.1rem',fontWeight:900,color:'#fff',margin:0}}>📦 Mes commandes</h1>
         </div>
         <span style={{fontSize:11,color:'#9CA3AF',fontWeight:700}}>{entries.length}</span>
+        <button onClick={cycleLang} style={{width:34,height:34,borderRadius:'50%',border:'1px solid #2a2a2a',cursor:'pointer',background:'rgba(255,255,255,0.06)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:10,fontWeight:900,flexShrink:0}}>{MYORD_LANG_LABELS[lang]}</button>
         <a href="https://wa.me/212764794856?text=Bonjour%2C+j%27ai+besoin+d%27aide+avec+ma+commande" target="_blank" rel="noopener noreferrer"
           style={{display:'flex',alignItems:'center',gap:5,background:'rgba(37,211,102,0.15)',border:'1px solid rgba(37,211,102,0.4)',borderRadius:20,padding:'6px 12px',color:'#25D366',fontSize:11,fontWeight:800,textDecoration:'none',flexShrink:0}}>
           💬 Aide
