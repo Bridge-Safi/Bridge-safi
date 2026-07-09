@@ -419,6 +419,31 @@ router.post("/orders/:ref/rating", async (req, res) => {
   }
 });
 
+// ── Annuler une commande (client) ───────────────────────────────────────────
+// Public (même modèle que /orders/status/:ref) : le client annule sa propre
+// commande via sa référence. Autorisé uniquement tant que le livreur n'est
+// pas encore parti (avant "on_the_way"/"on_way") — au-delà, la course est
+// déjà engagée et l'annulation doit passer par le support (bouton Aide).
+const CANCELABLE_STATUSES = ["pending", "pending_payment", "accepted", "preparing", "ready"];
+router.post("/orders/:ref/cancel", async (req, res) => {
+  try {
+    const ref = String(req.params.ref);
+    const [order] = await db.select().from(ordersTable).where(eq(ordersTable.ref, ref));
+    if (!order) { res.status(404).json({ error: "Commande introuvable" }); return; }
+    if (!CANCELABLE_STATUSES.includes(order.status)) {
+      res.status(409).json({ error: "Cette commande ne peut plus être annulée — le livreur est déjà en route." });
+      return;
+    }
+    await db.update(ordersTable).set({ status: "cancelled", updatedAt: new Date() }).where(eq(ordersTable.ref, ref));
+    logger.info({ ref }, "Order cancelled by customer");
+    try { broadcastOrder({ type: "ORDER_CANCELLED", orderId: order.id, ref: order.ref }); } catch {}
+    res.json({ ok: true });
+  } catch (err) {
+    logger.error({ err }, "Failed to cancel order");
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+});
+
 router.get("/orders", requireDriverKey, async (req, res) => {
   try {
     const { status, service } = req.query;
