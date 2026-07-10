@@ -65,6 +65,16 @@ export function syncTrackingStatus(ref: string, status: string): void {
   });
 }
 
+/**
+ * Lecture seule du nom/photo du livreur actuellement assigne a une commande
+ * (utilise par le signalement client -> alerte WhatsApp admin, 2026-07-10).
+ */
+export function getTrackedDriver(ref: string): { name?: string; photo?: string; phone?: string } | undefined {
+  const pos = positions.get(ref);
+  if (!pos) return undefined;
+  return { name: pos.driverName, photo: pos.driverPhoto, phone: pos.driverPhone };
+}
+
 function cleanup() {
   const now = Date.now();
   for (const [ref, pos] of positions) {

@@ -2,10 +2,11 @@ import { Router, Request, Response, NextFunction } from "express";
 import { db, ordersTable, restaurantsTable } from "@workspace/db";
 import { eq, desc, sql as sqlRaw } from "drizzle-orm";
 import { notifyDrivers, notifySpecificDrivers, notifyDriversExcept, notifyRestaurantOwner } from "./push";
-import { getDriverPositions, syncTrackingStatus } from "./tracking";
+import { getDriverPositions, syncTrackingStatus, getTrackedDriver } from "./tracking";
 import { addSSEClient, removeSSEClient, broadcastOrder } from "../lib/sse";
 import { logger } from "../lib/logger";
 import { notifyRestaurant } from "../lib/notify-restaurant";
+import { notifyAdminReport } from "../lib/notify-admin";
 import { pool } from "@workspace/db";
 import { verifyJWT, normalizePhone } from "./auth";
 
@@ -418,7 +419,7 @@ router.post("/orders/:ref/rating", async (req, res) => {
       return;
     }
 
-    const [order] = await db.select({ id: ordersTable.id }).from(ordersTable).where(eq(ordersTable.ref, ref));
+    const [order] = await db.select({ id: ordersTable.id, customerName: ordersTable.customerName }).from(ordersTable).where(eq(ordersTable.ref, ref));
     if (!order) { res.status(404).json({ error: "Commande introuvable" }); return; }
 
     const patch: Record<string, unknown> = { updatedAt: new Date() };
@@ -452,6 +453,19 @@ router.post("/orders/:ref/rating", async (req, res) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reason: reportReason.trim().slice(0, 500) }),
       }).catch((err) => logger.warn({ err, ref }, "Failed to forward report to Manager"));
+
+      // Alerte WhatsApp directe a zabi (2026-07-10, demande zabi) — EN PLUS du
+      // flux Manager ci-dessus, ne le remplace pas. Nom/photo du livreur tires
+      // du tracking store en temps reel (pas de la DB, plus a jour).
+      const trackedDriver = getTrackedDriver(ref);
+      notifyAdminReport({
+        ref,
+        reason: reportReason.trim().slice(0, 500),
+        customerName: order.customerName ?? undefined,
+        driverName: trackedDriver?.name,
+        driverPhoto: trackedDriver?.photo,
+        driverPhone: trackedDriver?.phone,
+      }).catch((err) => logger.warn({ err, ref }, "Failed to send admin WhatsApp report alert"));
     }
   } catch (err) {
     logger.error({ err }, "Failed to save order rating");
