@@ -119,6 +119,7 @@ async function forwardOrderToLivreurs(order: any) {
         pickupAddress: order.restaurantName || undefined,
         items: order.items,
         total: order.total,
+        paymentMethod: order.paymentMethod ?? "cash",
         notes: order.ref ? `Ref Bridge Eats: ${order.ref}` : undefined,
         source: "bridge-eats",
         serviceType: order.service,
@@ -444,10 +445,11 @@ router.post("/orders/:ref/rating", async (req, res) => {
 
 // ── Annuler une commande (client) ───────────────────────────────────────────
 // Public (même modèle que /orders/status/:ref) : le client annule sa propre
-// commande via sa référence. Autorisé uniquement tant que le livreur n'est
-// pas encore parti (avant "on_the_way"/"on_way") — au-delà, la course est
-// déjà engagée et l'annulation doit passer par le support (bouton Aide).
-const CANCELABLE_STATUSES = ["pending", "pending_payment", "accepted", "preparing", "ready"];
+// commande via sa référence. Autorisé UNIQUEMENT avant que le restaurant ne
+// commence la préparation — dès que le statut passe à "preparing", la
+// nourriture/les produits sont déjà engagés en cuisine, donc l'annulation
+// devient impossible et doit passer par le support (bouton Aide).
+const CANCELABLE_STATUSES = ["pending", "pending_payment", "accepted"];
 router.post("/orders/:ref/cancel", async (req, res) => {
   try {
     const ref = String(req.params.ref);
