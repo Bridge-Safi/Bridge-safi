@@ -371,11 +371,27 @@ router.get("/orders/status/:ref", async (req, res) => {
       ref: ordersTable.ref,
       status: ordersTable.status,
       updatedAt: ordersTable.updatedAt,
+      createdAt: ordersTable.createdAt,
       service: ordersTable.service,
       driverRating: ordersTable.driverRating,
+      // Champs ajoutes (2026-07-10) pour le recu imprimable a l'ecran
+      // "livraison terminee" — pas de donnee sensible (le client consulte
+      // uniquement sa propre commande via son ref, pas le telephone).
+      total: ordersTable.total,
+      restaurantName: ordersTable.restaurantName,
+      customerAddress: ordersTable.customerAddress,
+      customerName: ordersTable.customerName,
+      items: ordersTable.items,
+      paymentMethod: ordersTable.paymentMethod,
     }).from(ordersTable).where(eq(ordersTable.ref, ref));
     if (!order) { res.status(404).json({ error: "Commande introuvable" }); return; }
-    res.json({ ref: order.ref, status: order.status, updatedAt: order.updatedAt, service: order.service, alreadyRated: order.driverRating != null });
+    res.json({
+      ref: order.ref, status: order.status, updatedAt: order.updatedAt, service: order.service,
+      alreadyRated: order.driverRating != null,
+      createdAt: order.createdAt, total: order.total, restaurantName: order.restaurantName,
+      customerAddress: order.customerAddress, customerName: order.customerName,
+      items: order.items, paymentMethod: order.paymentMethod,
+    });
   } catch (err) {
     res.status(500).json({ error: "Erreur serveur" });
   }
