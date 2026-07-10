@@ -7087,7 +7087,7 @@ function MedItem({med,qty,isNight,nightSurcharge,effectivePrice,onAdd,onRem}:{me
   return(
     <div className="flex flex-col gap-2 rounded-2xl p-3"
       style={{background:qty>0?'rgba(99,102,241,0.18)':'rgba(255,255,255,0.04)',border:`1.5px solid ${qty>0?'rgba(99,102,241,0.5)':'rgba(165,180,252,0.15)'}`,transition:'all 0.15s'}}>
-      <div style={{width:'100%',height:84,borderRadius:12,flexShrink:0,overflow:'hidden',boxShadow:'0 2px 10px rgba(0,0,0,0.35)'}}>
+      <div style={{width:'100%',height:108,borderRadius:12,flexShrink:0,overflow:'hidden',boxShadow:'0 2px 10px rgba(0,0,0,0.35)'}}>
         {med.img&&imgOk?(
           <img src={med.img} alt={med.name} onError={()=>setImgOk(false)} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
         ):(
@@ -7702,15 +7702,16 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                   display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'flex-end',gap:3,
                   position:'relative',overflow:'hidden',
                   transition:'box-shadow 0.25s,border-color 0.25s',
-                  minHeight:92,
+                  minHeight:108,
                 }}>
-                  {/* Vraie photo en fond — moitié haute de la carte, remplace le logo */}
+                  {/* Vraie photo en fond — moitié haute de la carte, remplace le logo
+                      (agrandie 56%->64% + carte 92->108, demande zabi 2026-07-10) */}
                   <img src={CARD_PHOTOS[item.key]} alt="" loading="lazy"
                     onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
-                    style={{position:'absolute',top:0,left:0,right:0,height:'56%',width:'100%',objectFit:'cover',opacity:0.9}}/>
-                  <div style={{position:'absolute',top:0,left:0,right:0,height:'56%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
+                    style={{position:'absolute',top:0,left:0,right:0,height:'64%',width:'100%',objectFit:'cover',opacity:0.9}}/>
+                  <div style={{position:'absolute',top:0,left:0,right:0,height:'64%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
                   {/* Glass shine */}
-                  <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
+                  <div style={{position:'absolute',top:0,left:0,right:0,height:'63%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
                   {/* Sweep shine on hover */}
                   <div style={{position:'absolute',top:0,bottom:0,width:'40%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.07),transparent)',animation:'svcShine 3.5s ease-in-out infinite',pointerEvents:'none'}}/>
                   {item.pending&&(
@@ -7826,12 +7827,12 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     borderRadius:18,border:`1.5px solid ${pressed==='boulangerie'?'rgba(255,255,255,0.55)':'rgba(250,204,21,0.45)'}`,
                     boxShadow:pressed==='boulangerie'?'0 0 0 3px rgba(250,204,21,0.5),0 16px 40px rgba(250,204,21,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 8px 32px rgba(161,98,7,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
                     padding:'18px 8px 10px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'flex-end',gap:3,
-                    position:'relative',overflow:'hidden',minHeight:92,
+                    position:'relative',overflow:'hidden',minHeight:108,
                   }}>
                     <img src={CARD_PHOTOS.boulangerie} alt="" loading="lazy"
                       onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
-                      style={{position:'absolute',top:0,left:0,right:0,height:'56%',width:'100%',objectFit:'cover',opacity:0.9}}/>
-                    <div style={{position:'absolute',top:0,left:0,right:0,height:'56%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
+                      style={{position:'absolute',top:0,left:0,right:0,height:'64%',width:'100%',objectFit:'cover',opacity:0.9}}/>
+                    <div style={{position:'absolute',top:0,left:0,right:0,height:'64%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
                     <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 6px rgba(0,0,0,0.7)',textAlign:'center',position:'relative',zIndex:1}}>Bridge Boulangerie</p>
                     <HoursBadge k="boulangerie"/>
                     <p style={{color:'rgba(255,255,255,0.85)',fontSize:9,fontWeight:600,margin:0,textAlign:'center',textShadow:'0 1px 4px rgba(0,0,0,0.6)',position:'relative',zIndex:1}}>{t.boulangerieSub}</p>
@@ -7843,12 +7844,12 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     borderRadius:18,border:`1.5px solid ${pressed==='souk'?'rgba(255,255,255,0.55)':'rgba(192,132,252,0.45)'}`,
                     boxShadow:pressed==='souk'?'0 0 0 3px rgba(192,132,252,0.5),0 16px 40px rgba(192,132,252,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 8px 32px rgba(126,34,206,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
                     padding:'18px 8px 10px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'flex-end',gap:3,
-                    position:'relative',overflow:'hidden',minHeight:92,
+                    position:'relative',overflow:'hidden',minHeight:108,
                   }}>
                     <img src={CARD_PHOTOS.souk} alt="" loading="lazy"
                       onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
-                      style={{position:'absolute',top:0,left:0,right:0,height:'56%',width:'100%',objectFit:'cover',opacity:0.9}}/>
-                    <div style={{position:'absolute',top:0,left:0,right:0,height:'56%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
+                      style={{position:'absolute',top:0,left:0,right:0,height:'64%',width:'100%',objectFit:'cover',opacity:0.9}}/>
+                    <div style={{position:'absolute',top:0,left:0,right:0,height:'64%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
                     <p style={{color:'#fff',fontSize:12,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 6px rgba(0,0,0,0.7)',textAlign:'center',position:'relative',zIndex:1}}>Bridge Souk</p>
                     <HoursBadge k="souk"/>
                     <p style={{color:'rgba(255,255,255,0.85)',fontSize:9,fontWeight:600,margin:0,textAlign:'center',textShadow:'0 1px 4px rgba(0,0,0,0.6)',position:'relative',zIndex:1}}>{t.soukSub}</p>
@@ -11740,7 +11741,7 @@ function MarketItemCard({it,qty,theme,onAdd,onRem}:{it:MarketItem;qty:number;the
       {hasPromo&&(
         <span className="absolute top-2 left-2 z-10 text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{background:'#DC2626',color:'#fff'}}>PROMO</span>
       )}
-      <div style={{width:'100%',height:76,borderRadius:12,flexShrink:0,overflow:'hidden',background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:32}}>
+      <div style={{width:'100%',height:108,borderRadius:12,flexShrink:0,overflow:'hidden',background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:32}}>
         {photo
           ?<img src={photo} alt={it.name} loading="lazy" style={{width:'100%',height:'100%',objectFit:'cover'}} onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';const sib=(e.currentTarget as HTMLImageElement).nextElementSibling as HTMLElement|null;if(sib)sib.style.display='flex';}}/>
           :null
