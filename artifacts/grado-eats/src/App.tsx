@@ -9760,35 +9760,35 @@ const TABAC_CATALOG:CigEntry[] = [
 function CigItem({cig,qty,isNight,effectivePrice,onAdd,onRem}:{cig:CigEntry;qty:number;isNight:boolean;effectivePrice:number;onAdd:()=>void;onRem:()=>void}) {
   const [imgOk,setImgOk]=useState(!!cig.img);
   return(
-    <div className="flex items-center gap-3 rounded-2xl px-3 py-2"
+    <div className="flex flex-col gap-2 rounded-2xl p-3"
       style={{background:qty>0?'rgba(180,83,9,0.12)':'var(--c-card)',border:`1.5px solid ${qty>0?'rgba(180,83,9,0.5)':'var(--c-border)'}`,transition:'all 0.15s'}}>
-      {/* Pack image */}
-      <div style={{width:40,height:52,borderRadius:6,flexShrink:0,overflow:'hidden',boxShadow:'0 2px 8px rgba(0,0,0,0.35)'}}>
+      {/* Pack image — agrandie (format aligne sur Pharmacie/Boulangerie/Souk) pour bien voir le paquet */}
+      <div style={{width:'100%',height:84,borderRadius:12,flexShrink:0,overflow:'hidden',boxShadow:'0 2px 10px rgba(0,0,0,0.35)'}}>
         {cig.img&&imgOk?(
           <img src={cig.img} alt={cig.name} onError={()=>setImgOk(false)} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
         ):(
-          <div style={{width:'100%',height:'100%',background:`linear-gradient(160deg,${cig.c1},${cig.c2})`,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'3px 2px',gap:1}}>
-            <span style={{color:'rgba(255,255,255,0.95)',fontSize:6,fontWeight:900,textAlign:'center',letterSpacing:'0.05em',textTransform:'uppercase',lineHeight:1.1}}>{cig.brand}</span>
-            <div style={{width:'75%',height:'0.5px',background:'rgba(255,255,255,0.4)'}}/>
-            <span style={{color:'rgba(255,255,255,0.7)',fontSize:5,textAlign:'center',letterSpacing:'0.06em',textTransform:'uppercase'}}>{cig.label}</span>
+          <div style={{width:'100%',height:'100%',background:`linear-gradient(160deg,${cig.c1},${cig.c2})`,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'6px 4px',gap:2}}>
+            <span style={{color:'rgba(255,255,255,0.95)',fontSize:11,fontWeight:900,textAlign:'center',letterSpacing:'0.05em',textTransform:'uppercase',lineHeight:1.1}}>{cig.brand}</span>
+            <div style={{width:'55%',height:'1px',background:'rgba(255,255,255,0.4)'}}/>
+            <span style={{color:'rgba(255,255,255,0.7)',fontSize:9,textAlign:'center',letterSpacing:'0.06em',textTransform:'uppercase'}}>{cig.label}</span>
           </div>
         )}
       </div>
-      <div style={{flex:1,minWidth:0}}>
-        <p className="font-black text-[12px] truncate" style={{color:'var(--c-text)'}}>{cig.name}</p>
-        <div className="flex items-center gap-1.5">
-          <p className="text-[11px] font-black" style={{color:'#B45309'}}>{effectivePrice} DH</p>
+      <div style={{minWidth:0}}>
+        <p className="font-black text-[14px] leading-tight" style={{color:'var(--c-text)'}}>{cig.name}</p>
+        <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+          <span className="text-[13px] font-black" style={{color:'#B45309'}}>{effectivePrice} DH</span>
           {isNight&&<span style={{background:'rgba(251,191,36,0.15)',border:'1px solid rgba(251,191,36,0.4)',borderRadius:4,padding:'0 4px',fontSize:9,color:'#F59E0B',fontWeight:700}}>🌙 +8</span>}
         </div>
       </div>
-      <div className="flex items-center gap-1.5 flex-shrink-0">
+      <div className="flex items-center justify-end gap-2 flex-shrink-0 mt-auto">
         {qty>0&&(
           <>
-            <button onClick={onRem} style={{width:28,height:28,borderRadius:'50%',border:'none',background:'rgba(180,83,9,0.2)',color:'#B45309',fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
-            <span className="font-black text-sm w-5 text-center" style={{color:'var(--c-text)'}}>{qty}</span>
+            <button onClick={onRem} style={{width:32,height:32,borderRadius:'50%',border:'none',background:'rgba(180,83,9,0.2)',color:'#B45309',fontWeight:900,fontSize:18,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
+            <span className="font-black text-base w-5 text-center" style={{color:'var(--c-text)'}}>{qty}</span>
           </>
         )}
-        <button onClick={onAdd} style={{width:28,height:28,borderRadius:'50%',border:'none',background:'#B45309',color:'white',fontWeight:900,fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>+</button>
+        <button onClick={onAdd} style={{width:32,height:32,borderRadius:'50%',border:'none',background:'#B45309',color:'white',fontWeight:900,fontSize:18,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>+</button>
       </div>
     </div>
   );
@@ -9984,8 +9984,8 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
               ))}
             </div>
 
-            {/* Items grid */}
-            <div className="flex flex-col gap-2">
+            {/* Items grid — 2 par ligne (format aligne sur Pharmacie/Boulangerie/Souk) */}
+            <div className="grid grid-cols-2 gap-2.5">
               {visibleCigs.map(cig=>(
                 <CigItem key={cig.id} cig={cig} qty={cigQty(cig.id)} isNight={isNight}
                   effectivePrice={cigPrice(cig)}
