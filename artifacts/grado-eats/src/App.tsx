@@ -7460,7 +7460,7 @@ function HoursBadge({k}:{k:string}) {
 // chaque chargement = photos qui mettent du temps à apparaitre sur les cartes).
 const CARD_PHOTOS: Record<string,string> = {
   delivery:    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Pizza.jpg/500px-Pizza.jpg',
-  taxi:        'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/2010-12-14_Maroc_Agadir_PetitTaxi.JPG/500px-2010-12-14_Maroc_Agadir_PetitTaxi.JPG',
+  taxi:        'https://commons.wikimedia.org/wiki/Special:FilePath/Comfort_Hyundai_Sonata_taxi.jpg?width=500', // Taxi Confort moderne (pas luxe), demande zabi 2026-07-10
   fleurs:      'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Bouquet_de_roses_roses.jpg/500px-Bouquet_de_roses_roses.jpg',
   tabac:       'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Cigarettes_in_a_cigarette_packet_%28close-up%29.JPG/500px-Cigarettes_in_a_cigarette_packet_%28close-up%29.JPG',
   pharmacie:   'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Highland_Park_Pharmacy_interior_01.jpg/330px-Highland_Park_Pharmacy_interior_01.jpg',
