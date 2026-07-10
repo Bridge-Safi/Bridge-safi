@@ -5270,7 +5270,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
 
   const handleSuccess=()=>{
     localStorage.setItem('bridge_last_ref',orderRef);
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'eats',date:new Date().toISOString(),restaurantName,total});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'eats',date:new Date().toISOString(),restaurantName,total,owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     onOrderSuccess?.(orderRef);
     setStep('success');
   };
@@ -6949,6 +6949,7 @@ function MedItem({med,qty,isNight,nightSurcharge,effectivePrice,onAdd,onRem}:{me
 }
 
 function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void;onOrderSuccess?:(ref:string)=>void}) {
+  const { user } = useUser();
   const fClass=fontClass(lang); const isAR=lang==='ar';
   const [,navigatePharm]=useLocation();
 
@@ -7056,7 +7057,7 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
       body:JSON.stringify({ref:orderRef,service:'pharmacie',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:'Bridge Pharmacie'}),
     }).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'pharmacie',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'pharmacie',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
   };
 
@@ -7337,12 +7338,13 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
   useEffect(()=>{
     try{
       const raw=localStorage.getItem('bridge_history');
-      const arr:{type:string;date:string}[]=raw?JSON.parse(raw):[];
+      const arr:{type:string;date:string;owner?:string}[]=raw?JSON.parse(raw):[];
       const THREE_H=3*60*60*1000;
-      const recent=arr.filter(e=>e.type!=='taxi'&&e.type!=='moto'&&(Date.now()-new Date(e.date).getTime())<THREE_H);
+      const owner=user?.id||'guest';
+      const recent=arr.filter(e=>e.type!=='taxi'&&e.type!=='moto'&&(e.owner||'guest')===owner&&(Date.now()-new Date(e.date).getTime())<THREE_H);
       setRecentOrdersCount(recent.length);
     }catch{}
-  },[]);
+  },[user?.id]);
  
 
   return(
@@ -8051,6 +8053,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   onBack:()=>void; lang:Lang; cycleLang:()=>void;
   profile:UserProfile; saveProfile:(p:UserProfile)=>void;
 }) {
+  const { user } = useUser();
   const [showProfile,setShowProfile]=useState(false);
   const [activeTab,setActiveTab]=useState<0|1>(0);
   const isAR=lang==='ar'; const isAMZ=lang==='amz'; const fClass=fontClass(lang);
@@ -8160,7 +8163,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
     }finally{setSending(false);}
     if(taxiGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:taxiGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${taxiUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     localStorage.setItem('bridge_taxi_ref',ref);
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref,type:'taxi',date:new Date().toISOString(),destination:destination.trim(),address:clientAddress||'Safi',total:0,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref,type:'taxi',date:new Date().toISOString(),destination:destination.trim(),address:clientAddress||'Safi',total:0,name:name.trim(),owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setBookingRef(ref);
     if(taxiPayMethod==='qr') setShowTaxiQR(true);
     else setActiveTab(1);
@@ -8497,6 +8500,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
   profile:UserProfile; saveProfile:(p:UserProfile)=>void;
   vehicleType?:'taxi'|'moto';
 }) {
+  const { user } = useUser();
   const isTaxi=vehicleType==='taxi';
   const vEmoji=isTaxi?'🚖':'🛵';
   const vAccent=isTaxi?'#FDE68A':'#FED7AA';
@@ -8615,7 +8619,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
     }finally{setSending(false);}
     if(motoGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:motoGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${motoUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     localStorage.setItem(vLocalKey,ref);
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref,type:vehicleType,date:new Date().toISOString(),destination:destination.trim(),address:clientAddress||'Safi',total:finalPrice||undefined,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref,type:vehicleType,date:new Date().toISOString(),destination:destination.trim(),address:clientAddress||'Safi',total:finalPrice||undefined,name:name.trim(),owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setBookingRef(ref);
     if(motoPayMethod==='qr') setShowMotoQR(true);
   };
@@ -9242,6 +9246,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   profile:UserProfile; saveProfile:(p:UserProfile)=>void;
   onOrderSuccess?:(ref:string)=>void;
 }) {
+  const { user } = useUser();
   const [,navigateFleur]=useLocation();
   const [activeFlorist,setActiveFlorist]=useState<'nour'|'amina'|'rania'|'yasmine'|null>(null);
   const [fleurSearch,setFleurSearch]=useState('');
@@ -9291,7 +9296,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
     }finally{setSending(false);}
     setLastRef(orderRef);
     try{localStorage.setItem('bridge_fleurs_last_ref',orderRef);}catch{}
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'fleurs',date:new Date().toISOString(),total:cartTotal,address:delivAddr,name:resName.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'fleurs',date:new Date().toISOString(),total:cartTotal,address:delivAddr,name:resName.trim(),owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setTrackStage(0);setStep('track');
   };
 
@@ -9736,6 +9741,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   profile:UserProfile; saveProfile:(p:UserProfile)=>void;
   onOrderSuccess?:(ref:string)=>void;
 }) {
+  const { user } = useUser();
   // ── State ──
   const [showProfile,setShowProfile]=useState(false);
   const [ageVerified,setAgeVerified]=useState(()=>{try{return localStorage.getItem('bridge_tabac_age18')==='1';}catch{return false;}});
@@ -9835,7 +9841,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
       body:JSON.stringify({ref:orderRef,service:'tabac',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:'Bridge Tabac'}),
     }).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'tabac',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'tabac',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
   };
 
@@ -10191,6 +10197,7 @@ function BoulangerieItem({it,qty,effectivePrice,onAdd,onRem}:{it:BoulItem;qty:nu
 }
 
 function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void;onOrderSuccess?:(ref:string)=>void}) {
+  const { user } = useUser();
   const fClass=fontClass(lang); const isAR=lang==='ar';
   const [,navigateBoul]=useLocation();
 
@@ -10290,7 +10297,7 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
       body:JSON.stringify({ref:orderRef,service:'boulangerie',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:'Bridge Boulangerie'}),
     }).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'boulangerie',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'boulangerie',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
   };
 
@@ -10522,6 +10529,7 @@ function SoukItemCard({it,qty,effectivePrice,onAdd,onRem}:{it:SoukItem;qty:numbe
 }
 
 function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void;onOrderSuccess?:(ref:string)=>void}) {
+  const { user } = useUser();
   const fClass=fontClass(lang); const isAR=lang==='ar';
   const [,navigateSouk]=useLocation();
 
@@ -10619,7 +10627,7 @@ function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{on
       body:JSON.stringify({ref:orderRef,service:'souk',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:'Bridge Souk'}),
     }).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'souk',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim()});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'souk',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
   };
 
@@ -11544,6 +11552,7 @@ function SupermarcheStoreCircle({store,index,onSelect,lang}:{store:MarketStoreTh
 }
 
 function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void;onOrderSuccess?:(ref:string)=>void}) {
+  const { user } = useUser();
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const [,navigateMkt]=useLocation();
   const [store,setStore]=useState<'select'|MarketStoreId>('select');
@@ -11638,7 +11647,7 @@ function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
       body:JSON.stringify({ref:orderRef,service:'supermarche',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:'delivery',paymentMethod:payInfo,restaurantName:storeLabel}),
     }).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'supermarche',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),restaurantName:storeLabel});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'supermarche',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),restaurantName:storeLabel,owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
   };
 
@@ -12013,17 +12022,22 @@ type HistoryEntry = {
   address?: string;
   name?: string;
   restaurantName?: string;
+  owner?: string; // user?.id du compte qui a passé la commande, ou 'guest' si non connecté
 };
 
 export function HistoryPageRoute() {
   const [,navigate]=useLocation();
   const {dark}=useDark();
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
   const { getToken } = useAuth();
   const [lang]=useState<Lang>(()=>{try{const r=localStorage.getItem(NAV_KEY);return r?JSON.parse(r).lang??'fr':'fr';}catch{return 'fr';}});
   const t=T[lang];
+  // Ne garde que les entrées de CE compte (ou les entrées 'guest' non connecté) —
+  // corrige le bug où l'historique d'un appareil partagé mélangeait les commandes
+  // de plusieurs clients différents.
+  const currentOwner=user?.id||'guest';
   const [entries,setEntries]=useState<HistoryEntry[]>(()=>{
-    try{const r=localStorage.getItem('bridge_history');return r?JSON.parse(r):[];}catch{return [];}
+    try{const r=localStorage.getItem('bridge_history');const arr:HistoryEntry[]=r?JSON.parse(r):[];return arr.filter(e=>(e.owner||'guest')===currentOwner);}catch{return [];}
   });
 
   // Compte connecté → historique propre à ce compte, servi depuis le serveur
@@ -12050,7 +12064,7 @@ export function HistoryPageRoute() {
         if(!cancelled) setEntries(prev=>{
           const byRef=new Map<string,HistoryEntry>();
           serverEntries.forEach(e=>byRef.set(e.ref,e));
-          prev.forEach(e=>{ if(!byRef.has(e.ref)) byRef.set(e.ref,e); });
+          prev.forEach(e=>{ if((e.owner||'guest')===currentOwner && !byRef.has(e.ref)) byRef.set(e.ref,e); });
           return Array.from(byRef.values()).sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime());
         });
       }catch{}
@@ -12170,8 +12184,11 @@ function projectArrival(orderDate: string, status: string): string | null {
 export function MyOrdersPageRoute() {
   const [,navigate]=useLocation();
   const {dark}=useDark();
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
   const { getToken } = useAuth();
+  // Ne garde que les entrées de CE compte (ou 'guest' si non connecté) — voir
+  // HistoryPageRoute pour le détail du bug corrigé (appareil partagé).
+  const currentOwner=user?.id||'guest';
   const [lang,setLang]=useState<Lang>(()=>{try{const r=localStorage.getItem(NAV_KEY);return r?JSON.parse(r).lang??'fr':'fr';}catch{return 'fr';}});
   const cycleLang=()=>setLang(l=>{
     const next=LANG_CYCLE[(LANG_CYCLE.indexOf(l)+1)%LANG_CYCLE.length];
@@ -12183,7 +12200,7 @@ export function MyOrdersPageRoute() {
     try{
       const raw=localStorage.getItem('bridge_history');
       const arr:HistoryEntry[]=raw?JSON.parse(raw):[];
-      return arr.filter(e=>e.type!=='taxi'&&e.type!=='moto') as MyOrderEntry[];
+      return arr.filter(e=>e.type!=='taxi'&&e.type!=='moto'&&(e.owner||'guest')===currentOwner) as MyOrderEntry[];
     }catch{return [];}
   });
   const [openRef,setOpenRef]=useState<string|null>(null);
@@ -12214,7 +12231,7 @@ export function MyOrdersPageRoute() {
         if(!cancelled) setEntries(prev=>{
           const byRef=new Map<string,MyOrderEntry>();
           serverEntries.forEach(e=>byRef.set(e.ref,e));
-          prev.forEach(e=>{ if(!byRef.has(e.ref)) byRef.set(e.ref,e); else byRef.set(e.ref,{...e,...byRef.get(e.ref)}); });
+          prev.forEach(e=>{ if((e.owner||'guest')!==currentOwner) return; if(!byRef.has(e.ref)) byRef.set(e.ref,e); else byRef.set(e.ref,{...e,...byRef.get(e.ref)}); });
           return Array.from(byRef.values()).sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime());
         });
       }catch{}
