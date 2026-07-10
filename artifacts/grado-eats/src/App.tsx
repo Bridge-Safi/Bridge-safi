@@ -7279,11 +7279,11 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
 // peut commander à tout moment même si le service est marqué fermé — rien
 // n'est bloqué, la commande est simplement traitée dès la réouverture.
 const SERVICE_HOURS: Record<string,{open:number;close:number}> = {
-  delivery:    {open:8, close:23},
-  fleurs:      {open:8, close:20},
-  supermarche: {open:8, close:22},
-  boulangerie: {open:6, close:21},
-  souk:        {open:9, close:20},
+  delivery:    {open:8, close:24},
+  fleurs:      {open:8, close:24},
+  supermarche: {open:8, close:24},
+  boulangerie: {open:6, close:24},
+  souk:        {open:9, close:24},
 };
 function isServiceOpen(key:string):{open:boolean;opensAt:number;closesAt:number}{
   const h=SERVICE_HOURS[key];
@@ -7312,13 +7312,13 @@ function HoursBadge({k}:{k:string}) {
 // a un fallback silencieux (emoji/dégradé d'origine) si l'image ne charge pas.
 const CARD_PHOTOS: Record<string,string> = {
   delivery:    'https://commons.wikimedia.org/wiki/Special:FilePath/Pizza.jpg?width=400',
-  taxi:        'https://commons.wikimedia.org/wiki/Special:FilePath/Grand_Taxi_in_Centre_Ville_Casablanca.jpg?width=400',
+  taxi:        'https://commons.wikimedia.org/wiki/Special:FilePath/2010-12-14_Maroc_Agadir_PetitTaxi.JPG?width=400',
   fleurs:      'https://commons.wikimedia.org/wiki/Special:FilePath/Bouquet_de_roses_roses.jpg?width=400',
   tabac:       'https://commons.wikimedia.org/wiki/Special:FilePath/Cigarettes_in_a_cigarette_packet_%28close-up%29.JPG?width=400',
   pharmacie:   'https://commons.wikimedia.org/wiki/Special:FilePath/Highland_Park_Pharmacy_interior_01.jpg?width=300',
   supermarche: 'https://commons.wikimedia.org/wiki/Special:FilePath/Supermarket_shelves.jpg?width=400',
-  boulangerie: 'https://commons.wikimedia.org/wiki/Special:FilePath/Bread_Ahead_Bakery_Soho.jpg?width=400',
-  souk:        'https://commons.wikimedia.org/wiki/Special:FilePath/Agadir_souk.JPG?width=400',
+  boulangerie: 'https://commons.wikimedia.org/wiki/Special:FilePath/Khobz.jpg?width=400',
+  souk:        'https://commons.wikimedia.org/wiki/Special:FilePath/Epices_Marrakech.jpg?width=400',
 };
 function MiniPhotoBadge({k,emoji,size=38}:{k:string;emoji:string;size?:number}) {
   const [ok,setOk]=useState(true);
