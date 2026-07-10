@@ -1160,12 +1160,19 @@ const _mktImg=(ref?:string):string=>{
   return '';
 };
 const _ue=(s:string)=>{try{return JSON.parse('"'+s+'"');}catch{return s;}};
+// Fallback plat sans photo : variete d'emojis appetissants (pas le meme pour
+// chaque plat, deterministe via le nom) sur un degrade chaleureux aux couleurs
+// de la marque, plutot qu'une case grise identique repetee sur toute la grille.
+const _DISH_EMOJIS=['\ud83c\udf7d\ufe0f','\ud83e\udd62','\ud83c\udf5c','\ud83c\udf71','\ud83c\udf62','\ud83e\udd61'];
+function _dishEmoji(s:string):string{let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return _DISH_EMOJIS[Math.abs(h)%_DISH_EMOJIS.length];}
 function DishImg({src,alt,className}:{src:string;alt:string;className?:string}) {
   const [ok,setOk]=useState(!!src);
   return ok ? (
     <img src={src} alt={alt} className={className} loading="lazy" onError={()=>setOk(false)}/>
   ) : (
-    <div className={className} style={{display:'flex',alignItems:'center',justifyContent:'center',background:'linear-gradient(135deg,var(--c-border,#E5E7EB),var(--c-card,#F3F4F6))',fontSize:26}}>🍽️</div>
+    <div className={className} style={{display:'flex',alignItems:'center',justifyContent:'center',background:'linear-gradient(145deg,#FBF3E3 0%,#F2E4C6 100%)',fontSize:30}}>
+      <span style={{opacity:0.6,filter:'grayscale(0.15)'}}>{_dishEmoji(alt||'plat')}</span>
+    </div>
   );
 }
 const RESTAURANTS: Restaurant[] = [
@@ -4146,6 +4153,16 @@ function AddressAutocomplete({label,value,onChange,placeholder,lang,error,nation
 
 // ─── RESTAURANT CARD (Home) ───────────────────────────────────────────────────
 
+function CoverImg({src,alt,logo,className}:{src:string;alt:string;logo:string;className?:string}) {
+  const [ok,setOk]=useState(!!src);
+  return ok ? (
+    <img src={src} alt={alt} className={className} loading="lazy" onError={()=>setOk(false)}/>
+  ) : (
+    <div className={className} style={{display:'flex',alignItems:'center',justifyContent:'center',background:'linear-gradient(145deg,#0C2B20 0%,#065F46 55%,#0C2B20 100%)',fontSize:44}}>
+      <span style={{opacity:0.85,filter:'drop-shadow(0 4px 10px rgba(0,0,0,0.4))'}}>{_ue(logo)}</span>
+    </div>
+  );
+}
 function RestaurantCard({r,lang,t,onClick,compact=false}:{r:Restaurant;lang:Lang;t:typeof T.fr;onClick:()=>void;compact?:boolean}) {
   const fClass=fontClass(lang);
   const isFeatured = r.id === 'mcdonalds-safi';
@@ -4155,7 +4172,7 @@ function RestaurantCard({r,lang,t,onClick,compact=false}:{r:Restaurant;lang:Lang
         className="w-full text-left rounded-2xl overflow-hidden transition-all active:scale-95"
         style={{background:'var(--c-bg)',border:`1.5px solid ${isFeatured?'#D9C5A0':'#E5E1D8'}`,boxShadow:'0 4px 14px rgba(0,0,0,0.08)'}}>
         <div className="relative h-36 overflow-hidden">
-          <img src={r.cover} alt={r.name} className="w-full h-full object-cover" loading="lazy"/>
+          <CoverImg src={r.cover} alt={r.name} logo={r.logo} className="w-full h-full object-cover"/>
           <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.9) 0%,rgba(4,55,38,0.05) 60%,transparent 100%)'}}/>
           <div className="absolute top-2.5 left-2.5 w-10 h-10 rounded-xl flex items-center justify-center text-2xl"
             style={{background:'rgba(253,252,249,0.95)',backdropFilter:'blur(8px)',boxShadow:'0 2px 8px rgba(0,0,0,0.15)'}}>
@@ -4192,7 +4209,7 @@ function RestaurantCard({r,lang,t,onClick,compact=false}:{r:Restaurant;lang:Lang
       className="w-full text-left rounded-3xl overflow-hidden transition-all active:scale-95 hover:shadow-2xl"
       style={{background:'var(--c-bg)',border:`1.5px solid ${isFeatured?'#D9C5A0':'#E5E1D8'}`,boxShadow:isFeatured?'0 6px 24px rgba(217,197,160,0.35)':'0 4px 16px rgba(0,0,0,0.07)'}}>
       <div className="relative h-44 overflow-hidden">
-        <img src={r.cover} alt={r.name} className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" loading="lazy"/>
+        <CoverImg src={r.cover} alt={r.name} logo={r.logo} className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"/>
         <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.85) 0%,rgba(4,55,38,0.1) 55%,transparent 100%)'}}/>
         <div className="absolute top-3 left-3 w-12 h-12 rounded-2xl flex items-center justify-center text-3xl"
           style={{background:'rgba(253,252,249,0.95)',backdropFilter:'blur(8px)',boxShadow:'0 4px 12px rgba(0,0,0,0.15)'}}>
@@ -4374,7 +4391,7 @@ function RestaurantPage({restaurant,lang,t,onBack,onAddToCart}:{
     <div>
       {/* Restaurant hero */}
       <section className="relative mx-5 mb-5 rounded-3xl overflow-hidden" style={{boxShadow:'0 8px 32px rgba(0,0,0,0.12)'}}>
-        <img src={restaurant.cover} alt={restaurant.name} className="w-full h-52 object-cover"/>
+        <CoverImg src={restaurant.cover} alt={restaurant.name} logo={restaurant.logo} className="w-full h-52 object-cover"/>
         <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.9) 0%,rgba(4,55,38,0.2) 55%,transparent 100%)'}}/>
         <button onClick={onBack}
           className="absolute top-4 left-4 flex items-center gap-2 px-3 py-2 rounded-full font-black text-sm transition-all active:scale-90"
