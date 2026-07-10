@@ -11433,12 +11433,12 @@ const MARKET_STORES:MarketStoreTheme[]=[
 ];
 const MARKET_CAT_TABS:{key:MarketItem['cat'];label:string;emoji:string}[]=[
   {key:'fruits',    label:'Fruits & Légumes',  emoji:'🍎'},
-  {key:'boucherie', label:'Boucherie',         emoji:'🥩'},
-  {key:'laitier',   label:'Laitier & Œufs',    emoji:'🧀'},
   {key:'boissons',  label:'Boissons',          emoji:'💧'},
-  {key:'epicerie',  label:'Épicerie',          emoji:'🧂'},
+  {key:'epicerie',  label:'Épicerie salée',    emoji:'🧂'},
+  {key:'sucre',     label:'Épicerie sucrée',   emoji:'🍫'},
   {key:'snacking',  label:'Snacking',          emoji:'🍟'},
-  {key:'sucre',     label:'Sucré',             emoji:'🍫'},
+  {key:'laitier',   label:'Laitier & Œufs',    emoji:'🧀'},
+  {key:'boucherie', label:'Boucherie',         emoji:'🥩'},
   {key:'surgeles',  label:'Surgelés',          emoji:'🧊'},
 ];
 
