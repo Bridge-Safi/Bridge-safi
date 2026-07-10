@@ -7282,6 +7282,31 @@ function HoursBadge({k}:{k:string}) {
   );
 }
 
+// Vraies photos (Wikimedia Commons, licence libre) utilisées en arrière-plan des
+// cartes services — remplace les logos/emoji pour un rendu plus pro. Chaque usage
+// a un fallback silencieux (emoji/dégradé d'origine) si l'image ne charge pas.
+const CARD_PHOTOS: Record<string,string> = {
+  delivery:    'https://commons.wikimedia.org/wiki/Special:FilePath/Pizza.jpg?width=400',
+  taxi:        'https://commons.wikimedia.org/wiki/Special:FilePath/Grand_Taxi_in_Centre_Ville_Casablanca.jpg?width=400',
+  fleurs:      'https://commons.wikimedia.org/wiki/Special:FilePath/Bouquet_de_roses_roses.jpg?width=400',
+  tabac:       'https://commons.wikimedia.org/wiki/Special:FilePath/Cigarettes_in_a_cigarette_packet_%28close-up%29.JPG?width=400',
+  pharmacie:   'https://commons.wikimedia.org/wiki/Special:FilePath/Highland_Park_Pharmacy_interior_01.jpg?width=300',
+  supermarche: 'https://commons.wikimedia.org/wiki/Special:FilePath/Supermarket_shelves.jpg?width=400',
+  boulangerie: 'https://commons.wikimedia.org/wiki/Special:FilePath/Bread_Ahead_Bakery_Soho.jpg?width=400',
+  souk:        'https://commons.wikimedia.org/wiki/Special:FilePath/Agadir_souk.JPG?width=400',
+};
+function MiniPhotoBadge({k,emoji,size=38}:{k:string;emoji:string;size?:number}) {
+  const [ok,setOk]=useState(true);
+  const src=CARD_PHOTOS[k];
+  return (
+    <div style={{width:size,height:size,borderRadius:9,overflow:'hidden',flexShrink:0,background:'rgba(255,255,255,0.1)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+      {ok
+        ? <img src={src} alt="" loading="lazy" onError={()=>setOk(false)} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+        : <span style={{fontSize:size*0.6,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.4))'}}>{emoji}</span>}
+    </div>
+  );
+}
+
 // ─── SERVICE SELECT PAGE ──────────────────────────────────────────────────────
 
 function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:{onSelect:(s:'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk'|'supermarche')=>void;onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void}) {
@@ -7491,7 +7516,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
              glow:'rgba(125,79,46,0.5)', border:'rgba(160,98,58,0.4)'},
           ];
           const cardIdx:{[k:string]:number}={delivery:0,taxi:1,fleurs:3,tabac:4};
-          const renderCard=(item:{key:'delivery'|'taxi'|'fleurs'|'tabac'|'pharmacie';label:string;sub:string;emoji:string;pending?:boolean;grad:string;glow:string;border:string})=>{
+          const renderCard=(item:{key:'delivery'|'taxi'|'fleurs'|'tabac'|'pharmacie';label:string;sub:string;emoji:string;pending?:boolean;grad:string;glow:string;border:string;photo?:string})=>{
             const isPressed=pressed===item.key;
             const idx=cardIdx[item.key]??0;
             return(
@@ -7516,6 +7541,11 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                   transition:'box-shadow 0.25s,border-color 0.25s',
                   minHeight:92,
                 }}>
+                  {/* Vraie photo en fond — moitié haute de la carte, remplace le logo */}
+                  <img src={CARD_PHOTOS[item.key]} alt="" loading="lazy"
+                    onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
+                    style={{position:'absolute',top:0,left:0,right:0,height:'56%',width:'100%',objectFit:'cover',opacity:0.9}}/>
+                  <div style={{position:'absolute',top:0,left:0,right:0,height:'56%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
                   {/* Glass shine */}
                   <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
                   {/* Sweep shine on hover */}
@@ -7586,9 +7616,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                       <div style={{position:'absolute',top:5,right:8,fontSize:7,opacity:0.5}}>✨</div>
                       <div style={{position:'absolute',top:9,right:18,fontSize:5,opacity:0.3}}>★</div>
                       <div style={{position:'absolute',top:3,right:28,fontSize:6,opacity:0.4}}>✦</div>
-                      <div style={{background:'rgba(255,255,255,0.1)',borderRadius:8,padding:'4px 5px',flexShrink:0}}>
-                        <span style={{fontSize:28,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.4))'}}>💊</span>
-                      </div>
+                      <MiniPhotoBadge k="pharmacie" emoji="💊" size={44}/>
                       <div style={{textAlign:'left',flex:1}}>
                         <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:1}}>
                           <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.02em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)'}}>Bridge Pharmacie</p>
@@ -7617,9 +7645,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                   padding:'14px 12px',display:'flex',alignItems:'center',gap:10,position:'relative',overflow:'hidden',
                 }}>
                   <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
-                  <div style={{background:'rgba(255,255,255,0.1)',borderRadius:8,padding:'4px 5px',flexShrink:0}}>
-                    <span style={{fontSize:20,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.4))'}}>🛒</span>
-                  </div>
+                  <MiniPhotoBadge k="supermarche" emoji="🛒" size={36}/>
                   <div style={{textAlign:'left',flex:1}}>
                     <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:1}}>
                       <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.02em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)'}}>Bridge Supermarché</p>
@@ -7640,7 +7666,10 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     padding:'18px 8px 14px',display:'flex',flexDirection:'column',alignItems:'center',gap:5,
                     position:'relative',overflow:'hidden',minHeight:92,
                   }}>
-                    <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
+                    <img src={CARD_PHOTOS.boulangerie} alt="" loading="lazy"
+                      onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
+                      style={{position:'absolute',top:0,left:0,right:0,height:'56%',width:'100%',objectFit:'cover',opacity:0.9}}/>
+                    <div style={{position:'absolute',top:0,left:0,right:0,height:'56%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
                     <span style={{fontSize:30,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🥖</span>
                     <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Boulangerie</p>
                     <HoursBadge k="boulangerie"/>
@@ -7655,7 +7684,10 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     padding:'18px 8px 14px',display:'flex',flexDirection:'column',alignItems:'center',gap:5,
                     position:'relative',overflow:'hidden',minHeight:92,
                   }}>
-                    <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
+                    <img src={CARD_PHOTOS.souk} alt="" loading="lazy"
+                      onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
+                      style={{position:'absolute',top:0,left:0,right:0,height:'56%',width:'100%',objectFit:'cover',opacity:0.9}}/>
+                    <div style={{position:'absolute',top:0,left:0,right:0,height:'56%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
                     <span style={{fontSize:30,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🛍️</span>
                     <p style={{color:'#fff',fontSize:12,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Souk</p>
                     <HoursBadge k="souk"/>
