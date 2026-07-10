@@ -510,7 +510,7 @@ router.get("/orders/mine", async (req, res) => {
     }).from(ordersTable)
       .where(sqlRaw`regexp_replace(${ordersTable.customerPhone}, '\D', '', 'g') LIKE ${'%' + last9}`)
       .orderBy(desc(ordersTable.createdAt))
-      .limit(100);
+      .limit(1000); // 2026-07-10: releve de 100 -> 1000 (zabi: l'historique doit rester affiche "toute la vie")
 
     res.json({ orders });
   } catch (err) {
