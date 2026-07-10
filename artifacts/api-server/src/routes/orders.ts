@@ -415,6 +415,27 @@ router.post("/orders/:ref/rating", async (req, res) => {
     await db.update(ordersTable).set(patch).where(eq(ordersTable.ref, ref));
     logger.info({ ref, stars, reported: !!reportReason }, "Order rating/report saved");
     res.json({ ok: true });
+
+    // Route vers les 2 destinations séparées, en best-effort (ne bloque
+    // jamais la réponse client) :
+    // - la note + le commentaire montent chez le LIVREUR (visibles sur son
+    //   propre profil dans l'app Livreurs) ;
+    // - le signalement d'un problème part vers MANAGER (flux d'activité du
+    //   dashboard admin), jamais vers le livreur.
+    if (stars != null) {
+      fetch(`https://livreur.safi-bridge.ma/api/tracking/${ref}/review`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stars: Number(stars), comment: typeof comment === "string" ? comment : undefined }),
+      }).catch((err) => logger.warn({ err, ref }, "Failed to forward review to Livreurs"));
+    }
+    if (typeof reportReason === "string" && reportReason.trim()) {
+      fetch(`https://manager.safi-bridge.ma/api/orders/by-number/${ref}/report`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: reportReason.trim().slice(0, 500) }),
+      }).catch((err) => logger.warn({ err, ref }, "Failed to forward report to Manager"));
+    }
   } catch (err) {
     logger.error({ err }, "Failed to save order rating");
     res.status(500).json({ error: "Erreur serveur" });
