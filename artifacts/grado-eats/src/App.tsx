@@ -60,23 +60,17 @@ function DarkToggle({ size = 44 }: { size?: number }) {
 // zabi : des adresses bien reelles et centrales de Safi (ex: quartier Achbar,
 // Achbar Allal) tombaient hors de l'ancien polygone trop serre et se
 // faisaient rejeter a tort ("zone non couverte") au clic "Ma position GPS".
+// 2026-07-10 (2e passe) : le polygone serre continuait a rejeter des adresses
+// reelles de Safi (Achbar Allal etc) a chaque nouveau test de zabi. Remplace
+// par un grand rectangle couvrant tout le Grand Safi (mer a l'ouest jusqu'a
+// la peripherie est) pour arreter les faux "zone non couverte". On garde un
+// polygone (pas juste un bounding-box) pour pouvoir affiner plus tard si
+// besoin, mais les coins sont volontairement tres larges pour l'instant.
 const DELIVERY_ZONE: [number,number][] = [
-  [32.3165,-9.2652], // McDonald's (côte nord-ouest)
-  [32.3321,-9.2496], // Remontée nord
-  [32.3425,-9.2275], // Ijnnane nord
-  [32.3412,-9.1976], // Ijnnane nord-est
-  [32.3269,-9.1677], // R206 est
-  [32.3087,-9.1521], // Lamia nord
-  [32.2905,-9.1586], // Lamia / R204
-  [32.2697,-9.1846], // Azib Draï
-  [32.2515,-9.2067], // Azib Draï sud / Achbar
-  [32.2307,-9.2314], // Descente sud
-  [32.2021,-9.2535], // P2303 / Route Nsa
-  [32.1891,-9.2691], // Pointe sud-ouest
-  [32.2216,-9.2847], // Côte sud
-  [32.2541,-9.2821], // Bordeaux / côte
-  [32.2827,-9.2756], // Korten
-  [32.3126,-9.2678], // Retour McDonald's
+  [32.365,-9.30],  // nord-ouest (large marge cote/ocean)
+  [32.365,-9.12],  // nord-est
+  [32.16,-9.12],   // sud-est
+  [32.16,-9.30],   // sud-ouest
 ];
 
 function pointInPolygon(lat:number, lng:number, poly:[number,number][]): boolean {
