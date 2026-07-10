@@ -1160,6 +1160,14 @@ const _mktImg=(ref?:string):string=>{
   return '';
 };
 const _ue=(s:string)=>{try{return JSON.parse('"'+s+'"');}catch{return s;}};
+function DishImg({src,alt,className}:{src:string;alt:string;className?:string}) {
+  const [ok,setOk]=useState(!!src);
+  return ok ? (
+    <img src={src} alt={alt} className={className} loading="lazy" onError={()=>setOk(false)}/>
+  ) : (
+    <div className={className} style={{display:'flex',alignItems:'center',justifyContent:'center',background:'linear-gradient(135deg,var(--c-border,#E5E7EB),var(--c-card,#F3F4F6))',fontSize:26}}>🍽️</div>
+  );
+}
 const RESTAURANTS: Restaurant[] = [
   // ─── McDONALD'S SAFI (Featured · Pinned #1) ──────────────────────────────
   {
@@ -4267,7 +4275,7 @@ function ItemOptionsModal({item,lang,t,onClose,onAdd}:{
       <div className="w-full max-w-md mx-auto rounded-t-3xl modal-sheet" style={{background:'var(--c-bg)',maxHeight:'90vh',display:'flex',flexDirection:'column'}} onClick={e=>e.stopPropagation()}>
         {/* Item header */}
         <div className="relative h-44 rounded-t-3xl overflow-hidden flex-shrink-0">
-          <img src={item.photo} alt={item.names[lang]} className="w-full h-full object-cover"/>
+          <DishImg src={item.photo} alt={item.names[lang]} className="w-full h-full object-cover"/>
           <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(4,55,38,0.8) 0%,transparent 55%)'}}/>
           <div className="absolute top-3 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full" style={{background:'rgba(255,255,255,0.4)'}}/>
           <button onClick={onClose} className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center font-black" style={{background:'rgba(253,252,249,0.9)',color:'#6B7280',fontSize:16}}>✕</button>
@@ -4420,7 +4428,7 @@ function RestaurantPage({restaurant,lang,t,onBack,onAddToCart}:{
               className="text-left rounded-2xl overflow-hidden transition-all active:scale-95 hover:shadow-xl"
               style={{background:'var(--c-bg)',border:'1.5px solid var(--c-border)',boxShadow:'0 3px 12px rgba(0,0,0,0.07)'}}>
               <div className="relative h-28 overflow-hidden">
-                <img src={item.photo} alt={item.names[lang]} className="w-full h-full object-cover transition-transform duration-500 hover:scale-110" loading="lazy"/>
+                <DishImg src={item.photo} alt={item.names[lang]} className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"/>
                 <div className="absolute inset-0" style={{background:'linear-gradient(to top,rgba(0,0,0,0.15) 0%,transparent 60%)'}}/>
                 {item.safi&&<span className="absolute top-2 right-2 text-[8px] font-black px-1.5 py-0.5 rounded-full" style={{background:'#D9C5A0',color:'#065F46'}}>{t.safiExcl}</span>}
                 {item.options&&item.options.length>0&&(
@@ -5421,7 +5429,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
               ):cart.map(ci=>(
                 <div key={ci.cartId} className="py-3" style={{borderBottom:'1px solid #F3F4F6'}}>
                   <div className="flex items-center gap-3">
-                    <img src={ci.item.photo} alt={ci.item.names[lang]} className="w-12 h-12 rounded-xl object-cover flex-shrink-0"/>
+                    <DishImg src={ci.item.photo} alt={ci.item.names[lang]} className="w-12 h-12 rounded-xl object-cover flex-shrink-0"/>
                     <div className="flex-1 min-w-0">
                       <p className={`text-xs font-black truncate ${fClass}`} style={{color:'var(--c-text)'}}>{ci.item.names[lang]}</p>
                       <p className="text-[10px]" style={{color:'#9CA3AF'}}>{ci.restaurantName}</p>
