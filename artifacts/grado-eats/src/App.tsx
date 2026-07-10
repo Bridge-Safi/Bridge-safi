@@ -7429,9 +7429,9 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
       {/* Hub button — TOP CENTER */}
       <div className="absolute top-4 left-1/2 z-50" style={{transform:'translateX(-50%)'}}>
         <button onClick={onBack}
-          style={{display:'flex',alignItems:'center',gap:5,background:'rgba(255,255,255,0.12)',border:'1px solid rgba(255,255,255,0.22)',borderRadius:20,padding:'7px 16px',cursor:'pointer',backdropFilter:'blur(12px)',boxShadow:'0 2px 12px rgba(0,0,0,0.1)'}}>
-          <span style={{fontSize:12,color:'rgba(255,255,255,0.75)'}}>{isAR?'→':'←'}</span>
-          <span style={{fontSize:10,fontWeight:800,color:'rgba(255,255,255,0.75)',letterSpacing:'0.12em'}}>HUB</span>
+          style={{display:'flex',alignItems:'center',gap:5,background:'var(--c-card)',border:'1px solid var(--c-border)',borderRadius:20,padding:'7px 16px',cursor:'pointer',backdropFilter:'blur(12px)',boxShadow:'0 2px 12px rgba(0,0,0,0.1)'}}>
+          <span style={{fontSize:12,color:'var(--c-text)'}}>{isAR?'→':'←'}</span>
+          <span style={{fontSize:10,fontWeight:800,color:'var(--c-text)',letterSpacing:'0.12em'}}>HUB</span>
         </button>
       </div>
 
