@@ -7543,8 +7543,8 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                   boxShadow: isPressed
                     ? `0 0 0 3px ${item.glow},0 16px 40px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.25)`
                     : `0 8px 32px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.2)`,
-                  padding:'18px 8px 14px',
-                  display:'flex',flexDirection:'column',alignItems:'center',gap:5,
+                  padding:'18px 8px 10px',
+                  display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'flex-end',gap:3,
                   position:'relative',overflow:'hidden',
                   transition:'box-shadow 0.25s,border-color 0.25s',
                   minHeight:92,
@@ -7564,10 +7564,9 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                       <span style={{color:'#fff',fontSize:7,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
                     </div>
                   )}
-                  <span style={{fontSize:30,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))',display:'inline-block',animation:`svcFloat ${3.2+idx*0.35}s ease-in-out ${idx*0.25}s infinite`}}>{item.emoji}</span>
-                  <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>{item.label}</p>
+                  <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 6px rgba(0,0,0,0.7)',textAlign:'center',position:'relative',zIndex:1}}>{item.label}</p>
                   {!item.pending && <HoursBadge k={item.key}/>}
-                  <p style={{color:'rgba(255,255,255,0.75)',fontSize:9,fontWeight:600,margin:0,textAlign:'center'}}>{item.sub}</p>
+                  <p style={{color:'rgba(255,255,255,0.85)',fontSize:9,fontWeight:600,margin:0,textAlign:'center',textShadow:'0 1px 4px rgba(0,0,0,0.6)',position:'relative',zIndex:1}}>{item.sub}</p>
                 </div>
               </button>
             );
@@ -7671,17 +7670,16 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     background:'linear-gradient(145deg,#422006 0%,#A16207 55%,#FACC15 100%)',
                     borderRadius:18,border:`1.5px solid ${pressed==='boulangerie'?'rgba(255,255,255,0.55)':'rgba(250,204,21,0.45)'}`,
                     boxShadow:pressed==='boulangerie'?'0 0 0 3px rgba(250,204,21,0.5),0 16px 40px rgba(250,204,21,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 8px 32px rgba(161,98,7,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
-                    padding:'18px 8px 14px',display:'flex',flexDirection:'column',alignItems:'center',gap:5,
+                    padding:'18px 8px 10px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'flex-end',gap:3,
                     position:'relative',overflow:'hidden',minHeight:92,
                   }}>
                     <img src={CARD_PHOTOS.boulangerie} alt="" loading="lazy"
                       onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
                       style={{position:'absolute',top:0,left:0,right:0,height:'56%',width:'100%',objectFit:'cover',opacity:0.9}}/>
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'56%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
-                    <span style={{fontSize:30,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🥖</span>
-                    <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Boulangerie</p>
+                    <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 6px rgba(0,0,0,0.7)',textAlign:'center',position:'relative',zIndex:1}}>Bridge Boulangerie</p>
                     <HoursBadge k="boulangerie"/>
-                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:9,fontWeight:600,margin:0,textAlign:'center'}}>{t.boulangerieSub}</p>
+                    <p style={{color:'rgba(255,255,255,0.85)',fontSize:9,fontWeight:600,margin:0,textAlign:'center',textShadow:'0 1px 4px rgba(0,0,0,0.6)',position:'relative',zIndex:1}}>{t.boulangerieSub}</p>
                   </div>
                 </button>
                 <button onClick={()=>choose('souk')} style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:pressed==='souk'?'scale(0.94)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',animation:'svcFadeUp 0.45s ease-out 0.4s both'}}>
@@ -7689,17 +7687,16 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     background:'linear-gradient(145deg,#3B0764 0%,#7E22CE 55%,#C084FC 100%)',
                     borderRadius:18,border:`1.5px solid ${pressed==='souk'?'rgba(255,255,255,0.55)':'rgba(192,132,252,0.45)'}`,
                     boxShadow:pressed==='souk'?'0 0 0 3px rgba(192,132,252,0.5),0 16px 40px rgba(192,132,252,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 8px 32px rgba(126,34,206,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
-                    padding:'18px 8px 14px',display:'flex',flexDirection:'column',alignItems:'center',gap:5,
+                    padding:'18px 8px 10px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'flex-end',gap:3,
                     position:'relative',overflow:'hidden',minHeight:92,
                   }}>
                     <img src={CARD_PHOTOS.souk} alt="" loading="lazy"
                       onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
                       style={{position:'absolute',top:0,left:0,right:0,height:'56%',width:'100%',objectFit:'cover',opacity:0.9}}/>
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'56%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
-                    <span style={{fontSize:30,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🛍️</span>
-                    <p style={{color:'#fff',fontSize:12,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Souk</p>
+                    <p style={{color:'#fff',fontSize:12,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 6px rgba(0,0,0,0.7)',textAlign:'center',position:'relative',zIndex:1}}>Bridge Souk</p>
                     <HoursBadge k="souk"/>
-                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:9,fontWeight:600,margin:0,textAlign:'center'}}>{t.soukSub}</p>
+                    <p style={{color:'rgba(255,255,255,0.85)',fontSize:9,fontWeight:600,margin:0,textAlign:'center',textShadow:'0 1px 4px rgba(0,0,0,0.6)',position:'relative',zIndex:1}}>{t.soukSub}</p>
                   </div>
                 </button>
               </div>
