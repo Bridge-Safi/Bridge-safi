@@ -7247,6 +7247,40 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
   );
 }
 
+// ─── HORAIRES D'OUVERTURE ──────────────────────────────────────────────────
+// Horaires indicatifs par service, utilisés uniquement pour l'affichage d'un
+// badge "Ouvert/Fermé" sur la page d'accueil. Mode "distributeur" : le client
+// peut commander à tout moment même si le service est marqué fermé — rien
+// n'est bloqué, la commande est simplement traitée dès la réouverture.
+const SERVICE_HOURS: Record<string,{open:number;close:number}> = {
+  delivery:    {open:8, close:23},
+  fleurs:      {open:8, close:20},
+  supermarche: {open:8, close:22},
+  boulangerie: {open:6, close:21},
+  souk:        {open:9, close:20},
+};
+function isServiceOpen(key:string):{open:boolean;opensAt:number;closesAt:number}{
+  const h=SERVICE_HOURS[key];
+  if(!h) return {open:true,opensAt:0,closesAt:24};
+  const now=new Date().getHours();
+  const open = h.open<h.close ? (now>=h.open&&now<h.close) : (now>=h.open||now<h.close);
+  return {open,opensAt:h.open,closesAt:h.close};
+}
+function HoursBadge({k}:{k:string}) {
+  const st=isServiceOpen(k);
+  return (
+    <span style={{
+      display:'inline-flex',alignItems:'center',gap:3,
+      background:st.open?'rgba(16,185,129,0.25)':'rgba(239,68,68,0.25)',
+      border:`1px solid ${st.open?'rgba(52,211,153,0.5)':'rgba(248,113,113,0.5)'}`,
+      borderRadius:20,padding:'1px 6px',fontSize:7,fontWeight:900,color:'#fff',flexShrink:0,
+    }}>
+      <span style={{width:4,height:4,borderRadius:'50%',background:st.open?'#4ADE80':'#F87171',display:'inline-block'}}/>
+      {st.open?'OUVERT':`FERMÉ · ${String(st.opensAt).padStart(2,'0')}H`}
+    </span>
+  );
+}
+
 // ─── SERVICE SELECT PAGE ──────────────────────────────────────────────────────
 
 function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:{onSelect:(s:'delivery'|'taxi'|'tabac'|'fleurs'|'pharmacie'|'boulangerie'|'souk'|'supermarche')=>void;onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void}) {
@@ -7492,6 +7526,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                   )}
                   <span style={{fontSize:30,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))',display:'inline-block',animation:`svcFloat ${3.2+idx*0.35}s ease-in-out ${idx*0.25}s infinite`}}>{item.emoji}</span>
                   <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>{item.label}</p>
+                  {!item.pending && <HoursBadge k={item.key}/>}
                   <p style={{color:'rgba(255,255,255,0.75)',fontSize:9,fontWeight:600,margin:0,textAlign:'center'}}>{item.sub}</p>
                 </div>
               </button>
@@ -7586,6 +7621,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                   <div style={{textAlign:'left',flex:1}}>
                     <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:1}}>
                       <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.02em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)'}}>Bridge Supermarché</p>
+                      <HoursBadge k="supermarche"/>
                     </div>
                     <p style={{color:'rgba(255,255,255,0.75)',fontSize:8,fontWeight:600,margin:0}}>{t.supermarcheSub}</p>
                   </div>
@@ -7605,6 +7641,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
                     <span style={{fontSize:30,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🥖</span>
                     <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Boulangerie</p>
+                    <HoursBadge k="boulangerie"/>
                     <p style={{color:'rgba(255,255,255,0.75)',fontSize:9,fontWeight:600,margin:0,textAlign:'center'}}>{t.boulangerieSub}</p>
                   </div>
                 </button>
@@ -7619,6 +7656,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
                     <span style={{fontSize:30,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🛍️</span>
                     <p style={{color:'#fff',fontSize:12,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Souk</p>
+                    <HoursBadge k="souk"/>
                     <p style={{color:'rgba(255,255,255,0.75)',fontSize:9,fontWeight:600,margin:0,textAlign:'center'}}>{t.soukSub}</p>
                   </div>
                 </button>
