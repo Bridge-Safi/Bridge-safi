@@ -3736,6 +3736,96 @@ function StoreOwnerPage({ params }: { params?: { type?: string } }) {
   );
 }
 
+function AidePage() {
+  const [, navigate] = useLocation();
+  const [open, setOpen] = useState<number | null>(0);
+  const WA = '212764794856';
+  const FAQ: { icon: string; title: string; body: string }[] = [
+    {
+      icon: '🛍️',
+      title: 'Comment commander ?',
+      body: "Choisissez un service sur la page d'accueil (Eats, Pharmacie, Tabac, Fleurs, Boulangerie, Souk, Supermarché, Taxi ou Moto). Ajoutez vos articles au panier, indiquez votre adresse de livraison (ou utilisez le bouton GPS pour la position exacte), puis validez. Vous recevez un numéro de commande et pouvez suivre la livraison en direct.",
+    },
+    {
+      icon: '🕐',
+      title: 'Horaires des services',
+      body: "Bridge Eats, Fleurs, Supermarché, Boulangerie et Souk sont ouverts le matin et ferment à minuit. Bridge Taxi et Bridge Pharmacie restent ouverts 24h/24, 7j/7. Un badge OUVERT / FERMÉ s'affiche sur chaque carte de service avec l'heure de réouverture si besoin.",
+    },
+    {
+      icon: '🚚',
+      title: 'Livraison & suivi en direct',
+      body: "Dès qu'un livreur accepte votre commande, vous pouvez suivre sa position sur la carte en temps réel depuis 'Suivre mes commandes'. Vous voyez sa photo, son prénom, sa note, et pouvez le contacter directement par WhatsApp ou téléphone.",
+    },
+    {
+      icon: '💳',
+      title: 'Paiement',
+      body: "Le paiement se fait en espèces directement auprès du livreur à la réception de votre commande. Aucune information bancaire n'est demandée dans l'application.",
+    },
+    {
+      icon: '❌',
+      title: "Annuler une commande",
+      body: "Vous pouvez annuler gratuitement tant que la commande n'est pas encore en préparation. Une fois que le commerçant a commencé à préparer ou que le livreur est en route, l'annulation n'est plus possible depuis l'app — contactez l'assistance WhatsApp ci-dessous si besoin.",
+    },
+    {
+      icon: '📦',
+      title: 'Mes commandes & historique',
+      body: "Retrouvez toutes vos commandes en cours et passées dans 'Suivre mes commandes' et 'Historique', accessibles depuis votre profil. Chaque compte a son propre historique — les commandes d'un autre client ne peuvent pas apparaître sur votre compte.",
+    },
+    {
+      icon: '🚴',
+      title: 'Devenir livreur',
+      body: "Les livreurs disposent de leur propre application. Rendez-vous sur livreur.safi-bridge.ma pour créer un compte livreur et commencer à recevoir des courses.",
+    },
+    {
+      icon: '💎',
+      title: 'Diamants, classement & missions',
+      body: "Chaque commande vous rapporte des diamants. Cumulez-les pour grimper dans le classement et débloquer des missions avec récompenses, visibles dans votre profil.",
+    },
+    {
+      icon: '📞',
+      title: 'Nous contacter',
+      body: "Une question, un problème avec une commande ou un livreur ? Notre équipe répond directement sur WhatsApp, en bas de cette page.",
+    },
+  ];
+  return (
+    <div style={{ background: '#0a0a0a', minHeight: '100dvh', fontFamily: 'system-ui,sans-serif' }}>
+      <div style={{ background: '#111111', padding: '52px 20px 14px', borderBottom: '1px solid #2a2a2a', position: 'sticky', top: 0, zIndex: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#fff', padding: '4px 8px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: '50%', flexShrink: 0 }}>←</button>
+        <div style={{ flex: 1 }}>
+          <p style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.2em', color: '#9CA3AF', margin: '0 0 1px' }}>BRIDGE SAFI</p>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 900, color: '#fff', margin: 0 }}>❓ Centre d'aide</h1>
+        </div>
+      </div>
+      <div style={{ padding: '16px', maxWidth: 560, margin: '0 auto', boxSizing: 'border-box' as const }}>
+        <p style={{ color: '#9CA3AF', fontSize: 13, margin: '4px 4px 18px', lineHeight: 1.5 }}>
+          Toutes les réponses aux questions les plus fréquentes sur Bridge Safi. Vous ne trouvez pas ce que vous cherchez ? Écrivez-nous directement sur WhatsApp, en bas de page.
+        </p>
+        {FAQ.map((f, i) => {
+          const isOpen = open === i;
+          return (
+            <div key={i} style={{ background: '#161616', borderRadius: 16, marginBottom: 10, border: '1px solid #2a2a2a', overflow: 'hidden' }}>
+              <button onClick={() => setOpen(isOpen ? null : i)} style={{ width: '100%', textAlign: 'left' as const, background: 'none', border: 'none', cursor: 'pointer', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 20, flexShrink: 0 }}>{f.icon}</span>
+                <span style={{ flex: 1, color: '#fff', fontWeight: 800, fontSize: 14 }}>{f.title}</span>
+                <span style={{ color: '#9CA3AF', fontSize: 14, transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>⌄</span>
+              </button>
+              {isOpen && (
+                <div style={{ padding: '0 16px 16px 48px' }}>
+                  <p style={{ color: '#D1D5DB', fontSize: 13, lineHeight: 1.6, margin: 0 }}>{f.body}</p>
+                </div>
+              )}
+            </div>
+          );
+        })}
+        <a href={`https://wa.me/${WA}?text=Bonjour%2C+j%27ai+une+question+sur+Bridge+Safi`} target="_blank" rel="noopener noreferrer"
+          style={{ marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'rgba(37,211,102,0.15)', border: '1px solid rgba(37,211,102,0.4)', borderRadius: 16, padding: '14px', color: '#25D366', fontSize: 14, fontWeight: 900, textDecoration: 'none' }}>
+          💬 Contacter l'assistance WhatsApp
+        </a>
+      </div>
+    </div>
+  );
+}
+
 function ClerkProviderWithRoutes() {
   return (
     <AuthProvider>
@@ -3749,6 +3839,7 @@ function ClerkProviderWithRoutes() {
           <Route path="/game" component={GamePage} />
           <Route path="/missions" component={MissionsPage} />
           <Route path="/assistant" component={BridgeAssistantPage} />
+          <Route path="/aide" component={AidePage} />
           <Route path="/history" component={HistoryPageRoute} />
           <Route path="/mes-commandes" component={MyOrdersPageRoute} />
           <Route path="/driver/:ref" component={DriverTrackerPage} />

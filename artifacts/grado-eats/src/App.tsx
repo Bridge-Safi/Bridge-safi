@@ -7620,6 +7620,20 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                 )}
               </button>
 
+              {/* AIDE — accès direct au centre d'aide complet */}
+              <button onClick={()=>navigate('/aide')}
+                style={{
+                  display:'flex',alignItems:'center',justifyContent:'center',gap:8,
+                  width:'100%',padding:'11px 18px',borderRadius:16,cursor:'pointer',
+                  background:'rgba(255,255,255,0.04)',
+                  border:'1px solid rgba(255,255,255,0.12)',
+                }}>
+                <span style={{fontSize:15}}>❓</span>
+                <span style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:800}} className={fClass}>
+                  {lang==='ar'?'مركز المساعدة':lang==='en'?'Help center':"Centre d'aide"}
+                </span>
+              </button>
+
               {/* Row 1: Eats + Taxi */}
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
                 {topItems.map(renderCard)}
@@ -12342,10 +12356,10 @@ export function MyOrdersPageRoute() {
         </div>
         <span style={{fontSize:11,color:'#9CA3AF',fontWeight:700}}>{entries.length}</span>
         <button onClick={cycleLang} style={{width:34,height:34,borderRadius:'50%',border:'1px solid #2a2a2a',cursor:'pointer',background:'rgba(255,255,255,0.06)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:10,fontWeight:900,flexShrink:0}}>{MYORD_LANG_LABELS[lang]}</button>
-        <a href="https://wa.me/212764794856?text=Bonjour%2C+j%27ai+besoin+d%27aide+avec+ma+commande" target="_blank" rel="noopener noreferrer"
-          style={{display:'flex',alignItems:'center',gap:5,background:'rgba(37,211,102,0.15)',border:'1px solid rgba(37,211,102,0.4)',borderRadius:20,padding:'6px 12px',color:'#25D366',fontSize:11,fontWeight:800,textDecoration:'none',flexShrink:0}}>
-          💬 Aide
-        </a>
+        <button onClick={()=>navigate('/aide')}
+          style={{display:'flex',alignItems:'center',gap:5,background:'rgba(37,211,102,0.15)',border:'1px solid rgba(37,211,102,0.4)',borderRadius:20,padding:'6px 12px',color:'#25D366',fontSize:11,fontWeight:800,cursor:'pointer',flexShrink:0}}>
+          ❓ Aide
+        </button>
       </div>
 
       {/* Content */}
