@@ -5295,7 +5295,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
 
   const handleSuccess=()=>{
     localStorage.setItem('bridge_last_ref',orderRef);
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'eats',date:new Date().toISOString(),restaurantName,total,owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'eats',date:new Date().toISOString(),restaurantName,total,owner:user?.id||'guest'});if(arr.length>1000)arr.splice(1000);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     onOrderSuccess?.(orderRef);
     setStep('success');
   };
@@ -7082,7 +7082,7 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
       body:JSON.stringify({ref:orderRef,service:'pharmacie',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:'Bridge Pharmacie'}),
     }).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'pharmacie',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'pharmacie',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),owner:user?.id||'guest'});if(arr.length>1000)arr.splice(1000);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
   };
 
@@ -8215,7 +8215,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
     }finally{setSending(false);}
     if(taxiGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:taxiGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${taxiUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     localStorage.setItem('bridge_taxi_ref',ref);
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref,type:'taxi',date:new Date().toISOString(),destination:destination.trim(),address:clientAddress||'Safi',total:0,name:name.trim(),owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref,type:'taxi',date:new Date().toISOString(),destination:destination.trim(),address:clientAddress||'Safi',total:0,name:name.trim(),owner:user?.id||'guest'});if(arr.length>1000)arr.splice(1000);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setBookingRef(ref);
     if(taxiPayMethod==='qr') setShowTaxiQR(true);
     else setActiveTab(1);
@@ -8671,7 +8671,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
     }finally{setSending(false);}
     if(motoGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:motoGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${motoUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     localStorage.setItem(vLocalKey,ref);
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref,type:vehicleType,date:new Date().toISOString(),destination:destination.trim(),address:clientAddress||'Safi',total:finalPrice||undefined,name:name.trim(),owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref,type:vehicleType,date:new Date().toISOString(),destination:destination.trim(),address:clientAddress||'Safi',total:finalPrice||undefined,name:name.trim(),owner:user?.id||'guest'});if(arr.length>1000)arr.splice(1000);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setBookingRef(ref);
     if(motoPayMethod==='qr') setShowMotoQR(true);
   };
@@ -9348,7 +9348,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
     }finally{setSending(false);}
     setLastRef(orderRef);
     try{localStorage.setItem('bridge_fleurs_last_ref',orderRef);}catch{}
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'fleurs',date:new Date().toISOString(),total:cartTotal,address:delivAddr,name:resName.trim(),owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'fleurs',date:new Date().toISOString(),total:cartTotal,address:delivAddr,name:resName.trim(),owner:user?.id||'guest'});if(arr.length>1000)arr.splice(1000);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setTrackStage(0);setStep('track');
   };
 
@@ -9893,7 +9893,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
       body:JSON.stringify({ref:orderRef,service:'tabac',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:'Bridge Tabac'}),
     }).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'tabac',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'tabac',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),owner:user?.id||'guest'});if(arr.length>1000)arr.splice(1000);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
   };
 
@@ -10375,7 +10375,7 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
       body:JSON.stringify({ref:orderRef,service:'boulangerie',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:BOUL_VENDOR_META[boulVendor].name}),
     }).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'boulangerie',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'boulangerie',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),owner:user?.id||'guest'});if(arr.length>1000)arr.splice(1000);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
   };
 
@@ -10721,7 +10721,7 @@ function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{on
       body:JSON.stringify({ref:orderRef,service:'souk',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:'Bridge Souk'}),
     }).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'souk',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'souk',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),owner:user?.id||'guest'});if(arr.length>1000)arr.splice(1000);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
   };
 
@@ -11741,7 +11741,7 @@ function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
       body:JSON.stringify({ref:orderRef,service:'supermarche',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:'delivery',paymentMethod:payInfo,restaurantName:storeLabel}),
     }).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
-    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'supermarche',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),restaurantName:storeLabel,owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'supermarche',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),restaurantName:storeLabel,owner:user?.id||'guest'});if(arr.length>1000)arr.splice(1000);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
   };
 
