@@ -24,6 +24,25 @@ interface TrackPos {
   customerPhone?: string;
   clientPrice?: number;
   driverPrice?: number;
+  // Commerce (Eats/Pharmacie/Tabac/Fleurs/Boulangerie/Souk/Supermarche) — point
+  // de depart + logo affiches sur la carte de suivi (2026-07-10, demande zabi).
+  shopLat?: number;
+  shopLng?: number;
+  shopName?: string;
+  shopEmoji?: string;
+}
+
+// Position pseudo-geocodee deterministe (pas de vraie geocodification disponible) :
+// le meme texte (nom de commerce ou adresse) retombe toujours au meme point,
+// disperse dans un rayon ~1.3km autour du centre de Safi. Suffisant pour donner
+// une carte de suivi visuellement realiste avec un point different par commerce/adresse.
+function pseudoGeo(seed: string): { lat: number; lng: number } {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (Math.imul(h, 31) + seed.charCodeAt(i)) | 0;
+  h = h >>> 0;
+  const latOff = ((h % 1000) / 1000 - 0.5) * 0.026;
+  const lngOff = ((Math.floor(h / 1000) % 1000) / 1000 - 0.5) * 0.026;
+  return { lat: 32.2994 + latOff, lng: -9.2372 + lngOff };
 }
 
 // In-memory store: orderRef → position  (auto-expires after 3h)
@@ -106,33 +125,49 @@ router.get("/tracking-pending", (req, res) => {
   res.json({ bookings: pending });
 });
 
-// Client → create taxi booking (initial, status=waiting)
+// Client → create taxi booking (initial, status=waiting) OU initialiser le
+// suivi d'une commande commerce (Eats/Pharmacie/Tabac/Fleurs/Boulangerie/Souk/
+// Supermarche) avec kind:'shop' — dans ce cas pas de notification "Nouvelle
+// course Taxi" (le dispatch commerce a deja son propre circuit de notif).
 router.post("/tracking/:ref", (req, res) => {
   const { ref } = req.params;
-  const { clientLat, clientLng, clientAddress, destination, customerName, customerPhone, clientPrice } = req.body;
+  const { clientLat, clientLng, clientAddress, destination, customerName, customerPhone, clientPrice, shopName, shopEmoji, kind } = req.body;
+  const isShop = kind === 'shop';
+  const existing = positions.get(ref);
+  const resolvedClient = (typeof clientLat === 'number' && typeof clientLng === 'number')
+    ? { lat: clientLat, lng: clientLng }
+    : (clientAddress ? pseudoGeo('client:' + clientAddress) : { lat: 32.2994, lng: -9.2372 });
+  const resolvedShop = shopName ? pseudoGeo('shop:' + shopName) : undefined;
   positions.set(ref, {
-    lat: clientLat ?? 32.2994,
-    lng: clientLng ?? -9.2372,
-    updatedAt: Date.now(),
-    status: 'waiting',
-    clientLat: clientLat ?? undefined,
-    clientLng: clientLng ?? undefined,
-    clientAddress: clientAddress ?? undefined,
-    destination: destination ?? undefined,
-    customerName: customerName ?? undefined,
-    customerPhone: customerPhone ?? undefined,
-    clientPrice: typeof clientPrice === 'number' && clientPrice > 0 ? clientPrice : undefined,
+    lat: existing?.lat ?? (typeof clientLat === 'number' ? clientLat : 32.2994),
+    lng: existing?.lng ?? (typeof clientLng === 'number' ? clientLng : -9.2372),
+    ...existing,
+    status: existing?.status ?? 'waiting',
+    updatedAt: existing?.updatedAt ?? Date.now(),
+    clientLat: existing?.clientLat ?? resolvedClient.lat,
+    clientLng: existing?.clientLng ?? resolvedClient.lng,
+    clientAddress: clientAddress ?? existing?.clientAddress,
+    destination: destination ?? existing?.destination,
+    customerName: customerName ?? existing?.customerName,
+    customerPhone: customerPhone ?? existing?.customerPhone,
+    clientPrice: (typeof clientPrice === 'number' && clientPrice > 0) ? clientPrice : existing?.clientPrice,
+    shopLat: existing?.shopLat ?? resolvedShop?.lat,
+    shopLng: existing?.shopLng ?? resolvedShop?.lng,
+    shopName: shopName ?? existing?.shopName,
+    shopEmoji: shopEmoji ?? existing?.shopEmoji,
   });
-  req.log.info({ ref }, "taxi booking created");
+  req.log.info({ ref, isShop }, isShop ? "shop order tracking initialized" : "taxi booking created");
   res.json({ ok: true });
 
-  // Notify all drivers with push notification
-  notifyDrivers({
-    type: "NEW_TAXI",
-    title: "🚖 Nouvelle course Taxi !",
-    body: `${customerName || 'Client'} → ${destination || '?'} · ${clientAddress || 'Safi'}`,
-    data: { ref, url: "/dispatch" },
-  }).catch(() => {});
+  if (!isShop) {
+    // Notify all drivers with push notification (taxi/moto uniquement)
+    notifyDrivers({
+      type: "NEW_TAXI",
+      title: "🚖 Nouvelle course Taxi !",
+      body: `${customerName || 'Client'} → ${destination || '?'} · ${clientAddress || 'Safi'}`,
+      data: { ref, url: "/dispatch" },
+    }).catch(() => {});
+  }
 });
 
 // Driver → push position / update status
