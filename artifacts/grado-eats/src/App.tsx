@@ -7609,12 +7609,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
       
       {/* Language + Dark toggle — RIGHT */}
       <div className={`absolute top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
-        {/* Centre d'aide — petit bouton rond discret (remplace l'ancienne grosse barre, demande zabi 2026-07-10) */}
-        <button onClick={()=>navigate('/aide')} title="Centre d'aide"
-          className="rounded-full flex items-center justify-center transition-all active:scale-90 hover:scale-110"
-          style={{width:38,height:38,background:'var(--c-card)',border:'2px solid rgba(217,197,160,0.55)',boxShadow:'0 4px 20px rgba(6,95,70,0.15)',fontSize:15,flexShrink:0}}>
-          ❓
-        </button>
+        {/* Bouton Aide retire d'ici (demande zabi 2026-07-10) -> deplace dans FloatingHelpWA, a cote du WhatsApp, affiche partout */}
         <DarkToggle size={38}/>
         <button onClick={cycleLang}
           className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 px-3 ${lang==='amz'?'font-tifinagh':''}`}
@@ -8041,30 +8036,41 @@ function PWAInstallBanner({ lang }: { lang: Lang }) {
   );
 }
 
-function WAButton() {
+function FloatingHelpWA() {
+  // Regroupe Aide + WhatsApp, affiche en bas a droite sur TOUTES les pages
+  // (demande zabi 2026-07-10 : "met la [aide] a cote de wharrsap et message
+  // whattsap en bas a droite partout"). Remplace l'ancien WAButton() qui
+  // n'etait en fait jamais monte nulle part.
+  const [,navHelp] = useLocation();
   const msg = encodeURIComponent('Bonjour Bridge Safi, j\'ai besoin d\'aide 🙏');
   return (
-    <a
-      href={`https://wa.me/212764794856?text=${msg}`}
-      target="_blank" rel="noopener noreferrer"
-      title="Support WhatsApp"
-      style={{
-        position:'fixed',bottom:88,right:16,zIndex:60,
-        width:46,height:46,borderRadius:'50%',
-        background:'#25D366',
-        boxShadow:'0 4px 16px rgba(37,211,102,0.45)',
-        display:'flex',alignItems:'center',justifyContent:'center',
-        transition:'transform 0.15s',
-        textDecoration:'none',
-      }}
-      onMouseEnter={e=>(e.currentTarget.style.transform='scale(1.12)')}
-      onMouseLeave={e=>(e.currentTarget.style.transform='scale(1)')}
-    >
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
-      </svg>
-    </a>
+    <div style={{position:'fixed',bottom:88,right:16,zIndex:60,display:'flex',flexDirection:'column',alignItems:'center',gap:10}}>
+      <button onClick={()=>navHelp('/aide')} title="Centre d'aide"
+        className="rounded-full flex items-center justify-center transition-all active:scale-90 hover:scale-110"
+        style={{width:44,height:44,borderRadius:'50%',border:'2px solid rgba(217,197,160,0.6)',background:'var(--c-card)',boxShadow:'0 4px 16px rgba(6,95,70,0.3)',fontSize:17,cursor:'pointer'}}>
+        ❓
+      </button>
+      <a
+        href={`https://wa.me/212764794856?text=${msg}`}
+        target="_blank" rel="noopener noreferrer"
+        title="Support WhatsApp"
+        style={{
+          width:46,height:46,borderRadius:'50%',
+          background:'#25D366',
+          boxShadow:'0 4px 16px rgba(37,211,102,0.45)',
+          display:'flex',alignItems:'center',justifyContent:'center',
+          transition:'transform 0.15s',
+          textDecoration:'none',
+        }}
+        onMouseEnter={e=>(e.currentTarget.style.transform='scale(1.12)')}
+        onMouseLeave={e=>(e.currentTarget.style.transform='scale(1)')}
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.124 1.532 5.859L.036 23.671l5.979-1.567A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
+        </svg>
+      </a>
+    </div>
   );
 }
 
@@ -10390,11 +10396,13 @@ const BOULANGERIE_CATALOG:BoulItem[]=[
 ];
 
 function BoulangerieItem({it,qty,effectivePrice,onAdd,onRem}:{it:BoulItem;qty:number;effectivePrice:number;onAdd:()=>void;onRem:()=>void}) {
+  // Style modernise 2026-07-10 pour matcher les cartes Bridge Supermarche
+  // (fond sombre + icone sur degrade noir + effet "fun" au clic), demande zabi.
   return(
-    <div className="flex flex-col gap-2 rounded-2xl p-3"
-      style={{background:qty>0?'rgba(250,204,21,0.16)':'rgba(255,255,255,0.04)',border:`1.5px solid ${qty>0?'rgba(250,204,21,0.5)':'rgba(250,204,21,0.15)'}`,transition:'all 0.15s'}}>
-      <div style={{width:'100%',height:84,borderRadius:12,flexShrink:0,overflow:'hidden',background:'rgba(250,204,21,0.15)',border:'1px solid rgba(250,204,21,0.2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:36}}>
-        {it.emoji}
+    <div className="flex flex-col gap-2 rounded-2xl p-3 transition-all active:scale-[0.97]"
+      style={{background:qty>0?'rgba(250,204,21,0.14)':'rgba(0,0,0,0.22)',border:`1.5px solid ${qty>0?'rgba(250,204,21,0.55)':'rgba(250,204,21,0.18)'}`,boxShadow:qty>0?'0 6px 18px rgba(161,98,7,0.3)':'none'}}>
+      <div style={{width:'100%',height:104,borderRadius:12,flexShrink:0,overflow:'hidden',background:'linear-gradient(145deg,#000000 0%,#0D0D0D 45%,#3A2408 100%)',border:'1px solid rgba(250,204,21,0.35)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:40}}>
+        <span style={{filter:'drop-shadow(0 3px 8px rgba(250,204,21,0.4))'}}>{it.emoji}</span>
       </div>
       <div style={{minWidth:0}}>
         <p className="font-black text-[14px] leading-tight" style={{color:'#FEF3C7'}}>{it.name}</p>
@@ -10745,11 +10753,13 @@ const SOUK_CATALOG:SoukItem[]=[
 ];
 
 function SoukItemCard({it,qty,effectivePrice,onAdd,onRem}:{it:SoukItem;qty:number;effectivePrice:number;onAdd:()=>void;onRem:()=>void}) {
+  // Style modernise 2026-07-10 pour matcher les cartes Bridge Supermarche
+  // (fond sombre + icone sur degrade noir + effet "fun" au clic), demande zabi.
   return(
-    <div className="flex flex-col gap-2 rounded-2xl p-3"
-      style={{background:qty>0?'rgba(192,132,252,0.16)':'rgba(255,255,255,0.04)',border:`1.5px solid ${qty>0?'rgba(192,132,252,0.5)':'rgba(192,132,252,0.15)'}`,transition:'all 0.15s'}}>
-      <div style={{width:'100%',height:84,borderRadius:12,flexShrink:0,overflow:'hidden',background:'rgba(192,132,252,0.15)',border:'1px solid rgba(192,132,252,0.2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:36}}>
-        {it.emoji}
+    <div className="flex flex-col gap-2 rounded-2xl p-3 transition-all active:scale-[0.97]"
+      style={{background:qty>0?'rgba(192,132,252,0.14)':'rgba(0,0,0,0.22)',border:`1.5px solid ${qty>0?'rgba(192,132,252,0.55)':'rgba(192,132,252,0.18)'}`,boxShadow:qty>0?'0 6px 18px rgba(126,34,206,0.3)':'none'}}>
+      <div style={{width:'100%',height:104,borderRadius:12,flexShrink:0,overflow:'hidden',background:'linear-gradient(145deg,#000000 0%,#0D0D0D 45%,#2B1046 100%)',border:'1px solid rgba(192,132,252,0.35)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:40}}>
+        <span style={{filter:'drop-shadow(0 3px 8px rgba(192,132,252,0.4))'}}>{it.emoji}</span>
       </div>
       <div style={{minWidth:0}}>
         <p className="font-black text-[14px] leading-tight" style={{color:'#F3E8FF'}}>{it.name}</p>
@@ -12385,7 +12395,7 @@ export function HistoryPageRoute() {
         )}
       </div>
     </div>
-    </DarkModeCtx.Provider>
+    <FloatingHelpWA/></DarkModeCtx.Provider>
   );
 }
 
@@ -12712,22 +12722,22 @@ export default function App() {
         saveProfile={saveProfile}
         onDone={()=>saveProfile({...profile,onboardingComplete:true})}
       />
-    </DarkModeCtx.Provider>
+    <FloatingHelpWA/></DarkModeCtx.Provider>
   );
 
-  if(mode==='hub') return <DarkModeCtx.Provider value={dv}><HubPage onServices={()=>setMode('services')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/></DarkModeCtx.Provider>;
+  if(mode==='hub') return <DarkModeCtx.Provider value={dv}><HubPage onServices={()=>setMode('services')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/><FloatingHelpWA/></DarkModeCtx.Provider>;
 
   const backToHub=()=>{setMode('hub');setService('none');};
-  if(service==='none') return <DarkModeCtx.Provider value={dv}><ServiceSelectPage onSelect={s=>{if(s==='taxi')setService('taxi-select');else setService(s);}} onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/></DarkModeCtx.Provider>;
-  if(service==='taxi-select') return <DarkModeCtx.Provider value={dv}><TaxiVehicleSelectPage onBack={()=>setService('none')} onSelect={v=>setService(v)} lang={lang} cycleLang={cycleLang}/></DarkModeCtx.Provider>;
-  if(service==='taxi') return <DarkModeCtx.Provider value={dv}><MotoTaxiPage vehicleType='taxi' onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
-  if(service==='moto') return <DarkModeCtx.Provider value={dv}><MotoTaxiPage vehicleType='moto' onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/></DarkModeCtx.Provider>;
-  if(service==='tabac') return <DarkModeCtx.Provider value={dv}><TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
-  if(service==='fleurs') return <DarkModeCtx.Provider value={dv}><FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
-  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
-  if(service==='boulangerie') return <DarkModeCtx.Provider value={dv}><BoulangeriePage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
-  if(service==='souk') return <DarkModeCtx.Provider value={dv}><SoukPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
-  if(service==='supermarche') return <DarkModeCtx.Provider value={dv}><SupermarchePage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/></DarkModeCtx.Provider>;
+  if(service==='none') return <DarkModeCtx.Provider value={dv}><ServiceSelectPage onSelect={s=>{if(s==='taxi')setService('taxi-select');else setService(s);}} onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='taxi-select') return <DarkModeCtx.Provider value={dv}><TaxiVehicleSelectPage onBack={()=>setService('none')} onSelect={v=>setService(v)} lang={lang} cycleLang={cycleLang}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='taxi') return <DarkModeCtx.Provider value={dv}><MotoTaxiPage vehicleType='taxi' onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='moto') return <DarkModeCtx.Provider value={dv}><MotoTaxiPage vehicleType='moto' onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='tabac') return <DarkModeCtx.Provider value={dv}><TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='fleurs') return <DarkModeCtx.Provider value={dv}><FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='boulangerie') return <DarkModeCtx.Provider value={dv}><BoulangeriePage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='souk') return <DarkModeCtx.Provider value={dv}><SoukPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='supermarche') return <DarkModeCtx.Provider value={dv}><SupermarchePage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={
@@ -12860,6 +12870,6 @@ export default function App() {
         </div>
       )}
     </div>
-  </DarkModeCtx.Provider>
+  <FloatingHelpWA/></DarkModeCtx.Provider>
   );
 }
