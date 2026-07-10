@@ -5296,6 +5296,8 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
   const handleSuccess=()=>{
     localStorage.setItem('bridge_last_ref',orderRef);
     try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'eats',date:new Date().toISOString(),restaurantName,total,owner:user?.id||'guest'});if(arr.length>1000)arr.splice(1000);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
+    // Init carte de suivi (depart = logo du resto, arrivee = pin GPS du client si pose)
+    fetch(`/api/tracking/${orderRef}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'shop',shopName:restaurantName,shopEmoji:'🍔',clientLat:mapPin?mapPin[0]:undefined,clientLng:mapPin?mapPin[1]:undefined})}).catch(()=>{});
     onOrderSuccess?.(orderRef);
     setStep('success');
   };
@@ -6076,12 +6078,61 @@ function driverDisplayName(name?:string):string{
   return `${parts[0]} ${parts[1].charAt(0).toUpperCase()}.`;
 }
 
+// ─── CARTE DE SUIVI COMMERCE — depart (logo du commerce) + arrivee (client) ──
+// Avant l'acceptation par un livreur : carte "vivante" avec des logos de
+// commerces (restos/snack/tabac/etc) disperses autour du point de depart, pour
+// un rendu moderne et fun pendant l'attente. Des que la commande est prise en
+// charge (statut >= "acceptee"), ces logos disparaissent et seuls 3 points
+// restent : le commerce (depart), le client (arrivee) et le livreur en direct.
+// Demande zabi 2026-07-10 : remplace la carte GPS fixe (un seul point
+// hardcode) utilisee jusque-la sur TOUS les services.
+const DECO_SHOP_EMOJIS=['🍔','🍕','💊','🚬','🌹','🥖','🛍️','🛒','🍗','🥗'];
+function ShopTrackMap({shopPos,shopName,shopEmoji,clientPos,courierPos,isLive,assigned,accentColor,accentDark}:{
+  shopPos:{lat:number;lng:number};shopName:string;shopEmoji:string;
+  clientPos:{lat:number;lng:number}|null;courierPos:{lat:number;lng:number}|null;
+  isLive:boolean;assigned:boolean;accentColor:string;accentDark:string;
+}) {
+  const center:[number,number]=courierPos?[courierPos.lat,courierPos.lng]:[shopPos.lat,shopPos.lng];
+  const shopIcon=L.divIcon({html:`<div style="width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,${accentColor},${accentDark});border:3px solid #D9C5A0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,0.35);font-size:19px;">${shopEmoji}</div>`,className:'',iconSize:[38,38],iconAnchor:[19,19]});
+  const clientIcon=L.divIcon({html:`<div style="width:34px;height:34px;border-radius:50%;background:#fff;border:3px solid ${accentColor};display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,0.3);font-size:16px;">🏠</div>`,className:'',iconSize:[34,34],iconAnchor:[17,17]});
+  const driverIcon=L.divIcon({html:`<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,${accentColor},${accentDark});border:3px solid #D9C5A0;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 6px rgba(16,185,129,0.2),0 4px 16px rgba(0,0,0,0.5);font-size:18px;${isLive?'animation:pulse 1.5s ease-in-out infinite;':''}">🛵</div>`,className:'',iconSize:[36,36],iconAnchor:[18,18]});
+  const decoPoints=useMemo(()=>{
+    if(assigned) return [];
+    const pts:{lat:number;lng:number;emoji:string}[]=[];
+    for(let i=0;i<6;i++){
+      const seed=(shopName.length*7+i*53)%360;
+      const angle=seed*Math.PI/180;
+      const dist=0.0035+(((shopName.length+i*13)%5)*0.0013);
+      pts.push({lat:shopPos.lat+Math.cos(angle)*dist,lng:shopPos.lng+Math.sin(angle)*dist,emoji:DECO_SHOP_EMOJIS[(shopName.length+i)%DECO_SHOP_EMOJIS.length]});
+    }
+    return pts;
+  },[assigned,shopName,shopPos.lat,shopPos.lng]);
+  return (
+    <MapContainer center={center} zoom={assigned?15:14} style={{height:'100%',width:'100%'}} zoomControl attributionControl={false}>
+      <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"/>
+      <Marker position={[shopPos.lat,shopPos.lng]} icon={shopIcon}><Popup>{shopEmoji} {shopName}</Popup></Marker>
+      {assigned&&clientPos&&(
+        <Marker position={[clientPos.lat,clientPos.lng]} icon={clientIcon}><Popup>🏠 Adresse de livraison</Popup></Marker>
+      )}
+      {assigned&&courierPos&&(
+        <Marker position={[courierPos.lat,courierPos.lng]} icon={driverIcon}><Popup>🛵 Livreur — position réelle</Popup></Marker>
+      )}
+      {!assigned&&decoPoints.map((p,i)=>(
+        <Marker key={i} position={[p.lat,p.lng]} icon={L.divIcon({html:`<div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.92);border:2px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.15);">${p.emoji}</div>`,className:'',iconSize:[28,28],iconAnchor:[14,14]})}/>
+      ))}
+      <MapPanner center={center}/>
+    </MapContainer>
+  );
+}
+
 function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string}) {
   const [activeStage,setActiveStage]=useState(0);
   const [realPos,setRealPos]=useState<{lat:number;lng:number}|null>(null);
   const [lastSeen,setLastSeen]=useState<number|null>(null);
   const [driverInfo,setDriverInfo]=useState<{name?:string;phone?:string;photo?:string;rating?:number}|null>(null);
   const [orderCancelled,setOrderCancelled]=useState(false);
+  const [shopInfo,setShopInfo]=useState<{lat:number;lng:number;name:string;emoji:string}|null>(null);
+  const [clientPos,setClientPos]=useState<{lat:number;lng:number}|null>(null);
   const isAR=lang==='ar'; const fClass=fontClass(lang);
   const displayRef=orderRef||t.orderNum;
 
@@ -6110,6 +6161,8 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
               setLastSeen(data.updatedAt);
             }
             if(data.driverName||data.driverPhone||data.driverPhoto||data.driverRating) setDriverInfo(prev=>({...prev,name:data.driverName||prev?.name,phone:data.driverPhone||prev?.phone,photo:data.driverPhoto||prev?.photo,rating:typeof data.driverRating==='number'?data.driverRating:prev?.rating}));
+            if(typeof data.shopLat==='number'&&typeof data.shopLng==='number') setShopInfo({lat:data.shopLat,lng:data.shopLng,name:data.shopName||'Bridge Eats',emoji:data.shopEmoji||'🍔'});
+            if(typeof data.clientLat==='number'&&typeof data.clientLng==='number') setClientPos({lat:data.clientLat,lng:data.clientLng});
             if(data.status&&trackStageMap[data.status]!==undefined){
               setActiveStage(prev=>Math.max(prev,trackStageMap[data.status]));
             }
@@ -6139,6 +6192,8 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
   const SAFI_CENTER:[number,number]=[32.2994,-9.2372];
   const courierPos:[number,number]=realPos?[realPos.lat,realPos.lng]:SAFI_CENTER;
   const mapCenter:[number,number]=courierPos;
+  const trackAssigned=activeStage>=1||!!driverInfo?.name||!!realPos;
+  const trackShopPos=shopInfo?{lat:shopInfo.lat,lng:shopInfo.lng}:{lat:SAFI_CENTER[0],lng:SAFI_CENTER[1]};
 
   // Live courier icon (pulsing green dot)
   const liveIcon=L.divIcon({
@@ -6276,16 +6331,9 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
             </div>
           )}
           <div className="h-[380px]">
-            <MapContainer center={mapCenter} zoom={16} style={{height:'100%',width:'100%'}} zoomControl attributionControl={false}>
-              <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"/>
-              <Marker position={[32.3010,-9.2420]} icon={restaurantIcon}><Popup>🥘 Bridge Safi</Popup></Marker>
-              {realPos&&(
-                <Marker position={courierPos} icon={isLive?liveIcon:staleIcon}>
-                  <Popup>🛵 Livreur — position réelle</Popup>
-                </Marker>
-              )}
-              <MapPanner center={mapCenter}/>
-            </MapContainer>
+            <ShopTrackMap shopPos={trackShopPos} shopName={shopInfo?.name||'Bridge Eats'} shopEmoji={shopInfo?.emoji||'🍔'}
+              clientPos={clientPos} courierPos={realPos} isLive={!!isLive} assigned={trackAssigned}
+              accentColor="#059669" accentDark="#065F46"/>
           </div>
           <div className="px-4 py-3" style={{background:'var(--c-bg)'}}>
             <div className="flex items-center gap-3">
@@ -6541,6 +6589,8 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
   const [lastSeen,setLastSeen]=useState<number|null>(null);
   const [driverInfo,setDriverInfo]=useState<{name?:string;phone?:string;photo?:string;rating?:number}|null>(null);
   const [orderCancelled,setOrderCancelled]=useState(false);
+  const [shopInfo,setShopInfo]=useState<{lat:number;lng:number;name:string;emoji:string}|null>(null);
+  const [clientPos,setClientPos]=useState<{lat:number;lng:number}|null>(null);
   const fClass=fontClass(lang); const isAR=lang==='ar';
 
   const shareTracking=()=>{
@@ -6572,6 +6622,8 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
             const hasRealGPS = Math.abs(data.lat) > 0.001 || Math.abs(data.lng) > 0.001;
             if(hasRealGPS){ setRealPos({lat:data.lat,lng:data.lng}); setLastSeen(data.updatedAt); }
             if(data.driverName||data.driverPhone||data.driverPhoto||data.driverRating) setDriverInfo(prev=>({...prev,name:data.driverName||prev?.name,phone:data.driverPhone||prev?.phone,photo:data.driverPhoto||prev?.photo,rating:typeof data.driverRating==='number'?data.driverRating:prev?.rating}));
+            if(typeof data.shopLat==='number'&&typeof data.shopLng==='number') setShopInfo({lat:data.shopLat,lng:data.shopLng,name:data.shopName||theme.label,emoji:data.shopEmoji||theme.emoji});
+            if(typeof data.clientLat==='number'&&typeof data.clientLng==='number') setClientPos({lat:data.clientLat,lng:data.clientLng});
             if(data.status&&trackStageMap[data.status]!==undefined) setActiveStage(prev=>Math.max(prev,trackStageMap[data.status]));
           } else setRealPos(null);
         }
@@ -6592,6 +6644,8 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
   const SAFI_CENTER:[number,number]=[32.2994,-9.2372];
   const courierPos:[number,number]=realPos?[realPos.lat,realPos.lng]:SAFI_CENTER;
   const mapCenter:[number,number]=courierPos;
+  const trackAssigned=activeStage>=1||!!driverInfo?.name||!!realPos;
+  const trackShopPos=shopInfo?{lat:shopInfo.lat,lng:shopInfo.lng}:{lat:SAFI_CENTER[0],lng:SAFI_CENTER[1]};
 
   const liveIcon=L.divIcon({html:`<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,${theme.accent},${theme.accentDark});border:3px solid #D9C5A0;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 6px ${theme.cardBorder},0 4px 16px rgba(0,0,0,0.5);font-size:18px;animation:pulse 1.5s ease-in-out infinite;">🛵</div>`,className:'',iconSize:[36,36],iconAnchor:[18,18]});
   const staleIcon=L.divIcon({html:`<div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#9CA3AF,#6B7280);border:3px solid #D9C5A0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.2);font-size:16px;">🛵</div>`,className:'',iconSize:[34,34],iconAnchor:[17,17]});
@@ -6762,16 +6816,9 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
             </div>
           )}
           <div className="h-[380px]">
-            <MapContainer center={mapCenter} zoom={16} style={{height:'100%',width:'100%'}} zoomControl attributionControl={false}>
-              <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"/>
-              <Marker position={[32.3010,-9.2420]} icon={restaurantIcon}><Popup>{theme.emoji} {theme.label}</Popup></Marker>
-              {realPos&&(
-                <Marker position={courierPos} icon={isLive?liveIcon:staleIcon}>
-                  <Popup>🛵 Livreur — position réelle</Popup>
-                </Marker>
-              )}
-              <MapPanner center={mapCenter}/>
-            </MapContainer>
+            <ShopTrackMap shopPos={trackShopPos} shopName={shopInfo?.name||theme.label} shopEmoji={shopInfo?.emoji||theme.emoji}
+              clientPos={clientPos} courierPos={realPos} isLive={isLive} assigned={trackAssigned}
+              accentColor={theme.accent} accentDark={theme.accentDark}/>
           </div>
           <div className="px-4 py-3" style={{background:theme.cardBg}}>
             <div className="flex items-center gap-3">
@@ -7081,6 +7128,7 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
     await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({ref:orderRef,service:'pharmacie',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:'Bridge Pharmacie'}),
     }).catch(()=>{});
+    fetch(`/api/tracking/${orderRef}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'shop',shopName:'Bridge Pharmacie',shopEmoji:'💊',clientAddress:deliveryAddress})}).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
     try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'pharmacie',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),owner:user?.id||'guest'});if(arr.length>1000)arr.splice(1000);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
@@ -9348,6 +9396,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
     }finally{setSending(false);}
     setLastRef(orderRef);
     try{localStorage.setItem('bridge_fleurs_last_ref',orderRef);}catch{}
+    fetch(`/api/tracking/${orderRef}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'shop',shopName:`Bridge Fleurs — ${floristName}`,shopEmoji:'🌹',clientAddress:delivAddr})}).catch(()=>{});
     try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'fleurs',date:new Date().toISOString(),total:cartTotal,address:delivAddr,name:resName.trim(),owner:user?.id||'guest'});if(arr.length>1000)arr.splice(1000);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setTrackStage(0);setStep('track');
   };
@@ -9892,6 +9941,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
     await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({ref:orderRef,service:'tabac',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:'Bridge Tabac'}),
     }).catch(()=>{});
+    fetch(`/api/tracking/${orderRef}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'shop',shopName:'Bridge Tabac',shopEmoji:'🚬',clientAddress:deliveryAddress})}).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
     try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'tabac',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),owner:user?.id||'guest'});if(arr.length>1000)arr.splice(1000);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
@@ -10374,6 +10424,7 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
     await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({ref:orderRef,service:'boulangerie',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:BOUL_VENDOR_META[boulVendor].name}),
     }).catch(()=>{});
+    fetch(`/api/tracking/${orderRef}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'shop',shopName:BOUL_VENDOR_META[boulVendor].name,shopEmoji:'🥖',clientLat:boulPos.lat,clientLng:boulPos.lng})}).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
     try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'boulangerie',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),owner:user?.id||'guest'});if(arr.length>1000)arr.splice(1000);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
@@ -10720,6 +10771,7 @@ function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{on
     await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({ref:orderRef,service:'souk',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:'Bridge Souk'}),
     }).catch(()=>{});
+    fetch(`/api/tracking/${orderRef}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'shop',shopName:'Bridge Souk',shopEmoji:'🛍️',clientAddress:deliveryAddress})}).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
     try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'souk',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),owner:user?.id||'guest'});if(arr.length>1000)arr.splice(1000);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
@@ -11740,6 +11792,7 @@ function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
     await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({ref:orderRef,service:'supermarche',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:'delivery',paymentMethod:payInfo,restaurantName:storeLabel}),
     }).catch(()=>{});
+    fetch(`/api/tracking/${orderRef}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'shop',shopName:storeLabel,shopEmoji:'🛒',clientLat:mktPos.lat,clientLng:mktPos.lng})}).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
     try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'supermarche',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),restaurantName:storeLabel,owner:user?.id||'guest'});if(arr.length>1000)arr.splice(1000);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
     setSent(true);
