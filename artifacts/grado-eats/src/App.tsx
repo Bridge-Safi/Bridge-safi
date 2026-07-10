@@ -7466,6 +7466,12 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
       
       {/* Language + Dark toggle — RIGHT */}
       <div className={`absolute top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
+        {/* Centre d'aide — petit bouton rond discret (remplace l'ancienne grosse barre, demande zabi 2026-07-10) */}
+        <button onClick={()=>navigate('/aide')} title="Centre d'aide"
+          className="rounded-full flex items-center justify-center transition-all active:scale-90 hover:scale-110"
+          style={{width:38,height:38,background:'var(--c-card)',border:'2px solid rgba(217,197,160,0.55)',boxShadow:'0 4px 20px rgba(6,95,70,0.15)',fontSize:15,flexShrink:0}}>
+          ❓
+        </button>
         <DarkToggle size={38}/>
         <button onClick={cycleLang}
           className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 px-3 ${lang==='amz'?'font-tifinagh':''}`}
@@ -7605,20 +7611,6 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                 ) : (
                   <span style={{color:'rgba(255,255,255,0.35)',fontSize:14,flexShrink:0}}>{isAR?'←':'→'}</span>
                 )}
-              </button>
-
-              {/* AIDE — accès direct au centre d'aide complet */}
-              <button onClick={()=>navigate('/aide')}
-                style={{
-                  display:'flex',alignItems:'center',justifyContent:'center',gap:8,
-                  width:'100%',padding:'11px 18px',borderRadius:16,cursor:'pointer',
-                  background:'rgba(255,255,255,0.04)',
-                  border:'1px solid rgba(255,255,255,0.12)',
-                }}>
-                <span style={{fontSize:15}}>❓</span>
-                <span style={{color:'rgba(255,255,255,0.8)',fontSize:12,fontWeight:800}} className={fClass}>
-                  {lang==='ar'?'مركز المساعدة':lang==='en'?'Help center':"Centre d'aide"}
-                </span>
               </button>
 
               {/* Row 1: Eats + Taxi */}
