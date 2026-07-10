@@ -138,11 +138,13 @@ function DraggablePin({pos,onDragEnd}:{pos:[number,number];onDragEnd:(lat:number
   );
 }
 
-function DeliveryMap({onSet,onAddress,pin}:{
+function DeliveryMap({onSet,onAddress,pin,lang='fr'}:{
   onSet:(coords:string,inside:boolean)=>void;
   onAddress:(addr:string)=>void;
   pin:[number,number]|null;
+  lang?:Lang;
 }) {
+  const t=T[lang];
   const [geocoding,setGeocoding]=useState(false);
   const [gettingGPS,setGettingGPS]=useState(false);
 
@@ -181,13 +183,13 @@ function DeliveryMap({onSet,onAddress,pin}:{
           background:gettingGPS?'rgba(6,95,70,0.6)':'#065F46',color:'#fff',fontWeight:900,fontSize:11,
           cursor:gettingGPS?'not-allowed':'pointer',display:'flex',alignItems:'center',gap:5,boxShadow:'0 3px 10px rgba(0,0,0,0.3)'}}>
         {gettingGPS?<span style={{animation:'spin 1s linear infinite',display:'inline-block'}}>⟳</span>:<span>🎯</span>}
-        {gettingGPS?'Détection…':'Ma position GPS'}
+        {gettingGPS?t.gpsDetecting:t.gpsMyPosition}
       </button>
       {geocoding&&(
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-bold text-white flex items-center gap-1.5"
           style={{background:'rgba(6,95,70,0.85)',backdropFilter:'blur(4px)',zIndex:1000}}>
           <span className="w-2 h-2 rounded-full bg-green-300 animate-pulse"/>
-          Adresse en cours…
+          {t.addressLoading}
         </div>
       )}
     </div>
@@ -542,6 +544,47 @@ const T = {
     hubServices:'Services', hubServicesSub:'Eats · Taxi · Tabac · Fleurs · Pharmacie',
     hubGame:'Jouer & Gagner', hubGameSub:'Récoltez des diamants 💎 → menus offerts',
     hubWelcome:'Bienvenue',
+    // History / My orders
+    historyTitle:'Historique', historyEmpty:'Aucun historique',
+    historyEmptySub:'Vos commandes et courses apparaîtront ici après chaque service',
+    historyDiscover:'Découvrir les services', historyClear:'🗑 Effacer tout l\'historique',
+    historyDone:'✓ Effectué', historyPastLabel:'Courses & commandes passées',
+    missionsTitle:'Pubs & Missions', missionsSub:'Gagne jusqu\'à 15 DH/jour en 💎',
+    discountLabel:'💎 Réduction', discoverProducts:'Découvrir les produits →',
+    supermarcheSub:'🛒 Marjane · Carrefour · Bim — livrés chez vous',
+    myOrdersTitle:'Mes commandes',
+    myOrdersEmpty:'Aucune commande pour l\'instant',
+    myOrdersEmptySub:'Vos commandes Eats, Pharmacie, Tabac, Fleurs, Boulangerie et Souk apparaîtront ici avec leur suivi en direct',
+    myOrdersArrival:'Arrivée ≈',
+    statusPending:'En attente', statusPendingPay:'En attente de paiement', statusAccepted:'Acceptée',
+    statusPreparing:'En préparation', statusReady:'Prête', statusOnWay:'En route',
+    statusDelivered:'Livrée ✅', statusCancelled:'Annulée', statusRefused:'Refusée',
+    // ServiceSelect hub subtitles
+    boulangerieSub:'Pain & pâtisseries', soukSub:'Vêtements · Parfums · Miel',
+    gameOrderPoints:'Chaque commande = points → menus offerts',
+    pubsLabel:'Pubs & Missions', pubsEarn:'Gagne jusqu\'à 15 DH/jour en 💎',
+    chooseStore:'CHOISISSEZ VOTRE MAGASIN · SAFI',
+    // Payment card labels
+    cardLabelName:'NAME', cardLabelExpires:'EXPIRES', cardLabelCardholder:'CARDHOLDER',
+    collectFeeLabel:'Click & Collect — +2.99 MAD',
+    cardAccepted:'Accepté :',
+    // Map / GPS
+    gpsDetecting:'Détection…', gpsMyPosition:'Ma position GPS', gpsMyPositionShort:'Ma position',
+    addressLoading:'Adresse en cours…',
+    // Ad slot
+    adSlotLabel:'Espace Publicitaire',
+    // Taxi / Moto
+    chooseVehicle:'CHOISISSEZ VOTRE VÉHICULE · سافي',
+    taxiConfortName:'Taxi Confort', taxiConfortSub:'Safi & tout le Maroc',
+    motoTaxiSub:'Rapide & économique · Safi',
+    taxiConfortSubBottomSheet:'Taxi Confort · Safi & tout le Maroc',
+    vehicleRef:'Réf:', rideRef:'RÉFÉRENCE DE COURSE',
+    rateYourRide:'NOTEZ VOTRE COURSE', newRide:'Nouvelle course',
+    taxiThankYou:'Merci d\'avoir choisi Bridge Taxi Confort',
+    motoPricePerTrip:'Prix selon trajet',
+    vehicleTypeSub:(v:string)=>`${v} · Safi · Prix selon trajet`,
+    // Dark toggle
+    lightMode:'Mode clair', darkMode:'Mode sombre',
   },
   en: {
     appName:'Bridge Safi', zone:'Safi, Morocco',
@@ -642,6 +685,40 @@ const T = {
     hubServices:'Services', hubServicesSub:'Eats · Taxi · Tabac · Flowers · Pharmacy',
     hubGame:'Play & Win', hubGameSub:'Collect diamonds 💎 → free menus',
     hubWelcome:'Welcome',
+    historyTitle:'History', historyEmpty:'No history yet',
+    historyEmptySub:'Your orders and rides will appear here after each service',
+    historyDiscover:'Discover services', historyClear:'🗑 Clear all history',
+    historyDone:'✓ Done', historyPastLabel:'Past rides & orders',
+    missionsTitle:'Ads & Missions', missionsSub:'Earn up to 15 DH/day in 💎',
+    discountLabel:'💎 Discount', discoverProducts:'Discover products →',
+    supermarcheSub:'🛒 Marjane · Carrefour · Bim — delivered to you',
+    myOrdersTitle:'My orders',
+    myOrdersEmpty:'No orders yet',
+    myOrdersEmptySub:'Your Eats, Pharmacy, Tabac, Flowers, Bakery and Souk orders will appear here with live tracking',
+    myOrdersArrival:'Arrival ≈',
+    statusPending:'Pending', statusPendingPay:'Awaiting payment', statusAccepted:'Accepted',
+    statusPreparing:'Preparing', statusReady:'Ready', statusOnWay:'On the way',
+    statusDelivered:'Delivered ✅', statusCancelled:'Cancelled', statusRefused:'Refused',
+    boulangerieSub:'Bread & pastries', soukSub:'Clothes · Perfumes · Honey',
+    gameOrderPoints:'Every order = points → free menus',
+    pubsLabel:'Ads & Missions', pubsEarn:'Earn up to 15 DH/day in 💎',
+    chooseStore:'CHOOSE YOUR STORE · SAFI',
+    cardLabelName:'NAME', cardLabelExpires:'EXPIRES', cardLabelCardholder:'CARDHOLDER',
+    collectFeeLabel:'Click & Collect — +2.99 MAD',
+    cardAccepted:'Accepted:',
+    gpsDetecting:'Detecting…', gpsMyPosition:'Use my GPS', gpsMyPositionShort:'My location',
+    addressLoading:'Loading address…',
+    adSlotLabel:'Advertising Space',
+    chooseVehicle:'CHOOSE YOUR VEHICLE · SAFI',
+    taxiConfortName:'Comfort Taxi', taxiConfortSub:'Safi & all Morocco',
+    motoTaxiSub:'Quick & affordable · Safi',
+    taxiConfortSubBottomSheet:'Comfort Taxi · Safi & all Morocco',
+    vehicleRef:'Ref:', rideRef:'RIDE REFERENCE',
+    rateYourRide:'RATE YOUR RIDE', newRide:'New ride',
+    taxiThankYou:'Thank you for choosing Bridge Taxi Confort',
+    motoPricePerTrip:'Trip price',
+    vehicleTypeSub:(v:string)=>`${v} · Safi · Price per trip`,
+    lightMode:'Light mode', darkMode:'Dark mode',
   },
   ar: {
     appName:'بريدج سافي', zone:'آسفي، المغرب',
@@ -743,6 +820,40 @@ const T = {
     hubServices:'الخدمات', hubServicesSub:'إيتس · تاكسي · تاباك · زهور · صيدلية',
     hubGame:'العب واربح', hubGameSub:'اجمع الماسات 💎 ← وجبات مجانية',
     hubWelcome:'مرحباً',
+    historyTitle:'السجل', historyEmpty:'لا يوجد سجل',
+    historyEmptySub:'ستظهر طلباتك ورحلاتك هنا بعد كل خدمة',
+    historyDiscover:'اكتشف الخدمات', historyClear:'🗑 مسح كل السجل',
+    historyDone:'✓ تم', historyPastLabel:'الرحلات والطلبات السابقة',
+    missionsTitle:'إعلانات ومهام', missionsSub:'اكسب حتى 15 درهم/يوم 💎',
+    discountLabel:'💎 خصم', discoverProducts:'اكتشف المنتجات ←',
+    supermarcheSub:'🛒 مرجان · كارفور · بيم — تُوصَّل إليك',
+    myOrdersTitle:'طلباتي',
+    myOrdersEmpty:'لا توجد طلبات في الوقت الحالي',
+    myOrdersEmptySub:'ستظهر طلبات Eats والصيدلية والتاباك والزهور والمخبزة والسوق هنا مع التتبع المباشر',
+    myOrdersArrival:'وصول ≈',
+    statusPending:'في الانتظار', statusPendingPay:'في انتظار الدفع', statusAccepted:'مقبولة',
+    statusPreparing:'قيد التحضير', statusReady:'جاهزة', statusOnWay:'في الطريق',
+    statusDelivered:'تم التوصيل ✅', statusCancelled:'ملغاة', statusRefused:'مرفوضة',
+    boulangerieSub:'خبز ومعجنات', soukSub:'ملابس · عطور · عسل',
+    gameOrderPoints:'كل طلب = نقاط → وجبات مجانية',
+    pubsLabel:'إعلانات ومهام', pubsEarn:'اكسب حتى 15 DH/يوم من 💎',
+    chooseStore:'اختر متجرك · آسفي',
+    cardLabelName:'الاسم', cardLabelExpires:'تنتهي', cardLabelCardholder:'حامل البطاقة',
+    collectFeeLabel:'Click & Collect — +2.99 MAD',
+    cardAccepted:'مقبول:',
+    gpsDetecting:'جارٍ التحديد…', gpsMyPosition:'تحديد موقعي', gpsMyPositionShort:'موقعي',
+    addressLoading:'جارٍ تحميل العنوان…',
+    adSlotLabel:'مساحة إعلانية',
+    chooseVehicle:'اختر وسيلة التنقل · آسفي',
+    taxiConfortName:'تاكسي كونفور', taxiConfortSub:'سافي وكل المغرب',
+    motoTaxiSub:'سريع وبأسعار معقولة · سافي',
+    taxiConfortSubBottomSheet:'تاكسي كونفور · سافي وكل المغرب',
+    vehicleRef:'مرجع:', rideRef:'مرجع الرحلة',
+    rateYourRide:'قيّم رحلتك', newRide:'رحلة جديدة',
+    taxiThankYou:'شكراً لاختيارك Bridge Taxi',
+    motoPricePerTrip:'سعر حسب الرحلة',
+    vehicleTypeSub:(v:string)=>`${v} · آسفي · السعر حسب الرحلة`,
+    lightMode:'الوضع الفاتح', darkMode:'الوضع الداكن',
   },
   amz: {
     appName:'ⴱⵔⵉⴷⵊ ⵉⵢⵜⵙ', zone:'ⵙⴰⴼⵉ, ⵍⵎⵖⵔⵉⴱ',
@@ -844,6 +955,40 @@ const T = {
     hubServices:'ⵉⵙⵙⵓⵜⵓⵔⵏ', hubServicesSub:'ⵉⵜⵙ · ⵜⴰⴽⵙⵉ · ⵜⴰⴱⴰⴽ · ⵉⵥⵓⵍⴰⵏ · ⵜⵉⵙⵙⵏⵜⵉⵜ',
     hubGame:'ⴰⵎⵢⴰⴳⵓ · ⴳⵓⵍⵉ', hubGameSub:'ⵙⵎⵓⵏ ⵉⵎⴰⵙⵙⵏ 💎 → ⵉⵎⵏⵙⵉ ⴰⵎⵙⵜⵓ',
     hubWelcome:'ⵎⵔⵓⵃⴱⴰ',
+    historyTitle:'ⴰⵙⵎⴰⵔⵏ', historyEmpty:'ⵓⵔ ⵉⵍⵍⴰ ⵓⵙⵎⴰⵔⵏ',
+    historyEmptySub:'ⵜⵉⵖⵓⵍⴰ ⴷ ⵜⵉⵔⴰⵡⵉⵏ ⵏⵏⴽ ⴰⴷ ⵜⵉⴱⴹⵉⵏ ⵖ ⵓⵙⵔⴰⵜⵏ',
+    historyDiscover:'ⴰⵔⵣⵣⵓ ⵉⵙⵙⵓⵜⵓⵔⵏ', historyClear:'🗑 ⴽⴽⵙ ⴰⵙⵎⴰⵔⵏ',
+    historyDone:'✓ ⵉⵜⵜⵓⵙⴽⴰⵔ', historyPastLabel:'ⵜⵉⵔⴰⵡⵉⵏ ⴷ ⵜⵉⵖⵓⵍⴰ ⵉⵣⵔⵉⵏ',
+    missionsTitle:'ⵉⵙⵓⵜⵓⵔⵏ ⴷ ⵜⵎⵓⵔⵉⵏ', missionsSub:'ⴰⵡⵉ ⴰⵔ 15 DH/ⴰⵙⵙ ⴳ 💎',
+    discountLabel:'💎 ⴰⵙⵙⵎⵔⵙ', discoverProducts:'ⴰⵔⵣⵣⵓ ⵜⵉⵖⴰⵡⵙⵉⵡⵉⵏ →',
+    supermarcheSub:'🛒 Marjane · Carrefour · Bim — ⵜⵜⵓⵙⴽⵔⵏ ⴰⵔⵙⴽ',
+    myOrdersTitle:'ⵜⵉⵖⵓⵍⴰ ⵉⵏⵓ',
+    myOrdersEmpty:'ⵓⵔ ⵜⵍⵍⵉ ⵜⴰⵖⵓⵍⵜ',
+    myOrdersEmptySub:'ⵜⵉⵖⵓⵍⴰ ⵏ Eats, ⵜⴰⵙⵔⵓⴼⵜ, ⵜⴰⴱⴰⴽ, ⵉⵥⵓⵍⴰⵏ, ⵜⴰⵖⴱⴱⴰⵣⵜ ⴷ ⵓⵙⵓⵇ ⴰⴷ ⵜⴱⴹⵉⵏ ⵖ',
+    myOrdersArrival:'ⴰⵙⵍⵎⴷ ≈',
+    statusPending:'ⵉⵔⵉ', statusPendingPay:'ⵉⵔⵉ ⵏ ⵓⵣⵔⴼ', statusAccepted:'ⵜⵜⵓⵇⴱⵍ',
+    statusPreparing:'ⵜⴻⵜⵜⵓⵙⴽⴰⵔ', statusReady:'ⵜⵓⵔⴰ', statusOnWay:'ⵖ ⵓⵣⵔⵉⵔⵉ',
+    statusDelivered:'ⵜⵜⵓⵙⵍⵎⴷ ✅', statusCancelled:'ⵜⵜⵓⴽⴽⵙ', statusRefused:'ⵜⵜⵓⵏⵎⵍⴰ',
+    boulangerieSub:'ⴰⵖⵔⵓⵎ ⴷ ⵉⵖⴷⵓⴷⵏ', soukSub:'ⵉⴽⵯⵙⴰⵡⵏ · ⵜⵉⵣⵎⵎⴰⵔ · ⵜⴰⵎⵎⵏⵜ',
+    gameOrderPoints:'ⴽⵓ ⵜⴰⵖⵓⵍⵜ = ⵜⵉⵏⵓⴹⵉⵡⵉⵏ → ⵉⵎⵏⵙⵉ ⴰⵎⵙⵜⵓ',
+    pubsLabel:'ⵉⵙⵉⵡⵍⵏ ⴷ ⵜⵉⵡⵉⵙⵉⵡⵉⵏ', pubsEarn:'ⴳ 15 DH/ⵡⴰⵙⵙ ⵙ 💎',
+    chooseStore:'ⵙⵙⵔ ⵓⵙⴷⴷⵉ ⵏⵏⴽ · ⵙⴰⴼⵉ',
+    cardLabelName:'ⵉⵙⵎ', cardLabelExpires:'ⴰⵙⵓⵔⴼ', cardLabelCardholder:'ⴰⵎⵙⴽⴽⵉ',
+    collectFeeLabel:'Click & Collect — +2.99 MAD',
+    cardAccepted:'ⵉⵜⵜⵓⵇⴱⵍ:',
+    gpsDetecting:'ⴰⵙⵖⵓⴷ…', gpsMyPosition:'ⴰⵙⵖⵓⴷ GPS', gpsMyPositionShort:'ⵜⴰⵙⵓⵏⵜ ⵉⵏⵓ',
+    addressLoading:'ⴰⵙⵙⵓⵖⵏ…',
+    adSlotLabel:'ⵜⴰⵍⵖⴰ ⵏ ⵓⵙⵉⵡⵍ',
+    chooseVehicle:'ⵙⵙⵔ ⵓⵙⵜⴰⵢ ⵏⵏⴽ · ⵙⴰⴼⵉ',
+    taxiConfortName:'ⵜⴰⴽⵙⵉ', taxiConfortSub:'ⵙⴰⴼⵉ ⴷ ⵍⵎⵖⵔⵉⴱ',
+    motoTaxiSub:'ⴰⵣⵔⵉⵔⵉ ⴷ ⵉⵣⴷⵉⴳⵏ · ⵙⴰⴼⵉ',
+    taxiConfortSubBottomSheet:'ⵜⴰⴽⵙⵉ · ⵙⴰⴼⵉ ⴷ ⵍⵎⵖⵔⵉⴱ',
+    vehicleRef:'ⴰⵢⵡⴰⵏ:', rideRef:'ⴰⵢⵡⴰⵏ ⵏ ⵜⵔⴰⵡⵜ',
+    rateYourRide:'ⴼⵔⵓ ⵜⵉⵔⴰⵡⵜ ⵏⵏⴽ', newRide:'ⵜⴰⵔⴰⵡⵜ ⵜⴰⵎⴰⵢⵏⵓⵜ',
+    taxiThankYou:'ⵜⴰⵏⵎⵎⵉⵔⵜ ⵅⴼ Bridge Taxi',
+    motoPricePerTrip:'ⴰⵣⵎⵣ ⵏ ⵜⵔⴰⵡⵜ',
+    vehicleTypeSub:(v:string)=>`${v} · ⵙⴰⴼⵉ · ⴰⵣⵎⵣ ⵏ ⵜⵔⴰⵡⵜ`,
+    lightMode:'ⴰⵏⴰⵡ ⴰⴼⵓⵍⴽⵉ', darkMode:'ⴰⵏⴰⵡ ⴰⴽⵍⴰⵍⴰⵏ',
   },
 };
 
@@ -3887,14 +4032,15 @@ function GoldDivider() {
   );
 }
 
-function AdSlot({className=''}:{className?:string}) {
+function AdSlot({className='',lang='fr'}:{className?:string;lang?:Lang}) {
+  const t=T[lang];
   return (
     <div className={`px-5 pt-3 pb-2 ${className}`} id="bridge-ad-slot">
       <div className="rounded-2xl flex flex-col items-center justify-center gap-1.5 py-5"
         style={{border:'1.5px dashed #D9C5A0',background:'linear-gradient(135deg,rgba(253,252,249,0.9),rgba(247,243,235,0.7))',minHeight:88}}>
         {/* PUB_CONTENT_START */}
         <span style={{fontSize:22}}>📢</span>
-        <p className="text-[9px] font-black tracking-[0.18em] uppercase" style={{color:'#C9BFB2'}}>Espace Publicitaire</p>
+        <p className="text-[9px] font-black tracking-[0.18em] uppercase" style={{color:'#C9BFB2'}}>{t.adSlotLabel}</p>
         <p className="text-[8px] font-semibold" style={{color:'#D9C5A0'}}>contact@safi-bridge.ma</p>
         {/* PUB_CONTENT_END */}
       </div>
@@ -4308,7 +4454,7 @@ function RestaurantPage({restaurant,lang,t,onBack,onAddToCart}:{
         </div>
       )}
 
-      <AdSlot />
+      <AdSlot lang={lang} />
 
       {optionsItem&&(
         <ItemOptionsModal item={optionsItem} lang={lang} t={t} onClose={()=>setOptionsItem(null)}
@@ -4465,7 +4611,7 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
           </div>
         )
       }
-      <AdSlot />
+      <AdSlot lang={lang} />
     </div>
   );
 }
@@ -4774,14 +4920,14 @@ useEffect(() => {
                   </div>
                   <p className="text-white font-black text-base tracking-widest mb-3">{fmtCard(form.cardNumber)}</p>
                   <div className="flex justify-between items-end">
-                    <div><p className="text-white/50 text-[9px] font-bold">NAME</p><p className="text-white text-[11px] font-bold">{form.cardName||'—'}</p></div>
-                    <div className="text-right"><p className="text-white/50 text-[9px] font-bold">EXPIRES</p><p className="text-white text-[11px] font-bold">{form.cardExpiry||'—'}</p></div>
+                    <div><p className="text-white/50 text-[9px] font-bold">{t.cardLabelName}</p><p className="text-white text-[11px] font-bold">{form.cardName||'—'}</p></div>
+                    <div className="text-right"><p className="text-white/50 text-[9px] font-bold">{t.cardLabelExpires}</p><p className="text-white text-[11px] font-bold">{form.cardExpiry||'—'}</p></div>
                   </div>
                 </div>
               ):null;})()}
               {/* Accepted cards hint */}
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-[10px] font-bold" style={{color:'#6B7280'}}>Accepté :</span>
+                <span className="text-[10px] font-bold" style={{color:'#6B7280'}}>{t.cardAccepted}</span>
                 <span className="px-2 py-0.5 rounded text-[10px] font-black" style={{background:'#003087',color:'white'}}>VISA</span>
                 <span className="px-2 py-0.5 rounded text-[10px] font-black" style={{background:'linear-gradient(90deg,#EB001B,#F79E1B)',color:'white'}}>MC</span>
               </div>
@@ -5282,7 +5428,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                 <div className="flex flex-col items-center justify-center py-10 text-center">
                   <span className="text-6xl mb-3">🛒</span>
                   <p className={`text-sm font-bold ${fClass}`} style={{color:'#9CA3AF'}}>{t.cartEmpty}</p>
-                  <AdSlot className="w-full mt-4" />
+                  <AdSlot className="w-full mt-4" lang={lang} />
                 </div>
               ):cart.map(ci=>(
                 <div key={ci.cartId} className="py-3" style={{borderBottom:'1px solid #F3F4F6'}}>
@@ -5350,7 +5496,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                 <div className="flex items-start gap-2 px-3 py-3 rounded-xl mb-4" style={{background:'#FEF3C7',border:'1px solid #FDE68A'}}>
                   <span className="text-lg flex-shrink-0">🏪</span>
                   <div>
-                    <p className={`text-[11px] font-black mb-1 ${fClass}`} style={{color:'#B45309'}}>Click & Collect — +2.99 MAD</p>
+                    <p className={`text-[11px] font-black mb-1 ${fClass}`} style={{color:'#B45309'}}>{t.collectFeeLabel}</p>
                     <p className={`text-[10px] ${fClass}`} style={{color:'#92400E'}}>
                       {lang==='ar'?'ستحصل على رمز استلام بعد الطلب — أعطه للمطعم':
                        lang==='amz'?'ⴰⵏⵓⵎⵔ ⵏ ⵓⵔⵣⵣⵓ ⵉⵍⴰ ⵖ ⵓⵙⵙⵓⵎⵔ · ⴰⴼⴽ ⴰⵙ ⵉ ⵓⵣⵉⴳⵣ':
@@ -5375,6 +5521,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                 </p>
                 <DeliveryMap
                   pin={mapPin}
+                  lang={lang}
                   onSet={(coords,inside)=>{
                     const parts=coords.split(',');
                     setMapPin([parseFloat(parts[0]),parseFloat(parts[1])]);
@@ -5608,8 +5755,8 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                     </div>
                     <p className="text-white font-black text-base tracking-widest mb-3">{cardNum?fmtCard(cardNum):'•••• •••• •••• ••••'}</p>
                     <div className="flex justify-between items-end">
-                      <div><p className="text-white/40 text-[9px]">CARDHOLDER</p><p className="text-white text-xs font-bold">{cardName||'—'}</p></div>
-                      <div className="text-right"><p className="text-white/40 text-[9px]">EXPIRES</p><p className="text-white text-xs font-bold">{cardExp||'—'}</p></div>
+                      <div><p className="text-white/40 text-[9px]">{t.cardLabelCardholder}</p><p className="text-white text-xs font-bold">{cardName||'—'}</p></div>
+                      <div className="text-right"><p className="text-white/40 text-[9px]">{t.cardLabelExpires}</p><p className="text-white text-xs font-bold">{cardExp||'—'}</p></div>
                     </div>
                   </div>
                 );
@@ -6184,7 +6331,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
       {!isDelivered&&orderRef&&(
         <CancelOrderButton orderRef={orderRef} lang={lang} textColor="#065F46" mutedColor="#059669" cardBg="var(--c-bg)" cardBorder="var(--c-border)" onCancelled={()=>setOrderCancelled(true)}/>
       )}
-      <AdSlot />
+      <AdSlot lang={lang} />
     </div>
   );
 }
@@ -7027,7 +7174,7 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
             {cartSubtotal>0&&<div className="flex justify-between text-[12px] mb-1.5"><span style={{color:'rgba(165,180,252,0.5)'}}>{lang==='ar'?'المجموع':lang==='en'?'Subtotal':'Sous-total'}</span><span className="font-bold" style={{color:'#E0E7FF'}}>{cartSubtotal} DH</span></div>}
             {delivMode==='delivery'&&<div className="flex justify-between text-[12px] mb-1.5"><span style={{color:'rgba(165,180,252,0.5)'}}>🛵 {lang==='ar'?'توصيل':lang==='en'?'Delivery':'Livraison'}{isNight&&<span style={{color:'#F59E0B',fontWeight:700}}> 🌙</span>}</span><span className="font-bold" style={{color:'#A5B4FC'}}>{DELIV_FEE_PHARM} DH</span></div>}
             <div className="flex justify-between text-[12px] mb-2"><span style={{color:'rgba(165,180,252,0.5)'}}>⚙️ {lang==='ar'?'رسوم الخدمة':lang==='en'?'Service fee':'Frais de service'}</span><span className="font-bold" style={{color:'#A5B4FC'}}>{SVC_FEE_PHARM} DH</span></div>
-            {pharmGemMAD>0&&<div className="flex justify-between text-[12px] mb-2"><span style={{color:'#4ADE80'}}>💎 Réduction</span><span className="font-bold" style={{color:'#4ADE80'}}>-{pharmGemMAD} DH</span></div>}
+            {pharmGemMAD>0&&<div className="flex justify-between text-[12px] mb-2"><span style={{color:'#4ADE80'}}>{T[lang].discountLabel}</span><span className="font-bold" style={{color:'#4ADE80'}}>-{pharmGemMAD} DH</span></div>}
             <div className="flex justify-between items-center pt-2" style={{borderTop:'1.5px solid rgba(165,180,252,0.15)'}}><span className="font-black text-sm" style={{color:'#E0E7FF'}}>TOTAL</span><span className="font-black text-lg" style={{color:'#818CF8'}}>{cartTotal} DH</span></div>
           </div>
         )}
@@ -7431,7 +7578,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:1}}>
                       <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.02em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)'}}>Bridge Supermarché</p>
                     </div>
-                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:8,fontWeight:600,margin:0}}>🛒 Marjane · Carrefour · Bim — livrés chez vous</p>
+                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:8,fontWeight:600,margin:0}}>{t.supermarcheSub}</p>
                   </div>
                   <div style={{color:'rgba(255,255,255,0.5)',fontSize:18,flexShrink:0}}>›</div>
                 </div>
@@ -7449,7 +7596,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
                     <span style={{fontSize:30,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🥖</span>
                     <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Boulangerie</p>
-                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:9,fontWeight:600,margin:0,textAlign:'center'}}>Pain & pâtisseries</p>
+                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:9,fontWeight:600,margin:0,textAlign:'center'}}>{t.boulangerieSub}</p>
                   </div>
                 </button>
                 <button onClick={()=>choose('souk')} style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:pressed==='souk'?'scale(0.94)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',animation:'svcFadeUp 0.45s ease-out 0.4s both'}}>
@@ -7463,7 +7610,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
                     <span style={{fontSize:30,lineHeight:1,filter:'drop-shadow(0 4px 12px rgba(0,0,0,0.3))'}}>🛍️</span>
                     <p style={{color:'#fff',fontSize:12,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.4)',textAlign:'center'}}>Bridge Souk</p>
-                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:9,fontWeight:600,margin:0,textAlign:'center'}}>Vêtements · Parfums · Miel</p>
+                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:9,fontWeight:600,margin:0,textAlign:'center'}}>{t.soukSub}</p>
                   </div>
                 </button>
               </div>
@@ -7486,7 +7633,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
               <span style={{background:'rgba(74,222,128,0.2)',border:'1px solid rgba(74,222,128,0.6)',borderRadius:5,padding:'1px 6px',color:'#4ADE80',fontSize:8,fontWeight:900,letterSpacing:'0.14em'}}>GAME</span>
             </div>
             <p style={{color:'#FDE047',fontSize:12,fontWeight:800,margin:'0 0 2px',lineHeight:1.3}}>💎 Gagnez des diamants</p>
-            <p style={{color:'rgba(255,255,255,0.45)',fontSize:10,margin:0}}>Chaque commande = points → menus offerts</p>
+            <p style={{color:'rgba(255,255,255,0.45)',fontSize:10,margin:0}}>{t.gameOrderPoints}</p>
           </div>
           {/* Arrow */}
           <span style={{color:'#4ADE80',fontSize:18,flexShrink:0,fontWeight:900}}>›</span>
@@ -7798,7 +7945,7 @@ function TaxiVehicleSelectPage({onBack,onSelect,lang,cycleLang}:{
         <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.12)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:18,flexShrink:0}}>←</button>
         <div style={{flex:1,textAlign:'center'}}>
           <p style={{color:'#FDE68A',fontWeight:900,fontSize:14,letterSpacing:'0.12em',margin:0}}>🚖 BRIDGE TAXI · MOTO</p>
-          <p style={{color:'rgba(253,230,138,0.5)',fontSize:9,letterSpacing:'0.18em',margin:0}}>CHOISISSEZ VOTRE VÉHICULE · سافي</p>
+          <p style={{color:'rgba(253,230,138,0.5)',fontSize:9,letterSpacing:'0.18em',margin:0}}>{T[lang].chooseVehicle}</p>
         </div>
         <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.12)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:11,fontWeight:900,flexShrink:0}}>{LANG_LABELS[lang]}</button>
       </div>
@@ -7811,10 +7958,10 @@ function TaxiVehicleSelectPage({onBack,onSelect,lang,cycleLang}:{
           <div style={{fontSize:52,lineHeight:1,flexShrink:0}}>🚖</div>
           <div style={{flex:1}}>
             <p style={{color:'#FDE68A',fontWeight:900,fontSize:18,margin:'0 0 4px',letterSpacing:'0.04em'}}>
-              {lang==='en'?'Comfort Taxi':isAR?'تاكسي كونفور':isAMZ?'ⵜⴰⴽⵙⵉ':'Taxi Confort'}
+              {T[lang].taxiConfortName}
             </p>
             <p style={{color:'rgba(253,230,138,0.65)',fontSize:12,margin:'0 0 10px',fontWeight:600}}>
-              {lang==='en'?'Safi & all Morocco':isAR?'سافي وكل المغرب':'Safi & tout le Maroc'}
+              {T[lang].taxiConfortSub}
             </p>
             <div style={{display:'flex',gap:8,flexWrap:'wrap' as const}}>
               <span style={{background:'rgba(245,158,11,0.2)',border:'1px solid rgba(245,158,11,0.5)',borderRadius:8,padding:'3px 10px',fontSize:11,fontWeight:700,color:'#FDE68A'}}>
@@ -7832,17 +7979,17 @@ function TaxiVehicleSelectPage({onBack,onSelect,lang,cycleLang}:{
           <div style={{fontSize:52,lineHeight:1,flexShrink:0}}>🛵</div>
           <div style={{flex:1}}>
             <p style={{color:'#FED7AA',fontWeight:900,fontSize:18,margin:'0 0 4px',letterSpacing:'0.04em'}}>
-              {lang==='en'?'Moto Taxi':isAR?'موتو تاكسي':'Moto Taxi'}
+              Moto Taxi
             </p>
             <p style={{color:'rgba(254,215,170,0.65)',fontSize:12,margin:'0 0 10px',fontWeight:600}}>
-              {lang==='en'?'Quick & affordable · Safi':isAR?'سريع وبأسعار معقولة · سافي':'Rapide & économique · Safi'}
+              {T[lang].motoTaxiSub}
             </p>
             <div style={{display:'flex',gap:8,flexWrap:'wrap' as const}}>
               <span style={{background:'rgba(249,115,22,0.2)',border:'1px solid rgba(249,115,22,0.5)',borderRadius:8,padding:'3px 10px',fontSize:11,fontWeight:700,color:'#FED7AA'}}>
                 👤 1 {lang==='en'?'seat':isAR?'مقعد':'place'}
               </span>
               <span style={{background:'rgba(249,115,22,0.2)',border:'1px solid rgba(249,115,22,0.5)',borderRadius:8,padding:'3px 10px',fontSize:11,fontWeight:700,color:'#FED7AA'}}>
-                📍 {lang==='en'?'Trip price':isAR?'سعر حسب الرحلة':'Prix selon trajet'}
+                📍 {T[lang].motoPricePerTrip}
               </span>
             </div>
           </div>
@@ -8051,7 +8198,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
             <p style={{fontWeight:900,fontSize:18,color:'var(--c-text)',margin:0}}>
               {lang==='ar'?'📍 إلى أين؟':lang==='en'?'📍 Where to?':lang==='amz'?'📍 ⵖⴰⵜ ⵔⴰⴷ?':'📍 Où allez-vous ?'}
             </p>
-            <p style={{fontSize:11,color:'#9CA3AF',margin:'2px 0 0'}}>Taxi Confort · Safi & tout le Maroc</p>
+            <p style={{fontSize:11,color:'#9CA3AF',margin:'2px 0 0'}}>{T[lang].taxiConfortSubBottomSheet}</p>
           </div>
           <div style={{overflowY:'auto',flex:1,padding:'16px 20px 36px',display:'flex',flexDirection:'column',gap:14}}>
             {/* From */}
@@ -8066,10 +8213,10 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
                 placeholder={lang==='ar'?'Adresse à Safi':lang==='en'?'Address in Safi':'Adresse à Safi'} lang={lang}/>
               <button onClick={getClientGPS} style={{width:'100%',marginTop:6,padding:'9px 12px',borderRadius:10,border:clientPos?'1.5px solid rgba(16,185,129,0.35)':'none',background:clientPos?'rgba(16,185,129,0.1)':gettingGPS?'rgba(120,53,15,0.6)':'#78350F',color:clientPos?'#065F46':'white',fontWeight:900,fontSize:12,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
                 {gettingGPS
-                  ?<><span style={{animation:'spin 1s linear infinite',display:'inline-block'}}>⟳</span>{lang==='en'?'Detecting…':'Détection…'}</>
+                  ?<><span style={{animation:'spin 1s linear infinite',display:'inline-block'}}>⟳</span>{T[lang].gpsDetecting}</>
                   :clientPos
                     ?<>✓ GPS · {clientPos.lat.toFixed(4)}, {clientPos.lng.toFixed(4)}</>
-                    :<><span>🎯</span>{lang==='ar'?'تحديد موقعي':lang==='en'?'Use my location':'Ma position GPS'}</>
+                    :<><span>🎯</span>{T[lang].gpsMyPosition}</>
                 }
               </button>
             </div>
@@ -8213,7 +8360,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
             <span style={{fontSize:24}}>🚖</span>
             <div style={{flex:1}}>
               <p style={{fontSize:13,fontWeight:700,color:'var(--c-text)',margin:'0 0 1px'}}>{trackData?.driverName||'Bridge Taxi Confort'}</p>
-              <p style={{fontSize:10,color:'#9CA3AF',margin:0}}>Réf: <strong style={{color:'var(--c-text)'}}>{bookingRef}</strong></p>
+              <p style={{fontSize:10,color:'#9CA3AF',margin:0}}>{T[lang].vehicleRef} <strong style={{color:'var(--c-text)'}}>{bookingRef}</strong></p>
             </div>
             {trackData?.status==='arrived'&&<span style={{fontSize:20}}>🎉</span>}
           </div>
@@ -8267,16 +8414,16 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
             {lang==='ar'?'وصلت بسلامة !':lang==='en'?'You arrived safely!':lang==='amz'?'ⵜⴰⵍⴰ ⵢⵓⵙ !':'Vous êtes arrivé(e) !'}
           </h2>
           <p style={{color:'rgba(255,255,255,0.5)',fontSize:13,textAlign:'center',margin:'0 0 28px',maxWidth:260}}>
-            {lang==='en'?'Thank you for choosing Bridge Taxi Confort':lang==='ar'?'شكراً لاختيارك Bridge Taxi':'Merci d\'avoir choisi Bridge Taxi Confort'}
+            {T[lang].taxiThankYou}
           </p>
           <div style={{background:'rgba(255,255,255,0.06)',borderRadius:20,padding:'18px 28px',width:'100%',maxWidth:300,marginBottom:24,textAlign:'center',border:'1px solid rgba(217,197,160,0.15)'}}>
-            <p style={{color:'rgba(255,255,255,0.35)',fontSize:10,fontWeight:700,letterSpacing:'0.18em',margin:'0 0 5px'}}>RÉFÉRENCE DE COURSE</p>
+            <p style={{color:'rgba(255,255,255,0.35)',fontSize:10,fontWeight:700,letterSpacing:'0.18em',margin:'0 0 5px'}}>{T[lang].rideRef}</p>
             <p style={{color:'#F59E0B',fontWeight:900,fontSize:22,margin:'0 0 8px'}}>{bookingRef}</p>
             {trackData?.driverName&&<p style={{color:'rgba(255,255,255,0.6)',fontSize:13,margin:0}}>🚖 {trackData.driverName}</p>}
           </div>
           <div style={{marginBottom:28,textAlign:'center'}}>
             <p style={{color:'rgba(255,255,255,0.35)',fontSize:10,letterSpacing:'0.15em',marginBottom:10}}>
-              {lang==='en'?'RATE YOUR RIDE':lang==='ar'?'قيّم رحلتك':'NOTEZ VOTRE COURSE'}
+              {T[lang].rateYourRide}
             </p>
             <div style={{display:'flex',gap:6,justifyContent:'center'}}>
               {[1,2,3,4,5].map(s=>(
@@ -8286,7 +8433,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
           </div>
           <button onClick={()=>{setBookingRef('');localStorage.removeItem('bridge_taxi_ref');setTrackData(null);setTaxiRating(0);}}
             style={{width:'100%',maxWidth:300,padding:'16px',borderRadius:18,border:'none',background:'linear-gradient(135deg,#78350F,#F59E0B)',color:'white',fontWeight:900,fontSize:15,cursor:'pointer',boxShadow:'0 8px 28px rgba(245,158,11,0.45)'}}>
-            🚖 {lang==='en'?'New ride':lang==='ar'?'رحلة جديدة':'Nouvelle course'}
+            🚖 {T[lang].newRide}
           </button>
         </div>
       )}
@@ -8507,9 +8654,9 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
               <AddressAutocomplete label='' value={clientAddress} onChange={setClientAddress}
                 placeholder={lang==='ar'?'Adresse à Safi':lang==='en'?'Address in Safi':'Adresse à Safi'} lang={lang}/>
               <button onClick={getClientGPS} style={{width:'100%',marginTop:6,padding:'9px 12px',borderRadius:10,border:clientPos?'1.5px solid rgba(16,185,129,0.35)':'none',background:clientPos?'rgba(16,185,129,0.1)':gettingGPS?'rgba(154,52,18,0.6)':'#9A3412',color:clientPos?'#065F46':'white',fontWeight:900,fontSize:12,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
-                {gettingGPS?<><span style={{animation:'spin 1s linear infinite',display:'inline-block'}}>⟳</span>{lang==='en'?'Detecting…':'Détection…'}</>
+                {gettingGPS?<><span style={{animation:'spin 1s linear infinite',display:'inline-block'}}>⟳</span>{T[lang].gpsDetecting}</>
                   :clientPos?<>✓ GPS · {clientPos.lat.toFixed(4)}, {clientPos.lng.toFixed(4)}</>
-                  :<><span>🎯</span>{lang==='ar'?'تحديد موقعي':lang==='en'?'Use my location':'Ma position GPS'}</>}
+                  :<><span>🎯</span>{T[lang].gpsMyPosition}</>}
               </button>
             </div>
             <div>
@@ -8627,7 +8774,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
             <span style={{fontSize:24}}>{vEmoji}</span>
             <div style={{flex:1}}>
               <p style={{fontSize:13,fontWeight:700,color:'var(--c-text)',margin:'0 0 1px'}}>{trackData?.driverName||vServiceName}</p>
-              <p style={{fontSize:10,color:'#9CA3AF',margin:0}}>Réf: <strong style={{color:'var(--c-text)'}}>{bookingRef}</strong></p>
+              <p style={{fontSize:10,color:'#9CA3AF',margin:0}}>{T[lang].vehicleRef} <strong style={{color:'var(--c-text)'}}>{bookingRef}</strong></p>
             </div>
             {trackData?.status==='arrived'&&<span style={{fontSize:20}}>🎉</span>}
           </div>
@@ -8684,13 +8831,13 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
             {lang==='en'?`Thank you for choosing ${vServiceName}`:lang==='ar'?`شكراً لاختيارك ${vServiceName}`:`Merci d'avoir choisi ${vServiceName}`}
           </p>
           <div style={{background:'rgba(255,255,255,0.06)',borderRadius:20,padding:'18px 28px',width:'100%',maxWidth:300,marginBottom:24,textAlign:'center',border:`1px solid ${isTaxi?'rgba(245,158,11,0.15)':'rgba(249,115,22,0.15)'}`}}>
-            <p style={{color:'rgba(255,255,255,0.35)',fontSize:10,fontWeight:700,letterSpacing:'0.18em',margin:'0 0 5px'}}>RÉFÉRENCE DE COURSE</p>
+            <p style={{color:'rgba(255,255,255,0.35)',fontSize:10,fontWeight:700,letterSpacing:'0.18em',margin:'0 0 5px'}}>{T[lang].rideRef}</p>
             <p style={{color:isTaxi?'#F59E0B':'#F97316',fontWeight:900,fontSize:22,margin:'0 0 8px'}}>{bookingRef}</p>
             {trackData?.driverName&&<p style={{color:'rgba(255,255,255,0.6)',fontSize:13,margin:0}}>{vEmoji} {trackData.driverName}</p>}
           </div>
           <div style={{marginBottom:28,textAlign:'center'}}>
             <p style={{color:'rgba(255,255,255,0.35)',fontSize:10,letterSpacing:'0.15em',marginBottom:10}}>
-              {lang==='en'?'RATE YOUR RIDE':lang==='ar'?'قيّم رحلتك':'NOTEZ VOTRE COURSE'}
+              {T[lang].rateYourRide}
             </p>
             <div style={{display:'flex',gap:6,justifyContent:'center'}}>
               {[1,2,3,4,5].map(s=>(
@@ -8700,7 +8847,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
           </div>
           <button onClick={()=>{setBookingRef('');localStorage.removeItem(vLocalKey);setTrackData(null);setMotoRating(0);}}
             style={{width:'100%',maxWidth:300,padding:'16px',borderRadius:18,border:'none',background:vGrad,color:'white',fontWeight:900,fontSize:15,cursor:'pointer',boxShadow:`0 8px 28px ${isTaxi?'rgba(245,158,11,0.45)':'rgba(249,115,22,0.45)'}`}}>
-            {vEmoji} {lang==='en'?'New ride':lang==='ar'?'رحلة جديدة':'Nouvelle course'}
+            {vEmoji} {T[lang].newRide}
           </button>
         </div>
       )}
@@ -9832,7 +9979,8 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
 
 // ─── LOCATION PICKER MAP (GPS) ────────────────────────────────────────────────
 
-function LocationPickerMap({pos,onChange}:{pos:{lat:number;lng:number};onChange:(p:{lat:number;lng:number})=>void}) {
+function LocationPickerMap({pos,onChange,lang='fr'}:{pos:{lat:number;lng:number};onChange:(p:{lat:number;lng:number})=>void;lang?:Lang}) {
+  const _tLPM=T[lang];
   const [gettingGPS,setGettingGPS]=useState(false);
   const pinIcon=L.divIcon({className:'',html:'<div style="font-size:32px;line-height:1;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.6))">📍</div>',iconSize:[34,34],iconAnchor:[17,34]});
   function ClickCapture() {
@@ -9861,7 +10009,7 @@ function LocationPickerMap({pos,onChange}:{pos:{lat:number;lng:number};onChange:
           background:gettingGPS?'rgba(6,95,70,0.6)':'#065F46',color:'#fff',fontWeight:900,fontSize:10,
           cursor:gettingGPS?'not-allowed':'pointer',display:'flex',alignItems:'center',gap:4,boxShadow:'0 3px 10px rgba(0,0,0,0.35)'}}>
         {gettingGPS?<span style={{animation:'spin 1s linear infinite',display:'inline-block'}}>⟳</span>:<span>🎯</span>}
-        {gettingGPS?'Détection…':'Ma position'}
+        {gettingGPS?_tLPM.gpsDetecting:_tLPM.gpsMyPositionShort}
       </button>
     </div>
   );
@@ -10114,7 +10262,7 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
                 <div>
                   <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:'#FDE68A'}}>🗺️ {lang==='ar'?'اضبط موقعك على الخريطة':lang==='en'?'Fine-tune your location':'Ajustez votre position sur la carte'}</p>
                   <div style={{width:'100%',height:160,borderRadius:16,overflow:'hidden',border:'1.5px solid rgba(250,204,21,0.3)'}}>
-                    <LocationPickerMap pos={boulPos} onChange={setBoulPos}/>
+                    <LocationPickerMap pos={boulPos} onChange={setBoulPos} lang={lang}/>
                   </div>
                 </div>
               </>
@@ -10138,7 +10286,7 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
             {cartSubtotal>0&&<div className="flex justify-between text-[12px] mb-1.5"><span style={{color:'rgba(253,230,138,0.5)'}}>{lang==='ar'?'المجموع':lang==='en'?'Subtotal':'Sous-total'}</span><span className="font-bold" style={{color:'#FEF3C7'}}>{cartSubtotal} DH</span></div>}
             {delivMode==='delivery'&&<div className="flex justify-between text-[12px] mb-1.5"><span style={{color:'rgba(253,230,138,0.5)'}}>🛵 {lang==='ar'?'توصيل':lang==='en'?'Delivery':'Livraison'}</span><span className="font-bold" style={{color:'#FDE68A'}}>{DELIV_FEE_BOUL} DH</span></div>}
             <div className="flex justify-between text-[12px] mb-2"><span style={{color:'rgba(253,230,138,0.5)'}}>⚙️ {lang==='ar'?'رسوم الخدمة':lang==='en'?'Service fee':'Frais de service'}</span><span className="font-bold" style={{color:'#FDE68A'}}>{SVC_FEE_BOUL} DH</span></div>
-            {boulGemMAD>0&&<div className="flex justify-between text-[12px] mb-2"><span style={{color:'#4ADE80'}}>💎 Réduction</span><span className="font-bold" style={{color:'#4ADE80'}}>-{boulGemMAD} DH</span></div>}
+            {boulGemMAD>0&&<div className="flex justify-between text-[12px] mb-2"><span style={{color:'#4ADE80'}}>{T[lang].discountLabel}</span><span className="font-bold" style={{color:'#4ADE80'}}>-{boulGemMAD} DH</span></div>}
             <div className="flex justify-between items-center pt-2" style={{borderTop:'1.5px solid rgba(250,204,21,0.15)'}}><span className="font-black text-sm" style={{color:'#FEF3C7'}}>TOTAL</span><span className="font-black text-lg" style={{color:'#FACC15'}}>{cartTotal} DH</span></div>
           </div>
         )}
@@ -10459,7 +10607,7 @@ function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{on
             {cartSubtotal>0&&<div className="flex justify-between text-[12px] mb-1.5"><span style={{color:'rgba(233,213,255,0.5)'}}>{lang==='ar'?'المجموع':lang==='en'?'Subtotal':'Sous-total'}</span><span className="font-bold" style={{color:'#F3E8FF'}}>{cartSubtotal} DH</span></div>}
             {delivMode==='delivery'&&<div className="flex justify-between text-[12px] mb-1.5"><span style={{color:'rgba(233,213,255,0.5)'}}>🛵 {lang==='ar'?'توصيل':lang==='en'?'Delivery':'Livraison'}</span><span className="font-bold" style={{color:'#E9D5FF'}}>{DELIV_FEE_SOUK} DH</span></div>}
             <div className="flex justify-between text-[12px] mb-2"><span style={{color:'rgba(233,213,255,0.5)'}}>⚙️ {lang==='ar'?'رسوم الخدمة':lang==='en'?'Service fee':'Frais de service'}</span><span className="font-bold" style={{color:'#E9D5FF'}}>{SVC_FEE_SOUK} DH</span></div>
-            {soukGemMAD>0&&<div className="flex justify-between text-[12px] mb-2"><span style={{color:'#4ADE80'}}>💎 Réduction</span><span className="font-bold" style={{color:'#4ADE80'}}>-{soukGemMAD} DH</span></div>}
+            {soukGemMAD>0&&<div className="flex justify-between text-[12px] mb-2"><span style={{color:'#4ADE80'}}>{T[lang].discountLabel}</span><span className="font-bold" style={{color:'#4ADE80'}}>-{soukGemMAD} DH</span></div>}
             <div className="flex justify-between items-center pt-2" style={{borderTop:'1.5px solid rgba(192,132,252,0.15)'}}><span className="font-black text-sm" style={{color:'#F3E8FF'}}>TOTAL</span><span className="font-black text-lg" style={{color:'#C084FC'}}>{cartTotal} DH</span></div>
           </div>
         )}
@@ -11246,7 +11394,7 @@ function MarketItemCard({it,qty,theme,onAdd,onRem}:{it:MarketItem;qty:number;the
   );
 }
 
-function SupermarcheStoreCircle({store,index,onSelect}:{store:MarketStoreTheme;index:number;onSelect:()=>void}) {
+function SupermarcheStoreCircle({store,index,onSelect,lang}:{store:MarketStoreTheme;index:number;onSelect:()=>void;lang:Lang}) {
   const [pressed,setPressed]=useState(false);
   return(
     <button
@@ -11265,7 +11413,7 @@ function SupermarcheStoreCircle({store,index,onSelect}:{store:MarketStoreTheme;i
       </div>
       <div style={{textAlign:'left',flex:1}}>
         <p className="font-black" style={{fontSize:18,color:'#fff',margin:'0 0 3px',letterSpacing:'0.01em'}}>{store.label}</p>
-        <p style={{fontSize:11,color:'rgba(255,255,255,0.55)',fontWeight:700,margin:0}}>Découvrir les produits →</p>
+        <p style={{fontSize:11,color:'rgba(255,255,255,0.55)',fontWeight:700,margin:0}}>{T[lang].discoverProducts}</p>
       </div>
       <div style={{color:store.accentLight,fontSize:24,flexShrink:0}}>›</div>
     </button>
@@ -11273,7 +11421,7 @@ function SupermarcheStoreCircle({store,index,onSelect}:{store:MarketStoreTheme;i
 }
 
 function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void;onOrderSuccess?:(ref:string)=>void}) {
-  const fClass=fontClass(lang); const isAR=lang==='ar';
+  const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const [,navigateMkt]=useLocation();
   const [store,setStore]=useState<'select'|MarketStoreId>('select');
   const theme=store!=='select'?MARKET_STORES.find(s=>s.id===store)!:null;
@@ -11411,7 +11559,7 @@ function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
           <div className="w-full flex flex-col gap-4 mt-3">
             {MARKET_STORES.map((s,i)=>(
               <div key={s.id} style={{background:'rgba(255,255,255,0.05)',border:'1.5px solid rgba(255,255,255,0.12)',borderRadius:22,padding:'14px 16px',backdropFilter:'blur(10px)'}}>
-                <SupermarcheStoreCircle store={s} index={i} onSelect={()=>{setStore(s.id);setMktCat('fruits');setMktCart([]);}}/>
+                <SupermarcheStoreCircle store={s} index={i} lang={lang} onSelect={()=>{setStore(s.id);setMktCat('fruits');setMktCart([]);}}/>
               </div>
             ))}
           </div>
@@ -11493,7 +11641,7 @@ function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
             <div>
               <p className={`text-[10px] font-black uppercase tracking-widest mb-1.5 ${fClass}`} style={{color:theme!.accentLight}}>🗺️ {lang==='ar'?'اضبط موقعك على الخريطة':lang==='en'?'Fine-tune your location':'Ajustez votre position sur la carte'}</p>
               <div style={{width:'100%',height:160,borderRadius:16,overflow:'hidden',border:`1.5px solid ${theme!.cardBorder}`}}>
-                <LocationPickerMap pos={mktPos} onChange={setMktPos}/>
+                <LocationPickerMap pos={mktPos} onChange={setMktPos} lang={lang}/>
               </div>
             </div>
             <div>
@@ -11515,7 +11663,7 @@ function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
             {cartSubtotal>0&&<div className="flex justify-between text-[12px] mb-1.5"><span style={{color:theme!.mutedColor}}>{lang==='ar'?'المجموع':lang==='en'?'Subtotal':'Sous-total'}</span><span className="font-bold" style={{color:theme!.textColor}}>{cartSubtotal} DH</span></div>}
             <div className="flex justify-between text-[12px] mb-1.5"><span style={{color:theme!.mutedColor}}>🛵 {lang==='ar'?'توصيل':lang==='en'?'Delivery':'Livraison'}</span><span className="font-bold" style={{color:theme!.accentLight}}>{DELIV_FEE_MKT} DH</span></div>
             <div className="flex justify-between text-[12px] mb-2"><span style={{color:theme!.mutedColor}}>⚙️ {lang==='ar'?'رسوم الخدمة':lang==='en'?'Service fee':'Frais de service'}</span><span className="font-bold" style={{color:theme!.accentLight}}>{SVC_FEE_MKT} DH</span></div>
-            {mktGemMAD>0&&<div className="flex justify-between text-[12px] mb-2"><span style={{color:'#4ADE80'}}>💎 Réduction</span><span className="font-bold" style={{color:'#4ADE80'}}>-{mktGemMAD} DH</span></div>}
+            {mktGemMAD>0&&<div className="flex justify-between text-[12px] mb-2"><span style={{color:'#4ADE80'}}>{T[lang].discountLabel}</span><span className="font-bold" style={{color:'#4ADE80'}}>-{mktGemMAD} DH</span></div>}
             <div className="flex justify-between items-center pt-2" style={{borderTop:`1.5px solid ${theme!.cardBorder}`}}><span className="font-black text-sm" style={{color:theme!.textColor}}>TOTAL</span><span className="font-black text-lg" style={{color:theme!.accentLight}}>{cartTotal} DH</span></div>
           </div>
         )}
@@ -11696,8 +11844,8 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
                 </div>
               </div>
             </div>
-            <p style={{color:'#c4b5fd',fontSize:15,fontWeight:900,letterSpacing:'0.04em',margin:'0 0 3px'}} className={fClass}>Pubs & Missions</p>
-            <p style={{color:'rgba(255,255,255,0.5)',fontSize:10,fontWeight:600,margin:0}} className={fClass}>Gagne jusqu'à 15 DH/jour en 💎</p>
+            <p style={{color:'#c4b5fd',fontSize:15,fontWeight:900,letterSpacing:'0.04em',margin:'0 0 3px'}} className={fClass}>{t.missionsTitle}</p>
+            <p style={{color:'rgba(255,255,255,0.5)',fontSize:10,fontWeight:600,margin:0}} className={fClass}>{t.missionsSub}</p>
           </button>
 
           {/* HISTORY BUTTON */}
@@ -11715,8 +11863,8 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
             <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:14}}>
               <span style={{fontSize:22}}>📋</span>
               <div style={{textAlign:'left' as const}}>
-                <p style={{color:'#5EEAD4',fontSize:15,fontWeight:900,letterSpacing:'0.04em',margin:'0 0 2px'}}>Historique</p>
-                <p style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:600,margin:0}}>Courses & commandes passées</p>
+                <p style={{color:'#5EEAD4',fontSize:15,fontWeight:900,letterSpacing:'0.04em',margin:'0 0 2px'}}>{t.historyTitle}</p>
+                <p style={{color:'rgba(255,255,255,0.45)',fontSize:10,fontWeight:600,margin:0}}>{t.historyPastLabel}</p>
               </div>
             </div>
           </button>
@@ -11750,6 +11898,7 @@ export function HistoryPageRoute() {
   const { isSignedIn } = useUser();
   const { getToken } = useAuth();
   const [lang]=useState<Lang>(()=>{try{const r=localStorage.getItem(NAV_KEY);return r?JSON.parse(r).lang??'fr':'fr';}catch{return 'fr';}});
+  const t=T[lang];
   const [entries,setEntries]=useState<HistoryEntry[]>(()=>{
     try{const r=localStorage.getItem('bridge_history');return r?JSON.parse(r):[];}catch{return [];}
   });
@@ -11771,7 +11920,16 @@ export function HistoryPageRoute() {
           ref:o.ref,type:o.service==='delivery'?'eats':o.service,date:o.createdAt,total:o.total,
           address:o.customerAddress,restaurantName:o.restaurantName??undefined,
         }));
-        if(!cancelled) setEntries(serverEntries);
+        // Fusionne avec l'historique local au lieu de le remplacer : une commande
+        // dont le numéro saisi à la caisse ne correspond pas exactement au numéro
+        // du compte (ex. commande passée en invité, ou tapé différemment) ne doit
+        // jamais disparaître alors qu'elle est bien dans le localStorage de l'appareil.
+        if(!cancelled) setEntries(prev=>{
+          const byRef=new Map<string,HistoryEntry>();
+          serverEntries.forEach(e=>byRef.set(e.ref,e));
+          prev.forEach(e=>{ if(!byRef.has(e.ref)) byRef.set(e.ref,e); });
+          return Array.from(byRef.values()).sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime());
+        });
       }catch{}
     })();
     return ()=>{cancelled=true;};
@@ -11799,7 +11957,7 @@ export function HistoryPageRoute() {
         <button onClick={()=>navigate('/')} style={{background:'none',border:'none',fontSize:20,cursor:'pointer',color:dark?'#fff':'#111',padding:'4px 8px',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36,borderRadius:'50%',flexShrink:0}}>←</button>
         <div style={{flex:1}}>
           <p style={{fontSize:9,fontWeight:800,letterSpacing:'0.2em',color:'#9CA3AF',margin:'0 0 1px'}}>BRIDGE SAFI</p>
-          <h1 style={{fontSize:'1.1rem',fontWeight:900,color:dark?'#fff':'#111',margin:0}}>📋 Historique</h1>
+          <h1 style={{fontSize:'1.1rem',fontWeight:900,color:dark?'#fff':'#111',margin:0}}>📋 {t.historyTitle}</h1>
         </div>
         <span style={{fontSize:11,color:'#9CA3AF',fontWeight:700}}>{entries.length} entrée{entries.length!==1?'s':''}</span>
       </div>
@@ -11808,10 +11966,10 @@ export function HistoryPageRoute() {
         {entries.length===0?(
           <div style={{textAlign:'center',padding:'80px 20px',animation:'hfadeIn 0.4s ease-out'}}>
             <div style={{fontSize:60,marginBottom:14}}>📭</div>
-            <p style={{fontWeight:800,fontSize:17,color:dark?'#fff':'#374151',margin:'0 0 8px'}}>Aucun historique</p>
-            <p style={{color:'#9CA3AF',fontSize:13,margin:'0 0 28px'}}>Vos commandes et courses apparaîtront ici après chaque service</p>
+            <p style={{fontWeight:800,fontSize:17,color:dark?'#fff':'#374151',margin:'0 0 8px'}}>{t.historyEmpty}</p>
+            <p style={{color:'#9CA3AF',fontSize:13,margin:'0 0 28px'}}>{t.historyEmptySub}</p>
             <button onClick={()=>navigate('/')} style={{padding:'12px 24px',borderRadius:14,border:'none',background:'linear-gradient(135deg,#065F46,#34D399)',color:'#fff',fontWeight:900,fontSize:14,cursor:'pointer'}}>
-              Découvrir les services
+              {t.historyDiscover}
             </button>
           </div>
         ):entries.map((e,i)=>{
@@ -11826,7 +11984,7 @@ export function HistoryPageRoute() {
                 </div>
                 <div style={{textAlign:'right' as const,flexShrink:0}}>
                   {(e.total??0)>0&&<p style={{fontWeight:900,fontSize:15,color:ti.color,margin:'0 0 2px'}}>{e.total} DH</p>}
-                  <span style={{fontSize:10,fontWeight:700,color:'#059669',background:'rgba(5,150,105,0.1)',borderRadius:6,padding:'2px 7px'}}>✓ Effectué</span>
+                  <span style={{fontSize:10,fontWeight:700,color:'#059669',background:'rgba(5,150,105,0.1)',borderRadius:6,padding:'2px 7px'}}>{t.historyDone}</span>
                 </div>
               </div>
               <div style={{fontSize:11,fontWeight:600,color:dark?'#D1D5DB':'#374151',background:dark?'#2C2C2E':'#F9FAFB',borderRadius:10,padding:'8px 12px',display:'flex',gap:6,flexWrap:'wrap' as const,alignItems:'center'}}>
@@ -11842,7 +12000,7 @@ export function HistoryPageRoute() {
         {entries.length>0&&(
           <button onClick={()=>{try{localStorage.removeItem('bridge_history');}catch{}setEntries([]);}}
             style={{width:'100%',padding:'13px',borderRadius:14,border:`1px solid ${dark?'#3C3C3E':'#FEE2E2'}`,background:'transparent',color:'#EF4444',fontWeight:700,fontSize:13,cursor:'pointer',marginTop:4}}>
-            🗑 Effacer tout l'historique
+            {t.historyClear}
           </button>
         )}
       </div>
@@ -11927,7 +12085,15 @@ export function MyOrdersPageRoute() {
           ref:o.ref,type:o.service==='delivery'?'eats':o.service,date:o.createdAt,total:o.total,
           address:o.customerAddress,restaurantName:o.restaurantName??undefined,
         })).filter((e:MyOrderEntry)=>e.type!=='taxi'&&e.type!=='moto');
-        if(!cancelled) setEntries(serverEntries);
+        // Fusionne avec l'historique local (voir HistoryPageRoute) : une commande
+        // qui vient d'être passée ne doit pas disparaître de "Mes commandes" si le
+        // numéro de la commande ne correspond pas exactement à celui du compte.
+        if(!cancelled) setEntries(prev=>{
+          const byRef=new Map<string,MyOrderEntry>();
+          serverEntries.forEach(e=>byRef.set(e.ref,e));
+          prev.forEach(e=>{ if(!byRef.has(e.ref)) byRef.set(e.ref,e); else byRef.set(e.ref,{...e,...byRef.get(e.ref)}); });
+          return Array.from(byRef.values()).sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime());
+        });
       }catch{}
     })();
     return ()=>{cancelled=true;};
@@ -11963,10 +12129,11 @@ export function MyOrdersPageRoute() {
     try{const d=new Date(iso);return d.toLocaleDateString('fr-MA',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}catch{return iso;}
   };
 
+  const t=T[lang];
   const STATUS_LABEL:Record<string,string>={
-    pending:'En attente', pending_payment:'En attente de paiement', accepted:'Acceptée',
-    preparing:'En préparation', ready:'Prête', on_the_way:'En route', on_way:'En route',
-    delivered:'Livrée ✅', completed:'Livrée ✅', cancelled:'Annulée', refused:'Refusée',
+    pending:t.statusPending, pending_payment:t.statusPendingPay, accepted:t.statusAccepted,
+    preparing:t.statusPreparing, ready:t.statusReady, on_the_way:t.statusOnWay, on_way:t.statusOnWay,
+    delivered:t.statusDelivered, completed:t.statusDelivered, cancelled:t.statusCancelled, refused:t.statusRefused,
   };
 
   return (
@@ -11977,7 +12144,7 @@ export function MyOrdersPageRoute() {
         <button onClick={()=>navigate('/')} style={{background:'none',border:'none',fontSize:20,cursor:'pointer',color:'#fff',padding:'4px 8px',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36,borderRadius:'50%',flexShrink:0}}>←</button>
         <div style={{flex:1}}>
           <p style={{fontSize:9,fontWeight:800,letterSpacing:'0.2em',color:'#9CA3AF',margin:'0 0 1px'}}>BRIDGE SAFI</p>
-          <h1 style={{fontSize:'1.1rem',fontWeight:900,color:'#fff',margin:0}}>📦 Mes commandes</h1>
+          <h1 style={{fontSize:'1.1rem',fontWeight:900,color:'#fff',margin:0}}>📦 {t.myOrdersTitle}</h1>
         </div>
         <span style={{fontSize:11,color:'#9CA3AF',fontWeight:700}}>{entries.length}</span>
         <button onClick={cycleLang} style={{width:34,height:34,borderRadius:'50%',border:'1px solid #2a2a2a',cursor:'pointer',background:'rgba(255,255,255,0.06)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:10,fontWeight:900,flexShrink:0}}>{MYORD_LANG_LABELS[lang]}</button>
@@ -11992,10 +12159,10 @@ export function MyOrdersPageRoute() {
         {entries.length===0?(
           <div style={{textAlign:'center',padding:'80px 20px',animation:'mofadeIn 0.4s ease-out'}}>
             <div style={{fontSize:60,marginBottom:14}}>📭</div>
-            <p style={{fontWeight:800,fontSize:17,color:'#fff',margin:'0 0 8px'}}>Aucune commande pour l'instant</p>
-            <p style={{color:'#9CA3AF',fontSize:13,margin:'0 0 28px'}}>Vos commandes Eats, Pharmacie, Tabac, Fleurs, Boulangerie et Souk apparaîtront ici avec leur suivi en direct</p>
+            <p style={{fontWeight:800,fontSize:17,color:'#fff',margin:'0 0 8px'}}>{t.myOrdersEmpty}</p>
+            <p style={{color:'#9CA3AF',fontSize:13,margin:'0 0 28px'}}>{t.myOrdersEmptySub}</p>
             <button onClick={()=>navigate('/')} style={{padding:'12px 24px',borderRadius:14,border:'none',background:'linear-gradient(135deg,#065F46,#34D399)',color:'#fff',fontWeight:900,fontSize:14,cursor:'pointer'}}>
-              Découvrir les services
+              {t.historyDiscover}
             </button>
           </div>
         ):entries.map((e,i)=>{
@@ -12017,7 +12184,7 @@ export function MyOrdersPageRoute() {
                   <span style={{color:isDelivered?'#34D399':'#fff'}}>
                     {isDelivered?'✅ ':'⏱️ '}{STATUS_LABEL[e.liveStatus]??e.liveStatus}
                   </span>
-                  {e.etaLabel&&<span style={{color:'#9CA3AF'}}>Arrivée ≈ {e.etaLabel}</span>}
+                  {e.etaLabel&&<span style={{color:'#9CA3AF'}}>{t.myOrdersArrival} {e.etaLabel}</span>}
                 </div>
               )}
             </button>
