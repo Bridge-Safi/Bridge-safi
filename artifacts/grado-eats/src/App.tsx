@@ -56,23 +56,27 @@ function DarkToggle({ size = 44 }: { size?: number }) {
 
 // ─── DELIVERY ZONE ────────────────────────────────────────────────────────────
 
+// Zone elargie le 2026-07-10 (x1.3 depuis le centre) suite a un signalement
+// zabi : des adresses bien reelles et centrales de Safi (ex: quartier Achbar,
+// Achbar Allal) tombaient hors de l'ancien polygone trop serre et se
+// faisaient rejeter a tort ("zone non couverte") au clic "Ma position GPS".
 const DELIVERY_ZONE: [number,number][] = [
-  [32.3080,-9.2570], // McDonald's (côte nord-ouest)
-  [32.3200,-9.2450], // Remontée nord
-  [32.3280,-9.2280], // Ijnnane nord
-  [32.3270,-9.2050], // Ijnnane nord-est
-  [32.3160,-9.1820], // R206 est
-  [32.3020,-9.1700], // Lamia nord
-  [32.2880,-9.1750], // Lamia / R204
-  [32.2720,-9.1950], // Azib Draï
-  [32.2580,-9.2120], // Azib Draï sud
-  [32.2420,-9.2310], // Descente sud
-  [32.2200,-9.2480], // P2303 / Route Nsa
-  [32.2100,-9.2600], // Pointe sud-ouest
-  [32.2350,-9.2720], // Côte sud
-  [32.2600,-9.2700], // Bordeaux / côte
-  [32.2820,-9.2650], // Korten
-  [32.3050,-9.2590], // Retour McDonald's
+  [32.3165,-9.2652], // McDonald's (côte nord-ouest)
+  [32.3321,-9.2496], // Remontée nord
+  [32.3425,-9.2275], // Ijnnane nord
+  [32.3412,-9.1976], // Ijnnane nord-est
+  [32.3269,-9.1677], // R206 est
+  [32.3087,-9.1521], // Lamia nord
+  [32.2905,-9.1586], // Lamia / R204
+  [32.2697,-9.1846], // Azib Draï
+  [32.2515,-9.2067], // Azib Draï sud / Achbar
+  [32.2307,-9.2314], // Descente sud
+  [32.2021,-9.2535], // P2303 / Route Nsa
+  [32.1891,-9.2691], // Pointe sud-ouest
+  [32.2216,-9.2847], // Côte sud
+  [32.2541,-9.2821], // Bordeaux / côte
+  [32.2827,-9.2756], // Korten
+  [32.3126,-9.2678], // Retour McDonald's
 ];
 
 function pointInPolygon(lat:number, lng:number, poly:[number,number][]): boolean {
@@ -171,7 +175,7 @@ function DeliveryMap({onSet,onAddress,pin,lang='fr'}:{
     <div className="relative mb-3">
       <MapContainer center={[32.2994,-9.2372]} zoom={13}
         style={{height:220,borderRadius:14,zIndex:0}} scrollWheelZoom={false}
-        maxBounds={[[32.18,-9.265],[32.36,-9.13]]} maxBoundsViscosity={1.0} minZoom={12}>
+        maxBounds={[[32.16,-9.30],[32.365,-9.12]]} maxBoundsViscosity={1.0} minZoom={12}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://osm.org">OpenStreetMap</a>'/>
         <Polygon positions={DELIVERY_ZONE} pathOptions={{color:'#065F46',fillColor:'#2ecc71',fillOpacity:0.18,weight:2,dashArray:'6,4'}}/>
