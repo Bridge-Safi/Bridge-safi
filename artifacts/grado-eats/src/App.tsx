@@ -7310,15 +7310,18 @@ function HoursBadge({k}:{k:string}) {
 // Vraies photos (Wikimedia Commons, licence libre) utilisées en arrière-plan des
 // cartes services — remplace les logos/emoji pour un rendu plus pro. Chaque usage
 // a un fallback silencieux (emoji/dégradé d'origine) si l'image ne charge pas.
+// URLs directes upload.wikimedia.org (au lieu de Special:FilePath qui fait une
+// redirection HTTP vers un AUTRE domaine -> connexion TLS supplementaire à
+// chaque chargement = photos qui mettent du temps à apparaitre sur les cartes).
 const CARD_PHOTOS: Record<string,string> = {
-  delivery:    'https://commons.wikimedia.org/wiki/Special:FilePath/Pizza.jpg?width=400',
-  taxi:        'https://commons.wikimedia.org/wiki/Special:FilePath/2010-12-14_Maroc_Agadir_PetitTaxi.JPG?width=400',
-  fleurs:      'https://commons.wikimedia.org/wiki/Special:FilePath/Bouquet_de_roses_roses.jpg?width=400',
-  tabac:       'https://commons.wikimedia.org/wiki/Special:FilePath/Cigarettes_in_a_cigarette_packet_%28close-up%29.JPG?width=400',
-  pharmacie:   'https://commons.wikimedia.org/wiki/Special:FilePath/Highland_Park_Pharmacy_interior_01.jpg?width=300',
-  supermarche: 'https://commons.wikimedia.org/wiki/Special:FilePath/Supermarket_shelves.jpg?width=400',
-  boulangerie: 'https://commons.wikimedia.org/wiki/Special:FilePath/Khobz.jpg?width=400',
-  souk:        'https://commons.wikimedia.org/wiki/Special:FilePath/Epices_Marrakech.jpg?width=400',
+  delivery:    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Pizza.jpg/500px-Pizza.jpg',
+  taxi:        'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/2010-12-14_Maroc_Agadir_PetitTaxi.JPG/500px-2010-12-14_Maroc_Agadir_PetitTaxi.JPG',
+  fleurs:      'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Bouquet_de_roses_roses.jpg/500px-Bouquet_de_roses_roses.jpg',
+  tabac:       'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Cigarettes_in_a_cigarette_packet_%28close-up%29.JPG/500px-Cigarettes_in_a_cigarette_packet_%28close-up%29.JPG',
+  pharmacie:   'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Highland_Park_Pharmacy_interior_01.jpg/330px-Highland_Park_Pharmacy_interior_01.jpg',
+  supermarche: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Supermarket_shelves.jpg/500px-Supermarket_shelves.jpg',
+  boulangerie: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Khobz.jpg/500px-Khobz.jpg',
+  souk:        'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Epices_Marrakech.jpg/500px-Epices_Marrakech.jpg',
 };
 function MiniPhotoBadge({k,emoji,size=38}:{k:string;emoji:string;size?:number}) {
   const [ok,setOk]=useState(true);
