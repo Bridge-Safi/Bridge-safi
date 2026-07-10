@@ -6211,6 +6211,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
   const [orderCancelled,setOrderCancelled]=useState(false);
   const [shopInfo,setShopInfo]=useState<{lat:number;lng:number;name:string;emoji:string}|null>(null);
   const [clientPos,setClientPos]=useState<{lat:number;lng:number}|null>(null);
+  const [showReceipt,setShowReceipt]=useState(false);
   const isAR=lang==='ar'; const fClass=fontClass(lang);
   const displayRef=orderRef||t.orderNum;
 
