@@ -6125,6 +6125,84 @@ function ShopTrackMap({shopPos,shopName,shopEmoji,clientPos,courierPos,isLive,as
   );
 }
 
+function ReceiptModal({orderRef,lang,accent,accentDark,onClose}:{orderRef:string;lang:Lang;accent:string;accentDark:string;onClose:()=>void}) {
+  const [data,setData]=useState<any>(null);
+  const [loading,setLoading]=useState(true);
+  useEffect(()=>{
+    let alive=true;
+    fetch(`/api/orders/status/${orderRef}`).then(r=>r.ok?r.json():null).then(d=>{if(alive){setData(d);setLoading(false);}}).catch(()=>{if(alive)setLoading(false);});
+    return()=>{alive=false;};
+  },[orderRef]);
+  const items:any[]=Array.isArray(data?.items)?data.items:[];
+  const dateStr=data?.createdAt?new Date(data.createdAt).toLocaleString(lang==='ar'?'ar-MA':'fr-FR',{dateStyle:'medium',timeStyle:'short'}):'';
+  const payLabel=(pm?:string)=>pm==='cash'?(lang==='ar'?'نقداً':lang==='en'?'Cash':'Espèces'):pm==='card'?(lang==='ar'?'بطاقة':lang==='en'?'Card':'Carte'):(pm||'—');
+  return (
+    <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center p-0 sm:p-4" style={{background:'rgba(0,0,0,0.55)'}} onClick={onClose}>
+      <style>{`
+        @media print {
+          body * { visibility: hidden; }
+          #bridge-receipt-print, #bridge-receipt-print * { visibility: visible; }
+          #bridge-receipt-print { position: fixed; top:0; left:0; width:100%; margin:0; box-shadow:none; border-radius:0; }
+          .receipt-noprint { display:none !important; }
+        }
+      `}</style>
+      <div id="bridge-receipt-print" onClick={(e:any)=>e.stopPropagation()}
+        className="w-full sm:max-w-sm bg-white rounded-t-3xl sm:rounded-3xl overflow-hidden max-h-[90vh] flex flex-col"
+        style={{boxShadow:'0 20px 60px rgba(0,0,0,0.4)'}}>
+        <div className="px-5 pt-5 pb-3 flex items-center justify-between receipt-noprint" style={{borderBottom:'1px solid #eee'}}>
+          <p className="text-sm font-black" style={{color:'#111'}}>{lang==='ar'?'الإيصال':lang==='en'?'Receipt':'Reçu'}</p>
+          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center text-sm" style={{background:'#f3f4f6',border:'none',cursor:'pointer'}}>✕</button>
+        </div>
+        <div className="overflow-y-auto px-6 py-5" style={{flex:1}}>
+          <div className="flex flex-col items-center mb-4">
+            <img src="/logo.jpeg" alt="Bridge Safi" className="w-14 h-14 rounded-2xl object-cover mb-2"/>
+            <p className="text-base font-black" style={{color:'#111'}}>Bridge Safi</p>
+            <p className="text-[10px]" style={{color:'#888'}}>safi-bridge.ma</p>
+          </div>
+          {loading?(
+            <p className="text-center text-xs py-6" style={{color:'#999'}}>{lang==='ar'?'تحميل...':lang==='en'?'Loading...':'Chargement...'}</p>
+          ):!data||data.error?(
+            <p className="text-center text-xs py-6" style={{color:'#999'}}>{lang==='ar'?'تعذر تحميل الإيصال':lang==='en'?'Could not load receipt':'Reçu indisponible'}</p>
+          ):(
+            <>
+              <div className="text-center mb-4 pb-4" style={{borderBottom:'1px dashed #ddd'}}>
+                <p className="text-xs font-bold" style={{color:'#111'}}>{data.restaurantName||''}</p>
+                <p className="text-[10px] mt-0.5" style={{color:'#999'}}>{lang==='ar'?'مرجع':lang==='en'?'Ref':'Réf.'} #{data.ref} · {dateStr}</p>
+              </div>
+              {items.length>0&&(
+                <div className="mb-4">
+                  {items.map((it:any,i:number)=>(
+                    <div key={i} className="flex justify-between text-xs py-1">
+                      <span style={{color:'#333'}}>{it.qty||it.quantity||1}× {it.name||it.title||'—'}</span>
+                      <span className="font-bold" style={{color:'#111'}}>{typeof it.price==='number'?(it.price*(it.qty||it.quantity||1)).toFixed(2):''} DH</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="flex justify-between items-center py-3 mb-3" style={{borderTop:'1.5px solid #111',borderBottom:'1.5px solid #111'}}>
+                <span className="text-sm font-black" style={{color:'#111'}}>TOTAL</span>
+                <span className="text-lg font-black" style={{color:accentDark}}>{typeof data.total==='number'?data.total.toFixed(2):data.total} DH</span>
+              </div>
+              <div className="text-[10px] space-y-1 mb-2" style={{color:'#777'}}>
+                {data.customerName&&<p>{lang==='ar'?'العميل':lang==='en'?'Customer':'Client'} : {data.customerName}</p>}
+                {data.customerAddress&&<p>{lang==='ar'?'العنوان':lang==='en'?'Address':'Adresse'} : {data.customerAddress}</p>}
+                <p>{lang==='ar'?'الدفع':lang==='en'?'Payment':'Paiement'} : {payLabel(data.paymentMethod)}</p>
+              </div>
+              <p className="text-center text-[10px] mt-4" style={{color:'#bbb'}}>{lang==='ar'?'شكراً لثقتكم — Bridge Safi':lang==='en'?'Thank you for trusting Bridge Safi':'Merci pour votre confiance — Bridge Safi'}</p>
+            </>
+          )}
+        </div>
+        <div className="px-6 py-4 receipt-noprint" style={{borderTop:'1px solid #eee'}}>
+          <button onClick={()=>window.print()} disabled={loading||!data}
+            className="w-full py-3 rounded-2xl font-black text-sm text-white transition-all active:scale-95"
+            style={{background:`linear-gradient(135deg,${accentDark},${accent})`,border:'none',cursor:loading?'default':'pointer',opacity:loading?0.6:1}}>
+            🖨️ {lang==='ar'?'طباعة / تحميل PDF':lang==='en'?'Print / Save as PDF':'Imprimer / Enregistrer en PDF'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string}) {
   const [activeStage,setActiveStage]=useState(0);
   const [realPos,setRealPos]=useState<{lat:number;lng:number}|null>(null);
@@ -6311,14 +6389,23 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
             </div>
           )}
           <DriverRatingBox orderRef={orderRef} lang={lang} accent="#065F46" accentDark="#059669" textColor="#065F46" mutedColor="#059669" cardBg="rgba(255,255,255,0.7)" cardBorder="#86EFAC"/>
-          <button
-            onClick={()=>{window.location.href='/';}}
-            className="px-6 py-2.5 rounded-2xl font-black text-sm text-white transition-all active:scale-95 mt-4"
-            style={{background:'linear-gradient(135deg,#065F46,#059669)',border:'none',cursor:'pointer',boxShadow:'0 4px 14px rgba(5,150,105,0.35)'}}>
-            {lang==='ar'?'طلب جديد':lang==='en'?'New order':'Nouvelle commande'}
-          </button>
+          <div className="flex items-center justify-center gap-2 mt-4">
+            <button
+              onClick={()=>{window.location.href='/';}}
+              className="px-6 py-2.5 rounded-2xl font-black text-sm text-white transition-all active:scale-95"
+              style={{background:'linear-gradient(135deg,#065F46,#059669)',border:'none',cursor:'pointer',boxShadow:'0 4px 14px rgba(5,150,105,0.35)'}}>
+              {lang==='ar'?'طلب جديد':lang==='en'?'New order':'Nouvelle commande'}
+            </button>
+            <button
+              onClick={()=>setShowReceipt(true)}
+              className="px-4 py-2.5 rounded-2xl font-black text-sm transition-all active:scale-95"
+              style={{background:'#fff',border:'1.5px solid #86EFAC',color:'#065F46',cursor:'pointer'}}>
+              🧾 {lang==='ar'?'إيصال':lang==='en'?'Receipt':'Reçu'}
+            </button>
+          </div>
         </div>
       )}
+      {showReceipt&&<ReceiptModal orderRef={orderRef} lang={lang} accent="#059669" accentDark="#065F46" onClose={()=>setShowReceipt(false)}/>}
 
       {/* Live GPS Map — masquée après livraison */}
       {!isDelivered&&(
@@ -6591,6 +6678,7 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
   const [orderCancelled,setOrderCancelled]=useState(false);
   const [shopInfo,setShopInfo]=useState<{lat:number;lng:number;name:string;emoji:string}|null>(null);
   const [clientPos,setClientPos]=useState<{lat:number;lng:number}|null>(null);
+  const [showReceipt,setShowReceipt]=useState(false);
   const fClass=fontClass(lang); const isAR=lang==='ar';
 
   const shareTracking=()=>{
@@ -6797,13 +6885,21 @@ function ServiceTrackingView({orderRef,lang,theme,onNewOrder}:{orderRef:string;l
             </div>
           )}
           <DriverRatingBox orderRef={orderRef} lang={lang} accent={theme.accent} accentDark={theme.accentDark} textColor={theme.textColor} mutedColor={theme.mutedColor} cardBg={theme.cardBg} cardBorder={theme.cardBorder}/>
-          <button onClick={onNewOrder}
-            className="px-6 py-2.5 rounded-2xl font-black text-sm text-white transition-all active:scale-95 mt-4"
-            style={{background:`linear-gradient(135deg,${theme.accentDark},${theme.accent})`,border:'none',cursor:'pointer'}}>
-            {lang==='ar'?'طلب جديد':lang==='en'?'New order':'Nouvelle commande'}
-          </button>
+          <div className="flex items-center justify-center gap-2 mt-4">
+            <button onClick={onNewOrder}
+              className="px-6 py-2.5 rounded-2xl font-black text-sm text-white transition-all active:scale-95"
+              style={{background:`linear-gradient(135deg,${theme.accentDark},${theme.accent})`,border:'none',cursor:'pointer'}}>
+              {lang==='ar'?'طلب جديد':lang==='en'?'New order':'Nouvelle commande'}
+            </button>
+            <button onClick={()=>setShowReceipt(true)}
+              className="px-4 py-2.5 rounded-2xl font-black text-sm transition-all active:scale-95"
+              style={{background:theme.cardBg,border:`1.5px solid ${theme.cardBorder}`,color:theme.accentLight,cursor:'pointer'}}>
+              🧾 {lang==='ar'?'إيصال':lang==='en'?'Receipt':'Reçu'}
+            </button>
+          </div>
         </div>
       )}
+      {showReceipt&&<ReceiptModal orderRef={orderRef} lang={lang} accent={theme.accent} accentDark={theme.accentDark} onClose={()=>setShowReceipt(false)}/>}
 
       {/* Carte GPS en direct — masquée après livraison */}
       {!isDelivered&&(
