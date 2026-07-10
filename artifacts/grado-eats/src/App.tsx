@@ -10214,29 +10214,49 @@ function LocationPickerMap({pos,onChange,lang='fr'}:{pos:{lat:number;lng:number}
 
 // ─── BRIDGE BOULANGERIE — catalogue ───────────────────────────────────────────
 
-interface BoulItem {id:string;name:string;desc:string;price:number;cat:'viennoiseries'|'patisserie'|'sale'|'cafeteria'|'jus';emoji:string;}
+interface BoulItem {id:string;name:string;desc:string;price:number;cat:'viennoiseries'|'patisserie'|'sale'|'cafeteria'|'jus';emoji:string;vendor:'maitres'|'palm'|'rayan';}
 const BOULANGERIE_CATALOG:BoulItem[]=[
-  {id:'bv1',name:'Croissant Pur Beurre',       desc:'Viennoiserie feuilletée',        price:8,  cat:'viennoiseries', emoji:'🥐'},
-  {id:'bv2',name:'Pain Au Chocolat',           desc:'Viennoiserie pur beurre',        price:9,  cat:'viennoiseries', emoji:'🥐'},
-  {id:'bv3',name:'Mini Pain Au Chocolat',      desc:'Format mini, la pièce',          price:6,  cat:'viennoiseries', emoji:'🥐'},
-  {id:'bv4',name:'Chausson Aux Pommes',        desc:'Pâte feuilletée, pommes',        price:8,  cat:'viennoiseries', emoji:'🥐'},
-  {id:'bv5',name:'Mini Chausson Aux Amandes',  desc:'Format mini, la pièce',          price:8,  cat:'viennoiseries', emoji:'🥐'},
-  {id:'bp1',name:"Trompe L'œil Mangue",        desc:'Entremets frais du jour',        price:32, cat:'patisserie',    emoji:'🍰'},
-  {id:'bp2',name:'Royal Chocolat',             desc:'Mousse chocolat, croustillant',  price:32, cat:'patisserie',    emoji:'🍫'},
-  {id:'bp3',name:'Forêt-Noire (Part)',         desc:'Chocolat, cerises, chantilly',   price:29, cat:'patisserie',    emoji:'🍰'},
-  {id:'bp4',name:'Cheesecake Citron (Part)',   desc:'Part individuelle',              price:29, cat:'patisserie',    emoji:'🍰'},
-  {id:'bp5',name:'Pecaramel',                  desc:'Praliné, caramel, noisette',     price:29, cat:'patisserie',    emoji:'🍮'},
-  {id:'bp6',name:'Tarte Aux Poires',           desc:'Pâtisserie fraîche du jour',     price:26, cat:'patisserie',    emoji:'🍰'},
-  {id:'bs1',name:'Croissant Jambon Fromage',   desc:'Snack salé du jour',             price:22, cat:'sale',          emoji:'🧀'},
-  {id:'bs2',name:'Pain Traditionnel',          desc:'Khobz frais du four',            price:4,  cat:'sale',          emoji:'🍞'},
-  {id:'bs3',name:'Batbout ×4',                 desc:'Petits pains marocains',         price:12, cat:'sale',          emoji:'🫓'},
-  {id:'bc1',name:'Espresso',                   desc:'Café italien',                   price:17, cat:'cafeteria',     emoji:'☕'},
-  {id:'bc2',name:'Cappuccino',                 desc:'Espresso, lait moussé',          price:22, cat:'cafeteria',     emoji:'☕'},
-  {id:'bc3',name:'Café Crème',                 desc:'Espresso, lait chaud',           price:21, cat:'cafeteria',     emoji:'☕'},
-  {id:'bc4',name:'Chocolat Fondu',             desc:'Chocolat chaud gourmand',        price:26, cat:'cafeteria',     emoji:'🍫'},
-  {id:'bj1',name:"Jus D'Orange Frais",         desc:'Pressé minute',                  price:21, cat:'jus',           emoji:'🍊'},
-  {id:'bj2',name:"Jus D'Avocat",               desc:'Onctueux, sucré',                price:31, cat:'jus',           emoji:'🥑'},
-  {id:'bj3',name:'Panaché',                    desc:'Fruits de saison',               price:28, cat:'jus',           emoji:'🥤'},
+  {id:'bv1',name:'Croissant Pur Beurre',       desc:'Viennoiserie feuilletée',        price:8,  cat:'viennoiseries', emoji:'🥐',vendor:'maitres'},
+  {id:'bv2',name:'Pain Au Chocolat',           desc:'Viennoiserie pur beurre',        price:9,  cat:'viennoiseries', emoji:'🥐',vendor:'maitres'},
+  {id:'bv3',name:'Mini Pain Au Chocolat',      desc:'Format mini, la pièce',          price:6,  cat:'viennoiseries', emoji:'🥐',vendor:'maitres'},
+  {id:'bv4',name:'Chausson Aux Pommes',        desc:'Pâte feuilletée, pommes',        price:8,  cat:'viennoiseries', emoji:'🥐',vendor:'maitres'},
+  {id:'bv5',name:'Mini Chausson Aux Amandes',  desc:'Format mini, la pièce',          price:8,  cat:'viennoiseries', emoji:'🥐',vendor:'maitres'},
+  {id:'bp1',name:"Trompe L'œil Mangue",        desc:'Entremets frais du jour',        price:32, cat:'patisserie',    emoji:'🍰',vendor:'maitres'},
+  {id:'bp2',name:'Royal Chocolat',             desc:'Mousse chocolat, croustillant',  price:32, cat:'patisserie',    emoji:'🍫',vendor:'maitres'},
+  {id:'bp3',name:'Forêt-Noire (Part)',         desc:'Chocolat, cerises, chantilly',   price:29, cat:'patisserie',    emoji:'🍰',vendor:'maitres'},
+  {id:'bp4',name:'Cheesecake Citron (Part)',   desc:'Part individuelle',              price:29, cat:'patisserie',    emoji:'🍰',vendor:'maitres'},
+  {id:'bp5',name:'Pecaramel',                  desc:'Praliné, caramel, noisette',     price:29, cat:'patisserie',    emoji:'🍮',vendor:'maitres'},
+  {id:'bp6',name:'Tarte Aux Poires',           desc:'Pâtisserie fraîche du jour',     price:26, cat:'patisserie',    emoji:'🍰',vendor:'maitres'},
+  {id:'bs1',name:'Croissant Jambon Fromage',   desc:'Snack salé du jour',             price:22, cat:'sale',          emoji:'🧀',vendor:'maitres'},
+  {id:'bs2',name:'Pain Traditionnel',          desc:'Khobz frais du four',            price:4,  cat:'sale',          emoji:'🍞',vendor:'maitres'},
+  {id:'bs3',name:'Batbout ×4',                 desc:'Petits pains marocains',         price:12, cat:'sale',          emoji:'🫓',vendor:'maitres'},
+  {id:'bc1',name:'Espresso',                   desc:'Café italien',                   price:17, cat:'cafeteria',     emoji:'☕',vendor:'maitres'},
+  {id:'bc2',name:'Cappuccino',                 desc:'Espresso, lait moussé',          price:22, cat:'cafeteria',     emoji:'☕',vendor:'maitres'},
+  {id:'bc3',name:'Café Crème',                 desc:'Espresso, lait chaud',           price:21, cat:'cafeteria',     emoji:'☕',vendor:'maitres'},
+  {id:'bc4',name:'Chocolat Fondu',             desc:'Chocolat chaud gourmand',        price:26, cat:'cafeteria',     emoji:'🍫',vendor:'maitres'},
+  {id:'bj1',name:"Jus D'Orange Frais",         desc:'Pressé minute',                  price:21, cat:'jus',           emoji:'🍊',vendor:'maitres'},
+  {id:'bj2',name:"Jus D'Avocat",               desc:'Onctueux, sucré',                price:31, cat:'jus',           emoji:'🥑',vendor:'maitres'},
+  {id:'bj3',name:'Panaché',                    desc:'Fruits de saison',               price:28, cat:'jus',           emoji:'🥤',vendor:'maitres'},
+  // --- Boulangerie Palm ---
+  {id:'pv1',name:'Croissant Beurre',           desc:'Viennoiserie pur beurre',         price:7,  cat:'viennoiseries', emoji:'🥐',vendor:'palm'},
+  {id:'pv2',name:'Pain Au Chocolat',           desc:'Feuilleté pur beurre',            price:8,  cat:'viennoiseries', emoji:'🥐',vendor:'palm'},
+  {id:'pp1',name:'Cornes De Gazelle',          desc:'Pâte d\'amande, fleur d\'oranger', price:18, cat:'patisserie',    emoji:'🌙',vendor:'palm'},
+  {id:'pp2',name:'Baklawa Amandes',            desc:'Feuilleté, miel, amandes',        price:22, cat:'patisserie',    emoji:'🍯',vendor:'palm'},
+  {id:'ps1',name:'Msemen x4',                  desc:'Crêpes feuilletées marocaines',   price:15, cat:'sale',          emoji:'🫓',vendor:'palm'},
+  {id:'ps2',name:'Pain Complet',               desc:'Farine complète, frais du jour',  price:6,  cat:'sale',          emoji:'🍞',vendor:'palm'},
+  {id:'pc1',name:'Café Noir',                  desc:'Café traditionnel marocain',      price:12, cat:'cafeteria',     emoji:'☕',vendor:'palm'},
+  {id:'pc2',name:'Thé À La Menthe',            desc:'Thé vert, menthe fraîche',        price:14, cat:'cafeteria',     emoji:'🍵',vendor:'palm'},
+  {id:'pj1',name:'Jus De Grenade',             desc:'Pressé minute',                   price:24, cat:'jus',           emoji:'🍹',vendor:'palm'},
+  // --- Rayan ---
+  {id:'rv1',name:'Croissant Amandes',          desc:'Garni crème d\'amande',           price:10, cat:'viennoiseries', emoji:'🥐',vendor:'rayan'},
+  {id:'rv2',name:'Chausson Abricot',           desc:'Pâte feuilletée, abricot',        price:9,  cat:'viennoiseries', emoji:'🥐',vendor:'rayan'},
+  {id:'rp1',name:'Number Cake',                desc:'Part individuelle, fruits frais', price:28, cat:'patisserie',    emoji:'🍰',vendor:'rayan'},
+  {id:'rp2',name:'Éclair Café',                desc:'Pâte à choux, crème café',        price:20, cat:'patisserie',    emoji:'🍮',vendor:'rayan'},
+  {id:'rs1',name:'Batbout Fromage',            desc:'Petit pain fourré fromage',       price:9,  cat:'sale',          emoji:'🧀',vendor:'rayan'},
+  {id:'rs2',name:'Fougasse Olives',            desc:'Pain aux olives, huile d\'olive', price:16, cat:'sale',          emoji:'🫒',vendor:'rayan'},
+  {id:'rc1',name:'Latte',                      desc:'Espresso, lait vapeur',           price:23, cat:'cafeteria',     emoji:'☕',vendor:'rayan'},
+  {id:'rc2',name:'Chocolat Chaud',             desc:'Chocolat fondu maison',           price:25, cat:'cafeteria',     emoji:'🍫',vendor:'rayan'},
+  {id:'rj1',name:'Jus Citron Menthe',          desc:'Pressé minute, menthe fraîche',   price:20, cat:'jus',           emoji:'🍋',vendor:'rayan'},
 ];
 
 function BoulangerieItem({it,qty,effectivePrice,onAdd,onRem}:{it:BoulItem;qty:number;effectivePrice:number;onAdd:()=>void;onRem:()=>void}) {
@@ -10264,6 +10284,11 @@ function BoulangerieItem({it,qty,effectivePrice,onAdd,onRem}:{it:BoulItem;qty:nu
   );
 }
 
+const BOUL_VENDOR_META:Record<'maitres'|'palm'|'rayan',{name:string;emoji:string;sub:Record<Lang,string>}>={
+  maitres:{name:'Les Maîtres du Pain',emoji:'🥐',sub:{fr:'Viennoiseries & pâtisserie fine · Safi',en:'Pastries & fine bakery · Safi',ar:'معجنات وحلويات · آسفي',amz:'ⵜⴰⵖⵔⵓⵎⵜ · ⵙⴰⴼⵉ'}},
+  palm:{name:'Boulangerie Palm',emoji:'🌴',sub:{fr:'Boulangerie traditionnelle · Safi',en:'Traditional bakery · Safi',ar:'مخبزة تقليدية · آسفي',amz:'ⵜⴰⵖⵔⵓⵎⵜ ⵜⴰⵇⴱⵓⵔⵜ · ⵙⴰⴼⵉ'}},
+  rayan:{name:'Rayan',emoji:'🥖',sub:{fr:'Boulangerie & pâtisserie · Safi',en:'Bakery & pastry · Safi',ar:'مخبزة وحلويات · آسفي',amz:'ⵜⴰⵖⵔⵓⵎⵜ · ⵙⴰⴼⵉ'}},
+};
 function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void;onOrderSuccess?:(ref:string)=>void}) {
   const { user } = useUser();
   const fClass=fontClass(lang); const isAR=lang==='ar';
@@ -10273,6 +10298,7 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
   const SVC_FEE_BOUL=5;
 
   const [boulCart,setBoulCart]=useState<{id:string;qty:number}[]>([]);
+  const [boulVendor,setBoulVendor]=useState<'maitres'|'palm'|'rayan'>('maitres');
   const [boulCat,setBoulCat]=useState<BoulItem['cat']>('viennoiseries');
   const [boulSearch,setBoulSearch]=useState('');
   const [delivMode,setDelivMode]=useState<'delivery'|'collect'>('delivery');
@@ -10308,7 +10334,7 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
   const cartCount=boulCart.reduce((s,ci)=>s+ci.qty,0);
 
   const visibleItems=BOULANGERIE_CATALOG.filter(it=>
-    it.cat===boulCat&&(boulSearch===''||it.name.toLowerCase().includes(boulSearch.toLowerCase()))
+    it.vendor===boulVendor&&it.cat===boulCat&&(boulSearch===''||it.name.toLowerCase().includes(boulSearch.toLowerCase()))
   );
 
   const catTabs:{key:BoulItem['cat'];label:string;emoji:string}[]=[
@@ -10344,25 +10370,25 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
   const handleSend=async(payLabel?:string)=>{
     if(!name.trim()||!phone.trim()||(delivMode==='delivery'&&!addr.trim())){setErr('*');return;}
     setSending(true);
-    const deliveryAddress=delivMode==='delivery'?`${addr.trim()}, Safi, Maroc (GPS: ${boulPos.lat.toFixed(5)},${boulPos.lng.toFixed(5)})`:'Bridge Boulangerie — Retrait sur place';
+    const deliveryAddress=delivMode==='delivery'?`${addr.trim()}, Safi, Maroc (GPS: ${boulPos.lat.toFixed(5)},${boulPos.lng.toFixed(5)})`:`${BOUL_VENDOR_META[boulVendor].name} — Retrait sur place`;
     const driverTrackUrl=`${window.location.origin}/driver/${orderRef}`;
     const payInfo=payLabel?payLabel:payMethod==='qr'?'QR Code':payMethod==='cash'?'Espèces':payMethod==='apple'?'Apple Pay':payMethod==='google'?'Google Pay':'Espèces';
     const itemsList=boulCart.map(ci=>{const it=BOULANGERIE_CATALOG.find(f=>f.id===ci.id)!;return `${it.name} ×${ci.qty} (${it.price*ci.qty} DH)`;}).join('\\n');
-    const notesStr=`🥐 Bridge Boulangerie\\n${itemsList||'Commande générale'}\\n—\\nSous-total: ${cartSubtotal} DH\\nLivraison: ${delivMode==='delivery'?DELIV_FEE_BOUL:0} DH\\nService: ${SVC_FEE_BOUL} DH\\nTotal: ${cartTotal} DH\\n💳 ${payInfo}\\n👤 ${name.trim()} — ${phone.trim()}`;
+    const notesStr=`🥐 Bridge Boulangerie — ${BOUL_VENDOR_META[boulVendor].name}\\n${itemsList||'Commande générale'}\\n—\\nSous-total: ${cartSubtotal} DH\\nLivraison: ${delivMode==='delivery'?DELIV_FEE_BOUL:0} DH\\nService: ${SVC_FEE_BOUL} DH\\nTotal: ${cartTotal} DH\\n💳 ${payInfo}\\n👤 ${name.trim()} — ${phone.trim()}`;
     const apiItems=boulCart.length>0
       ?boulCart.map(ci=>{const it=BOULANGERIE_CATALOG.find(f=>f.id===ci.id)!;return {name:it.name,qty:ci.qty,price:it.price};})
       :[{name:'🥐 Commande Bridge Boulangerie',qty:1,price:0}];
     try{
       await fetch('/api/orders/inbound',{method:'POST',headers:{'Content-Type':'application/json','x-bridge-secret':'bridge-safi-8b269bba03fd8c0205116f3f'},
-        body:JSON.stringify({customerName:name.trim(),customerPhone:phone.trim(),deliveryAddress,pickupAddress:'Bridge Boulangerie — Safi',items:apiItems,total:cartTotal,source:'Bridge Boulangerie',paymentMethod:payInfo}),
+        body:JSON.stringify({customerName:name.trim(),customerPhone:phone.trim(),deliveryAddress,pickupAddress:`${BOUL_VENDOR_META[boulVendor].name} — Safi`,items:apiItems,total:cartTotal,source:'Bridge Boulangerie',paymentMethod:payInfo}),
       }).catch(()=>{});
       await fetch(`${DRIVER_APP_URL}/api/deliveries`,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({trackingNumber:orderRef,customerName:name.trim(),customerPhone:phone.trim(),pickupAddress:'Bridge Boulangerie — Safi',deliveryAddress,priority:'normal',notes:notesStr,driverTrackUrl}),
+        body:JSON.stringify({trackingNumber:orderRef,customerName:name.trim(),customerPhone:phone.trim(),pickupAddress:`${BOUL_VENDOR_META[boulVendor].name} — Safi`,deliveryAddress,priority:'normal',notes:notesStr,driverTrackUrl}),
       }).catch(()=>{});
     }finally{setSending(false);}
     if(boulGemMAD>0){getAuthHeadersBoul().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:boulGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${boulUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ref:orderRef,service:'boulangerie',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:'Bridge Boulangerie'}),
+      body:JSON.stringify({ref:orderRef,service:'boulangerie',customerName:name.trim(),customerPhone:phone.trim(),customerAddress:deliveryAddress,items:apiItems,total:cartTotal,deliveryMode:delivMode,paymentMethod:payInfo,restaurantName:BOUL_VENDOR_META[boulVendor].name}),
     }).catch(()=>{});
     localStorage.setItem('bridge_last_ref',orderRef);
     try{const raw=localStorage.getItem('bridge_history');const arr=raw?JSON.parse(raw):[];arr.unshift({ref:orderRef,type:'boulangerie',date:new Date().toISOString(),total:cartTotal,address:deliveryAddress,name:name.trim(),owner:user?.id||'guest'});if(arr.length>100)arr.splice(100);localStorage.setItem('bridge_history',JSON.stringify(arr));}catch{}
@@ -10388,6 +10414,22 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
           <h1 className={`font-black text-xl tracking-wider mb-0.5 ${fClass}`} style={{color:'#FDE68A'}}>BRIDGE BOULANGERIE</h1>
           <p className="text-[10px] tracking-widest font-bold" style={{color:'rgba(253,230,138,0.6)'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
         </div>
+
+        {!sent&&(
+          <div className="w-full flex gap-2 mb-3 overflow-x-auto pb-1" style={{scrollbarWidth:'none'}}>
+            {(['maitres','palm','rayan'] as const).map(v=>{
+              const meta=BOUL_VENDOR_META[v]; const sel=boulVendor===v;
+              return(
+                <button key={v} onClick={()=>{setBoulVendor(v);setBoulCat('viennoiseries');setBoulSearch('');}}
+                  className="flex-shrink-0 flex flex-col items-start gap-0.5 py-2 px-3.5 rounded-2xl transition-all active:scale-95"
+                  style={{background:sel?'#A16207':'rgba(250,204,21,0.08)',border:`1.5px solid ${sel?'#A16207':'rgba(250,204,21,0.2)'}`,minWidth:132}}>
+                  <span className={`font-black text-[12px] ${fClass}`} style={{color:sel?'#fff':'#FDE68A'}}>{meta.emoji} {meta.name}</span>
+                  <span className={`text-[9px] ${fClass}`} style={{color:sel?'rgba(255,255,255,0.75)':'rgba(253,230,138,0.5)'}}>{meta.sub[lang]}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {!sent&&(
           <div className="w-full">
