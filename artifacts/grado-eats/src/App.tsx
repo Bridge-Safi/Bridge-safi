@@ -1271,16 +1271,6 @@ const RESTAURANTS: Restaurant[] = [
     rating:0,deliveryTime:"15\\u201325",minOrder:25,
     address:'Safi, Maroc',
     categories:[
-      {id:"topdesvent_0",emoji:"\\ud83c\\udf7d\\ufe0f",names:_n("Top des ventes"),items:[
-        {id:"lesm_0_0",names:_n("Trompe l'oeil mangue"),price:32,photo:_gp("")},
-        {id:"lesm_0_1",names:_n("Miellefille Praliné"),price:23,photo:_gp("")},
-        {id:"lesm_0_2",names:_n("Pecaramel"),price:29,photo:_gp("")},
-        {id:"lesm_0_3",names:_n("Croquant amande"),price:29,photo:_gp("")},
-        {id:"lesm_0_4",names:_n("Trompe l'oeil citron"),price:32,photo:_gp("")},
-        {id:"lesm_0_5",names:_n("Miellefille café"),price:23,photo:_gp("")},
-        {id:"lesm_0_6",names:_n("Royal chocolat"),price:32,photo:_gp("")},
-        {id:"lesm_0_7",names:_n("Tout chocolat"),price:32,photo:_gp("")},
-      ]},
       {id:"viennoiser_1",emoji:"\\ud83e\\udd50",names:_n("Viennoiseries"),items:[
         {id:"lesm_1_0",names:_n("Mini chausson aux amandes"),price:8,photo:_gp("")},
         {id:"lesm_1_1",names:_n("Pain au chocolat"),price:9,photo:_gp("6abaa6dac9b8907ecc7f35e62f9b788a29c27920a828db6c4f07f1f80e983074")},
@@ -1322,9 +1312,7 @@ const RESTAURANTS: Restaurant[] = [
         {id:"lesm_5_4",names:_n("Café crème"),price:21,photo:_gp("b63ee861195b9ba1365d0a39e9c0e1bbfcaa40b2cdd5b41af277557e5e3b222e")},
         {id:"lesm_5_5",names:_n("Lait au chocolat"),price:18,photo:_gp("")},
         {id:"lesm_5_6",names:_n("Cappuccino"),price:22,photo:_gp("")},
-        {id:"lesm_5_7",names:_n("cappuccino"),price:26,photo:_gp("")},
         {id:"lesm_5_8",names:_n("Chocolat fondu"),price:26,photo:_gp("")},
-        {id:"lesm_5_9",names:_n("Chocolat fondu"),price:28,photo:_gp("")},
         {id:"lesm_5_10",names:_n("Ice latè"),price:28,photo:_gp("")},
         {id:"lesm_5_11",names:_n("Spanish latè"),price:30,photo:_gp("")},
         {id:"lesm_5_12",names:_n("Ice spanish"),price:32,photo:_gp("")},
