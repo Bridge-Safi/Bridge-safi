@@ -138,9 +138,17 @@ router.post("/tracking/:ref", (req, res) => {
     ? { lat: clientLat, lng: clientLng }
     : (clientAddress ? pseudoGeo('client:' + clientAddress) : { lat: 32.2994, lng: -9.2372 });
   const resolvedShop = shopName ? pseudoGeo('shop:' + shopName) : undefined;
+  // IMPORTANT : lat/lng (racine) = position GPS REELLE du livreur, jamais une
+  // position deduite/pseudo. Pour une commande commerce (kind:'shop'), on ne
+  // connait pas encore de vrai livreur a l'init (checkout) : on laisse donc
+  // lat/lng a 0 (comme avant, via syncTrackingStatus) pour que le frontend
+  // (hasRealGPS = |lat|>0.001) ne prenne pas la position du client/commerce
+  // pour un GPS livreur en direct. Corrige le bug "le GPS du livreur envoie
+  // vers une adresse differente" (2026-07-10) — regression du commit precedent
+  // qui ecrasait lat/lng avec clientLat/clientLng des l'initialisation.
   positions.set(ref, {
-    lat: existing?.lat ?? (typeof clientLat === 'number' ? clientLat : 32.2994),
-    lng: existing?.lng ?? (typeof clientLng === 'number' ? clientLng : -9.2372),
+    lat: existing?.lat ?? (isShop ? 0 : (typeof clientLat === 'number' ? clientLat : 32.2994)),
+    lng: existing?.lng ?? (isShop ? 0 : (typeof clientLng === 'number' ? clientLng : -9.2372)),
     ...existing,
     status: existing?.status ?? 'waiting',
     updatedAt: existing?.updatedAt ?? Date.now(),
