@@ -9171,23 +9171,45 @@ const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
 const NAV_KEY='bridge_nav_state';
 // ─── FLEURS PAGE ──────────────────────────────────────────────────────────────
 
-type FleurItem={id:string;img:string;emoji:string;names:Record<Lang,string>;price:number;florist:'nour'|'amina'};
+type FleurItem={id:string;img:string;emoji:string;names:Record<Lang,string>;price:number;florist:'nour'|'amina'|'rania'|'yasmine'};
 const FLEURS_CATALOG:FleurItem[]=[
   // ── Nour Fleurs ── bouquets & coffrets
-  {id:'n1',img:'/fleurs/fl_01.png',emoji:'🌹',florist:'nour',price:80,  names:{fr:'Bouquet Roses Mixtes',      en:'Mixed Roses Bouquet',       ar:'باقة ورود مشكلة',          amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵉⴳⵍⴰⴷ'}},
-  {id:'n2',img:'/fleurs/fl_02.png',emoji:'🤍',florist:'nour',price:90,  names:{fr:'Bouquet Blanc & Rose',       en:'White & Pink Bouquet',       ar:'باقة بيضاء وردية',         amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵎⵍⵍⴰⵍ'}},
-  {id:'n3',img:'/fleurs/fl_03.png',emoji:'🌸',florist:'nour',price:75,  names:{fr:'Bouquet Roses Tendres',      en:'Soft Pink Roses',            ar:'باقة ورود وردية',          amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵉⴳⵍⴰⴷ ⵉⵡⵔⵉⵖⵏ'}},
-  {id:'n4',img:'/fleurs/fl_05.png',emoji:'💐',florist:'nour',price:150, names:{fr:'Grand Bouquet Luxe',          en:'Luxury Large Bouquet',       ar:'باقة فاخرة كبيرة',         amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵎⵇⵔⴰⵏ'}},
-  {id:'n5',img:'/fleurs/fl_07.png',emoji:'❤️',florist:'nour',price:120, names:{fr:'Coffret Cœur Roses',         en:'Heart Rose Box',             ar:'علبة قلب ورود',            amz:'ⴰⵙⴷⴰⵙ ⵏ ⵓⵍ'}},
-  {id:'n6',img:'/fleurs/fl_11.png',emoji:'🎁',florist:'nour',price:130, names:{fr:'Box Roses Élégance',          en:'Elegance Rose Box',          ar:'علبة ورود أناقة',          amz:'ⴰⵙⴷⴰⵙ ⵏ ⵉⴳⵍⴰⴷ'}},
-  {id:'n7',img:'/fleurs/fl_12.png',emoji:'🎀',florist:'nour',price:180, names:{fr:'Box Prestige Nœud Or',        en:'Gold Bow Prestige Box',      ar:'علبة فاخرة ذهبية',         amz:'ⴰⵙⴷⴰⵙ ⵏ ⵓⵔ'}},
+  {id:'n1',img:'/fleurs/fl_01.png',emoji:'🌹',florist:'nour',price:74,  names:{fr:'Bouquet Roses Mixtes',      en:'Mixed Roses Bouquet',       ar:'باقة ورود مشكلة',          amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵉⴳⵍⴰⴷ'}},
+  {id:'n2',img:'/fleurs/fl_02.png',emoji:'🤍',florist:'nour',price:84,  names:{fr:'Bouquet Blanc & Rose',       en:'White & Pink Bouquet',       ar:'باقة بيضاء وردية',         amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵎⵍⵍⴰⵍ'}},
+  {id:'n3',img:'/fleurs/fl_03.png',emoji:'🌸',florist:'nour',price:70,  names:{fr:'Bouquet Roses Tendres',      en:'Soft Pink Roses',            ar:'باقة ورود وردية',          amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵉⴳⵍⴰⴷ ⵉⵡⵔⵉⵖⵏ'}},
+  {id:'n4',img:'/fleurs/fl_05.png',emoji:'💐',florist:'nour',price:140, names:{fr:'Grand Bouquet Luxe',          en:'Luxury Large Bouquet',       ar:'باقة فاخرة كبيرة',         amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵎⵇⵔⴰⵏ'}},
+  {id:'n5',img:'/fleurs/fl_07.png',emoji:'❤️',florist:'nour',price:112, names:{fr:'Coffret Cœur Roses',         en:'Heart Rose Box',             ar:'علبة قلب ورود',            amz:'ⴰⵙⴷⴰⵙ ⵏ ⵓⵍ'}},
+  {id:'n6',img:'/fleurs/fl_11.png',emoji:'🎁',florist:'nour',price:121, names:{fr:'Box Roses Élégance',          en:'Elegance Rose Box',          ar:'علبة ورود أناقة',          amz:'ⴰⵙⴷⴰⵙ ⵏ ⵉⴳⵍⴰⴷ'}},
+  {id:'n7',img:'/fleurs/fl_12.png',emoji:'🎀',florist:'nour',price:167, names:{fr:'Box Prestige Nœud Or',        en:'Gold Bow Prestige Box',      ar:'علبة فاخرة ذهبية',         amz:'ⴰⵙⴷⴰⵙ ⵏ ⵓⵔ'}},
   // ── Amina Blooms ── arrangements créatifs
-  {id:'a1',img:'/fleurs/fl_08.png',emoji:'🌷',florist:'amina',price:85, names:{fr:'Bouquet Lavande & Blanc',     en:'Lavender & White',           ar:'باقة بنفسجية بيضاء',       amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵣⴳⵣⴰⵡ'}},
-  {id:'a2',img:'/fleurs/fl_09.png',emoji:'🌹',florist:'amina',price:80, names:{fr:'Bouquet Bordeaux Profond',    en:'Deep Bordeaux Roses',        ar:'باقة ورود عنابية',         amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵣⴳⴳⴰⵖ'}},
-  {id:'a3',img:'/fleurs/fl_06.png',emoji:'🍫',florist:'amina',price:140,names:{fr:'Bouquet Ferrero Rocher',       en:'Ferrero Rocher Bouquet',     ar:'باقة فريرو روشيه',         amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵉⵡⵙⴽⵉⵡⵏ'}},
-  {id:'a4',img:'/fleurs/fl_04.png',emoji:'🍫',florist:'amina',price:160,names:{fr:'Arrangement Ferrero & Roses',  en:'Ferrero & Roses Arrangement',ar:'تنسيق فريرو وورود',         amz:'ⴰⵔⴰⵜⵉⴱ ⵏ ⵉⴳⵍⴰⴷ'}},
-  {id:'a5',img:'/fleurs/fl_10.png',emoji:'💙',florist:'amina',price:110,names:{fr:'Arrangement Roses Bleues',     en:'Blue Roses Arrangement',     ar:'تنسيق ورود زرقاء',         amz:'ⴰⵔⴰⵜⵉⴱ ⵏ ⵉⴳⵍⴰⴷ ⵉⵣⵣⴳⴳⴰⵏ'}},
+  {id:'a1',img:'/fleurs/fl_08.png',emoji:'🌷',florist:'amina',price:79, names:{fr:'Bouquet Lavande & Blanc',     en:'Lavender & White',           ar:'باقة بنفسجية بيضاء',       amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵣⴳⵣⴰⵡ'}},
+  {id:'a2',img:'/fleurs/fl_09.png',emoji:'🌹',florist:'amina',price:74, names:{fr:'Bouquet Bordeaux Profond',    en:'Deep Bordeaux Roses',        ar:'باقة ورود عنابية',         amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵣⴳⴳⴰⵖ'}},
+  {id:'a3',img:'/fleurs/fl_06.png',emoji:'🍫',florist:'amina',price:130,names:{fr:'Bouquet Ferrero Rocher',       en:'Ferrero Rocher Bouquet',     ar:'باقة فريرو روشيه',         amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵉⵡⵙⴽⵉⵡⵏ'}},
+  {id:'a4',img:'/fleurs/fl_04.png',emoji:'🍫',florist:'amina',price:149,names:{fr:'Arrangement Ferrero & Roses',  en:'Ferrero & Roses Arrangement',ar:'تنسيق فريرو وورود',         amz:'ⴰⵔⴰⵜⵉⴱ ⵏ ⵉⴳⵍⴰⴷ'}},
+  {id:'a5',img:'/fleurs/fl_10.png',emoji:'💙',florist:'amina',price:102,names:{fr:'Arrangement Roses Bleues',     en:'Blue Roses Arrangement',     ar:'تنسيق ورود زرقاء',         amz:'ⴰⵔⴰⵜⵉⴱ ⵏ ⵉⴳⵍⴰⴷ ⵉⵣⵣⴳⴳⴰⵏ'}},
+  // ── Rania Fleurs (bouquets inspirés des styles parisiens) ──
+  {id:'r1',img:'https://commons.wikimedia.org/wiki/Special:FilePath/Pink%20button%20roses.jpg?width=300',emoji:'🌸',florist:'rania',price:135,names:{fr:'Bouquet Pivoines Roses',        en:'Pink Peony Bouquet',         ar:'باقة الفاوانيا الوردية',    amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵣⴳⵣⴰⵡ'}},
+  {id:'r2',img:'',emoji:'🌷',florist:'rania',price:88, names:{fr:'Bouquet Tulipes Colorées',       en:'Colorful Tulip Bouquet',     ar:'باقة الزنبق الملونة',       amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵜⵓⵍⵉⴱ'}},
+  {id:'r3',img:'https://commons.wikimedia.org/wiki/Special:FilePath/Flower%20bouquet.jpg?width=300',emoji:'🌼',florist:'rania',price:102,names:{fr:'Composition Champêtre Paris',      en:'Parisian Countryside Style',  ar:'تنسيق ريفي باريسي',        amz:'ⴰⵔⴰⵜⵉⴱ ⴰⵏⴰⵎⵓⵔ'}},
+  {id:'r4',img:'https://commons.wikimedia.org/wiki/Special:FilePath/Bridal%20bouquet%20white%20pink%20rose%20stephanotis.jpg?width=300',emoji:'🤍',florist:'rania',price:121,names:{fr:'Bouquet Rond Parisien Blanc',     en:'Parisian Round White Bouquet',ar:'باقة بيضاء مستديرة',        amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵎⵍⵍⴰⵍ ⵏ ⴱⴰⵔⵉ'}},
+  {id:'r5',img:'',emoji:'🎁',florist:'rania',price:158,names:{fr:'Box Fleurs Éternelles Dorée',     en:'Golden Eternal Flowers Box', ar:'علبة الزهور الخالدة الذهبية',amz:'ⴰⵙⴷⴰⵙ ⵏ ⵓⵔ'}},
+  // ── Yasmine Blooms (bouquets inspirés des styles parisiens) ──
+  {id:'y1',img:'',emoji:'🤍',florist:'yasmine',price:149,names:{fr:'Bouquet Orchidées Blanches',      en:'White Orchid Bouquet',       ar:'باقة الأوركيد البيضاء',     amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵎⵍⵍⴰⵍ'}},
+  {id:'y2',img:'',emoji:'🌸',florist:'yasmine',price:93, names:{fr:'Arrangement Anémones Paris',      en:'Paris Anemone Arrangement',  ar:'تنسيق شقائق النعمان',       amz:'ⴰⵔⴰⵜⵉⴱ ⵏ ⴰⵏⵉⵎⵓⵏ'}},
+  {id:'y3',img:'https://commons.wikimedia.org/wiki/Special:FilePath/Pink%20Rosee.jpg?width=300',emoji:'🌷',florist:'yasmine',price:112,names:{fr:'Bouquet Renoncules Roses',         en:'Pink Ranunculus Bouquet',    ar:'باقة الحوذان الوردية',      amz:'ⴰⵥⴰⵡⴰⵏ ⵏ ⵔⴰⵏⵓⵏⴽⵓⵍ'}},
+  {id:'y4',img:'',emoji:'🌾',florist:'yasmine',price:130,names:{fr:'Box Fleurs Séchées Chic',         en:'Chic Dried Flowers Box',     ar:'علبة الزهور المجففة الأنيقة',amz:'ⴰⵙⴷⴰⵙ ⵏ ⵜⵥⴰⵡⵉⵏ ⵢⵇⵇⵓⵔⵏ'}},
+  {id:'y5',img:'',emoji:'💐',florist:'yasmine',price:186,names:{fr:'Grand Bouquet Mariage Blanc',     en:'Large White Wedding Bouquet',ar:'باقة زفاف بيضاء كبيرة',     amz:'ⴰⵥⴰⵡⴰⵏ ⴰⵎⵇⵔⴰⵏ ⵏ ⵣⵡⴰⵊ'}},
+
 ];
+
+function FleurImg({src,emoji,style,emojiSize}:{src:string;emoji:string;style:React.CSSProperties;emojiSize?:number}) {
+  const [ok,setOk]=useState(!!src);
+  return ok?(
+    <img src={src} alt="" onError={()=>setOk(false)} style={style}/>
+  ):(
+    <div style={{...style,display:'flex',alignItems:'center',justifyContent:'center',fontSize:emojiSize??24}}>{emoji}</div>
+  );
+}
 
 function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   onBack:()=>void; lang:Lang; cycleLang:()=>void;
@@ -9195,7 +9217,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   onOrderSuccess?:(ref:string)=>void;
 }) {
   const [,navigateFleur]=useLocation();
-  const [activeFlorist,setActiveFlorist]=useState<'nour'|'amina'|null>(null);
+  const [activeFlorist,setActiveFlorist]=useState<'nour'|'amina'|'rania'|'yasmine'|null>(null);
   const [fleurSearch,setFleurSearch]=useState('');
   const [cart,setCart]=useState<{id:string;qty:number}[]>([]);
   const [step,setStep]=useState<'florist'|'catalog'|'checkout'|'track'>('florist');
@@ -9234,7 +9256,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
     if(!resName.trim()||!resPhone.trim()||!resDate||!resTime||(resMode==='livraison'&&!resAddr.trim())){setErr('*');return;}
     setSending(true);
     const items=cart.map(ci=>{const p=FLEURS_CATALOG.find(f=>f.id===ci.id)!;return{name:p.names.fr,qty:ci.qty,price:p.price};});
-    const floristName=activeFlorist==='nour'?'Nour Fleurs':'Amina Blooms';
+    const floristName=activeFlorist?FLORIST_META[activeFlorist].name:'Bridge Fleurs';
     const delivAddr=resMode==='retrait'?`${floristName} — Retrait sur place`:`${resAddr.trim()}, Safi, Maroc`;
     try{
       await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
@@ -9249,10 +9271,18 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
 
   const nourGrad='linear-gradient(135deg,#BE185D,#EC4899)';
   const aminaGrad='linear-gradient(135deg,#7C3AED,#A855F7)';
-  const activeGrad=activeFlorist==='nour'?nourGrad:aminaGrad;
-  const activeDark=activeFlorist==='nour'?'#BE185D':'#7C3AED';
-  const activeBg=activeFlorist==='nour'?'#FFF0F6':'#F5F3FF';
-  const activeBorder=activeFlorist==='nour'?'#FCE7F3':'#EDE9FE';
+  const raniaGrad='linear-gradient(135deg,#B45309,#F59E0B)';
+  const yasmineGrad='linear-gradient(135deg,#0E7490,#22D3EE)';
+  const FLORIST_META:Record<'nour'|'amina'|'rania'|'yasmine',{name:string;emoji:string;grad:string;dark:string;bg:string;border:string;sub:Record<Lang,string>}>={
+    nour:{name:'Nour Fleurs',emoji:'🌹',grad:nourGrad,dark:'#BE185D',bg:'#FFF0F6',border:'#FCE7F3',sub:{fr:'Bouquets & Coffrets · Safi',en:'Bouquets & Boxes · Safi',ar:'بوكيهات وصناديق · سافي',amz:'ⴰⵥⴰⵡⴰⵏ · ⵙⴰⴼⵉ'}},
+    amina:{name:'Amina Blooms',emoji:'💐',grad:aminaGrad,dark:'#7C3AED',bg:'#F5F3FF',border:'#EDE9FE',sub:{fr:'Arrangements créatifs · Safi',en:'Creative Arrangements · Safi',ar:'تنسيقات إبداعية · سافي',amz:'ⴰⵔⴰⵜⵉⴱ · ⵙⴰⴼⵉ'}},
+    rania:{name:'Rania Fleurs',emoji:'🌷',grad:raniaGrad,dark:'#B45309',bg:'#FFFBEB',border:'#FDE68A',sub:{fr:'Style parisien · Safi',en:'Parisian Style · Safi',ar:'ستايل باريسي · سافي',amz:'ⴰⵙⴳⴰⵏ ⵏ ⴱⴰⵔⵉ · ⵙⴰⴼⵉ'}},
+    yasmine:{name:'Yasmine Blooms',emoji:'🌼',grad:yasmineGrad,dark:'#0E7490',bg:'#ECFEFF',border:'#A5F3FC',sub:{fr:'Fleurs fraîches · Safi',en:'Fresh Flowers · Safi',ar:'زهور طازجة · سافي',amz:'ⵜⵥⴰⵡⵉⵏ ⵉⵎⴰⵢⵏⵓⵜⵏ · ⵙⴰⴼⵉ'}},
+  };
+  const activeGrad=activeFlorist?FLORIST_META[activeFlorist].grad:nourGrad;
+  const activeDark=activeFlorist?FLORIST_META[activeFlorist].dark:'#BE185D';
+  const activeBg=activeFlorist?FLORIST_META[activeFlorist].bg:'#FFF0F6';
+  const activeBorder=activeFlorist?FLORIST_META[activeFlorist].border:'#FCE7F3';
 
   const trackStages=lang==='ar'
     ?['تم تأكيد الحجز','جاري التحضير','في الطريق إليك','تم التسليم']
@@ -9314,7 +9344,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
                 <div className="px-5 py-3 flex items-center justify-between">
                   <div className="flex gap-1.5">
                     {FLEURS_CATALOG.filter(f=>f.florist==='nour').slice(0,4).map(f=>(
-                      <img key={f.id} src={f.img} alt="" style={{width:34,height:34,objectFit:'contain',borderRadius:8,background:'#FFF0F6',border:'1.5px solid #FCE7F3'}}/>
+                      <FleurImg key={f.id} src={f.img} emoji={f.emoji} emojiSize={16} style={{width:34,height:34,objectFit:'contain',borderRadius:8,background:'#FFF0F6',border:'1.5px solid #FCE7F3'}}/>
                     ))}
                     <div style={{width:34,height:34,borderRadius:8,background:'#FCE7F3',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,fontWeight:900,color:'#BE185D'}}>+{FLEURS_CATALOG.filter(f=>f.florist==='nour').length-4}</div>
                   </div>
@@ -9338,10 +9368,56 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
                 <div className="px-5 py-3 flex items-center justify-between">
                   <div className="flex gap-1.5">
                     {FLEURS_CATALOG.filter(f=>f.florist==='amina').slice(0,4).map(f=>(
-                      <img key={f.id} src={f.img} alt="" style={{width:34,height:34,objectFit:'contain',borderRadius:8,background:'#F5F3FF',border:'1.5px solid #EDE9FE'}}/>
+                      <FleurImg key={f.id} src={f.img} emoji={f.emoji} emojiSize={16} style={{width:34,height:34,objectFit:'contain',borderRadius:8,background:'#F5F3FF',border:'1.5px solid #EDE9FE'}}/>
                     ))}
                   </div>
                   <div style={{width:32,height:32,borderRadius:'50%',background:aminaGrad,display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16,boxShadow:'0 4px 12px rgba(124,58,237,0.4)'}}>→</div>
+                </div>
+              </button>
+
+              {/* Rania Fleurs */}
+              <button onClick={()=>{setActiveFlorist('rania');setCart([]);setStep('catalog');}}
+                className="rounded-3xl overflow-hidden text-left transition-all active:scale-[0.97]"
+                style={{boxShadow:'0 12px 40px rgba(180,83,9,0.22),0 0 0 2px rgba(245,158,11,0.25)',background:'white'}}>
+                <div style={{background:raniaGrad,padding:'22px 20px 16px',position:'relative',overflow:'hidden'}}>
+                  <div style={{position:'absolute',top:-30,right:-30,width:120,height:120,borderRadius:'50%',background:'rgba(255,255,255,0.1)'}}/>
+                  <div style={{position:'absolute',top:12,right:12,width:70,height:70,borderRadius:'50%',background:'rgba(255,255,255,0.07)'}}/>
+                  <span style={{fontSize:44,display:'block',position:'relative'}}>🌷</span>
+                  <p className="font-black text-2xl text-white mt-1" style={{position:'relative'}}>Rania Fleurs</p>
+                  <p style={{color:'rgba(255,255,255,0.8)',fontSize:11,fontWeight:700,position:'relative'}}>
+                    {lang==='ar'?'ستايل باريسي · سافي':lang==='en'?'Parisian Style · Safi':'Style parisien · Safi'}
+                  </p>
+                </div>
+                <div className="px-5 py-3 flex items-center justify-between">
+                  <div className="flex gap-1.5">
+                    {FLEURS_CATALOG.filter(f=>f.florist==='rania').slice(0,4).map(f=>(
+                      <FleurImg key={f.id} src={f.img} emoji={f.emoji} emojiSize={16} style={{width:34,height:34,objectFit:'contain',borderRadius:8,background:'#FFFBEB',border:'1.5px solid #FDE68A'}}/>
+                    ))}
+                  </div>
+                  <div style={{width:32,height:32,borderRadius:'50%',background:raniaGrad,display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16,boxShadow:'0 4px 12px rgba(180,83,9,0.4)'}}>→</div>
+                </div>
+              </button>
+
+              {/* Yasmine Blooms */}
+              <button onClick={()=>{setActiveFlorist('yasmine');setCart([]);setStep('catalog');}}
+                className="rounded-3xl overflow-hidden text-left transition-all active:scale-[0.97]"
+                style={{boxShadow:'0 12px 40px rgba(14,116,144,0.22),0 0 0 2px rgba(34,211,238,0.25)',background:'white'}}>
+                <div style={{background:yasmineGrad,padding:'22px 20px 16px',position:'relative',overflow:'hidden'}}>
+                  <div style={{position:'absolute',top:-30,right:-30,width:120,height:120,borderRadius:'50%',background:'rgba(255,255,255,0.1)'}}/>
+                  <div style={{position:'absolute',top:12,right:12,width:70,height:70,borderRadius:'50%',background:'rgba(255,255,255,0.07)'}}/>
+                  <span style={{fontSize:44,display:'block',position:'relative'}}>🌼</span>
+                  <p className="font-black text-2xl text-white mt-1" style={{position:'relative'}}>Yasmine Blooms</p>
+                  <p style={{color:'rgba(255,255,255,0.8)',fontSize:11,fontWeight:700,position:'relative'}}>
+                    {lang==='ar'?'زهور طازجة · سافي':lang==='en'?'Fresh Flowers · Safi':'Fleurs fraîches · Safi'}
+                  </p>
+                </div>
+                <div className="px-5 py-3 flex items-center justify-between">
+                  <div className="flex gap-1.5">
+                    {FLEURS_CATALOG.filter(f=>f.florist==='yasmine').slice(0,4).map(f=>(
+                      <FleurImg key={f.id} src={f.img} emoji={f.emoji} emojiSize={16} style={{width:34,height:34,objectFit:'contain',borderRadius:8,background:'#ECFEFF',border:'1.5px solid #A5F3FC'}}/>
+                    ))}
+                  </div>
+                  <div style={{width:32,height:32,borderRadius:'50%',background:yasmineGrad,display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16,boxShadow:'0 4px 12px rgba(14,116,144,0.4)'}}>→</div>
                 </div>
               </button>
             </div>
@@ -9370,9 +9446,9 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           <div>
             <div className="pt-20 px-5 pb-3">
               <div className="flex items-center gap-2">
-                <span style={{fontSize:24}}>{activeFlorist==='nour'?'🌹':'💐'}</span>
+                <span style={{fontSize:24}}>{activeFlorist?FLORIST_META[activeFlorist].emoji:'🌹'}</span>
                 <div>
-                  <h2 className="font-black text-xl" style={{color:activeDark}}>{activeFlorist==='nour'?'Nour Fleurs':'Amina Blooms'}</h2>
+                  <h2 className="font-black text-xl" style={{color:activeDark}}>{activeFlorist?FLORIST_META[activeFlorist].name:''}</h2>
                   <p className="text-[11px] font-semibold" style={{color:'#9CA3AF'}}>{catalogItems.length} {lang==='ar'?'منتج':lang==='en'?'products':'produits'}</p>
                 </div>
               </div>
@@ -9393,7 +9469,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
                       style={{background:'white',border:`1.5px solid ${activeBorder}`,boxShadow:'0 4px 16px rgba(0,0,0,0.06)'}}>
                       <div className="flex items-center justify-center overflow-hidden"
                         style={{height:120,background:`linear-gradient(135deg,${activeBg},white)`}}>
-                        <img src={item.img} alt={item.names.fr} style={{width:'100%',height:'100%',objectFit:'contain'}}/>
+                        <FleurImg src={item.img} emoji={item.emoji} emojiSize={40} style={{width:'100%',height:'100%',objectFit:'contain'}}/>
                       </div>
                       <div className="p-3">
                         <p className={`font-black text-[11px] leading-tight mb-0.5 ${fClass}`} style={{color:activeDark==='#BE185D'?'#831843':'#4C1D95'}}>{item.names[lang]}</p>
@@ -9426,7 +9502,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
             <h2 className="font-black text-2xl mb-0.5" style={{background:activeGrad,WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>
               {lang==='ar'?'تأكيد الحجز':lang==='en'?'Reserve Now':'Réserver'}
             </h2>
-            <p className="text-[12px] font-semibold mb-5" style={{color:'#9CA3AF'}}>{cartCount} article(s) · {cartTotal} MAD · {activeFlorist==='nour'?'Nour Fleurs':'Amina Blooms'}</p>
+            <p className="text-[12px] font-semibold mb-5" style={{color:'#9CA3AF'}}>{cartCount} article(s) · {cartTotal} MAD · {activeFlorist?FLORIST_META[activeFlorist].name:''}</p>
 
             {/* Résumé panier */}
             <div className="rounded-2xl p-4 mb-4" style={{background:'white',boxShadow:'0 4px 16px rgba(0,0,0,0.06)',border:`1.5px solid ${activeBorder}`}}>
