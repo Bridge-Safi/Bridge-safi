@@ -227,6 +227,46 @@ async function forwardToRestaurant(order: typeof ordersTable.$inferSelect) {
   }
 }
 
+// ── Miroir vers Manager (tableau de bord / commandes) ───────────────────────
+// Bridge-safi a sa propre base de commandes ; Manager (manager.safi-bridge.ma)
+// en a une séparée pour le dashboard. Sans ce forward, Manager ne voit JAMAIS
+// les vraies commandes clients (seulement celles créées manuellement dedans).
+const MANAGER_SERVICE_TYPE_MAP: Record<string, string> = {
+  delivery: "nourriture",
+  tabac: "tabac",
+  pharmacie: "pharmacie",
+  fleurs: "fleurs",
+  souk: "souk",
+  boulangerie: "boulangerie",
+  supermarche: "supermarche",
+  taxi: "taxi",
+  confort: "confort",
+};
+async function forwardToManager(order: typeof ordersTable.$inferSelect) {
+  try {
+    const resp = await fetch("https://manager.safi-bridge.ma/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        orderNumber: order.ref,
+        customerName: order.customerName,
+        customerPhone: order.customerPhone,
+        deliveryAddress: order.customerAddress,
+        items: JSON.stringify(order.items ?? []),
+        totalAmount: Number(order.total),
+        serviceType: MANAGER_SERVICE_TYPE_MAP[order.service] ?? "nourriture",
+        platform: order.restaurantName ?? "Bridge Eats",
+        notes: `${order.deliveryMode ?? "delivery"} \u00b7 ${order.paymentMethod ?? "cash"}`,
+      }),
+    });
+    if (!resp.ok) {
+      logger.warn({ ref: order.ref, status: resp.status }, "forwardToManager: non-OK response");
+    }
+  } catch (err) {
+    logger.error({ err, ref: order.ref }, "forwardToManager: fetch failed");
+  }
+}
+
 // ── Callback entrant depuis restaurant.safi-bridge.ma ───────────────────────
 // POST /api/callbacks/order-status
 // Reçu quand le restaurateur change le statut d'une commande
@@ -643,6 +683,7 @@ router.post("/orders", async (req, res) => {
     //    POST https://restaurant.safi-bridge.ma/api/webhook/orders
     //    Header: X-Bridge-Token: <restaurant token>
     await forwardToRestaurant(order).catch(() => {});
+    forwardToManager(order).catch(() => {});
 
     // 3️⃣ Dispatch aux livreurs SEULEMENT si livraison (pas click & collect / retrait)
     const isCollect = order.deliveryMode === "collect" || order.deliveryMode === "retrait";
@@ -704,6 +745,7 @@ router.post("/orders/:ref/confirm-payment", requireClerkAuth, async (req, res) =
 
     // 1️⃣ Restaurant reçoit la commande EN PREMIER (webhook + WhatsApp)
     await forwardToRestaurant(order).catch(() => {});
+    forwardToManager(order).catch(() => {});
     notifyRestaurant(order.restaurantName, {
       ref: order.ref,
       customerName: order.customerName,
