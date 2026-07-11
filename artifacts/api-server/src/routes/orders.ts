@@ -45,7 +45,13 @@ async function ensureDriverRatingColumns() {
     await db.execute(sqlRaw`ALTER TABLE orders ADD COLUMN IF NOT EXISTS driver_comment TEXT`);
     await db.execute(sqlRaw`ALTER TABLE orders ADD COLUMN IF NOT EXISTS reported_issue TEXT`);
     await db.execute(sqlRaw`ALTER TABLE orders ADD COLUMN IF NOT EXISTS reported_at TIMESTAMP`);
-    logger.info("orders driver_rating/driver_comment/reported_issue columns verified");
+    // zabi (2026-07-11): le client doit aussi pouvoir noter le RESTAURANT/commerce
+    // (comme pour le livreur) — cette note alimente la note affichee sur les
+    // cartes (Eats/Pharmacie/Tabac/etc), donc une vraie note qui vient des
+    // clients au lieu d'un chiffre fixe hardcode.
+    await db.execute(sqlRaw`ALTER TABLE orders ADD COLUMN IF NOT EXISTS restaurant_rating REAL`);
+    await db.execute(sqlRaw`ALTER TABLE orders ADD COLUMN IF NOT EXISTS restaurant_comment TEXT`);
+    logger.info("orders driver_rating/driver_comment/reported_issue/restaurant_rating columns verified");
   } catch (err) {
     logger.error({ err }, "Failed to ensure driver rating columns");
   }
@@ -509,6 +515,7 @@ router.get("/orders/status/:ref", async (req, res) => {
       createdAt: ordersTable.createdAt,
       service: ordersTable.service,
       driverRating: ordersTable.driverRating,
+      restaurantRating: ordersTable.restaurantRating,
       // Champs ajoutes (2026-07-10) pour le recu imprimable a l'ecran
       // "livraison terminee" — pas de donnee sensible (le client consulte
       // uniquement sa propre commande via son ref, pas le telephone).
@@ -523,11 +530,45 @@ router.get("/orders/status/:ref", async (req, res) => {
     res.json({
       ref: order.ref, status: order.status, updatedAt: order.updatedAt, service: order.service,
       alreadyRated: order.driverRating != null,
+      alreadyRatedRestaurant: order.restaurantRating != null,
       createdAt: order.createdAt, total: order.total, restaurantName: order.restaurantName,
       customerAddress: order.customerAddress, customerName: order.customerName,
       items: order.items, paymentMethod: order.paymentMethod,
     });
   } catch (err) {
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+});
+
+// ── Note moyenne des commerces (restaurant/tabac/pharmacie/etc), calculee a
+// partir des vraies notes clients (restaurant_rating sur orders) ────────────
+// Public, en lecture seule. Utilise par les cartes cote client (Eats en
+// premier lieu, puis Pharmacie/Tabac/Fleurs/Boulangerie/Souk) pour afficher
+// une vraie note au lieu d'un chiffre fixe. zabi (2026-07-11): "cette note
+// cest celle qui apparaitra dans la note du restaurant dans eats ou
+// pharmacie ou tabac etc pour que les client voient la note".
+// GET /api/restaurants/ratings?names=Resto%20A,Resto%20B  -> { "Resto A": {avg, count}, ... }
+router.get("/restaurants/ratings", async (req, res) => {
+  try {
+    const namesParam = String(req.query.names ?? "");
+    const names = namesParam.split(",").map(n => n.trim()).filter(Boolean).slice(0, 200);
+    if (names.length === 0) { res.json({}); return; }
+
+    const result = await pool.query(
+      `SELECT restaurant_name AS name, AVG(restaurant_rating)::float AS avg, COUNT(*)::int AS count
+       FROM orders
+       WHERE restaurant_rating IS NOT NULL AND restaurant_name = ANY($1::text[])
+       GROUP BY restaurant_name`,
+      [names]
+    );
+
+    const out: Record<string, { avg: number; count: number }> = {};
+    for (const row of result.rows as { name: string; avg: number; count: number }[]) {
+      out[row.name] = { avg: Math.round(row.avg * 10) / 10, count: row.count };
+    }
+    res.json(out);
+  } catch (err) {
+    logger.error({ err }, "Failed to fetch restaurant ratings");
     res.status(500).json({ error: "Erreur serveur" });
   }
 });
@@ -539,7 +580,7 @@ router.get("/orders/status/:ref", async (req, res) => {
 router.post("/orders/:ref/rating", async (req, res) => {
   try {
     const ref = String(req.params.ref);
-    const { stars, comment, reportReason } = req.body ?? {};
+    const { stars, comment, reportReason, restaurantStars, restaurantComment } = req.body ?? {};
 
     if (stars !== undefined && stars !== null) {
       const n = Number(stars);
@@ -548,7 +589,14 @@ router.post("/orders/:ref/rating", async (req, res) => {
         return;
       }
     }
-    if (stars == null && !reportReason) {
+    if (restaurantStars !== undefined && restaurantStars !== null) {
+      const n = Number(restaurantStars);
+      if (!Number.isFinite(n) || n < 1 || n > 5) {
+        res.status(400).json({ error: "La note du commerce doit être entre 1 et 5" });
+        return;
+      }
+    }
+    if (stars == null && restaurantStars == null && !reportReason) {
       res.status(400).json({ error: "Merci de donner une note ou de signaler un problème" });
       return;
     }
@@ -559,13 +607,18 @@ router.post("/orders/:ref/rating", async (req, res) => {
     const patch: Record<string, unknown> = { updatedAt: new Date() };
     if (stars != null) patch.driverRating = Number(stars);
     if (typeof comment === "string" && comment.trim()) patch.driverComment = comment.trim().slice(0, 500);
+    // zabi (2026-07-11): note + commentaire client sur le RESTAURANT/commerce,
+    // meme principe que la note livreur ci-dessus — alimente la note affichee
+    // sur les cartes (Eats/Pharmacie/Tabac/etc) via /api/restaurants/ratings.
+    if (restaurantStars != null) patch.restaurantRating = Number(restaurantStars);
+    if (typeof restaurantComment === "string" && restaurantComment.trim()) patch.restaurantComment = restaurantComment.trim().slice(0, 500);
     if (typeof reportReason === "string" && reportReason.trim()) {
       patch.reportedIssue = reportReason.trim().slice(0, 500);
       patch.reportedAt = new Date();
     }
 
     await db.update(ordersTable).set(patch).where(eq(ordersTable.ref, ref));
-    logger.info({ ref, stars, reported: !!reportReason }, "Order rating/report saved");
+    logger.info({ ref, stars, restaurantStars, reported: !!reportReason }, "Order rating/report saved");
     res.json({ ok: true });
 
     // Route vers les 2 destinations séparées, en best-effort (ne bloque
