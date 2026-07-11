@@ -131,6 +131,56 @@ async function forwardOrderToLivreurs(order: any) {
   }
 }
 
+/**
+ * Transmet au livreur (via Livreurs) le statut resto + le delai de preparation
+ * choisi (10/15/20min etc). Le livreur qui a deja accepte la livraison (donc
+ * connu de Livreurs via trackingNumber = order.ref, poste directement par
+ * chaque page service) recoit un push : "en preparation, pret dans ~Xmin"
+ * puis "commande prete, va la recuperer". Best-effort, jamais bloquant.
+ */
+async function notifyLivreursRestaurantStatus(
+  orderRef: string,
+  status: "preparing" | "ready",
+  estimatedPrepTime?: number | null,
+) {
+  const base = process.env.LIVREURS_API_URL;
+  if (!base) return;
+  const secret = process.env.BRIDGE_WEBHOOK_SECRET;
+  try {
+    await fetch(`${base}/api/deliveries/restaurant-status`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(secret ? { "x-bridge-secret": secret } : {}),
+      },
+      body: JSON.stringify({ trackingNumber: orderRef, status, estimatedPrepTime }),
+    });
+  } catch (err) {
+    logger.warn({ err, orderRef, status }, "notifyLivreursRestaurantStatus: fetch failed");
+  }
+}
+
+/**
+ * Quand le client annule, le dashboard restaurateur (restaurant.safi-bridge.ma)
+ * doit aussi voir la commande disparaitre du kanban (elle etait jusqu'ici
+ * annulee seulement cote Bridge-safi + Livreurs, jamais cote resto -> le
+ * cuisinier continuait a preparer une commande deja annulee).
+ */
+async function notifyRestaurantDashboardCancel(order: typeof ordersTable.$inferSelect) {
+  if (!order.restaurantName) return;
+  try {
+    const dashboardMatch = await lookupDashboardRestaurant(order.restaurantName);
+    if (!dashboardMatch) return; // ancien systeme (webhookUrl manuel) : pas de route cancel, best-effort skip
+    const cancelUrl = `${RESTAURANT_DASHBOARD_BASE}/api/webhook/orders/${encodeURIComponent(order.ref)}/cancel`;
+    await fetch(cancelUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Bridge-Token": dashboardMatch.token },
+    });
+  } catch (err) {
+    logger.warn({ err, ref: order.ref }, "notifyRestaurantDashboardCancel: fetch failed");
+  }
+}
+
 /** Smart dispatch: notify nearby drivers first, then ALL remaining after 2 min.
  *
  *  Bug fix: "far" list only included GPS-tracked drivers. Drivers whose position
@@ -362,6 +412,15 @@ router.post("/callbacks/order-status", async (req, res) => {
     if (trackMap[internalStatus]) {
       syncTrackingStatus(updated.ref, trackMap[internalStatus]);
     }
+
+    // Transmet au livreur assigne (via Livreurs) le delai de preparation choisi
+    // par le resto, puis un push "commande prete" — zabi: "le livreur doit
+    // recevoir le delai sur quoi le restaurant a appuye" + "une notification
+    // pour le livreur que la commande est prete".
+    if (internalStatus === "preparing" || internalStatus === "ready") {
+      notifyLivreursRestaurantStatus(updated.ref, internalStatus, estimatedPrepTime ?? null)
+        .catch(() => {});
+    }
   } catch (err) {
     res.status(500).json({ error: "Erreur serveur" });
   }
@@ -574,6 +633,12 @@ router.post("/orders/:ref/cancel", async (req, res) => {
     // s'il y en avait déjà un. Best-effort, ne bloque jamais la réponse client.
     fetch(`https://livreur.safi-bridge.ma/api/tracking/${ref}/cancel`, { method: "POST" })
       .catch((err) => logger.warn({ err, ref }, "Failed to notify Livreurs of cancellation"));
+
+    // Notifie aussi le dashboard restaurateur : la commande annulée par le
+    // client doit disparaître du kanban resto (sinon le cuisinier continue à
+    // préparer une commande déjà annulée). zabi: "quand le client annule la
+    // livraison sa doit etre annulez meme dans restaurant".
+    notifyRestaurantDashboardCancel(order).catch(() => {});
   } catch (err) {
     logger.error({ err }, "Failed to cancel order");
     res.status(500).json({ error: "Erreur serveur" });
