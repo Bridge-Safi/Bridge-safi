@@ -4161,9 +4161,31 @@ function CoverImg({src,alt,logo,className}:{src:string;alt:string;logo:string;cl
     </div>
   );
 }
-function RestaurantCard({r,lang,t,onClick,compact=false}:{r:Restaurant;lang:Lang;t:typeof T.fr;onClick:()=>void;compact?:boolean}) {
+// ─── Notes reelles des commerces (zabi 2026-07-11) ────────────────────────────
+// Remplace la note fixe hardcodee par la vraie moyenne des notes clients des
+// que le commerce en a au moins une (voir POST /orders/:ref/rating +
+// GET /api/restaurants/ratings cote api-server). Tant qu'aucun client n'a
+// encore note, on garde l'ancienne note fixe en repli (jamais de trou visuel).
+function useLiveRatings(names: string[]): Record<string, { avg: number; count: number }> {
+  const [ratings, setRatings] = useState<Record<string, { avg: number; count: number }>>({});
+  const key = names.filter(Boolean).join(',');
+  useEffect(() => {
+    if (!key) return;
+    let cancelled = false;
+    fetch(`/api/restaurants/ratings?names=${encodeURIComponent(key)}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d && !cancelled) setRatings(d); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [key]);
+  return ratings;
+}
+
+function RestaurantCard({r,lang,t,onClick,compact=false,liveRating}:{r:Restaurant;lang:Lang;t:typeof T.fr;onClick:()=>void;compact?:boolean;liveRating?:{avg:number;count:number}}) {
   const fClass=fontClass(lang);
   const isFeatured = r.id === 'mcdonalds-safi';
+  const displayRating = liveRating&&liveRating.count>0 ? liveRating.avg.toFixed(1) : r.rating;
+  const ratingCount = liveRating&&liveRating.count>0 ? liveRating.count : undefined;
   if(compact){
     return(
       <button onClick={onClick}
@@ -4190,7 +4212,8 @@ function RestaurantCard({r,lang,t,onClick,compact=false}:{r:Restaurant;lang:Lang
         <div className="px-3 py-2.5 flex items-center justify-between gap-1">
           <div className="flex items-center gap-1 flex-wrap">
             <span className="text-yellow-400 text-sm">★</span>
-            <span className="text-xs font-black" style={{color:'var(--c-text)'}}>{r.rating}</span>
+            <span className="text-xs font-black" style={{color:'var(--c-text)'}}>{displayRating}</span>
+            {ratingCount!==undefined&&<span className="text-[9px]" style={{color:'#9CA3AF'}}>({ratingCount})</span>}
             <div className="w-0.5 h-0.5 rounded-full mx-0.5" style={{background:'#D9C5A0'}}/>
             <span className="text-xs" style={{color:'#6B7280'}}>⏱{_ue(r.deliveryTime)}{t.delivMin}</span>
           </div>
@@ -4235,7 +4258,8 @@ function RestaurantCard({r,lang,t,onClick,compact=false}:{r:Restaurant;lang:Lang
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             <span className="text-yellow-400 text-sm">★</span>
-            <span className="text-xs font-black" style={{color:'var(--c-text)'}}>{r.rating}</span>
+            <span className="text-xs font-black" style={{color:'var(--c-text)'}}>{displayRating}</span>
+            {ratingCount!==undefined&&<span className="text-[10px]" style={{color:'#9CA3AF'}}>({ratingCount})</span>}
           </div>
           <div className="w-1 h-1 rounded-full" style={{background:'#D9C5A0'}}/>
           <span className="text-xs" style={{color:'#6B7280'}}>⏱ {_ue(r.deliveryTime)} {t.delivMin}</span>
@@ -4368,6 +4392,9 @@ function RestaurantPage({restaurant,lang,t,onBack,onAddToCart}:{
   const [activeCategory,setActiveCategory]=useState(restaurant.categories[0]?.id||'');
   const [optionsItem,setOptionsItem]=useState<MenuItem|null>(null);
   const fClass=fontClass(lang); const isAR=lang==='ar';
+  const liveRatings=useLiveRatings([restaurant.name]);
+  const liveR=liveRatings[restaurant.name];
+  const displayRating=liveR&&liveR.count>0?liveR.avg.toFixed(1):restaurant.rating;
 
   const activeCat=restaurant.categories.find(c=>c.id===activeCategory);
 
@@ -4411,7 +4438,8 @@ function RestaurantPage({restaurant,lang,t,onBack,onAddToCart}:{
           <div className="flex items-center gap-3" style={{direction:'ltr'}}>
             <div className="flex items-center gap-1 px-2 py-1 rounded-full" style={{background:'rgba(253,252,249,0.15)'}}>
               <span className="text-yellow-400 text-xs">★</span>
-              <span className="text-white text-xs font-black">{restaurant.rating}</span>
+              <span className="text-white text-xs font-black">{displayRating}</span>
+              {liveR&&liveR.count>0&&<span className="text-white/60 text-[10px]">({liveR.count})</span>}
             </div>
             <div className="flex items-center gap-1 px-2 py-1 rounded-full" style={{background:'rgba(253,252,249,0.15)'}}>
               <span className="text-white text-xs">⏱</span>
@@ -4493,6 +4521,7 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
   const fClass=fontClass(lang);
   const [activeFilter,setActiveFilter]=useState<FilterId>('all');
   const [searchQuery,setSearchQuery]=useState('');
+  const liveRatings=useLiveRatings(RESTAURANTS.map(r=>r.name));
 
   // Ordre aléatoire des restaurants (sauf McDo, toujours en tête) — stable pendant la session
   const shuffledRestaurants = useMemo(() => {
@@ -4615,7 +4644,7 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
               const isFeatured=activeFilter==='all' && idx%5===0;
               return(
                 <div key={r.id}>
-                  <RestaurantCard r={r} lang={lang} t={t} onClick={()=>onSelectRestaurant(r)} compact={!isFeatured}/>
+                  <RestaurantCard r={r} lang={lang} t={t} onClick={()=>onSelectRestaurant(r)} compact={!isFeatured} liveRating={liveRatings[r.name]}/>
                 </div>
               );
             })}
@@ -6153,7 +6182,7 @@ function ReceiptModal({orderRef,lang,accent,accentDark,onClose}:{orderRef:string
         </div>
         <div className="overflow-y-auto px-6 py-5" style={{flex:1}}>
           <div className="flex flex-col items-center mb-4">
-            <img src="/logo.jpeg" alt="Bridge Safi" className="w-14 h-14 rounded-2xl object-cover mb-2"/>
+            <img src="/logo.jpeg" alt="Bridge Safi" className="w-24 h-24 rounded-3xl object-cover mb-2" style={{boxShadow:'0 4px 16px rgba(0,0,0,0.15)'}}/>
             <p className="text-base font-black" style={{color:'#111'}}>Bridge Safi</p>
             <p className="text-[10px]" style={{color:'#888'}}>safi-bridge.ma</p>
           </div>
@@ -6557,30 +6586,44 @@ function DriverRatingBox({orderRef,lang,accent,accentDark,textColor,mutedColor,c
   const [showReport,setShowReport]=useState(false);
   const [reportReason,setReportReason]=useState('');
   const [reported,setReported]=useState(false);
+  // zabi (2026-07-11): note + commentaire client sur le RESTAURANT/commerce,
+  // en plus de la note livreur ci-dessus — meme boite, meme flux d'envoi.
+  const [restaurantName,setRestaurantName]=useState<string|null>(null);
+  const [restaurantRated,setRestaurantRated]=useState(false);
+  const [restaurantStars,setRestaurantStars]=useState(0);
+  const [restaurantComment,setRestaurantComment]=useState('');
 
   useEffect(()=>{
     let cancelled=false;
     if(!orderRef){ setChecking(false); return; }
     fetch(`/api/orders/status/${orderRef}`,{cache:'no-store'}).then(r=>r.ok?r.json():null).then(d=>{
-      if(!cancelled&&d?.alreadyRated) setRated(true);
+      if(!cancelled){
+        if(d?.alreadyRated) setRated(true);
+        if(d?.alreadyRatedRestaurant) setRestaurantRated(true);
+        if(d?.restaurantName) setRestaurantName(d.restaurantName);
+      }
     }).catch(()=>{}).finally(()=>{if(!cancelled) setChecking(false);});
     return()=>{cancelled=true;};
   },[orderRef]);
 
   const L = lang==='ar'
-    ? {title:'قيّم سائقك',sub:'رأيك يساعدنا على تحسين الخدمة',placeholder:'تعليق؟ (اختياري)',send:'إرسال',thanks:'شكراً على ملاحظاتك! ⭐',report:'الإبلاغ عن مشكلة',reportTitle:'ما هي المشكلة؟',reportPlaceholder:'صف المشكلة...',reportSend:'إرسال البلاغ',reportThanks:'تم إرسال البلاغ، شكراً.',cancel:'إلغاء',reasons:['تأخير','سلوك غير لائق','نقص في الطلب','أخرى']}
+    ? {title:'قيّم سائقك',sub:'رأيك يساعدنا على تحسين الخدمة',placeholder:'تعليق؟ (اختياري)',send:'إرسال',thanks:'شكراً على ملاحظاتك! ⭐',report:'الإبلاغ عن مشكلة',reportTitle:'ما هي المشكلة؟',reportPlaceholder:'صف المشكلة...',reportSend:'إرسال البلاغ',reportThanks:'تم إرسال البلاغ، شكراً.',cancel:'إلغاء',reasons:['تأخير','سلوك غير لائق','نقص في الطلب','أخرى'],rateShop:(n:string)=>`قيّم ${n}`,shopSub:'رأيك يساعد التجار على التحسن',shopThanks:'شكراً على تقييمك! ⭐'}
     : lang==='amz'
-    ? {title:'Sekked amaddaz-ik',sub:'Tikti-inek tessefrak tanfa',placeholder:'Awennit? (d afrayan)',send:'Azen',thanks:'Tanemmirt! ⭐',report:'Mmel ugur',reportTitle:'Mad ugur?',reportPlaceholder:'Glem ugur...',reportSend:'Azen ugur',reportThanks:'Yettwazen, tanemmirt.',cancel:'Sefsex',reasons:['Alwexer','Askasi','Ayla yextin','Wayeḍ']}
+    ? {title:'Sekked amaddaz-ik',sub:'Tikti-inek tessefrak tanfa',placeholder:'Awennit? (d afrayan)',send:'Azen',thanks:'Tanemmirt! ⭐',report:'Mmel ugur',reportTitle:'Mad ugur?',reportPlaceholder:'Glem ugur...',reportSend:'Azen ugur',reportThanks:'Yettwazen, tanemmirt.',cancel:'Sefsex',reasons:['Alwexer','Askasi','Ayla yextin','Wayeḍ'],rateShop:(n:string)=>`Sekked ${n}`,shopSub:'Tikti-inek tessefrak commerçants',shopThanks:'Tanemmirt! ⭐'}
     : lang==='en'
-    ? {title:'Rate your driver',sub:'Your feedback helps us improve',placeholder:'A comment? (optional)',send:'Send',thanks:'Thanks for your feedback! ⭐',report:'Report a problem',reportTitle:"What's the problem?",reportPlaceholder:'Describe the issue...',reportSend:'Send report',reportThanks:'Report sent, thank you.',cancel:'Cancel',reasons:['Late delivery','Bad behavior','Missing item','Other']}
-    : {title:'Notez votre livreur',sub:'Votre avis nous aide à améliorer le service',placeholder:'Un commentaire ? (optionnel)',send:'Envoyer',thanks:'Merci pour votre retour ! ⭐',report:'Signaler un problème',reportTitle:'Quel est le problème ?',reportPlaceholder:'Décrivez le problème...',reportSend:'Envoyer le signalement',reportThanks:'Signalement envoyé, merci.',cancel:'Annuler',reasons:['Retard','Comportement','Article manquant','Autre']};
+    ? {title:'Rate your driver',sub:'Your feedback helps us improve',placeholder:'A comment? (optional)',send:'Send',thanks:'Thanks for your feedback! ⭐',report:'Report a problem',reportTitle:"What's the problem?",reportPlaceholder:'Describe the issue...',reportSend:'Send report',reportThanks:'Report sent, thank you.',cancel:'Cancel',reasons:['Late delivery','Bad behavior','Missing item','Other'],rateShop:(n:string)=>`Rate ${n}`,shopSub:'Your feedback helps merchants improve',shopThanks:'Thanks for your rating! ⭐'}
+    : {title:'Notez votre livreur',sub:'Votre avis nous aide à améliorer le service',placeholder:'Un commentaire ? (optionnel)',send:'Envoyer',thanks:'Merci pour votre retour ! ⭐',report:'Signaler un problème',reportTitle:'Quel est le problème ?',reportPlaceholder:'Décrivez le problème...',reportSend:'Envoyer le signalement',reportThanks:'Signalement envoyé, merci.',cancel:'Annuler',reasons:['Retard','Comportement','Article manquant','Autre'],rateShop:(n:string)=>`Notez ${n}`,shopSub:'Votre avis aide les commerçants à s\'améliorer',shopThanks:'Merci pour votre note ! ⭐'};
 
   const submitRating=async()=>{
-    if(stars<1||sending) return;
+    if((stars<1&&restaurantStars<1)||sending) return;
     setSending(true);
     try{
-      await fetch(`/api/orders/${orderRef}/rating`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({stars,comment:comment.trim()||undefined})});
-      setRated(true);
+      await fetch(`/api/orders/${orderRef}/rating`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        stars:stars>0?stars:undefined,comment:comment.trim()||undefined,
+        restaurantStars:restaurantStars>0?restaurantStars:undefined,restaurantComment:restaurantComment.trim()||undefined,
+      })});
+      if(stars>0) setRated(true);
+      if(restaurantStars>0) setRestaurantRated(true);
     }catch{} finally{setSending(false);}
   };
   const submitReport=async()=>{
@@ -6594,6 +6637,8 @@ function DriverRatingBox({orderRef,lang,accent,accentDark,textColor,mutedColor,c
 
   if(checking||!orderRef) return null;
 
+  const showSubmit=(!rated&&stars>0)||(!restaurantRated&&restaurantStars>0);
+
   return (
     <div className="rounded-2xl p-4 mt-3 w-full text-left" style={{background:cardBg,border:`1px solid ${cardBorder}`}}>
       {!rated ? (
@@ -6606,19 +6651,43 @@ function DriverRatingBox({orderRef,lang,accent,accentDark,textColor,mutedColor,c
             ))}
           </div>
           {stars>0&&(
-            <>
-              <textarea value={comment} onChange={e=>setComment(e.target.value)} placeholder={L.placeholder} rows={2}
-                className="w-full rounded-xl p-2.5 text-xs mb-2" style={{background:cardBg,border:`1px solid ${cardBorder}`,color:textColor,resize:'none' as const}}/>
-              <button onClick={submitRating} disabled={sending}
-                className="w-full py-2.5 rounded-xl font-black text-sm text-white transition-all active:scale-95"
-                style={{background:`linear-gradient(135deg,${accentDark},${accent})`,border:'none',cursor:'pointer',opacity:sending?0.6:1}}>
-                {L.send}
-              </button>
-            </>
+            <textarea value={comment} onChange={e=>setComment(e.target.value)} placeholder={L.placeholder} rows={2}
+              className="w-full rounded-xl p-2.5 text-xs mb-2" style={{background:cardBg,border:`1px solid ${cardBorder}`,color:textColor,resize:'none' as const}}/>
           )}
         </>
       ) : (
         <p className="text-center text-sm font-bold py-1" style={{color:textColor}}>{L.thanks}</p>
+      )}
+
+      {/* zabi (2026-07-11): note + commentaire sur le RESTAURANT/commerce */}
+      {restaurantName&&(
+        <div className="mt-3 pt-3" style={{borderTop:rated?'none':`1px solid ${cardBorder}`}}>
+          {!restaurantRated ? (
+            <>
+              <p className="text-sm font-black mb-1 text-center" style={{color:textColor}}>{L.rateShop(restaurantName)}</p>
+              <p className="text-[11px] mb-3 text-center" style={{color:mutedColor}}>{L.shopSub}</p>
+              <div className="flex items-center justify-center gap-1.5 mb-3">
+                {[1,2,3,4,5].map(n=>(
+                  <button key={n} onClick={()=>setRestaurantStars(n)} style={{background:'none',border:'none',cursor:'pointer',fontSize:26,padding:2,filter:n<=restaurantStars?'none':'grayscale(1) opacity(0.35)'}}>⭐</button>
+                ))}
+              </div>
+              {restaurantStars>0&&(
+                <textarea value={restaurantComment} onChange={e=>setRestaurantComment(e.target.value)} placeholder={L.placeholder} rows={2}
+                  className="w-full rounded-xl p-2.5 text-xs mb-2" style={{background:cardBg,border:`1px solid ${cardBorder}`,color:textColor,resize:'none' as const}}/>
+              )}
+            </>
+          ) : (
+            <p className="text-center text-sm font-bold py-1" style={{color:textColor}}>{L.shopThanks}</p>
+          )}
+        </div>
+      )}
+
+      {showSubmit&&(
+        <button onClick={submitRating} disabled={sending}
+          className="w-full py-2.5 rounded-2xl font-black text-sm text-white transition-all active:scale-95 mt-2"
+          style={{background:`linear-gradient(135deg,${accentDark},${accent})`,border:'none',cursor:'pointer',opacity:sending?0.6:1}}>
+          {L.send}
+        </button>
       )}
 
       {!reported ? (
