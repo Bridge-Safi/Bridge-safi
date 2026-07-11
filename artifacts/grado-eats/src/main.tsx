@@ -2247,6 +2247,7 @@ function BridgeAssistantPage() {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ messages: newMessages, lang }),
+        signal: AbortSignal.timeout(30000),
       });
       const data = await res.json() as { reply: string; isEscalation: boolean };
       setMessages(prev => [...prev, { role:'assistant', content: data.reply }]);
@@ -3255,6 +3256,7 @@ function FloatingAssistantWidget() {
       const res = await fetch(`${import.meta.env.BASE_URL}api/assistant/chat`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: newMessages, lang }),
+        signal: AbortSignal.timeout(30000),
       });
       const data = await res.json() as { reply: string; isEscalation: boolean };
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
