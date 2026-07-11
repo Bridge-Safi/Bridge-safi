@@ -9589,8 +9589,21 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
 
         {/* ── STEP 1: CHOIX FLEURISTE ── */}
         {step==='florist'&&(
-          <div className="px-5 pt-20">
-            <div className="text-center mb-8">
+          <div className="px-5 pt-20 relative overflow-hidden">
+            <style>{`
+              @keyframes fleurFadeUp{0%{opacity:0;transform:translateY(22px);}100%{opacity:1;transform:translateY(0);}}
+              @keyframes fleurPetalFloat{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-14px) rotate(12deg);}}
+              @keyframes fleurShine{0%{transform:translateX(-120%) skewX(-15deg);}100%{transform:translateX(220%) skewX(-15deg);}}
+            `}</style>
+
+            {/* petales flottants décoratifs */}
+            <div className="pointer-events-none select-none" style={{position:'absolute',inset:0,zIndex:0}}>
+              {['🌸','🌷','🌹','💮','🌼','✨'].map((e,i)=>(
+                <span key={i} style={{position:'absolute',left:`${6+i*16}%`,top:`${4+(i%3)*22}%`,fontSize:i%2===0?22:16,opacity:0.16,animation:`fleurPetalFloat ${4.5+i*0.7}s ease-in-out infinite`,animationDelay:`${i*0.3}s`}}>{e}</span>
+              ))}
+            </div>
+
+            <div className="text-center mb-7 relative" style={{zIndex:1}}>
               <div className="inline-flex items-center gap-3 mb-2">
                 <span style={{fontSize:40}}>🌸</span>
                 <div className="text-left">
@@ -9603,105 +9616,74 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
               </p>
             </div>
 
-            <div className="flex flex-col gap-5 mb-6">
-              {/* Nour Fleurs */}
-              <button onClick={()=>{setActiveFlorist('nour');setCart([]);setStep('catalog');}}
-                className="rounded-3xl overflow-hidden text-left transition-all active:scale-[0.97]"
-                style={{boxShadow:'0 12px 40px rgba(190,24,93,0.22),0 0 0 2px rgba(236,72,153,0.25)',background:'white'}}>
-                <div style={{background:nourGrad,padding:'22px 20px 16px',position:'relative',overflow:'hidden'}}>
-                  <div style={{position:'absolute',top:-30,right:-30,width:120,height:120,borderRadius:'50%',background:'rgba(255,255,255,0.1)'}}/>
-                  <div style={{position:'absolute',top:12,right:12,width:70,height:70,borderRadius:'50%',background:'rgba(255,255,255,0.07)'}}/>
-                  <span style={{fontSize:44,display:'block',position:'relative'}}>🌹</span>
-                  <p className="font-black text-2xl text-white mt-1" style={{position:'relative'}}>Nour Fleurs</p>
-                  <p style={{color:'rgba(255,255,255,0.8)',fontSize:11,fontWeight:700,position:'relative'}}>
-                    {lang==='ar'?'بوكيهات وصناديق · سافي':lang==='en'?'Bouquets & Boxes · Safi':'Bouquets & Coffrets · Safi'}
-                  </p>
-                </div>
-                <div className="px-5 py-3 flex items-center justify-between">
-                  <div className="flex gap-1.5">
-                    {FLEURS_CATALOG.filter(f=>f.florist==='nour').slice(0,4).map(f=>(
-                      <FleurImg key={f.id} src={f.img} emoji={f.emoji} emojiSize={16} style={{width:34,height:34,objectFit:'contain',borderRadius:8,background:'#FFF0F6',border:'1.5px solid #FCE7F3'}}/>
-                    ))}
-                    <div style={{width:34,height:34,borderRadius:8,background:'#FCE7F3',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,fontWeight:900,color:'#BE185D'}}>+{FLEURS_CATALOG.filter(f=>f.florist==='nour').length-4}</div>
-                  </div>
-                  <div style={{width:32,height:32,borderRadius:'50%',background:nourGrad,display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16,boxShadow:'0 4px 12px rgba(190,24,93,0.4)'}}>→</div>
-                </div>
-              </button>
+            <div className="flex flex-col gap-5 mb-6 relative" style={{zIndex:1}}>
+              {(['nour','amina','rania','yasmine'] as const).map((fid,i)=>{
+                const metaGrad:Record<string,string>={nour:'linear-gradient(135deg,#BE185D,#EC4899)',amina:'linear-gradient(135deg,#7C3AED,#A855F7)',rania:'linear-gradient(135deg,#B45309,#F59E0B)',yasmine:'linear-gradient(135deg,#0E7490,#22D3EE)'};
+                const metaShadow:Record<string,string>={nour:'rgba(190,24,93,0.28)',amina:'rgba(124,58,237,0.28)',rania:'rgba(180,83,9,0.28)',yasmine:'rgba(14,116,144,0.28)'};
+                const metaName:Record<string,string>={nour:'Nour Fleurs',amina:'Amina Blooms',rania:'Rania Fleurs',yasmine:'Yasmine Blooms'};
+                const metaSub:Record<string,Record<Lang,string>>={
+                  nour:{fr:'Bouquets & Coffrets',en:'Bouquets & Boxes',ar:'بوكيهات وصناديق',amz:'ⴰⵥⴰⵡⴰⵏ'},
+                  amina:{fr:'Arrangements créatifs',en:'Creative Arrangements',ar:'تنسيقات إبداعية',amz:'ⴰⵔⴰⵜⵉⴱ'},
+                  rania:{fr:'Style parisien',en:'Parisian Style',ar:'ستايل باريسي',amz:'ⴰⵙⴳⴰⵏ ⵏ ⴱⴰⵔⵉ'},
+                  yasmine:{fr:'Fleurs fraîches',en:'Fresh Flowers',ar:'زهور طازجة',amz:'ⵜⵥⴰⵡⵉⵏ ⵉⵎⴰⵢⵏⵓⵜⵏ'},
+                };
+                const metaEmoji:Record<string,string>={nour:'🌹',amina:'💐',rania:'🌷',yasmine:'🌼'};
+                const shopItems=FLEURS_CATALOG.filter(f=>f.florist===fid);
+                const photos=shopItems.slice(0,4);
+                const totalCount=shopItems.length;
+                return(
+                  <button key={fid} onClick={()=>{setActiveFlorist(fid);setCart([]);setStep('catalog');}}
+                    className="rounded-3xl overflow-hidden text-left transition-all active:scale-[0.96]"
+                    style={{animation:`fleurFadeUp 0.5s ease-out ${i*0.1}s both`,boxShadow:`0 14px 36px ${metaShadow[fid]},0 0 0 1.5px rgba(255,255,255,0.5)`,background:'white'}}>
 
-              {/* Amina Blooms */}
-              <button onClick={()=>{setActiveFlorist('amina');setCart([]);setStep('catalog');}}
-                className="rounded-3xl overflow-hidden text-left transition-all active:scale-[0.97]"
-                style={{boxShadow:'0 12px 40px rgba(124,58,237,0.22),0 0 0 2px rgba(168,85,247,0.25)',background:'white'}}>
-                <div style={{background:aminaGrad,padding:'22px 20px 16px',position:'relative',overflow:'hidden'}}>
-                  <div style={{position:'absolute',top:-30,right:-30,width:120,height:120,borderRadius:'50%',background:'rgba(255,255,255,0.1)'}}/>
-                  <div style={{position:'absolute',top:12,right:12,width:70,height:70,borderRadius:'50%',background:'rgba(255,255,255,0.07)'}}/>
-                  <span style={{fontSize:44,display:'block',position:'relative'}}>💐</span>
-                  <p className="font-black text-2xl text-white mt-1" style={{position:'relative'}}>Amina Blooms</p>
-                  <p style={{color:'rgba(255,255,255,0.8)',fontSize:11,fontWeight:700,position:'relative'}}>
-                    {lang==='ar'?'تنسيقات إبداعية · سافي':lang==='en'?'Creative Arrangements · Safi':'Arrangements créatifs · Safi'}
-                  </p>
-                </div>
-                <div className="px-5 py-3 flex items-center justify-between">
-                  <div className="flex gap-1.5">
-                    {FLEURS_CATALOG.filter(f=>f.florist==='amina').slice(0,4).map(f=>(
-                      <FleurImg key={f.id} src={f.img} emoji={f.emoji} emojiSize={16} style={{width:34,height:34,objectFit:'contain',borderRadius:8,background:'#F5F3FF',border:'1.5px solid #EDE9FE'}}/>
-                    ))}
-                  </div>
-                  <div style={{width:32,height:32,borderRadius:'50%',background:aminaGrad,display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16,boxShadow:'0 4px 12px rgba(124,58,237,0.4)'}}>→</div>
-                </div>
-              </button>
+                    {/* Collage 2x2 de 4 photos différentes */}
+                    <div className="relative" style={{height:168}}>
+                      <div className="grid grid-cols-2 grid-rows-2 gap-[2px]" style={{height:'100%'}}>
+                        {[0,1,2,3].map(idx=>{
+                          const it=photos[idx];
+                          return(
+                            <div key={idx} className="relative overflow-hidden" style={{background:metaGrad[fid]}}>
+                              {it?(
+                                <FleurImg src={it.img} emoji={metaEmoji[fid]} emojiSize={26} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+                              ):(
+                                <div style={{width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:26}}>{metaEmoji[fid]}</div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {/* voile dégradé + shine pour lisibilité et effet "fun" */}
+                      <div className="pointer-events-none" style={{position:'absolute',inset:0,background:'linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.55) 100%)'}}/>
+                      <div className="pointer-events-none" style={{position:'absolute',inset:0,overflow:'hidden'}}>
+                        <div style={{position:'absolute',top:0,bottom:0,width:'40%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent)',animation:`fleurShine 3.2s ease-in-out ${i*0.4}s infinite`}}/>
+                      </div>
+                      <div style={{position:'absolute',top:10,left:12,background:'rgba(0,0,0,0.35)',backdropFilter:'blur(6px)',borderRadius:12,padding:'4px 10px',display:'flex',alignItems:'center',gap:5}}>
+                        <span style={{fontSize:14}}>{metaEmoji[fid]}</span>
+                        <span className="font-black text-white" style={{fontSize:10,letterSpacing:'0.03em'}}>{totalCount} bouquets</span>
+                      </div>
+                      <div style={{position:'absolute',bottom:10,left:14,right:14}}>
+                        <p className="font-black text-white text-xl leading-tight" style={{textShadow:'0 2px 8px rgba(0,0,0,0.5)'}}>{metaName[fid]}</p>
+                        <p style={{color:'rgba(255,255,255,0.88)',fontSize:11,fontWeight:700,textShadow:'0 1px 6px rgba(0,0,0,0.5)'}}>
+                          {metaSub[fid][lang]} · Safi
+                        </p>
+                      </div>
+                    </div>
 
-              {/* Rania Fleurs */}
-              <button onClick={()=>{setActiveFlorist('rania');setCart([]);setStep('catalog');}}
-                className="rounded-3xl overflow-hidden text-left transition-all active:scale-[0.97]"
-                style={{boxShadow:'0 12px 40px rgba(180,83,9,0.22),0 0 0 2px rgba(245,158,11,0.25)',background:'white'}}>
-                <div style={{background:raniaGrad,padding:'22px 20px 16px',position:'relative',overflow:'hidden'}}>
-                  <div style={{position:'absolute',top:-30,right:-30,width:120,height:120,borderRadius:'50%',background:'rgba(255,255,255,0.1)'}}/>
-                  <div style={{position:'absolute',top:12,right:12,width:70,height:70,borderRadius:'50%',background:'rgba(255,255,255,0.07)'}}/>
-                  <span style={{fontSize:44,display:'block',position:'relative'}}>🌷</span>
-                  <p className="font-black text-2xl text-white mt-1" style={{position:'relative'}}>Rania Fleurs</p>
-                  <p style={{color:'rgba(255,255,255,0.8)',fontSize:11,fontWeight:700,position:'relative'}}>
-                    {lang==='ar'?'ستايل باريسي · سافي':lang==='en'?'Parisian Style · Safi':'Style parisien · Safi'}
-                  </p>
-                </div>
-                <div className="px-5 py-3 flex items-center justify-between">
-                  <div className="flex gap-1.5">
-                    {FLEURS_CATALOG.filter(f=>f.florist==='rania').slice(0,4).map(f=>(
-                      <FleurImg key={f.id} src={f.img} emoji={f.emoji} emojiSize={16} style={{width:34,height:34,objectFit:'contain',borderRadius:8,background:'#FFFBEB',border:'1.5px solid #FDE68A'}}/>
-                    ))}
-                  </div>
-                  <div style={{width:32,height:32,borderRadius:'50%',background:raniaGrad,display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16,boxShadow:'0 4px 12px rgba(180,83,9,0.4)'}}>→</div>
-                </div>
-              </button>
-
-              {/* Yasmine Blooms */}
-              <button onClick={()=>{setActiveFlorist('yasmine');setCart([]);setStep('catalog');}}
-                className="rounded-3xl overflow-hidden text-left transition-all active:scale-[0.97]"
-                style={{boxShadow:'0 12px 40px rgba(14,116,144,0.22),0 0 0 2px rgba(34,211,238,0.25)',background:'white'}}>
-                <div style={{background:yasmineGrad,padding:'22px 20px 16px',position:'relative',overflow:'hidden'}}>
-                  <div style={{position:'absolute',top:-30,right:-30,width:120,height:120,borderRadius:'50%',background:'rgba(255,255,255,0.1)'}}/>
-                  <div style={{position:'absolute',top:12,right:12,width:70,height:70,borderRadius:'50%',background:'rgba(255,255,255,0.07)'}}/>
-                  <span style={{fontSize:44,display:'block',position:'relative'}}>🌼</span>
-                  <p className="font-black text-2xl text-white mt-1" style={{position:'relative'}}>Yasmine Blooms</p>
-                  <p style={{color:'rgba(255,255,255,0.8)',fontSize:11,fontWeight:700,position:'relative'}}>
-                    {lang==='ar'?'زهور طازجة · سافي':lang==='en'?'Fresh Flowers · Safi':'Fleurs fraîches · Safi'}
-                  </p>
-                </div>
-                <div className="px-5 py-3 flex items-center justify-between">
-                  <div className="flex gap-1.5">
-                    {FLEURS_CATALOG.filter(f=>f.florist==='yasmine').slice(0,4).map(f=>(
-                      <FleurImg key={f.id} src={f.img} emoji={f.emoji} emojiSize={16} style={{width:34,height:34,objectFit:'contain',borderRadius:8,background:'#ECFEFF',border:'1.5px solid #A5F3FC'}}/>
-                    ))}
-                  </div>
-                  <div style={{width:32,height:32,borderRadius:'50%',background:yasmineGrad,display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16,boxShadow:'0 4px 12px rgba(14,116,144,0.4)'}}>→</div>
-                </div>
-              </button>
+                    <div className="px-4 py-2.5 flex items-center justify-between" style={{background:metaGrad[fid]}}>
+                      <span className="font-black text-white" style={{fontSize:11,letterSpacing:'0.04em'}}>
+                        {lang==='ar'?'اكتشف المجموعة':lang==='en'?'Discover the collection':'Découvrir la collection'}
+                      </span>
+                      <div style={{width:28,height:28,borderRadius:'50%',background:'rgba(255,255,255,0.25)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:14}}>→</div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
 
             {lastRef&&(
               <button onClick={()=>setStep('track')}
-                className="w-full rounded-2xl p-4 flex items-center justify-between transition-all active:scale-95"
-                style={{background:'white',boxShadow:'0 4px 20px rgba(0,0,0,0.07)',border:'1.5px solid #EDE9FE'}}>
+                className="w-full rounded-2xl p-4 flex items-center justify-between transition-all active:scale-95 relative"
+                style={{zIndex:1,background:'white',boxShadow:'0 4px 20px rgba(0,0,0,0.07)',border:'1.5px solid #EDE9FE'}}>
                 <div className="flex items-center gap-3">
                   <span style={{fontSize:26}}>📦</span>
                   <div className="text-left">
