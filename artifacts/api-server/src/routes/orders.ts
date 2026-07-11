@@ -180,24 +180,59 @@ function getApiBase(): string {
   return "https://safi-bridge.ma";
 }
 
+// Domaine du nouveau tableau de bord restaurateurs (self-service, un compte
+// par restaurant). Chaque restaurant y a son propre token API, retrouvable
+// via /api/restaurant/lookup (secret partagé) — pas besoin de dupliquer le
+// token dans la table restaurants de Bridge-safi.
+const RESTAURANT_DASHBOARD_BASE = process.env.RESTAURANT_DASHBOARD_BASE ?? "https://restaurant.safi-bridge.ma";
+const INTERNAL_LOOKUP_SECRET = process.env.INTERNAL_LOOKUP_SECRET ?? "bridge-safi-internal-lookup-2026";
+
+async function lookupDashboardRestaurant(name: string): Promise<{ webhookUrl: string; token: string } | null> {
+  try {
+    const resp = await fetch(
+      `${RESTAURANT_DASHBOARD_BASE}/api/restaurant/lookup?name=${encodeURIComponent(name)}`,
+      { headers: { "X-Internal-Secret": INTERNAL_LOOKUP_SECRET }, signal: AbortSignal.timeout(5000) }
+    );
+    if (!resp.ok) return null;
+    const data = (await resp.json()) as { found: boolean; apiToken?: string };
+    if (!data.found || !data.apiToken) return null;
+    return { webhookUrl: `${RESTAURANT_DASHBOARD_BASE}/api/webhook/orders`, token: data.apiToken };
+  } catch (err) {
+    logger.warn({ err, name }, "lookupDashboardRestaurant: lookup failed");
+    return null;
+  }
+}
+
 async function forwardToRestaurant(order: typeof ordersTable.$inferSelect) {
   if (!order.restaurantName) {
     logger.info({ ref: order.ref }, "forwardToRestaurant: no restaurantName, skipping");
     return;
   }
   try {
-    const rows = await db.select().from(restaurantsTable)
-      .where(sqlRaw`lower(${restaurantsTable.name}) = lower(${order.restaurantName})`);
-    const resto = rows[0];
-    if (!resto) {
-      logger.warn({ ref: order.ref, restaurant: order.restaurantName }, "forwardToRestaurant: restaurant not found in DB");
-      return;
+    // 1) Nouveau tableau de bord self-service (prioritaire, un restaurant peut
+    //    s'y être inscrit sans qu'aucune configuration manuelle soit faite ici).
+    const dashboardMatch = await lookupDashboardRestaurant(order.restaurantName);
+
+    let webhookUrl: string | undefined;
+    let token: string | undefined;
+
+    if (dashboardMatch) {
+      webhookUrl = dashboardMatch.webhookUrl;
+      token = dashboardMatch.token;
+    } else {
+      // 2) Ancien système (webhookUrl/webhookToken configurés à la main dans
+      //    la table restaurants de Bridge-safi elle-même).
+      const rows = await db.select().from(restaurantsTable)
+        .where(sqlRaw`lower(${restaurantsTable.name}) = lower(${order.restaurantName})`);
+      const resto = rows[0];
+      if (!resto?.webhookUrl) {
+        logger.warn({ ref: order.ref, restaurant: order.restaurantName }, "forwardToRestaurant: no webhookUrl configured (ni tableau de bord, ni config manuelle)");
+        return;
+      }
+      webhookUrl = resto.webhookUrl;
+      token = resto.webhookToken ?? BRIDGE_INBOUND_SECRET;
     }
-    if (!resto.webhookUrl) {
-      logger.warn({ ref: order.ref, restaurant: order.restaurantName }, "forwardToRestaurant: no webhookUrl configured");
-      return;
-    }
-    const token = resto.webhookToken ?? BRIDGE_INBOUND_SECRET;
+
     const callbackUrl = `${getApiBase()}/api/callbacks/order-status`;
     const body = JSON.stringify({
       orderNumber:    order.ref,
@@ -214,10 +249,10 @@ async function forwardToRestaurant(order: typeof ordersTable.$inferSelect) {
       paymentMethod:  order.paymentMethod,
       callbackUrl,
     });
-    logger.info({ ref: order.ref, restaurant: order.restaurantName, webhookUrl: resto.webhookUrl }, "Sending webhook to restaurant...");
-    const resp = await fetch(resto.webhookUrl, {
+    logger.info({ ref: order.ref, restaurant: order.restaurantName, webhookUrl }, "Sending webhook to restaurant...");
+    const resp = await fetch(webhookUrl!, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Bridge-Token": token },
+      headers: { "Content-Type": "application/json", "X-Bridge-Token": token! },
       body,
     });
     const respText = await resp.text().catch(() => "");
