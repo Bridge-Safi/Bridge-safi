@@ -6190,11 +6190,16 @@ function ReceiptModal({orderRef,lang,accent,accentDark,onClose}:{orderRef:string
             </>
           )}
         </div>
-        <div className="px-6 py-4 receipt-noprint" style={{borderTop:'1px solid #eee'}}>
+        <div className="px-6 py-4 receipt-noprint flex gap-2" style={{borderTop:'1px solid #eee'}}>
           <button onClick={()=>window.print()} disabled={loading||!data}
-            className="w-full py-3 rounded-2xl font-black text-sm text-white transition-all active:scale-95"
+            className="flex-1 py-3 rounded-2xl font-black text-sm text-white transition-all active:scale-95"
             style={{background:`linear-gradient(135deg,${accentDark},${accent})`,border:'none',cursor:loading?'default':'pointer',opacity:loading?0.6:1}}>
-            🖨️ {lang==='ar'?'طباعة / تحميل PDF':lang==='en'?'Print / Save as PDF':'Imprimer / Enregistrer en PDF'}
+            🖨️ {lang==='ar'?'طباعة':lang==='en'?'Print':'Imprimer'}
+          </button>
+          <button onClick={()=>window.print()} disabled={loading||!data}
+            className="flex-1 py-3 rounded-2xl font-black text-sm transition-all active:scale-95"
+            style={{background:'#fff',border:`1.5px solid ${accent}`,color:accentDark,cursor:loading?'default':'pointer',opacity:loading?0.6:1}}>
+            💾 {lang==='ar'?'حفظ PDF':lang==='en'?'Save PDF':'Enregistrer PDF'}
           </button>
         </div>
       </div>
@@ -10437,7 +10442,6 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
 
   const [boulCart,setBoulCart]=useState<{id:string;qty:number}[]>([]);
   const [boulVendor,setBoulVendor]=useState<'maitres'|'palm'|'rayan'>('maitres');
-  const [boulScreenSelect,setBoulScreenSelect]=useState(true);
   const [boulCat,setBoulCat]=useState<BoulItem['cat']>('viennoiseries');
   const [boulSearch,setBoulSearch]=useState('');
   const [delivMode,setDelivMode]=useState<'delivery'|'collect'>('delivery');
@@ -10535,65 +10539,13 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
     setSent(true);
   };
 
-  // ── Écran 1 : choix du vendeur (grandes cartes) ─────────────────────────
-  if(boulScreenSelect){
-    return(
-      <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`}
-        dir={isAR?'rtl':'ltr'}
-        style={{background:'linear-gradient(160deg,#1C0F02 0%,#422006 40%,#78350F 70%,#0F172A 100%)',color:'#fff',minHeight:'100dvh',position:'relative',overflow:'hidden'}}>
-        <style>{`
-          @keyframes boulFadeUp{0%{opacity:0;transform:translateY(20px);}100%{opacity:1;transform:translateY(0);}}
-        `}</style>
-        <div style={{position:'fixed',top:16,left:isAR?'auto':16,right:isAR?16:'auto',zIndex:50}}>
-          <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(250,204,21,0.14)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:18}}>←</button>
-        </div>
-        <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
-          <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(250,204,21,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#FDE68A',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
-          <SharkDiamondWidget onNavigate={()=>navigateBoul('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
-        </div>
-
-        <div className={`flex flex-col items-center px-6 pt-24 pb-12 max-w-md mx-auto w-full gap-3 relative ${fClass}`} style={{zIndex:1}}>
-          <div className="text-center mb-2">
-            <p style={{fontSize:34,marginBottom:4}}>🥐✨</p>
-            <h1 className={`font-black text-2xl tracking-wider mb-1 ${fClass}`} style={{color:'#fff',textShadow:'0 2px 12px rgba(250,204,21,0.6)'}}>BRIDGE BOULANGERIE</h1>
-            <p className="text-[11px] tracking-widest font-bold" style={{color:'rgba(253,230,138,0.6)'}}>{lang==='ar'?'اختر المخبزة':lang==='en'?'CHOOSE YOUR BAKERY':'CHOISISSEZ VOTRE BOULANGERIE'} · SAFI</p>
-          </div>
-
-          <div className="w-full flex flex-col gap-3 mt-3">
-            {(['maitres','palm','rayan'] as const).map((v,i)=>{
-              const meta=BOUL_VENDOR_META[v];
-              return(
-                <button key={v} onClick={()=>{setBoulVendor(v);setBoulCat('viennoiseries');setBoulSearch('');setBoulScreenSelect(false);}}
-                  className="w-full text-left active:scale-[0.97] transition-transform"
-                  style={{animation:`boulFadeUp 0.5s ease-out ${i*0.1}s both`,background:'rgba(255,255,255,0.05)',border:'1.5px solid rgba(250,204,21,0.2)',borderRadius:22,padding:'16px 18px',backdropFilter:'blur(10px)',display:'flex',alignItems:'center',gap:16}}>
-                  <div style={{width:64,height:64,borderRadius:18,flexShrink:0,background:'linear-gradient(145deg,#000000 0%,#0D0D0D 45%,#3A2408 100%)',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                    <span style={{fontSize:32,filter:'drop-shadow(0 3px 8px rgba(0,0,0,0.4))'}}>{meta.emoji}</span>
-                  </div>
-                  <div style={{flex:1}}>
-                    <p className="font-black" style={{fontSize:17,color:'#fff',margin:'0 0 3px'}}>{meta.name}</p>
-                    <p style={{fontSize:11,color:'rgba(253,230,138,0.55)',fontWeight:700,margin:0}}>{meta.sub[lang]}</p>
-                  </div>
-                  <div style={{color:'#FDE68A',fontSize:24,flexShrink:0}}>›</div>
-                </button>
-              );
-            })}
-          </div>
-
-          <p className="text-center mt-4" style={{fontSize:10,color:'rgba(253,230,138,0.4)',fontWeight:600}}>
-            🚚 Livraison à domicile · 💎 Réduction diamants · 📍 Retrait possible
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return(
     <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`}
       dir={isAR?'rtl':'ltr'}
       style={{background:'linear-gradient(160deg,#1C0F02 0%,#422006 40%,#78350F 70%,#0F172A 100%)',color:'#fff',minHeight:'100dvh'}}>
 
       <div style={{position:'fixed',top:16,left:isAR?'auto':16,right:isAR?16:'auto',zIndex:50}}>
-        <button onClick={()=>{if(sent){onBack();}else{setBoulScreenSelect(true);}}} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(250,204,21,0.14)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:18}}>←</button>
+        <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(250,204,21,0.14)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:18}}>←</button>
       </div>
       <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
         <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(250,204,21,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#FDE68A',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
@@ -10603,9 +10555,25 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
       <div className={`flex flex-col items-center px-5 pt-20 pb-12 max-w-2xl mx-auto w-full gap-4 ${fClass}`}>
 
         <div className="text-center">
-          <h1 className={`font-black text-xl tracking-wider mb-0.5 ${fClass}`} style={{color:'#FDE68A'}}>{BOUL_VENDOR_META[boulVendor].name.toUpperCase()}</h1>
+          <h1 className={`font-black text-xl tracking-wider mb-0.5 ${fClass}`} style={{color:'#FDE68A'}}>BRIDGE BOULANGERIE</h1>
           <p className="text-[10px] tracking-widest font-bold" style={{color:'rgba(253,230,138,0.6)'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
         </div>
+
+        {!sent&&(
+          <div className="w-full flex gap-2 mb-3 overflow-x-auto pb-1" style={{scrollbarWidth:'none'}}>
+            {(['maitres','palm','rayan'] as const).map(v=>{
+              const meta=BOUL_VENDOR_META[v]; const sel=boulVendor===v;
+              return(
+                <button key={v} onClick={()=>{setBoulVendor(v);setBoulCat('viennoiseries');setBoulSearch('');}}
+                  className="flex-shrink-0 flex flex-col items-start gap-0.5 py-2 px-3.5 rounded-2xl transition-all active:scale-95"
+                  style={{background:sel?'#A16207':'rgba(250,204,21,0.08)',border:`1.5px solid ${sel?'#A16207':'rgba(250,204,21,0.2)'}`,minWidth:132}}>
+                  <span className={`font-black text-[12px] ${fClass}`} style={{color:sel?'#fff':'#FDE68A'}}>{meta.emoji} {meta.name}</span>
+                  <span className={`text-[9px] ${fClass}`} style={{color:sel?'rgba(255,255,255,0.75)':'rgba(253,230,138,0.5)'}}>{meta.sub[lang]}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {!sent&&(
           <div className="w-full">
@@ -10826,7 +10794,6 @@ function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{on
 
   const [soukCart,setSoukCart]=useState<{id:string;qty:number}[]>([]);
   const [soukCat,setSoukCat]=useState<SoukItem['cat']>('vetements');
-  const [soukScreenSelect,setSoukScreenSelect]=useState(true);
   const [soukSearch,setSoukSearch]=useState('');
   const [delivMode,setDelivMode]=useState<'delivery'|'collect'>('delivery');
   const [name,setName]=useState(profile.name??'');
@@ -10921,68 +10888,13 @@ function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{on
     setSent(true);
   };
 
-  // ── Écran 1 : choix de la catégorie (grandes cartes) ────────────────────
-  if(soukScreenSelect){
-    const soukCatCards:{key:SoukItem['cat'];label:string;sub:string;emoji:string}[]=[
-      {key:'vetements', label:lang==='ar'?'ملابس':lang==='en'?'Clothes':'Vêtements',     sub:lang==='ar'?'أزياء مغربية تقليدية وعصرية':lang==='en'?'Traditional & modern fashion':'Mode traditionnelle & moderne', emoji:'👗'},
-      {key:'parfums',   label:lang==='ar'?'عطور':lang==='en'?'Perfumes':'Parfums',       sub:lang==='ar'?'عطور شرقية أصيلة':lang==='en'?'Authentic oriental scents':'Senteurs orientales authentiques', emoji:'🧴'},
-      {key:'miel',      label:lang==='ar'?'عسل':lang==='en'?'Honey':'Miel',              sub:lang==='ar'?'عسل طبيعي من الجبال':lang==='en'?'Natural mountain honey':'Miel naturel de montagne', emoji:'🍯'},
-      {key:'artisanat', label:lang==='ar'?'حرف يدوية':lang==='en'?'Crafts':'Artisanat',  sub:lang==='ar'?'صناعة تقليدية مغربية':lang==='en'?'Moroccan handcrafted goods':'Fait main marocain', emoji:'🎨'},
-    ];
-    return(
-      <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`}
-        dir={isAR?'rtl':'ltr'}
-        style={{background:'linear-gradient(160deg,#1A0630 0%,#3B0764 40%,#581C87 70%,#0F172A 100%)',color:'#fff',minHeight:'100dvh',position:'relative',overflow:'hidden'}}>
-        <style>{`
-          @keyframes soukFadeUp{0%{opacity:0;transform:translateY(20px);}100%{opacity:1;transform:translateY(0);}}
-        `}</style>
-        <div style={{position:'fixed',top:16,left:isAR?'auto':16,right:isAR?16:'auto',zIndex:50}}>
-          <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(192,132,252,0.14)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:18}}>←</button>
-        </div>
-        <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
-          <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(192,132,252,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#E9D5FF',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
-          <SharkDiamondWidget onNavigate={()=>navigateSouk('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
-        </div>
-
-        <div className={`flex flex-col items-center px-6 pt-24 pb-12 max-w-md mx-auto w-full gap-3 relative ${fClass}`} style={{zIndex:1}}>
-          <div className="text-center mb-2">
-            <p style={{fontSize:34,marginBottom:4}}>🛍️✨</p>
-            <h1 className={`font-black text-2xl tracking-wider mb-1 ${fClass}`} style={{color:'#fff',textShadow:'0 2px 12px rgba(192,132,252,0.6)'}}>BRIDGE SOUK</h1>
-            <p className="text-[11px] tracking-widest font-bold" style={{color:'rgba(233,213,255,0.6)'}}>{lang==='ar'?'اختر الفئة':lang==='en'?'CHOOSE A CATEGORY':'CHOISISSEZ UNE CATÉGORIE'} · SAFI</p>
-          </div>
-
-          <div className="w-full flex flex-col gap-3 mt-3">
-            {soukCatCards.map((c,i)=>(
-              <button key={c.key} onClick={()=>{setSoukCat(c.key);setSoukScreenSelect(false);}}
-                className="w-full text-left active:scale-[0.97] transition-transform"
-                style={{animation:`soukFadeUp 0.5s ease-out ${i*0.1}s both`,background:'rgba(255,255,255,0.05)',border:'1.5px solid rgba(192,132,252,0.2)',borderRadius:22,padding:'16px 18px',backdropFilter:'blur(10px)',display:'flex',alignItems:'center',gap:16}}>
-                <div style={{width:64,height:64,borderRadius:18,flexShrink:0,background:'linear-gradient(145deg,#000000 0%,#0D0D0D 45%,#2B1046 100%)',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                  <span style={{fontSize:32,filter:'drop-shadow(0 3px 8px rgba(0,0,0,0.4))'}}>{c.emoji}</span>
-                </div>
-                <div style={{flex:1}}>
-                  <p className="font-black" style={{fontSize:17,color:'#fff',margin:'0 0 3px'}}>{c.label}</p>
-                  <p style={{fontSize:11,color:'rgba(233,213,255,0.55)',fontWeight:700,margin:0}}>{c.sub}</p>
-                </div>
-                <div style={{color:'#C084FC',fontSize:24,flexShrink:0}}>›</div>
-              </button>
-            ))}
-          </div>
-
-          <p className="text-center mt-4" style={{fontSize:10,color:'rgba(233,213,255,0.4)',fontWeight:600}}>
-            🚚 Livraison à domicile · 💎 Réduction diamants · 📍 Retrait possible
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return(
     <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`}
       dir={isAR?'rtl':'ltr'}
       style={{background:'linear-gradient(160deg,#1A0630 0%,#3B0764 40%,#581C87 70%,#0F172A 100%)',color:'#fff',minHeight:'100dvh'}}>
 
       <div style={{position:'fixed',top:16,left:isAR?'auto':16,right:isAR?16:'auto',zIndex:50}}>
-        <button onClick={()=>{if(sent){onBack();}else{setSoukScreenSelect(true);}}} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(192,132,252,0.14)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:18}}>←</button>
+        <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(192,132,252,0.14)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:18}}>←</button>
       </div>
       <div style={{position:'fixed',top:16,right:isAR?'auto':16,left:isAR?16:'auto',zIndex:50,display:'flex',alignItems:'center',gap:8}}>
         <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(192,132,252,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#E9D5FF',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
@@ -12882,8 +12794,10 @@ export default function App() {
       {/* ── Header ── */}
       <header className="relative pt-14 pb-4 flex flex-col items-center"
         style={{borderBottom:'1px solid var(--c-border)',background:'var(--c-nav-soft)',backdropFilter:'blur(14px)'}}>
-        <img src="/logo.jpeg" alt="Bridge" className="h-14 w-14 rounded-full object-cover"
-          style={{border:'2.5px solid #D9C5A0',boxShadow:'0 4px 16px rgba(6,95,70,0.15)'}}/>
+        <div className="h-14 w-14 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0"
+          style={{border:'2.5px solid #D9C5A0',boxShadow:'0 4px 16px rgba(6,95,70,0.15)'}}>
+          <img src="/logo.jpeg" alt="Bridge" className="w-full h-full object-cover" style={{transform:'scale(1.9)'}}/>
+        </div>
         <h1 className="mt-2 text-[11px] font-black tracking-[0.45em] uppercase" style={{color:'#065F46'}}>
           {isAMZ?'ⴱⵔⵉⴷⵊ':isAR?'بريدج':'Bridge'}
         </h1>
