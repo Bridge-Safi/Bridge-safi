@@ -6620,7 +6620,7 @@ function DriverRatingBox({orderRef,lang,accent,accentDark,textColor,mutedColor,c
     try{
       await fetch(`/api/orders/${orderRef}/rating`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
         stars:stars>0?stars:undefined,comment:comment.trim()||undefined,
-        restaurantStars:restaurantStars>0?restaurantStars:undefined,restaurantComment:restaurantComment.trim()||undefined,
+        restaurantStars:restaurantStars>0?restaurantStars:undefined,
       })});
       if(stars>0) setRated(true);
       if(restaurantStars>0) setRestaurantRated(true);
@@ -6671,10 +6671,7 @@ function DriverRatingBox({orderRef,lang,accent,accentDark,textColor,mutedColor,c
                   <button key={n} onClick={()=>setRestaurantStars(n)} style={{background:'none',border:'none',cursor:'pointer',fontSize:26,padding:2,filter:n<=restaurantStars?'none':'grayscale(1) opacity(0.35)'}}>⭐</button>
                 ))}
               </div>
-              {restaurantStars>0&&(
-                <textarea value={restaurantComment} onChange={e=>setRestaurantComment(e.target.value)} placeholder={L.placeholder} rows={2}
-                  className="w-full rounded-xl p-2.5 text-xs mb-2" style={{background:cardBg,border:`1px solid ${cardBorder}`,color:textColor,resize:'none' as const}}/>
-              )}
+              {/* zabi 2026-07-12 : note resto = etoiles seules, pas de commentaire */}
             </>
           ) : (
             <p className="text-center text-sm font-bold py-1" style={{color:textColor}}>{L.shopThanks}</p>
