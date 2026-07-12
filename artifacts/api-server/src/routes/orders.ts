@@ -51,6 +51,11 @@ async function ensureDriverRatingColumns() {
     // clients au lieu d'un chiffre fixe hardcode.
     await db.execute(sqlRaw`ALTER TABLE orders ADD COLUMN IF NOT EXISTS restaurant_rating REAL`);
     await db.execute(sqlRaw`ALTER TABLE orders ADD COLUMN IF NOT EXISTS restaurant_comment TEXT`);
+    // Colonnes presentes dans le schema Drizzle mais jamais migrees sur la
+    // base live -> tout SELECT explicite qui les referencait faisait un 500
+    // ("Reçu indisponible" pour toutes les commandes).
+    await db.execute(sqlRaw`ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_method TEXT NOT NULL DEFAULT 'cash'`);
+    await db.execute(sqlRaw`ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_mode TEXT NOT NULL DEFAULT 'delivery'`);
     logger.info("orders driver_rating/driver_comment/reported_issue/restaurant_rating columns verified");
   } catch (err) {
     logger.error({ err }, "Failed to ensure driver rating columns");
@@ -184,6 +189,23 @@ async function notifyRestaurantDashboardCancel(order: typeof ordersTable.$inferS
     });
   } catch (err) {
     logger.warn({ err, ref: order.ref }, "notifyRestaurantDashboardCancel: fetch failed");
+  }
+}
+
+// Coche verte "Récupérée" sur le kanban resto : previent le dashboard
+// restaurateur que le livreur a recupere la commande (colonne "Prêtes").
+async function notifyRestaurantDashboardPickedUp(order: typeof ordersTable.$inferSelect) {
+  if (!order.restaurantName) return;
+  try {
+    const dashboardMatch = await lookupDashboardRestaurant(order.restaurantName);
+    if (!dashboardMatch) return;
+    const url = `${RESTAURANT_DASHBOARD_BASE}/api/webhook/orders/${encodeURIComponent(order.ref)}/picked-up`;
+    await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Bridge-Token": dashboardMatch.token },
+    });
+  } catch (err) {
+    logger.warn({ err, ref: order.ref }, "notifyRestaurantDashboardPickedUp: fetch failed");
   }
 }
 
@@ -375,7 +397,7 @@ router.post("/callbacks/order-status", async (req, res) => {
       rejectionReason?: string | null;
     };
 
-    const allowed = ["accepted", "ready", "rejected", "preparing", "delivered", "cancelled"];
+    const allowed = ["accepted", "ready", "rejected", "preparing", "on_the_way", "delivered", "cancelled"];
     if (!status || !allowed.includes(status)) {
       res.status(400).json({ error: "Statut invalide" }); return;
     }
@@ -421,6 +443,12 @@ router.post("/callbacks/order-status", async (req, res) => {
     };
     if (trackMap[internalStatus]) {
       syncTrackingStatus(updated.ref, trackMap[internalStatus]);
+    }
+
+    // Livreur a recupere la commande -> coche verte "Récupérée" sur le
+    // kanban du restaurateur (colonne Prêtes).
+    if (internalStatus === "on_the_way") {
+      notifyRestaurantDashboardPickedUp(updated).catch(() => {});
     }
 
     // Transmet au livreur assigne (via Livreurs) le delai de preparation choisi
@@ -512,34 +540,33 @@ router.post("/orders/inbound", async (req, res) => {
 router.get("/orders/status/:ref", async (req, res) => {
   try {
     const ref = String(req.params.ref);
-    const [order] = await db.select({
-      ref: ordersTable.ref,
-      status: ordersTable.status,
-      updatedAt: ordersTable.updatedAt,
-      createdAt: ordersTable.createdAt,
-      service: ordersTable.service,
-      driverRating: ordersTable.driverRating,
-      restaurantRating: ordersTable.restaurantRating,
-      // Champs ajoutes (2026-07-10) pour le recu imprimable a l'ecran
-      // "livraison terminee" — pas de donnee sensible (le client consulte
-      // uniquement sa propre commande via son ref, pas le telephone).
-      total: ordersTable.total,
-      restaurantName: ordersTable.restaurantName,
-      customerAddress: ordersTable.customerAddress,
-      customerName: ordersTable.customerName,
-      items: ordersTable.items,
-      paymentMethod: ordersTable.paymentMethod,
-    }).from(ordersTable).where(eq(ordersTable.ref, ref));
-    if (!order) { res.status(404).json({ error: "Commande introuvable" }); return; }
+    // to_jsonb(o) : renvoie TOUTES les colonnes existantes sans jamais
+    // planter sur une colonne manquante (l'ancien SELECT explicite 500ait
+    // si une seule colonne du schema n'existait pas dans la base live ->
+    // "Reçu indisponible" partout).
+    const result = await pool.query(
+      `SELECT to_jsonb(o) AS row FROM orders o WHERE o.ref = $1 LIMIT 1`,
+      [ref]
+    );
+    const raw = (result.rows[0] as { row?: Record<string, unknown> } | undefined)?.row;
+    if (!raw) { res.status(404).json({ error: "Commande introuvable" }); return; }
     res.json({
-      ref: order.ref, status: order.status, updatedAt: order.updatedAt, service: order.service,
-      alreadyRated: order.driverRating != null,
-      alreadyRatedRestaurant: order.restaurantRating != null,
-      createdAt: order.createdAt, total: order.total, restaurantName: order.restaurantName,
-      customerAddress: order.customerAddress, customerName: order.customerName,
-      items: order.items, paymentMethod: order.paymentMethod,
+      ref: raw.ref,
+      status: raw.status,
+      updatedAt: raw.updated_at ?? null,
+      service: raw.service ?? null,
+      alreadyRated: raw.driver_rating != null,
+      alreadyRatedRestaurant: raw.restaurant_rating != null,
+      createdAt: raw.created_at ?? null,
+      total: raw.total ?? null,
+      restaurantName: raw.restaurant_name ?? null,
+      customerAddress: raw.customer_address ?? null,
+      customerName: raw.customer_name ?? null,
+      items: raw.items ?? [],
+      paymentMethod: raw.payment_method ?? "cash",
     });
   } catch (err) {
+    logger.error({ err, ref: req.params.ref }, "orders/status/:ref failed");
     res.status(500).json({ error: "Erreur serveur" });
   }
 });
