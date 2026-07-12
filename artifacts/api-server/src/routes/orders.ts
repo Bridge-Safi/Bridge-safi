@@ -233,7 +233,11 @@ function getApiBase(): string {
   const domains = process.env.REPLIT_DOMAINS ?? "";
   const first = domains.split(",")[0]?.trim();
   if (first) return `https://${first}`;
-  return "https://safi-bridge.ma";
+  // IMPORTANT: toujours avec www — le domaine apex safi-bridge.ma n'existe
+  // PAS en DNS (NXDOMAIN). Un callbackUrl sans www = tous les callbacks du
+  // dashboard restaurateur (accepté / en préparation / prête) perdus, et le
+  // client ne voyait jamais "En préparation" après acceptation du resto.
+  return "https://www.safi-bridge.ma";
 }
 
 // Domaine du nouveau tableau de bord restaurateurs (self-service, un compte
