@@ -34,7 +34,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "artifacts/mockup-sandbox: Component Preview Server"
+args = "artifacts/grado-eats: Dev Server"
 
 [[workflows.workflow]]
 name = "artifacts/mockup-sandbox: Component Preview Server"
@@ -48,3 +48,15 @@ isCanvasWorkflow = true
 task = "shell.exec"
 args = "cd artifacts/mockup-sandbox && PORT=8000 BASE_PATH=/__mockup/ pnpm dev"
 waitForPort = 8000
+
+[[workflows.workflow]]
+name = "artifacts/grado-eats: Dev Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd artifacts/grado-eats && PORT=8080 BASE_PATH=/ pnpm dev"
+waitForPort = 8080

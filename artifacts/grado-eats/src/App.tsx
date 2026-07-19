@@ -7770,7 +7770,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                 }}>
                   <img src={CARD_PHOTOS[item.key]} alt="" loading="lazy"
                     onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
-                    style={{position:'absolute',top:0,left:0,right:0,height:item.key==='taxi'?'82%':'92%',width:'100%',objectFit:'cover',objectPosition:'center',opacity:0.95,transform:item.key==='taxi'?'none':'scale(1.08)',transformOrigin:'center top'}}/>
+                    style={{position:'absolute',top:0,left:0,right:0,height:item.key==='taxi'?'82%':'92%',width:'100%',objectFit:'cover',objectPosition:'center',opacity:0.95,transform:item.key==='taxi'?'none':'scale(1.5)',transformOrigin:'center center'}}/>
                   <div style={{position:'absolute',top:0,left:0,right:0,height:item.key==='taxi'?'82%':'92%',background:'linear-gradient(180deg,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,0.82) 100%)',pointerEvents:'none'}}/>
                   <div style={{position:'absolute',top:0,left:0,right:0,height:'90%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
                   <div style={{position:'absolute',top:0,bottom:0,width:'40%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.07),transparent)',animation:'svcShine 3.5s ease-in-out infinite',pointerEvents:'none'}}/>
@@ -7851,7 +7851,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                   {/* Photo en fond pleine carte */}
                   <img src={CARD_PHOTOS.supermarche} alt="" loading="lazy"
                     onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
-                    style={{position:'absolute',top:0,left:0,right:0,bottom:0,width:'100%',height:'100%',objectFit:'cover',objectPosition:'center',opacity:0.35}}/>
+                    style={{position:'absolute',top:0,left:0,right:0,bottom:0,width:'100%',height:'100%',objectFit:'cover',objectPosition:'center',opacity:0.35,transform:'scale(1.5)',transformOrigin:'center center'}}/>
                   <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
                   <MiniPhotoBadge k="supermarche" emoji="🛒" size={44}/>
                   <div style={{textAlign:'left',flex:1,position:'relative',zIndex:1}}>
@@ -7876,7 +7876,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                   }}>
                     <img src={CARD_PHOTOS.boulangerie} alt="" loading="lazy"
                       onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
-                      style={{position:'absolute',top:0,left:0,right:0,height:'92%',width:'100%',objectFit:'cover',objectPosition:'center',opacity:0.95,transform:'scale(1.08)',transformOrigin:'center top'}}/>
+                      style={{position:'absolute',top:0,left:0,right:0,height:'92%',width:'100%',objectFit:'cover',objectPosition:'center',opacity:0.95,transform:'scale(1.5)',transformOrigin:'center center'}}/>
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'92%',background:'linear-gradient(180deg,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,0.82) 100%)',pointerEvents:'none'}}/>
                     {(()=>{const st=isServiceOpen('boulangerie');return(<div style={{position:'absolute',top:7,right:7,zIndex:10,background:st.open?'rgba(5,150,105,0.82)':'rgba(220,38,38,0.82)',backdropFilter:'blur(10px)',borderRadius:30,padding:'3px 9px',display:'flex',alignItems:'center',gap:4,boxShadow:'0 2px 10px rgba(0,0,0,0.3)',border:'1px solid rgba(255,255,255,0.2)'}}><span style={{width:5,height:5,borderRadius:'50%',background:st.open?'#6EE7B7':'#FCA5A5',display:'inline-block',flexShrink:0,boxShadow:`0 0 6px ${st.open?'#6EE7B7':'#FCA5A5'}`,animation:'pulse2 1.4s ease-in-out infinite'}}/><span style={{color:'#fff',fontSize:8,fontWeight:900,letterSpacing:'0.08em'}}>{st.open?'OUVERT':'FERMÉ'}</span></div>);})()}
                     <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 6px rgba(0,0,0,0.8)',textAlign:'center',position:'relative',zIndex:1}}>Bridge Boulangerie</p>
@@ -7893,7 +7893,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                   }}>
                     <img src={CARD_PHOTOS.souk} alt="" loading="lazy"
                       onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
-                      style={{position:'absolute',top:0,left:0,right:0,height:'92%',width:'100%',objectFit:'cover',objectPosition:'center',opacity:0.95,transform:'scale(1.08)',transformOrigin:'center top'}}/>
+                      style={{position:'absolute',top:0,left:0,right:0,height:'92%',width:'100%',objectFit:'cover',objectPosition:'center',opacity:0.95,transform:'scale(1.5)',transformOrigin:'center center'}}/>
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'92%',background:'linear-gradient(180deg,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,0.82) 100%)',pointerEvents:'none'}}/>
                     {(()=>{const st=isServiceOpen('souk');return(<div style={{position:'absolute',top:7,right:7,zIndex:10,background:st.open?'rgba(5,150,105,0.82)':'rgba(220,38,38,0.82)',backdropFilter:'blur(10px)',borderRadius:30,padding:'3px 9px',display:'flex',alignItems:'center',gap:4,boxShadow:'0 2px 10px rgba(0,0,0,0.3)',border:'1px solid rgba(255,255,255,0.2)'}}><span style={{width:5,height:5,borderRadius:'50%',background:st.open?'#6EE7B7':'#FCA5A5',display:'inline-block',flexShrink:0,boxShadow:`0 0 6px ${st.open?'#6EE7B7':'#FCA5A5'}`,animation:'pulse2 1.4s ease-in-out infinite'}}/><span style={{color:'#fff',fontSize:8,fontWeight:900,letterSpacing:'0.08em'}}>{st.open?'OUVERT':'FERMÉ'}</span></div>);})()}
                     <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 6px rgba(0,0,0,0.8)',textAlign:'center',position:'relative',zIndex:1}}>Bridge Souk</p>

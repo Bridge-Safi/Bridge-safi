@@ -18,19 +18,47 @@ Monorepo pnpm multi-applications :
 - **Notifications** : Twilio (WhatsApp + appels)
 - **Déploiement original** : Railway
 
+## Lancer le projet sur Replit
+
+### Frontend grado-eats (port 8080)
+
+Le workflow **`artifacts/grado-eats: Dev Server`** lance automatiquement le frontend :
+
+```bash
+cd artifacts/grado-eats && PORT=8080 BASE_PATH=/ pnpm dev
+```
+
+Variables d'environnement requises : `PORT` et `BASE_PATH` (déjà configurés dans le workflow).
+
+### Backend api-server (port 8080 en prod / à configurer)
+
+```bash
+cd artifacts/api-server && pnpm dev
+```
+
+Requiert les secrets ci-dessous.
+
 ## Variables d'environnement requises
 
 Voir `.env.railway.example` pour la liste complète :
-- `DATABASE_URL` — PostgreSQL
-- `CLERK_SECRET_KEY` + `VITE_CLERK_PUBLISHABLE_KEY` — Auth Clerk
-- `SESSION_SECRET` — Sessions (déjà configuré dans Replit Secrets)
-- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER` — Notifications
-- `VITE_GOOGLE_MAPS_KEY` — Google Maps (optionnel)
 
-## Images des cartes de services (grado-eats)
+| Variable | Description | Statut |
+|---|---|---|
+| `DATABASE_URL` | PostgreSQL | ⚠️ À configurer |
+| `CLERK_SECRET_KEY` | Auth Clerk (backend) | ⚠️ À configurer |
+| `VITE_CLERK_PUBLISHABLE_KEY` | Auth Clerk (frontend) | ⚠️ À configurer |
+| `SESSION_SECRET` | Sessions Express | ✅ Configuré |
+| `TWILIO_ACCOUNT_SID` | Notifications WhatsApp | ⚠️ Optionnel |
+| `TWILIO_AUTH_TOKEN` | Notifications WhatsApp | ⚠️ Optionnel |
+| `TWILIO_PHONE_NUMBER` | Numéro Twilio | ⚠️ Optionnel |
+| `VITE_GOOGLE_MAPS_KEY` | Google Maps | ⚠️ Optionnel |
 
-Les photos des cartes sont définies dans `artifacts/grado-eats/src/App.tsx` dans `CARD_PHOTOS`.  
+## Photos des cartes de services (grado-eats)
+
+Les photos sont définies dans `artifacts/grado-eats/src/App.tsx` (chercher `CARD_PHOTOS` ~ligne 7530).  
 Les images locales sont dans `artifacts/grado-eats/public/`.
+
+Le zoom des photos est réglé à `scale(1.5)` centré sur le contenu pour toutes les cartes.
 
 ## Préférences utilisateur
 
