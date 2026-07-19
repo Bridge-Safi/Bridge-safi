@@ -7791,9 +7791,9 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                       </div>
                     );
                   })()}
-                  <div style={{background:item.bottom??'rgba(0,0,0,0.7)',padding:'4px 10px 5px',display:'flex',flexDirection:'column',alignItems:'center',gap:1,position:'relative',zIndex:2}}>
-                    <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)',textAlign:'center'}}>{item.label}</p>
-                    <p style={{color:'rgba(255,255,255,0.9)',fontSize:9,fontWeight:700,margin:0,textAlign:'center',letterSpacing:'0.03em'}}>{item.sub}</p>
+                  <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.03em',margin:'0 0 4px',textShadow:'0 2px 8px rgba(0,0,0,0.9)',textAlign:'center',position:'relative',zIndex:2,paddingLeft:8,paddingRight:8}}>{item.label}</p>
+                  <div style={{background:item.bottom??'rgba(0,0,0,0.7)',padding:'3px 14px',display:'flex',alignItems:'center',justifyContent:'center',position:'relative',zIndex:2,width:'100%',boxSizing:'border-box'}}>
+                    <p style={{color:'#fff',fontSize:9,fontWeight:700,margin:0,textAlign:'center',letterSpacing:'0.03em'}}>{item.sub}</p>
                   </div>
                 </div>
               </button>
@@ -7880,9 +7880,9 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                       style={{position:'absolute',top:0,left:0,right:0,height:'92%',width:'100%',objectFit:'cover',objectPosition:'center',opacity:0.95,transform:'scale(1.5)',transformOrigin:'center center'}}/>
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'92%',background:'linear-gradient(180deg,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,0.82) 100%)',pointerEvents:'none'}}/>
                     {(()=>{const st=isServiceOpen('boulangerie');return(<div style={{position:'absolute',top:6,right:6,zIndex:10,background:st.open?'rgba(5,150,105,0.82)':'rgba(220,38,38,0.82)',backdropFilter:'blur(12px)',borderRadius:20,padding:'2px 6px',display:'flex',alignItems:'center',gap:3,boxShadow:'0 1px 6px rgba(0,0,0,0.25)',border:'1px solid rgba(255,255,255,0.18)'}}><span style={{width:4,height:4,borderRadius:'50%',background:st.open?'#6EE7B7':'#FCA5A5',display:'inline-block',flexShrink:0,boxShadow:`0 0 4px ${st.open?'#6EE7B7':'#FCA5A5'}`,animation:'pulse2 1.4s ease-in-out infinite'}}/><span style={{color:'#fff',fontSize:6,fontWeight:800,letterSpacing:'0.06em'}}>{st.open?'OUVERT':'FERMÉ'}</span></div>);})()}
-                    <div style={{background:'#A16207',padding:'4px 10px 5px',display:'flex',flexDirection:'column',alignItems:'center',gap:1,position:'relative',zIndex:2}}>
-                      <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)',textAlign:'center'}}>Bridge Boulangerie</p>
-                      <p style={{color:'rgba(255,255,255,0.9)',fontSize:9,fontWeight:700,margin:0,textAlign:'center',letterSpacing:'0.03em'}}>{t.boulangerieSub}</p>
+                    <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.03em',margin:'0 0 4px',textShadow:'0 2px 8px rgba(0,0,0,0.9)',textAlign:'center',position:'relative',zIndex:2,paddingLeft:8,paddingRight:8}}>Bridge Boulangerie</p>
+                    <div style={{background:'#A16207',padding:'3px 14px',display:'flex',alignItems:'center',justifyContent:'center',position:'relative',zIndex:2,width:'100%',boxSizing:'border-box'}}>
+                      <p style={{color:'#fff',fontSize:9,fontWeight:700,margin:0,textAlign:'center',letterSpacing:'0.03em'}}>{t.boulangerieSub}</p>
                     </div>
                   </div>
                 </button>
@@ -7899,9 +7899,9 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                       style={{position:'absolute',top:0,left:0,right:0,height:'92%',width:'100%',objectFit:'cover',objectPosition:'center',opacity:0.95,transform:'scale(1.5)',transformOrigin:'center center'}}/>
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'92%',background:'linear-gradient(180deg,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,0.82) 100%)',pointerEvents:'none'}}/>
                     {(()=>{const st=isServiceOpen('souk');return(<div style={{position:'absolute',top:6,right:6,zIndex:10,background:st.open?'rgba(5,150,105,0.82)':'rgba(220,38,38,0.82)',backdropFilter:'blur(12px)',borderRadius:20,padding:'2px 6px',display:'flex',alignItems:'center',gap:3,boxShadow:'0 1px 6px rgba(0,0,0,0.25)',border:'1px solid rgba(255,255,255,0.18)'}}><span style={{width:4,height:4,borderRadius:'50%',background:st.open?'#6EE7B7':'#FCA5A5',display:'inline-block',flexShrink:0,boxShadow:`0 0 4px ${st.open?'#6EE7B7':'#FCA5A5'}`,animation:'pulse2 1.4s ease-in-out infinite'}}/><span style={{color:'#fff',fontSize:6,fontWeight:800,letterSpacing:'0.06em'}}>{st.open?'OUVERT':'FERMÉ'}</span></div>);})()}
-                    <div style={{background:'#7E22CE',padding:'4px 10px 5px',display:'flex',flexDirection:'column',alignItems:'center',gap:1,position:'relative',zIndex:2}}>
-                      <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)',textAlign:'center'}}>Bridge Souk</p>
-                      <p style={{color:'rgba(255,255,255,0.9)',fontSize:9,fontWeight:700,margin:0,textAlign:'center',letterSpacing:'0.03em'}}>{t.soukSub}</p>
+                    <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.03em',margin:'0 0 4px',textShadow:'0 2px 8px rgba(0,0,0,0.9)',textAlign:'center',position:'relative',zIndex:2,paddingLeft:8,paddingRight:8}}>Bridge Souk</p>
+                    <div style={{background:'#7E22CE',padding:'3px 14px',display:'flex',alignItems:'center',justifyContent:'center',position:'relative',zIndex:2,width:'100%',boxSizing:'border-box'}}>
+                      <p style={{color:'#fff',fontSize:9,fontWeight:700,margin:0,textAlign:'center',letterSpacing:'0.03em'}}>{t.soukSub}</p>
                     </div>
                   </div>
                 </button>
