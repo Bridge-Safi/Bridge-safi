@@ -7084,8 +7084,8 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
 interface MedEntry {id:string;name:string;desc:string;price:number;cat:'douleur'|'digestif'|'rhume'|'peau'|'vitamines'|'yeux'|'parapharmacie';emoji:string;img?:string;}
 const PHARMA_CATALOG:MedEntry[]=[
   // ── 💊 Douleur & Fièvre ──
-  {id:'doli-500',  name:'Doliprane 500mg',        desc:'Paracétamol 20 cp',         price:12.50, cat:'douleur', emoji:'💊', img:'https://pharmacieposte.fr/61802-product_zoom/doliprane-500mg-cpr-sec-b-16.jpg'},
-  {id:'doli-1000', name:'Doliprane 1000mg',        desc:'Paracétamol 8 cp',          price:17.50, cat:'douleur', emoji:'💊', img:'https://www.pharmacasse.fr/16916-large_default/doliprane-500mg-boite-de-16-comprimes-.jpg'},
+  {id:'doli-500',  name:'Doliprane 500mg',        desc:'Paracétamol 20 cp',         price:12.50, cat:'douleur', emoji:'💊', img:'https://www.pharmaforce.fr/resize/600x600/media/finish/img/normal/39/3400932320189-doliprane-500mg-16-comprimes-a-partir-de-27kg.jpg'},
+  {id:'doli-1000', name:'Doliprane 1000mg',        desc:'Paracétamol 8 cp',          price:17.50, cat:'douleur', emoji:'💊', img:'https://www.pharmashopi.com/media/catalog/product/cache/3c4265fea8008d6bef8197bc9519d338/d/o/doliprane-1000mg-comprimes-1372663029-1.jpg'},
   {id:'effera',    name:'Efferalgan 500mg',         desc:'Effervescent 16 cp',        price:22.00, cat:'douleur', emoji:'🫧', img:'https://www.pharmashopi.com/media/catalog/product/cache/3c4265fea8008d6bef8197bc9519d338/3/4/3400932570010.jpg'},
   {id:'dafal',     name:'Dafalgan 1g Effervescent', desc:'Paracétamol fort 8 cp',     price:23.00, cat:'douleur', emoji:'🫧', img:'https://www.pharmaciepolygone.com/media/cache/original/f2/a9/0f548b08aeb66b4e3357d5877aba.jpeg'},
   {id:'aspegic',   name:'Aspégic 500mg',            desc:'Aspirine sachets ×10',      price:17.50, cat:'douleur', emoji:'💊', img:'https://www.autourdelapharmacie.fr/media/finish/img/normal/65/3400934736155-aspegic-500mg-pdr-sol-buv-b-30sach.jpg'},
