@@ -7529,7 +7529,7 @@ function HoursBadge({k}:{k:string}) {
 // chaque chargement = photos qui mettent du temps à apparaitre sur les cartes).
 const CARD_PHOTOS: Record<string,string> = {
   delivery:    '/cover-eats.png',
-  taxi:        'https://commons.wikimedia.org/wiki/Special:FilePath/Comfort_Hyundai_Sonata_taxi.jpg?width=500', // Taxi Confort moderne (pas luxe), demande zabi 2026-07-10
+  taxi:        '/cover-taxi.jpeg',
   fleurs:      '/cover-fleurs.png',
   tabac:       '/cover-tabac.png',
   pharmacie:   '/cover-pharmacie.png',
