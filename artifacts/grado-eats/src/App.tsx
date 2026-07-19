@@ -7762,21 +7762,17 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                   boxShadow: isPressed
                     ? `0 0 0 3px ${item.glow},0 16px 40px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.25)`
                     : `0 8px 32px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.2)`,
-                  padding:'18px 8px 10px',
-                  display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'flex-end',gap:3,
+                  padding:'0 8px 7px',
+                  display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'flex-end',gap:2,
                   position:'relative',overflow:'hidden',
                   transition:'box-shadow 0.25s,border-color 0.25s',
                   minHeight:108,
                 }}>
-                  {/* Vraie photo en fond — moitié haute de la carte, remplace le logo
-                      (agrandie 56%->64% + carte 92->108, demande zabi 2026-07-10) */}
                   <img src={CARD_PHOTOS[item.key]} alt="" loading="lazy"
                     onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
-                    style={{position:'absolute',top:0,left:0,right:0,height:'64%',width:'100%',objectFit:'cover',opacity:0.9}}/>
-                  <div style={{position:'absolute',top:0,left:0,right:0,height:'64%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
-                  {/* Glass shine */}
-                  <div style={{position:'absolute',top:0,left:0,right:0,height:'63%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
-                  {/* Sweep shine on hover */}
+                    style={{position:'absolute',top:0,left:0,right:0,height:'82%',width:'100%',objectFit:'cover',opacity:0.9}}/>
+                  <div style={{position:'absolute',top:0,left:0,right:0,height:'82%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
+                  <div style={{position:'absolute',top:0,left:0,right:0,height:'80%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
                   <div style={{position:'absolute',top:0,bottom:0,width:'40%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.07),transparent)',animation:'svcShine 3.5s ease-in-out infinite',pointerEvents:'none'}}/>
                   {item.pending&&(
                     <div style={{position:'absolute',top:3,right:isAR?'auto':3,left:isAR?3:'auto',background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'2px 7px',display:'flex',alignItems:'center',gap:3,backdropFilter:'blur(6px)'}}>
@@ -7784,9 +7780,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                       <span style={{color:'#fff',fontSize:7,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
                     </div>
                   )}
-                  <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 6px rgba(0,0,0,0.7)',textAlign:'center',position:'relative',zIndex:1}}>{item.label}</p>
-                  {!item.pending && <HoursBadge k={item.key}/>}
-                  <p style={{color:'rgba(255,255,255,0.85)',fontSize:9,fontWeight:600,margin:0,textAlign:'center',textShadow:'0 1px 4px rgba(0,0,0,0.6)',position:'relative',zIndex:1}}>{item.sub}</p>
+                  <p style={{color:'rgba(255,255,255,0.92)',fontSize:9,fontWeight:700,margin:0,textAlign:'center',textShadow:'0 1px 4px rgba(0,0,0,0.8)',position:'relative',zIndex:1}}>{item.sub}</p>
                 </div>
               </button>
             );
@@ -7894,16 +7888,14 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     background:'linear-gradient(145deg,#422006 0%,#A16207 55%,#FACC15 100%)',
                     borderRadius:18,border:`1.5px solid ${pressed==='boulangerie'?'rgba(255,255,255,0.55)':'rgba(250,204,21,0.45)'}`,
                     boxShadow:pressed==='boulangerie'?'0 0 0 3px rgba(250,204,21,0.5),0 16px 40px rgba(250,204,21,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 8px 32px rgba(161,98,7,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
-                    padding:'18px 8px 10px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'flex-end',gap:3,
+                    padding:'0 8px 7px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'flex-end',gap:2,
                     position:'relative',overflow:'hidden',minHeight:108,
                   }}>
                     <img src={CARD_PHOTOS.boulangerie} alt="" loading="lazy"
                       onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
-                      style={{position:'absolute',top:0,left:0,right:0,height:'64%',width:'100%',objectFit:'cover',opacity:0.9}}/>
-                    <div style={{position:'absolute',top:0,left:0,right:0,height:'64%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
-                    <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 6px rgba(0,0,0,0.7)',textAlign:'center',position:'relative',zIndex:1}}>Bridge Boulangerie</p>
-                    <HoursBadge k="boulangerie"/>
-                    <p style={{color:'rgba(255,255,255,0.85)',fontSize:9,fontWeight:600,margin:0,textAlign:'center',textShadow:'0 1px 4px rgba(0,0,0,0.6)',position:'relative',zIndex:1}}>{t.boulangerieSub}</p>
+                      style={{position:'absolute',top:0,left:0,right:0,height:'82%',width:'100%',objectFit:'cover',opacity:0.9}}/>
+                    <div style={{position:'absolute',top:0,left:0,right:0,height:'82%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
+                    <p style={{color:'rgba(255,255,255,0.92)',fontSize:9,fontWeight:700,margin:0,textAlign:'center',textShadow:'0 1px 4px rgba(0,0,0,0.8)',position:'relative',zIndex:1}}>{t.boulangerieSub}</p>
                   </div>
                 </button>
                 <button onClick={()=>choose('souk')} style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:pressed==='souk'?'scale(0.94)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',animation:'svcFadeUp 0.45s ease-out 0.4s both'}}>
@@ -7911,16 +7903,14 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     background:'linear-gradient(145deg,#3B0764 0%,#7E22CE 55%,#C084FC 100%)',
                     borderRadius:18,border:`1.5px solid ${pressed==='souk'?'rgba(255,255,255,0.55)':'rgba(192,132,252,0.45)'}`,
                     boxShadow:pressed==='souk'?'0 0 0 3px rgba(192,132,252,0.5),0 16px 40px rgba(192,132,252,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 8px 32px rgba(126,34,206,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
-                    padding:'18px 8px 10px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'flex-end',gap:3,
+                    padding:'0 8px 7px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'flex-end',gap:2,
                     position:'relative',overflow:'hidden',minHeight:108,
                   }}>
                     <img src={CARD_PHOTOS.souk} alt="" loading="lazy"
                       onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
-                      style={{position:'absolute',top:0,left:0,right:0,height:'64%',width:'100%',objectFit:'cover',opacity:0.9}}/>
-                    <div style={{position:'absolute',top:0,left:0,right:0,height:'64%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
-                    <p style={{color:'#fff',fontSize:12,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 6px rgba(0,0,0,0.7)',textAlign:'center',position:'relative',zIndex:1}}>Bridge Souk</p>
-                    <HoursBadge k="souk"/>
-                    <p style={{color:'rgba(255,255,255,0.85)',fontSize:9,fontWeight:600,margin:0,textAlign:'center',textShadow:'0 1px 4px rgba(0,0,0,0.6)',position:'relative',zIndex:1}}>{t.soukSub}</p>
+                      style={{position:'absolute',top:0,left:0,right:0,height:'82%',width:'100%',objectFit:'cover',opacity:0.9}}/>
+                    <div style={{position:'absolute',top:0,left:0,right:0,height:'82%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
+                    <p style={{color:'rgba(255,255,255,0.92)',fontSize:9,fontWeight:700,margin:0,textAlign:'center',textShadow:'0 1px 4px rgba(0,0,0,0.8)',position:'relative',zIndex:1}}>{t.soukSub}</p>
                   </div>
                 </button>
               </div>
