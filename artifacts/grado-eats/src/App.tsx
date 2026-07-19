@@ -5152,11 +5152,13 @@ function QRPayModal({lang,amount,onConfirm,onClose}:{lang:Lang;amount?:number;on
 
 // ─── SHARED PAYMENT OPTIONS ────────────────────────────────────────────────────
 
-type PayMethodType='cash'|'card'|'qr'|'apple'|'google'|null;
+type PayMethodType='cash'|'card'|'qr'|'apple'|'google'|'paypal'|null;
 
-function SharedPaymentOptions({lang,amount,selected,onSelect,showCash=true,showCard=false,onWalletPay}:{
+function SharedPaymentOptions({lang,amount,selected,onSelect,showCash=true,showCard=false,showPaypal=true,paypalEmail='',onPaypalEmailChange,onWalletPay}:{
   lang:Lang; amount?:number; selected:PayMethodType; onSelect:(m:PayMethodType)=>void;
-  showCash?:boolean; showCard?:boolean; onWalletPay:(type:'apple'|'google')=>void;
+  showCash?:boolean; showCard?:boolean; showPaypal?:boolean;
+  paypalEmail?:string; onPaypalEmailChange?:(v:string)=>void;
+  onWalletPay:(type:'apple'|'google')=>void;
 }){
   const t=T[lang]; const isAR=lang==='ar'; const fClass=lang==='amz'?'font-tifinagh':'';
   return(
@@ -5230,6 +5232,39 @@ function SharedPaymentOptions({lang,amount,selected,onSelect,showCash=true,showC
             {selected==='card'&&<div className="w-2 h-2 rounded-full bg-white"/>}
           </div>
         </button>
+      )}
+      {/* PayPal */}
+      {showPaypal&&(
+        <>
+          <button onClick={()=>onSelect(selected==='paypal'?null:'paypal')}
+            className="w-full flex items-center gap-3 p-3.5 rounded-2xl mb-2.5 text-left transition-all active:scale-95"
+            style={{background:selected==='paypal'?'#EFF6FF':'var(--c-card)',border:`2px solid ${selected==='paypal'?'#1D4ED8':'var(--c-border)'}`}}>
+            <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{background:selected==='paypal'?'#003087':'var(--c-input)'}}>
+              <span style={{fontWeight:900,fontSize:10,letterSpacing:'-0.5px',lineHeight:1,color:selected==='paypal'?'#fff':'#003087'}}>Pay<span style={{color:selected==='paypal'?'#99c8ff':'#009cde'}}>Pal</span></span>
+            </div>
+            <div className="flex-1 text-left">
+              <p className={`font-black text-sm ${fClass}`} style={{color:selected==='paypal'?'#1D4ED8':'var(--c-text)'}}>PayPal</p>
+              <p className={`text-xs mt-0.5 ${fClass}`} style={{color:'#9CA3AF'}}>{lang==='ar'?'ادفع بـ PayPal · آمن':lang==='en'?'Pay with PayPal · Secure':'Payer via PayPal · Sécurisé'}</p>
+            </div>
+            <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0"
+              style={{borderColor:selected==='paypal'?'#1D4ED8':'#D1D5DB',background:selected==='paypal'?'#1D4ED8':'transparent'}}>
+              {selected==='paypal'&&<div className="w-2 h-2 rounded-full bg-white"/>}
+            </div>
+          </button>
+          {selected==='paypal'&&(
+            <div className="mb-2.5">
+              <input
+                type="email"
+                value={paypalEmail}
+                onChange={e=>onPaypalEmailChange?.(e.target.value)}
+                placeholder={t.paypalPh}
+                className={`w-full px-4 py-3 rounded-xl text-sm font-medium outline-none ${fClass}`}
+                style={{background:'#EFF6FF',border:'1.5px solid #1D4ED8',color:'#1E40AF'}}
+              />
+              <p className={`text-[10px] mt-1 px-1 ${fClass}`} style={{color:'#9CA3AF'}}>{t.paypalEmailLabel}</p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -5311,6 +5346,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
   const [mapPin,setMapPin]=useState<[number,number]|null>(null);
   const [outsideZone,setOutsideZone]=useState(false);
   const [payMethod,setPayMethod]=useState<PayMethodType>(null);
+  const [paypalEmail,setPaypalEmail]=useState(profile.paypalEmail||'');
   const [showQRModal,setShowQRModal]=useState(false);
   const [cardNum,setCardNum]=useState('');
   const [cardExp,setCardExp]=useState(profile.cardExpiry);
@@ -5741,6 +5777,7 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
               <SharedPaymentOptions
                 lang={lang} amount={total} selected={payMethod}
                 onSelect={setPayMethod} showCash={delivMode==='delivery'} showCard
+                paypalEmail={paypalEmail} onPaypalEmailChange={setPaypalEmail}
                 onWalletPay={handleWalletPay}
               />
               <div className="flex items-center gap-2 px-3 py-2 rounded-xl mt-3" style={{background:'var(--c-input)'}}>
@@ -5753,16 +5790,17 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
                   if(!payMethod)return;
                   if(payMethod==='cash'){sendOrderToAPI('cash');sendOrderToDriverApp('cash');handleSuccess();}
                   else if(payMethod==='qr'){sendOrderToAPI('QR Code');setShowQRModal(true);}
+                  else if(payMethod==='paypal'){sendOrderToAPI('PayPal'+(paypalEmail?' · '+paypalEmail:''));sendOrderToDriverApp('PayPal'+(paypalEmail?' · '+paypalEmail:''));handleSuccess();}
                   else{setStep('card');}
                 }}
                 disabled={!payMethod}
                 className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
                 style={{
-                  background:!payMethod?'#E5E1D8':payMethod==='cash'?'#16A34A':payMethod==='qr'?'#065F46':'#4F46E5',
-                  boxShadow:payMethod?`0 6px 20px ${payMethod==='cash'?'rgba(22,163,74,0.3)':payMethod==='qr'?'rgba(6,95,70,0.3)':'rgba(79,70,229,0.3)'}`:'none',
+                  background:!payMethod?'#E5E1D8':payMethod==='cash'?'#16A34A':payMethod==='qr'?'#065F46':payMethod==='paypal'?'#003087':'#4F46E5',
+                  boxShadow:payMethod?`0 6px 20px ${payMethod==='cash'?'rgba(22,163,74,0.3)':payMethod==='qr'?'rgba(6,95,70,0.3)':payMethod==='paypal'?'rgba(0,48,135,0.3)':'rgba(79,70,229,0.3)'}`:'none',
                   cursor:payMethod?'pointer':'not-allowed',
                 }}>
-                {payMethod==='card'?`${t.cardFormTitle} →`:payMethod==='cash'?`✅ ${t.continueBtn}`:payMethod==='qr'?`📲 ${t.qrModalTitle}`:t.continueBtn}
+                {payMethod==='card'?`${t.cardFormTitle} →`:payMethod==='cash'?`✅ ${t.continueBtn}`:payMethod==='qr'?`📲 ${t.qrModalTitle}`:payMethod==='paypal'?`✅ ${t.continueBtn}`:t.continueBtn}
               </button>
             </div>
             {showQRModal&&<QRPayModal lang={lang} amount={total} onClose={()=>setShowQRModal(false)} onConfirm={async()=>{
@@ -7211,6 +7249,7 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
   const [sent,setSent]=useState(false);
   const [orderRef]=useState(()=>`PH-${Math.floor(1000+Math.random()*9000)}`);
   const [payMethod,setPayMethod]=useState<PayMethodType>(null);
+  const [paypalEmail,setPaypalEmail]=useState(profile.paypalEmail||'');
   const [showQR,setShowQR]=useState(false);
   const {user:pharmUser}=useUser();
   const getAuthHeadersPharm=useAuthHeaders();
@@ -7276,7 +7315,7 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
     setSending(true);
     const deliveryAddress=delivMode==='delivery'?`${addr.trim()}, Safi, Maroc`:'Pharmacie Bridge Safi — Retrait sur place';
     const driverTrackUrl=`${window.location.origin}/driver/${orderRef}`;
-    const payInfo=payLabel?payLabel:payMethod==='qr'?'QR Code':payMethod==='cash'?'Espèces':payMethod==='apple'?'Apple Pay':payMethod==='google'?'Google Pay':'Espèces';
+    const payInfo=payLabel?payLabel:payMethod==='qr'?'QR Code':payMethod==='cash'?'Espèces':payMethod==='apple'?'Apple Pay':payMethod==='google'?'Google Pay':payMethod==='paypal'?'PayPal'+(paypalEmail?' · '+paypalEmail:''):'Espèces';
     const itemsList=pharmCart.map(ci=>{const m=PHARMA_CATALOG.find(f=>f.id===ci.id)!;const ep=medPrice(m);return `${m.name} ×${ci.qty} (${ep*ci.qty} DH${isNight?' 🌙':''})`;}).join('\n');
     const notesStr=`💊 Bridge Pharmacie${isNight?' 🌙 NUIT':''}\n${itemsList||'Commande générale'}\n—\nSous-total: ${cartSubtotal} DH\nLivraison: ${DELIV_FEE_PHARM} DH${isNight?' (tarif nuit)':''}\nService: ${SVC_FEE_PHARM} DH\nTotal: ${cartTotal} DH\n💳 ${payInfo}\n👤 ${name.trim()} — ${phone.trim()}`;
     const apiItems=pharmCart.length>0
@@ -7468,7 +7507,7 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
         {!sent&&(
           <div className="w-full rounded-2xl p-4" style={{background:'rgba(255,255,255,0.04)',border:'1.5px solid rgba(165,180,252,0.15)'}}>
             <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#A5B4FC'}}>💳 {lang==='ar'?'طريقة الدفع':lang==='en'?'Payment':'Mode de paiement'}</p>
-            <SharedPaymentOptions lang={lang} selected={payMethod} onSelect={setPayMethod} showCash showCard={false} onWalletPay={handleWalletPay}/>
+            <SharedPaymentOptions lang={lang} selected={payMethod} onSelect={setPayMethod} showCash showCard={false} paypalEmail={paypalEmail} onPaypalEmailChange={setPaypalEmail} onWalletPay={handleWalletPay}/>
           </div>
         )}
 
@@ -8325,6 +8364,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   });
   const [formErr,setFormErr]=useState('');
   const [taxiPayMethod,setTaxiPayMethod]=useState<PayMethodType>(null);
+  const [paypalEmail,setPaypalEmail]=useState('');
   const [showTaxiQR,setShowTaxiQR]=useState(false);
   const {user:taxiUser}=useUser();
   const getAuthHeaders=useAuthHeaders();
@@ -8398,7 +8438,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
     const ref='TC-'+Math.floor(1000+Math.random()*9000);
     const driverTrackUrl=`${window.location.origin}/driver/${ref}`;
     const pickup=clientAddress||'Safi, Maroc';
-    const payInfo=payLabel?payLabel:taxiPayMethod==='qr'?'QR Code':taxiPayMethod==='cash'?'Espèces':taxiPayMethod==='apple'?'Apple Pay':taxiPayMethod==='google'?'Google Pay':'À définir';
+    const payInfo=payLabel?payLabel:taxiPayMethod==='qr'?'QR Code':taxiPayMethod==='cash'?'Espèces':taxiPayMethod==='apple'?'Apple Pay':taxiPayMethod==='google'?'Google Pay':taxiPayMethod==='paypal'?'PayPal'+(paypalEmail?' · '+paypalEmail:''):'À définir';
     try{
       await fetch(`/api/tracking/${ref}`,{
         method:'POST',headers:{'Content-Type':'application/json'},
@@ -8627,7 +8667,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
               <p style={{fontSize:10,fontWeight:900,color:'#78350F',letterSpacing:'0.1em',textTransform:'uppercase' as const,margin:'0 0 11px'}}>
                 💳 {lang==='ar'?'طريقة الدفع':lang==='en'?'Payment method':'Mode de paiement'}
               </p>
-              <SharedPaymentOptions lang={lang} selected={taxiPayMethod} onSelect={setTaxiPayMethod} showCash showCard={false} onWalletPay={handleTaxiWalletPay}/>
+              <SharedPaymentOptions lang={lang} selected={taxiPayMethod} onSelect={setTaxiPayMethod} showCash showCard={false} paypalEmail={paypalEmail} onPaypalEmailChange={setPaypalEmail} onWalletPay={handleTaxiWalletPay}/>
             </div>
             {/* Book CTA */}
             <button onClick={()=>{if(!taxiPayMethod){setFormErr('*pay');return;}handleBook();}} disabled={sending}
@@ -8772,6 +8812,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
   const [bookingRef,setBookingRef]=useState<string>(()=>{try{return localStorage.getItem(vLocalKey)||'';}catch{return '';}});
   const [formErr,setFormErr]=useState('');
   const [motoPayMethod,setMotoPayMethod]=useState<PayMethodType>(null);
+  const [paypalEmail,setPaypalEmail]=useState('');
   const [showMotoQR,setShowMotoQR]=useState(false);
   const {user:motoUser}=useUser();
   const getAuthHeaders=useAuthHeaders();
@@ -8846,7 +8887,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
     const pickup=clientAddress||'Safi, Maroc';
     const offeredPrice=parseFloat(prixProposeMoto)||0;
     const finalPrice=Math.max(0,offeredPrice-motoGemMAD);
-    const payInfoMoto=motoPayMethod==='qr'?'QR Code':motoPayMethod==='cash'?'Espèces':motoPayMethod==='apple'?'Apple Pay':motoPayMethod==='google'?'Google Pay':'Espèces';
+    const payInfoMoto=motoPayMethod==='qr'?'QR Code':motoPayMethod==='cash'?'Espèces':motoPayMethod==='apple'?'Apple Pay':motoPayMethod==='google'?'Google Pay':motoPayMethod==='paypal'?'PayPal'+(paypalEmail?' · '+paypalEmail:''):'Espèces';
     // Le back-end Livreurs (chauffeurs/motards) distingue les livreurs par
     // vehicleType 'car' | 'moto' UNIQUEMENT — jamais 'taxi'. Avant ce fix, une
     // course "Taxi Confort" envoyait vehicleType:'taxi', qui ne correspondait
@@ -9041,7 +9082,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
               <p style={{fontSize:10,fontWeight:900,color:'#9A3412',letterSpacing:'0.1em',textTransform:'uppercase' as const,margin:'0 0 11px'}}>
                 💳 {lang==='ar'?'طريقة الدفع':lang==='en'?'Payment method':'Mode de paiement'}
               </p>
-              <SharedPaymentOptions lang={lang} selected={motoPayMethod} onSelect={setMotoPayMethod} showCash showCard={false} onWalletPay={handleMotoWalletPay}/>
+              <SharedPaymentOptions lang={lang} selected={motoPayMethod} onSelect={setMotoPayMethod} showCash showCard={false} paypalEmail={paypalEmail} onPaypalEmailChange={setPaypalEmail} onWalletPay={handleMotoWalletPay}/>
             </div>
             {prixProposeMoto&&(
               <div style={{borderRadius:14,padding:'12px 16px',background:`linear-gradient(135deg,${isTaxi?'rgba(180,83,9,0.12),rgba(245,158,11,0.06)':'rgba(234,88,12,0.12),rgba(249,115,22,0.06)'})`,border:`1px solid ${isTaxi?'rgba(180,83,9,0.3)':'rgba(234,88,12,0.3)'}`,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
@@ -10031,6 +10072,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   const [sent,setSent]=useState(false);
   const [orderRef]=useState(()=>`TB-${Math.floor(1000+Math.random()*9000)}`);
   const [tabacPayMethod,setTabacPayMethod]=useState<PayMethodType>(null);
+  const [paypalEmail,setPaypalEmail]=useState('');
   const [showTabacQR,setShowTabacQR]=useState(false);
   const {user:tabacUser}=useUser();
   const getAuthHeadersTabac=useAuthHeaders();
@@ -10096,7 +10138,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
     setSending(true);
     const deliveryAddress=delivMode==='delivery'?`${addr.trim()}, Safi, Maroc`:t.tabacCollectAddress;
     const driverTrackUrl=`${window.location.origin}/driver/${orderRef}`;
-    const payInfo=payLabel?payLabel:tabacPayMethod==='qr'?'QR Code':tabacPayMethod==='cash'?'Espèces':tabacPayMethod==='apple'?'Apple Pay':tabacPayMethod==='google'?'Google Pay':'Espèces';
+    const payInfo=payLabel?payLabel:tabacPayMethod==='qr'?'QR Code':tabacPayMethod==='cash'?'Espèces':tabacPayMethod==='apple'?'Apple Pay':tabacPayMethod==='google'?'Google Pay':tabacPayMethod==='paypal'?'PayPal'+(paypalEmail?' · '+paypalEmail:''):'Espèces';
     const itemsList=tabacCart.map(ci=>{const p=TABAC_CATALOG.find(f=>f.id===ci.id)!;const ep=cigPrice(p);return `${p.name} x${ci.qty} (${ep*ci.qty} DH${isNight?' 🌙':''})`; }).join('\n');
     const notesStr=`🚬 Bridge Tabac${isNight?' 🌙 NUIT':''}\n${itemsList||'Commande générale'}\n—\nSous-total: ${cartSubtotal} DH\nLivraison: ${DELIV_FEE} DH${isNight?' (tarif nuit)':''}\nService: ${SVC_FEE} DH\nTotal: ${cartTotal} DH\n💳 ${payInfo}\n👤 ${name.trim()} — ${phone.trim()}`;
     const apiItems=tabacCart.length>0
@@ -10360,7 +10402,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
             <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#065F46'}}>
               💳 {lang==='ar'?'طريقة الدفع':lang==='en'?'Payment method':'Mode de paiement'}
             </p>
-            <SharedPaymentOptions lang={lang} selected={tabacPayMethod} onSelect={setTabacPayMethod} showCash showCard={false} onWalletPay={handleTabacWalletPay}/>
+            <SharedPaymentOptions lang={lang} selected={tabacPayMethod} onSelect={setTabacPayMethod} showCash showCard={false} paypalEmail={paypalEmail} onPaypalEmailChange={setPaypalEmail} onWalletPay={handleTabacWalletPay}/>
           </div>
         )}
 
@@ -10525,6 +10567,7 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
   const [sent,setSent]=useState(false);
   const [orderRef]=useState(()=>`BOUL-${Math.floor(1000+Math.random()*9000)}`);
   const [payMethod,setPayMethod]=useState<PayMethodType>(null);
+  const [paypalEmail,setPaypalEmail]=useState('');
   const [showQR,setShowQR]=useState(false);
   const {user:boulUser}=useUser();
   const getAuthHeadersBoul=useAuthHeaders();
@@ -10586,7 +10629,7 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
     setSending(true);
     const deliveryAddress=delivMode==='delivery'?`${addr.trim()}, Safi, Maroc (GPS: ${boulPos.lat.toFixed(5)},${boulPos.lng.toFixed(5)})`:`${BOUL_VENDOR_META[boulVendor].name} — Retrait sur place`;
     const driverTrackUrl=`${window.location.origin}/driver/${orderRef}`;
-    const payInfo=payLabel?payLabel:payMethod==='qr'?'QR Code':payMethod==='cash'?'Espèces':payMethod==='apple'?'Apple Pay':payMethod==='google'?'Google Pay':'Espèces';
+    const payInfo=payLabel?payLabel:payMethod==='qr'?'QR Code':payMethod==='cash'?'Espèces':payMethod==='apple'?'Apple Pay':payMethod==='google'?'Google Pay':payMethod==='paypal'?'PayPal'+(paypalEmail?' · '+paypalEmail:''):'Espèces';
     const itemsList=boulCart.map(ci=>{const it=BOULANGERIE_CATALOG.find(f=>f.id===ci.id)!;return `${it.name} ×${ci.qty} (${it.price*ci.qty} DH)`;}).join('\\n');
     const notesStr=`🥐 Bridge Boulangerie — ${BOUL_VENDOR_META[boulVendor].name}\\n${itemsList||'Commande générale'}\\n—\\nSous-total: ${cartSubtotal} DH\\nLivraison: ${delivMode==='delivery'?DELIV_FEE_BOUL:0} DH\\nService: ${SVC_FEE_BOUL} DH\\nTotal: ${cartTotal} DH\\n💳 ${payInfo}\\n👤 ${name.trim()} — ${phone.trim()}`;
     const apiItems=boulCart.length>0
@@ -10819,7 +10862,7 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
         {!sent&&(
           <div className="w-full rounded-2xl p-4" style={{background:'rgba(255,255,255,0.04)',border:'1.5px solid rgba(250,204,21,0.15)'}}>
             <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#FDE68A'}}>💳 {lang==='ar'?'طريقة الدفع':lang==='en'?'Payment':'Mode de paiement'}</p>
-            <SharedPaymentOptions lang={lang} selected={payMethod} onSelect={setPayMethod} showCash showCard={false} onWalletPay={handleWalletPay}/>
+            <SharedPaymentOptions lang={lang} selected={payMethod} onSelect={setPayMethod} showCash showCard={false} paypalEmail={paypalEmail} onPaypalEmailChange={setPaypalEmail} onWalletPay={handleWalletPay}/>
           </div>
         )}
 
@@ -10915,6 +10958,7 @@ function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{on
   const [sent,setSent]=useState(false);
   const [orderRef]=useState(()=>`SOUK-${Math.floor(1000+Math.random()*9000)}`);
   const [payMethod,setPayMethod]=useState<PayMethodType>(null);
+  const [paypalEmail,setPaypalEmail]=useState('');
   const [showQR,setShowQR]=useState(false);
   const {user:soukUser}=useUser();
   const getAuthHeadersSouk=useAuthHeaders();
@@ -10975,7 +11019,7 @@ function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{on
     setSending(true);
     const deliveryAddress=delivMode==='delivery'?`${addr.trim()}, Safi, Maroc`:'Bridge Souk — Retrait sur place';
     const driverTrackUrl=`${window.location.origin}/driver/${orderRef}`;
-    const payInfo=payLabel?payLabel:payMethod==='qr'?'QR Code':payMethod==='cash'?'Espèces':payMethod==='apple'?'Apple Pay':payMethod==='google'?'Google Pay':'Espèces';
+    const payInfo=payLabel?payLabel:payMethod==='qr'?'QR Code':payMethod==='cash'?'Espèces':payMethod==='apple'?'Apple Pay':payMethod==='google'?'Google Pay':payMethod==='paypal'?'PayPal'+(paypalEmail?' · '+paypalEmail:''):'Espèces';
     const itemsList=soukCart.map(ci=>{const it=SOUK_CATALOG.find(f=>f.id===ci.id)!;return `${it.name} ×${ci.qty} (${it.price*ci.qty} DH)`;}).join('\\n');
     const notesStr=`🛍️ Bridge Souk\\n${itemsList||'Commande générale'}\\n—\\nSous-total: ${cartSubtotal} DH\\nLivraison: ${delivMode==='delivery'?DELIV_FEE_SOUK:0} DH\\nService: ${SVC_FEE_SOUK} DH\\nTotal: ${cartTotal} DH\\n💳 ${payInfo}\\n👤 ${name.trim()} — ${phone.trim()}`;
     const apiItems=soukCart.length>0
@@ -11203,7 +11247,7 @@ function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{on
         {!sent&&(
           <div className="w-full rounded-2xl p-4" style={{background:'rgba(255,255,255,0.04)',border:'1.5px solid rgba(192,132,252,0.15)'}}>
             <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:'#E9D5FF'}}>💳 {lang==='ar'?'طريقة الدفع':lang==='en'?'Payment':'Mode de paiement'}</p>
-            <SharedPaymentOptions lang={lang} selected={payMethod} onSelect={setPayMethod} showCash showCard={false} onWalletPay={handleWalletPay}/>
+            <SharedPaymentOptions lang={lang} selected={payMethod} onSelect={setPayMethod} showCash showCard={false} paypalEmail={paypalEmail} onPaypalEmailChange={setPaypalEmail} onWalletPay={handleWalletPay}/>
           </div>
         )}
 
@@ -12350,6 +12394,7 @@ function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
   const [sent,setSent]=useState(false);
   const [orderRef]=useState(()=>`MKT-${Math.floor(1000+Math.random()*9000)}`);
   const [payMethod,setPayMethod]=useState<PayMethodType>(null);
+  const [paypalEmail,setPaypalEmail]=useState('');
   const [showQR,setShowQR]=useState(false);
   const {user:mktUser}=useUser();
   const getAuthHeadersMkt=useAuthHeaders();
@@ -12403,7 +12448,7 @@ function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
     setSending(true);
     const deliveryAddress=`${addr.trim()}, Safi, Maroc (GPS: ${mktPos.lat.toFixed(5)},${mktPos.lng.toFixed(5)})`;
     const driverTrackUrl=`${window.location.origin}/driver/${orderRef}`;
-    const payInfo=payLabel?payLabel:payMethod==='qr'?'QR Code':payMethod==='cash'?'Espèces':payMethod==='apple'?'Apple Pay':payMethod==='google'?'Google Pay':'Espèces';
+    const payInfo=payLabel?payLabel:payMethod==='qr'?'QR Code':payMethod==='cash'?'Espèces':payMethod==='apple'?'Apple Pay':payMethod==='google'?'Google Pay':payMethod==='paypal'?'PayPal'+(paypalEmail?' · '+paypalEmail:''):'Espèces';
     const itemsList=mktCart.map(ci=>{const it=activeCatalog.find(f=>f.id===ci.id)!;return `${it.name} ×${ci.qty} (${it.price*ci.qty} DH)`;}).join('\\n');
     const notesStr=`🛒 ${storeLabel}\\n${itemsList||'Commande générale'}\\n—\\nSous-total: ${cartSubtotal} DH\\nLivraison: ${DELIV_FEE_MKT} DH\\nService: ${SVC_FEE_MKT} DH\\nTotal: ${cartTotal} DH\\n💳 ${payInfo}\\n👤 ${name.trim()} — ${phone.trim()}`;
     const apiItems=mktCart.length>0
@@ -12613,7 +12658,7 @@ function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
         {!sent&&(
           <div className="w-full rounded-2xl p-4" style={{background:'rgba(255,255,255,0.05)',border:`1.5px solid ${theme!.cardBorder}`}}>
             <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${fClass}`} style={{color:theme!.accentLight}}>💳 {lang==='ar'?'طريقة الدفع':lang==='en'?'Payment':'Mode de paiement'}</p>
-            <SharedPaymentOptions lang={lang} selected={payMethod} onSelect={setPayMethod} showCash showCard={false} onWalletPay={handleWalletPay}/>
+            <SharedPaymentOptions lang={lang} selected={payMethod} onSelect={setPayMethod} showCash showCard={false} paypalEmail={paypalEmail} onPaypalEmailChange={setPaypalEmail} onWalletPay={handleWalletPay}/>
           </div>
         )}
 
