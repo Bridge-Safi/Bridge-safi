@@ -12,6 +12,9 @@ import { Router, type IRouter } from "express";
 const LIVREUR_PAR_COURSE = Number(process.env.LIVREUR_PAY_MAD ?? 6);
 const SERVICE_FEE = Number(process.env.BRIDGE_SERVICE_FEE_MAD ?? 6.5);
 const PART_LIVRAISON_BRIDGE = Number(process.env.BRIDGE_DELIVERY_SHARE_MAD ?? 6);
+// Commission Bridge sur les ARTICLES (prix bases Glovo) : 6% pour Bridge,
+// 94% reverses au restaurateur (zabi 2026-07-19).
+const COMMISSION_ARTICLES = Number(process.env.BRIDGE_COMMISSION_PCT ?? 6) / 100;
 
 const router: IRouter = Router();
 
@@ -28,9 +31,12 @@ router.get("/finance/summary", async (_req, res) => {
 
     const split = (encaisse: number, commandes: number) => {
       const livreurs = commandes * LIVREUR_PAR_COURSE;
-      const bridge = commandes * (SERVICE_FEE + PART_LIVRAISON_BRIDGE);
-      const restaurateurs = Math.max(0, encaisse - livreurs - bridge);
-      return { encaisse, commandes, bridge, livreurs, restaurateurs };
+      const fraisBridge = commandes * (SERVICE_FEE + PART_LIVRAISON_BRIDGE);
+      const articles = Math.max(0, encaisse - livreurs - fraisBridge);
+      const commissionArticles = articles * COMMISSION_ARTICLES;
+      const restaurateurs = articles - commissionArticles;
+      const bridge = fraisBridge + commissionArticles;
+      return { encaisse, commandes, articles, bridge, commissionArticles, livreurs, restaurateurs };
     };
 
     res.json({
@@ -43,8 +49,22 @@ router.get("/finance/summary", async (_req, res) => {
         fraisService: SERVICE_FEE,
         partLivraisonBridge: PART_LIVRAISON_BRIDGE,
         netBridgeParCommande: SERVICE_FEE + PART_LIVRAISON_BRIDGE,
+        commissionArticlesPct: COMMISSION_ARTICLES * 100,
       },
     });
+  } catch {
+    res.status(502).json({ error: "Manager injoignable" });
+  }
+});
+
+// GET /finance/staff — livreurs réels + paie du mois (proxy Manager, évite le CORS)
+router.get("/finance/staff", async (_req, res) => {
+  try {
+    const r = await fetch("https://manager.safi-bridge.ma/api/dashboard/payroll", {
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!r.ok) { res.status(502).json({ error: "Manager injoignable" }); return; }
+    res.json(await r.json());
   } catch {
     res.status(502).json({ error: "Manager injoignable" });
   }
