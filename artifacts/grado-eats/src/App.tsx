@@ -7313,19 +7313,18 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
         <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(165,180,252,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#A5B4FC',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
         <SharkDiamondWidget onNavigate={()=>navigatePharm('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
       </div>
+      <div style={{position:'fixed',top:12,left:'50%',transform:'translateX(-50%)',zIndex:49,display:'flex',alignItems:'center',gap:8,pointerEvents:'none'}}>
+        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:36,height:36,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(165,180,252,0.5))'}}/>
+        <span style={{fontWeight:900,fontSize:12,letterSpacing:'0.1em',color:'#A5B4FC',textShadow:'0 1px 6px rgba(0,0,0,0.6)'}}>BRIDGE PHARMACIE</span>
+      </div>
 
       {/* Content */}
       <div className={`flex flex-col items-center px-5 pt-20 pb-12 max-w-2xl mx-auto w-full gap-4 ${fClass}`}>
 
         {/* Title */}
         <div className="text-center">
-          <div className="inline-flex items-center gap-3 mb-1">
-            <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:48,height:48,objectFit:'contain',filter:'drop-shadow(0 2px 10px rgba(165,180,252,0.5))'}}/>
-            <div className="text-left">
-              <h1 className={`font-black text-xl tracking-wider mb-0 ${fClass}`} style={{color:'#A5B4FC'}}>BRIDGE PHARMACIE</h1>
-              <p className="text-[10px] tracking-widest font-bold" style={{color:'rgba(165,180,252,0.6)'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
-            </div>
-          </div>
+          <h1 className={`font-black text-xl tracking-wider mb-0.5 ${fClass}`} style={{color:'#A5B4FC'}}>BRIDGE PHARMACIE</h1>
+          <p className="text-[10px] tracking-widest font-bold" style={{color:'rgba(165,180,252,0.6)'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
           {isNight&&<div style={{display:'inline-flex',alignItems:'center',gap:5,background:'rgba(99,102,241,0.2)',border:'1px solid rgba(165,180,252,0.35)',borderRadius:50,padding:'3px 12px',marginTop:6}}>
             <span style={{fontSize:12}}>🌙</span>
             <span style={{color:'#C7D2FE',fontSize:10,fontWeight:900,letterSpacing:'0.12em'}}>TARIF NUIT +{NIGHT_SURCHARGE} DH/méd.</span>
@@ -9673,6 +9672,10 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
         <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(124,58,237,0.15)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#7C3AED',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
         <SharkDiamondWidget onNavigate={()=>navigateFleur('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
       </div>
+      <div style={{position:'fixed',top:12,left:'50%',transform:'translateX(-50%)',zIndex:49,display:'flex',alignItems:'center',gap:8,pointerEvents:'none'}}>
+        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:36,height:36,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(190,24,93,0.5))'}}/>
+        <span style={{fontWeight:900,fontSize:12,letterSpacing:'0.1em',color:'#F9A8D4',textShadow:'0 1px 6px rgba(0,0,0,0.6)'}}>BRIDGE FLEURS</span>
+      </div>
 
       <div className="flex-1 overflow-y-auto pb-36">
 
@@ -9694,7 +9697,6 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
 
             <div className="text-center mb-7 relative" style={{zIndex:1}}>
               <div className="inline-flex items-center gap-3 mb-2">
-                <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:48,height:48,objectFit:'contain',filter:'drop-shadow(0 2px 10px rgba(190,24,93,0.5))'}}/>
                 <div className="text-left">
                   <h1 className="font-black text-2xl tracking-tight" style={{background:'linear-gradient(135deg,#BE185D,#7C3AED)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Bridge Fleurs</h1>
                   <p className="text-[10px] font-black tracking-widest" style={{color:'#A855F7'}}>RÉSERVATION · سافي · SAFI</p>
@@ -10207,19 +10209,18 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
         <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(120,53,15,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--c-text)',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
         <SharkDiamondWidget onNavigate={()=>navigateTabac('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
       </div>
+      <div style={{position:'fixed',top:12,left:'50%',transform:'translateX(-50%)',zIndex:49,display:'flex',alignItems:'center',gap:8,pointerEvents:'none'}}>
+        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:36,height:36,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(180,83,9,0.5))'}}/>
+        <span style={{fontWeight:900,fontSize:12,letterSpacing:'0.1em',color:'#FCD34D',textShadow:'0 1px 6px rgba(0,0,0,0.6)'}}>BRIDGE TABAC</span>
+      </div>
 
       {/* Content */}
       <div className="flex flex-col items-center px-5 pt-20 pb-12 max-w-sm mx-auto w-full gap-4">
 
         {/* Title + night badge */}
         <div className="text-center">
-          <div className="inline-flex items-center gap-3 mb-1">
-            <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:48,height:48,objectFit:'contain',filter:'drop-shadow(0 2px 10px rgba(180,83,9,0.5))'}}/>
-            <div className="text-left">
-              <h1 className={`font-black text-xl tracking-wider mb-0 ${fClass}`} style={{color:'#7D4F2E'}}>BRIDGE TABAC</h1>
-              <p className="text-[10px] tracking-widest font-bold" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
-            </div>
-          </div>
+          <h1 className={`font-black text-xl tracking-wider mb-0.5 ${fClass}`} style={{color:'#7D4F2E'}}>BRIDGE TABAC</h1>
+          <p className="text-[10px] tracking-widest font-bold" style={{color:'#B45309'}}>SAFI · MAROC · آسفي · ⵙⴰⴼⵉ</p>
           {isNight&&<div style={{display:'inline-flex',alignItems:'center',gap:5,background:'rgba(30,10,0,0.9)',border:'1px solid rgba(251,191,36,0.4)',borderRadius:50,padding:'3px 12px',marginTop:6}}>
             <span style={{fontSize:12}}>🌙</span>
             <span style={{color:'#FDE68A',fontSize:10,fontWeight:900,letterSpacing:'0.12em'}}>TARIF NUIT</span>
@@ -10669,13 +10670,14 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
           <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(250,204,21,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#FDE68A',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
           <SharkDiamondWidget onNavigate={()=>navigateBoul('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
         </div>
+      <div style={{position:'fixed',top:12,left:'50%',transform:'translateX(-50%)',zIndex:49,display:'flex',alignItems:'center',gap:8,pointerEvents:'none'}}>
+        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:36,height:36,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(250,204,21,0.6))'}}/>
+        <span style={{fontWeight:900,fontSize:12,letterSpacing:'0.1em',color:'#FDE68A',textShadow:'0 1px 6px rgba(0,0,0,0.6)'}}>BRIDGE BOULANGERIE</span>
+      </div>
 
         <div className={`flex flex-col items-center px-6 pt-24 pb-12 max-w-md mx-auto w-full gap-3 relative ${fClass}`} style={{zIndex:1}}>
           <div className="text-center mb-2">
-            <div className="inline-flex items-center gap-3 mb-2">
-              <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:50,height:50,objectFit:'contain',filter:'drop-shadow(0 2px 10px rgba(250,204,21,0.6))'}}/>
-              <h1 className={`font-black text-2xl tracking-wider mb-0 ${fClass}`} style={{color:'#fff',textShadow:'0 2px 12px rgba(250,204,21,0.6)'}}>BRIDGE BOULANGERIE</h1>
-            </div>
+            <h1 className={`font-black text-2xl tracking-wider mb-1 ${fClass}`} style={{color:'#fff',textShadow:'0 2px 12px rgba(250,204,21,0.6)'}}>BRIDGE BOULANGERIE</h1>
             <p className="text-[11px] tracking-widest font-bold" style={{color:'rgba(253,230,138,0.6)'}}>{lang==='ar'?'اختر المخبزة':lang==='en'?'CHOOSE YOUR BAKERY':'CHOISISSEZ VOTRE BOULANGERIE'} · SAFI</p>
           </div>
 
@@ -11063,13 +11065,14 @@ function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{on
           <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(192,132,252,0.18)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#E9D5FF',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
           <SharkDiamondWidget onNavigate={()=>navigateSouk('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
         </div>
+      <div style={{position:'fixed',top:12,left:'50%',transform:'translateX(-50%)',zIndex:49,display:'flex',alignItems:'center',gap:8,pointerEvents:'none'}}>
+        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:36,height:36,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(192,132,252,0.6))'}}/>
+        <span style={{fontWeight:900,fontSize:12,letterSpacing:'0.1em',color:'#E9D5FF',textShadow:'0 1px 6px rgba(0,0,0,0.6)'}}>BRIDGE SOUK</span>
+      </div>
 
         <div className={`flex flex-col items-center px-6 pt-24 pb-12 max-w-md mx-auto w-full gap-3 relative ${fClass}`} style={{zIndex:1}}>
           <div className="text-center mb-2">
-            <div className="inline-flex items-center gap-3 mb-2">
-              <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:50,height:50,objectFit:'contain',filter:'drop-shadow(0 2px 10px rgba(192,132,252,0.6))'}}/>
-              <h1 className={`font-black text-2xl tracking-wider mb-0 ${fClass}`} style={{color:'#fff',textShadow:'0 2px 12px rgba(192,132,252,0.6)'}}>BRIDGE SOUK</h1>
-            </div>
+            <h1 className={`font-black text-2xl tracking-wider mb-1 ${fClass}`} style={{color:'#fff',textShadow:'0 2px 12px rgba(192,132,252,0.6)'}}>BRIDGE SOUK</h1>
             <p className="text-[11px] tracking-widest font-bold" style={{color:'rgba(233,213,255,0.6)'}}>{lang==='ar'?'اختر الفئة':lang==='en'?'CHOOSE A CATEGORY':'CHOISISSEZ UNE CATÉGORIE'} · SAFI</p>
           </div>
 
@@ -12497,13 +12500,14 @@ function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
           <button onClick={cycleLang} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.14)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#E9D5FF',fontSize:11,fontWeight:900}}>{LANG_LABELS[lang]}</button>
           <SharkDiamondWidget onNavigate={()=>navigateMkt('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
         </div>
+      <div style={{position:'fixed',top:12,left:'50%',transform:'translateX(-50%)',zIndex:49,display:'flex',alignItems:'center',gap:8,pointerEvents:'none'}}>
+        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:36,height:36,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(74,222,128,0.6))'}}/>
+        <span style={{fontWeight:900,fontSize:12,letterSpacing:'0.1em',color:'#86EFAC',textShadow:'0 1px 6px rgba(0,0,0,0.6)'}}>BRIDGE SUPERMARCHÉ</span>
+      </div>
 
         <div className={`flex flex-col items-center px-6 pt-24 pb-12 max-w-md mx-auto w-full gap-3 relative`} style={{zIndex:1}}>
           <div className="text-center mb-2">
-            <div className="inline-flex items-center gap-3 mb-2">
-              <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:50,height:50,objectFit:'contain',filter:'drop-shadow(0 2px 10px rgba(74,222,128,0.6))'}}/>
-              <h1 className={`font-black text-2xl tracking-wider mb-0 ${fClass}`} style={{color:'#fff',textShadow:'0 2px 12px rgba(74,222,128,0.6)'}}>BRIDGE SUPERMARCHÉ</h1>
-            </div>
+            <h1 className={`font-black text-2xl tracking-wider mb-1 ${fClass}`} style={{color:'#fff',textShadow:'0 2px 12px rgba(74,222,128,0.6)'}}>BRIDGE SUPERMARCHÉ</h1>
             <p className="text-[11px] tracking-widest font-bold" style={{color:'rgba(233,213,255,0.6)'}}>CHOISISSEZ VOTRE MAGASIN · SAFI</p>
           </div>
 
