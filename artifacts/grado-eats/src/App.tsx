@@ -7726,24 +7726,24 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
             {key:'delivery' as const, label:'Bridge Eats',  sub:t.deliverySub, emoji:'🍕🍔',
              pending:false, active:true,
              grad:'linear-gradient(145deg,#064E3B 0%,#065F46 45%,#059669 100%)',
-             glow:'rgba(5,150,105,0.55)', border:'rgba(52,211,153,0.45)', pill:'rgba(5,150,105,0.8)'},
+             glow:'rgba(5,150,105,0.55)', border:'rgba(52,211,153,0.45)', pill:'rgba(5,150,105,0.8)', bottom:'#059669'},
             {key:'taxi'     as const, label:'Bridge Taxi',  sub:t.taxiSub,     emoji:'🚖🛵',
              pending:true,
              grad:'linear-gradient(145deg,#78350F 0%,#B45309 55%,#F59E0B 100%)',
-             glow:'rgba(245,158,11,0.45)', border:'rgba(251,191,36,0.45)', pill:'rgba(180,83,9,0.85)'},
+             glow:'rgba(245,158,11,0.45)', border:'rgba(251,191,36,0.45)', pill:'rgba(180,83,9,0.85)', bottom:'#B45309'},
           ];
           const botItems=[
             {key:'fleurs'   as const, label:'Bridge Fleurs',sub:t.fleursSub,   emoji:'🌹',
              pending:false, active:true,
              grad:'linear-gradient(145deg,#831843 0%,#DB2777 55%,#F472B6 100%)',
-             glow:'rgba(219,39,119,0.5)', border:'rgba(244,114,182,0.45)', pill:'rgba(219,39,119,0.8)'},
+             glow:'rgba(219,39,119,0.5)', border:'rgba(244,114,182,0.45)', pill:'rgba(219,39,119,0.8)', bottom:'#DB2777'},
             {key:'tabac'    as const, label:'Bridge Tabac', sub:t.tabacSub,    emoji:'🚬',
              pending:true,
              grad:'linear-gradient(145deg,#1C0A00 0%,#7D4F2E 55%,#A0623A 100%)',
-             glow:'rgba(125,79,46,0.5)', border:'rgba(160,98,58,0.4)', pill:'rgba(125,79,46,0.85)'},
+             glow:'rgba(125,79,46,0.5)', border:'rgba(160,98,58,0.4)', pill:'rgba(125,79,46,0.85)', bottom:'#7D4F2E'},
           ];
           const cardIdx:{[k:string]:number}={delivery:0,taxi:1,fleurs:3,tabac:4};
-          const renderCard=(item:{key:'delivery'|'taxi'|'fleurs'|'tabac'|'pharmacie';label:string;sub:string;emoji:string;pending?:boolean;grad:string;glow:string;border:string;pill?:string;photo?:string})=>{
+          const renderCard=(item:{key:'delivery'|'taxi'|'fleurs'|'tabac'|'pharmacie';label:string;sub:string;emoji:string;pending?:boolean;grad:string;glow:string;border:string;pill?:string;bottom?:string;photo?:string})=>{
             const isPressed=pressed===item.key;
             const idx=cardIdx[item.key]??0;
             return(
@@ -7762,8 +7762,8 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                   boxShadow: isPressed
                     ? `0 0 0 3px ${item.glow},0 16px 40px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.25)`
                     : `0 8px 32px ${item.glow},inset 0 1px 0 rgba(255,255,255,0.2)`,
-                  padding:'8px',
-                  display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:5,
+                  padding:0,
+                  display:'flex',flexDirection:'column',alignItems:'stretch',justifyContent:'flex-end',
                   position:'relative',overflow:'hidden',
                   transition:'box-shadow 0.25s,border-color 0.25s',
                   minHeight:108,
@@ -7792,8 +7792,10 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                       </div>
                     );
                   })()}
-                  <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 2px 8px rgba(0,0,0,0.9)',textAlign:'center',position:'relative',zIndex:1}}>{item.label}</p>
-                  <span style={{background:item.pill??'rgba(0,0,0,0.5)',backdropFilter:'blur(8px)',borderRadius:20,padding:'3px 10px',fontSize:9,fontWeight:800,color:'#fff',textShadow:'0 1px 3px rgba(0,0,0,0.6)',letterSpacing:'0.04em',position:'relative',zIndex:1,border:'1px solid rgba(255,255,255,0.2)'}}>{item.sub}</span>
+                  <div style={{background:item.bottom??'rgba(0,0,0,0.7)',padding:'7px 10px 9px',display:'flex',flexDirection:'column',alignItems:'center',gap:1,position:'relative',zIndex:2}}>
+                    <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)',textAlign:'center'}}>{item.label}</p>
+                    <p style={{color:'rgba(255,255,255,0.9)',fontSize:9,fontWeight:700,margin:0,textAlign:'center',letterSpacing:'0.03em'}}>{item.sub}</p>
+                  </div>
                 </div>
               </button>
             );
@@ -7871,7 +7873,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     background:'linear-gradient(145deg,#422006 0%,#A16207 55%,#FACC15 100%)',
                     borderRadius:18,border:`1.5px solid ${pressed==='boulangerie'?'rgba(255,255,255,0.55)':'rgba(250,204,21,0.45)'}`,
                     boxShadow:pressed==='boulangerie'?'0 0 0 3px rgba(250,204,21,0.5),0 16px 40px rgba(250,204,21,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 8px 32px rgba(161,98,7,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
-                    padding:'8px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:5,
+                    padding:0,display:'flex',flexDirection:'column',alignItems:'stretch',justifyContent:'flex-end',
                     position:'relative',overflow:'hidden',minHeight:108,
                   }}>
                     <img src={CARD_PHOTOS.boulangerie} alt="" loading="lazy"
@@ -7879,8 +7881,10 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                       style={{position:'absolute',top:0,left:0,right:0,height:'92%',width:'100%',objectFit:'cover',objectPosition:'center',opacity:0.95,transform:'scale(1.5)',transformOrigin:'center center'}}/>
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'92%',background:'linear-gradient(180deg,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,0.82) 100%)',pointerEvents:'none'}}/>
                     {(()=>{const st=isServiceOpen('boulangerie');return(<div style={{position:'absolute',top:6,right:6,zIndex:10,background:st.open?'rgba(5,150,105,0.82)':'rgba(220,38,38,0.82)',backdropFilter:'blur(12px)',borderRadius:20,padding:'2px 6px',display:'flex',alignItems:'center',gap:3,boxShadow:'0 1px 6px rgba(0,0,0,0.25)',border:'1px solid rgba(255,255,255,0.18)'}}><span style={{width:4,height:4,borderRadius:'50%',background:st.open?'#6EE7B7':'#FCA5A5',display:'inline-block',flexShrink:0,boxShadow:`0 0 4px ${st.open?'#6EE7B7':'#FCA5A5'}`,animation:'pulse2 1.4s ease-in-out infinite'}}/><span style={{color:'#fff',fontSize:6,fontWeight:800,letterSpacing:'0.06em'}}>{st.open?'OUVERT':'FERMÉ'}</span></div>);})()}
-                    <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 2px 8px rgba(0,0,0,0.9)',textAlign:'center',position:'relative',zIndex:1}}>Bridge Boulangerie</p>
-                    <span style={{background:'rgba(161,98,7,0.82)',backdropFilter:'blur(8px)',borderRadius:20,padding:'3px 10px',fontSize:9,fontWeight:800,color:'#fff',letterSpacing:'0.04em',position:'relative',zIndex:1,border:'1px solid rgba(255,255,255,0.2)'}}>{t.boulangerieSub}</span>
+                    <div style={{background:'#A16207',padding:'7px 10px 9px',display:'flex',flexDirection:'column',alignItems:'center',gap:1,position:'relative',zIndex:2}}>
+                      <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)',textAlign:'center'}}>Bridge Boulangerie</p>
+                      <p style={{color:'rgba(255,255,255,0.9)',fontSize:9,fontWeight:700,margin:0,textAlign:'center',letterSpacing:'0.03em'}}>{t.boulangerieSub}</p>
+                    </div>
                   </div>
                 </button>
                 <button onClick={()=>choose('souk')} style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:pressed==='souk'?'scale(0.94)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',animation:'svcFadeUp 0.45s ease-out 0.4s both'}}>
@@ -7888,7 +7892,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     background:'linear-gradient(145deg,#3B0764 0%,#7E22CE 55%,#C084FC 100%)',
                     borderRadius:18,border:`1.5px solid ${pressed==='souk'?'rgba(255,255,255,0.55)':'rgba(192,132,252,0.45)'}`,
                     boxShadow:pressed==='souk'?'0 0 0 3px rgba(192,132,252,0.5),0 16px 40px rgba(192,132,252,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 8px 32px rgba(126,34,206,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
-                    padding:'8px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:5,
+                    padding:0,display:'flex',flexDirection:'column',alignItems:'stretch',justifyContent:'flex-end',
                     position:'relative',overflow:'hidden',minHeight:108,
                   }}>
                     <img src={CARD_PHOTOS.souk} alt="" loading="lazy"
@@ -7896,8 +7900,10 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                       style={{position:'absolute',top:0,left:0,right:0,height:'92%',width:'100%',objectFit:'cover',objectPosition:'center',opacity:0.95,transform:'scale(1.5)',transformOrigin:'center center'}}/>
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'92%',background:'linear-gradient(180deg,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,0.82) 100%)',pointerEvents:'none'}}/>
                     {(()=>{const st=isServiceOpen('souk');return(<div style={{position:'absolute',top:6,right:6,zIndex:10,background:st.open?'rgba(5,150,105,0.82)':'rgba(220,38,38,0.82)',backdropFilter:'blur(12px)',borderRadius:20,padding:'2px 6px',display:'flex',alignItems:'center',gap:3,boxShadow:'0 1px 6px rgba(0,0,0,0.25)',border:'1px solid rgba(255,255,255,0.18)'}}><span style={{width:4,height:4,borderRadius:'50%',background:st.open?'#6EE7B7':'#FCA5A5',display:'inline-block',flexShrink:0,boxShadow:`0 0 4px ${st.open?'#6EE7B7':'#FCA5A5'}`,animation:'pulse2 1.4s ease-in-out infinite'}}/><span style={{color:'#fff',fontSize:6,fontWeight:800,letterSpacing:'0.06em'}}>{st.open?'OUVERT':'FERMÉ'}</span></div>);})()}
-                    <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 2px 8px rgba(0,0,0,0.9)',textAlign:'center',position:'relative',zIndex:1}}>Bridge Souk</p>
-                    <span style={{background:'rgba(126,34,206,0.82)',backdropFilter:'blur(8px)',borderRadius:20,padding:'3px 10px',fontSize:9,fontWeight:800,color:'#fff',letterSpacing:'0.04em',position:'relative',zIndex:1,border:'1px solid rgba(255,255,255,0.2)'}}>{t.soukSub}</span>
+                    <div style={{background:'#7E22CE',padding:'7px 10px 9px',display:'flex',flexDirection:'column',alignItems:'center',gap:1,position:'relative',zIndex:2}}>
+                      <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.03em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)',textAlign:'center'}}>Bridge Souk</p>
+                      <p style={{color:'rgba(255,255,255,0.9)',fontSize:9,fontWeight:700,margin:0,textAlign:'center',letterSpacing:'0.03em'}}>{t.soukSub}</p>
+                    </div>
                   </div>
                 </button>
               </div>
