@@ -7084,8 +7084,8 @@ function ContactPage({lang,t}:{lang:Lang;t:typeof T.fr}) {
 interface MedEntry {id:string;name:string;desc:string;price:number;cat:'douleur'|'digestif'|'rhume'|'peau'|'vitamines'|'yeux'|'parapharmacie';emoji:string;img?:string;}
 const PHARMA_CATALOG:MedEntry[]=[
   // ── 💊 Douleur & Fièvre ──
-  {id:'doli-500',  name:'Doliprane 500mg',        desc:'Paracétamol 20 cp',         price:12.50, cat:'douleur', emoji:'💊', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Doliprane.jpg/120px-Doliprane.jpg'},
-  {id:'doli-1000', name:'Doliprane 1000mg',        desc:'Paracétamol 8 cp',          price:17.50, cat:'douleur', emoji:'💊', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Doliprane.jpg/120px-Doliprane.jpg'},
+  {id:'doli-500',  name:'Doliprane 500mg',        desc:'Paracétamol 20 cp',         price:12.50, cat:'douleur', emoji:'💊', img:'https://pharmacieposte.fr/61802-product_zoom/doliprane-500mg-cpr-sec-b-16.jpg'},
+  {id:'doli-1000', name:'Doliprane 1000mg',        desc:'Paracétamol 8 cp',          price:17.50, cat:'douleur', emoji:'💊', img:'https://www.pharmacasse.fr/16916-large_default/doliprane-500mg-boite-de-16-comprimes-.jpg'},
   {id:'effera',    name:'Efferalgan 500mg',         desc:'Effervescent 16 cp',        price:22.00, cat:'douleur', emoji:'🫧', img:'https://www.pharmashopi.com/media/catalog/product/cache/3c4265fea8008d6bef8197bc9519d338/3/4/3400932570010.jpg'},
   {id:'dafal',     name:'Dafalgan 1g Effervescent', desc:'Paracétamol fort 8 cp',     price:23.00, cat:'douleur', emoji:'🫧', img:'https://www.pharmaciepolygone.com/media/cache/original/f2/a9/0f548b08aeb66b4e3357d5877aba.jpeg'},
   {id:'aspegic',   name:'Aspégic 500mg',            desc:'Aspirine sachets ×10',      price:17.50, cat:'douleur', emoji:'💊', img:'https://www.autourdelapharmacie.fr/media/finish/img/normal/65/3400934736155-aspegic-500mg-pdr-sol-buv-b-30sach.jpg'},
@@ -7094,7 +7094,7 @@ const PHARMA_CATALOG:MedEntry[]=[
   {id:'voltarene', name:'Voltarène Gel 1%',         desc:'Anti-inflammatoire 50g',    price:57.00, cat:'douleur', emoji:'🧴', img:'https://pharmacie-citypharma.fr/247845-large_default/voltarene-emulgel-1-gel-tube-100g.jpg'},
   // ── 🤢 Digestif & Estomac ──
   {id:'smecta',    name:'Smecta',                   desc:'Diarrhée sachets ×10',      price:38.00, cat:'digestif', emoji:'🟡', img:'https://www.lapharmaciecentrale.fr/8722-large_default/smecta-diosmectite-3-gr-30-sachets-orange-vanille-ipsen.jpg'},
-  {id:'imodium',   name:'Imodium 2mg',              desc:'Loperamide 12 gel',         price:36.00, cat:'digestif', emoji:'💊', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Imodium.jpg/120px-Imodium.jpg'},
+  {id:'imodium',   name:'Imodium 2mg',              desc:'Loperamide 12 gel',         price:36.00, cat:'digestif', emoji:'💊', img:'https://www.pharmashopi.com/media/catalog/product/cache/3c4265fea8008d6bef8197bc9519d338/i/m/imodium-caps-1372663741-1.png'},
   {id:'maalox',    name:'Maalox Suspension',        desc:'Antiacide 250ml',           price:46.50, cat:'digestif', emoji:'🥛', img:'https://www.pharmacie-du-centre-albert.fr/resize/600x600/media/finish/img/normal/34/3400930007648-maalox-menthe-suspension-buvable-flacon-250ml.jpg'},
   {id:'gaviscon',  name:'Gaviscon Advance',          desc:'Brûlures 30 cp',            price:57.00, cat:'digestif', emoji:'💊', img:'https://www.pharmacodel.com/266301-thickbox_default/gaviscon-advance-menthe-sachets-20-x-10-ml.jpg'},
   {id:'lacteol',   name:'Lacteol Fort',             desc:'Probiotique 10 sachets',    price:52.00, cat:'digestif', emoji:'🦠'},
@@ -7112,7 +7112,7 @@ const PHARMA_CATALOG:MedEntry[]=[
   // ── 🩹 Plaies & Peau ──
   {id:'biafine',   name:'Biafine Émulsion',         desc:'Brûlures 93g',              price:59.50, cat:'peau', emoji:'🧴', img:'https://www.pharmacie-du-centre-albert.fr/resize/600x600/media/finish/img/normal/80/3400932857012-biafine-emulsion-pour-application-cutanee-tube-de186-g-grand-modele.jpg'},
   {id:'bepanthen', name:'Bepanthen Pommade',        desc:'Cicatrisant 100g',          price:70.00, cat:'peau', emoji:'🧴', img:'https://www.pharmacie-randanne.com/resize/600x600/media/randanne/finish/img/normal/21/3400935940179-bepanthen-5-pom-tub-100g.jpg'},
-  {id:'betadine',  name:'Bétadine Solution',        desc:'Antiseptique 125ml',        price:41.00, cat:'peau', emoji:'🟤', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Betadine.jpg/120px-Betadine.jpg'},
+  {id:'betadine',  name:'Bétadine Solution',        desc:'Antiseptique 125ml',        price:41.00, cat:'peau', emoji:'🟤', img:'https://www.pharmashopi.com/media/catalog/product/cache/3c4265fea8008d6bef8197bc9519d338/b/e/betadine-jaune-1378918079.png'},
   {id:'flammazine',name:'Flammazine Crème',         desc:'Brûlures graves 50g',       price:77.50, cat:'peau', emoji:'🧴'},
   {id:'cicatryl',  name:'Cicatryl Pommade',         desc:'Cicatrisant 50g',           price:48.50, cat:'peau', emoji:'🧴'},
   {id:'eau-oxy',   name:'Eau Oxygénée 10vol',       desc:'Antiseptique 250ml',        price:11.00, cat:'peau', emoji:'🫧'},
@@ -7135,7 +7135,7 @@ const PHARMA_CATALOG:MedEntry[]=[
   {id:'mustela-lait',   name:'Mustela Lait Hydratant Bébé', desc:'Corps bébé 300ml',           price:91.00,  cat:'parapharmacie', emoji:'🍼'},
   {id:'mustela-lini',   name:'Mustela Liniment Oléo-Calcaire', desc:'Change bébé 500ml',       price:59.00,  cat:'parapharmacie', emoji:'🍼'},
   {id:'bepanthen-baby', name:'Bepanthen Baby Crème Change', desc:'Érythème fessier 100g',      price:64.00,  cat:'parapharmacie', emoji:'🍼'},
-  {id:'sensodyne',      name:'Sensodyne Dentifrice',       desc:'Dents sensibles 75ml',        price:48.00,  cat:'parapharmacie', emoji:'🦷', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Sensodyne%20toothpaste%20Iran.jpg?width=200'},
+  {id:'sensodyne',      name:'Sensodyne Dentifrice',       desc:'Dents sensibles 75ml',        price:48.00,  cat:'parapharmacie', emoji:'🦷', img:'https://www.pharmacie-prado-mermoz.com/client/840002/media/files/SENSODYNE-Dentifrice-Expert-Protect-Sensibilite-Gencives-Tube-75ml-45523_1_1749051444.jpg'},
   {id:'signal',         name:'Signal Dentifrice',          desc:'Protection complète 75ml',    price:27.00,  cat:'parapharmacie', emoji:'🦷'},
   {id:'cetaphil',       name:'Cetaphil Gel Nettoyant',     desc:'Peau sensible 125ml',         price:117.50, cat:'parapharmacie', emoji:'🧴', img:'https://www.pharmacodel.com/96412-thickbox_default/cetaphil-nettoyant-visage-237-ml.jpg'},
   {id:'klorane',        name:'Klorane Shampooing',         desc:'Usage fréquent 200ml',        price:80.50,  cat:'parapharmacie', emoji:'🧴', img:'https://media.pharmaciedesdrakkars.com/media/images/products/w-1280-h-1280-zc-2-klorane-shampooing-a-l-ortie-seboreducteur-klorane12-1767871461.jpg.webp'},
