@@ -7534,7 +7534,7 @@ const CARD_PHOTOS: Record<string,string> = {
   tabac:       'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Cigarettes_in_a_cigarette_packet_%28close-up%29.JPG/500px-Cigarettes_in_a_cigarette_packet_%28close-up%29.JPG',
   pharmacie:   'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Highland_Park_Pharmacy_interior_01.jpg/330px-Highland_Park_Pharmacy_interior_01.jpg',
   supermarche: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Supermarket_shelves.jpg/500px-Supermarket_shelves.jpg',
-  boulangerie: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Khobz.jpg/500px-Khobz.jpg',
+  boulangerie: '/cover-boulangerie.png',
   souk:        '/cover-souk.png',
 };
 function MiniPhotoBadge({k,emoji,size=38}:{k:string;emoji:string;size?:number}) {
