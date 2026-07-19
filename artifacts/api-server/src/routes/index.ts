@@ -12,6 +12,7 @@ import couponsRouter from "./coupons";
 import visitsRouter from "./visits";
 import missionsRouter from "./missions";
 import managerRouter from "./manager";
+import financeRouter from "./finance";
 import authRouter from "./auth";
 
 const router: IRouter = Router();
@@ -30,5 +31,6 @@ router.use(couponsRouter);
 router.use(visitsRouter);
 router.use(missionsRouter);
 router.use(managerRouter);
+router.use(financeRouter);
 
 export default router;
