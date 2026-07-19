@@ -7625,8 +7625,8 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
         @keyframes svcShine{0%{left:-100%;}100%{left:200%;}}
         @keyframes svcPulseRed{0%,100%{box-shadow:0 8px 32px rgba(185,28,28,0.35);}50%{box-shadow:0 8px 48px rgba(185,28,28,0.7);}}
       `}</style>
-    
-     {/* Background watermark retire (2026-07-10) : emoji flottants (rose/pilule/taxi/diamant) juges parasites par zabi */}
+      {/* Arabesque background pattern */}
+      <div style={{position:'fixed',inset:0,opacity:0.06,backgroundImage:`url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23065F46' fill-opacity='1'%3E%3Cpath d='M40 0L0 40L40 80L80 40L40 0zm0 14L66 40L40 66L14 40L40 14z'/%3E%3Cpath d='M40 24L56 40L40 56L24 40L40 24z' fill-opacity='0.5'/%3E%3C/g%3E%3C/svg%3E")`,backgroundSize:'80px 80px',pointerEvents:'none',zIndex:0}}/>
       {/* Hub button — TOP CENTER */}
       <div className="absolute top-4 left-1/2 z-50" style={{transform:'translateX(-50%)'}}>
         <button onClick={onBack}
@@ -7666,13 +7666,13 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
       style={{
         background:'linear-gradient(135deg,rgba(6,95,70,0.92),rgba(4,55,38,0.95))',
         backdropFilter:'blur(12px)',color:'#FDFCF9',
-        border:'1.5px solid rgba(217,197,160,0.55)',
-        boxShadow:'0 4px 16px rgba(6,95,70,0.35),inset 0 1px 0 rgba(255,255,255,0.15)',
-        borderRadius:20,padding:'8px 18px',fontSize:11,fontWeight:900,
-        letterSpacing:'0.04em',display:'flex',alignItems:'center',gap:6,cursor:'pointer',
+        border:'1px solid rgba(217,197,160,0.4)',
+        boxShadow:'0 2px 8px rgba(6,95,70,0.25)',
+        borderRadius:20,padding:'5px 12px',fontSize:9,fontWeight:800,
+        letterSpacing:'0.04em',display:'flex',alignItems:'center',gap:4,cursor:'pointer',
       }}
     >
-      <span style={{fontSize:12}}>✦</span>
+      <span style={{fontSize:9}}>✦</span>
       {lang==='ar'?'تسجيل الدخول':lang==='amz'?'ⴰⴽⵛⵎ':'Se connecter'}
     </button>
   </div>
