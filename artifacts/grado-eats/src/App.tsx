@@ -7746,7 +7746,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
              glow:'rgba(125,79,46,0.5)', border:'rgba(160,98,58,0.4)', pill:'rgba(125,79,46,0.85)', bottom:'#7D4F2E'},
           ];
           const cardIdx:{[k:string]:number}={delivery:0,taxi:1,fleurs:3,tabac:4};
-          const renderCard=(item:{key:'delivery'|'taxi'|'fleurs'|'tabac'|'pharmacie';label:string;sub:string;emoji:string;pending?:boolean;grad:string;glow:string;border:string;pill?:string;bottom?:string;photo?:string})=>{
+          const renderCard=(item:{key:'delivery'|'taxi'|'fleurs'|'tabac'|'pharmacie'|'supermarche';label:string;sub:string;emoji:string;pending?:boolean;grad:string;glow:string;border:string;pill?:string;bottom?:string;photo?:string})=>{
             const isPressed=pressed===item.key;
             const idx=cardIdx[item.key]??0;
             return(
@@ -7809,66 +7809,22 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
                 {topItems.map(renderCard)}
               </div>
-              {/* Row 2: Bridge Pharmacie — full width, centered */}
+              {/* Row 2: Pharmacie + Supermarché */}
               {(()=>{
-                const isPh=pressed==='pharmacie';
+                const midItems=[
+                  {key:'pharmacie' as const, label:'Bridge Pharmacie', sub:t.pharmaeSub,    emoji:'💊', pending:true,  grad:'linear-gradient(145deg,#0C0E2B 0%,#1E1B4B 35%,#312E81 65%,#1D4ED8 100%)', glow:'rgba(99,102,241,0.55)',  border:'rgba(99,102,241,0.45)',  bottom:'#4338CA'},
+                  {key:'supermarche' as const, label:'Bridge Supermarché', sub:t.supermarcheSub, emoji:'🛒', pending:false, grad:'linear-gradient(145deg,#450A0A 0%,#7F1D1D 55%,#EF4444 100%)',           glow:'rgba(239,68,68,0.5)',    border:'rgba(239,68,68,0.45)',    bottom:'#DC2626'},
+                ];
                 return(
-                  <button onClick={()=>choose('pharmacie')} style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:isPh?'scale(0.97)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',opacity:0.82,animation:'svcFadeUp 0.45s ease-out 0.16s both'}}>
-                    <div style={{
-                      background:'linear-gradient(145deg,#0C0E2B 0%,#1E1B4B 35%,#312E81 65%,#1D4ED8 100%)',
-                      borderRadius:18,border:`1.5px solid ${isPh?'rgba(255,255,255,0.5)':'rgba(99,102,241,0.5)'}`,
-                      boxShadow:isPh?'0 0 0 3px rgba(99,102,241,0.5),0 16px 40px rgba(99,102,241,0.4),inset 0 1px 0 rgba(255,255,255,0.2)':'0 8px 32px rgba(30,27,75,0.7),inset 0 1px 0 rgba(255,255,255,0.15)',
-                      padding:'14px 12px',display:'flex',alignItems:'center',gap:10,position:'relative',overflow:'hidden',
-                    }}>
-                      <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
-                      {/* Night stars decoration */}
-                      <div style={{position:'absolute',top:5,right:8,fontSize:7,opacity:0.5}}>✨</div>
-                      <div style={{position:'absolute',top:9,right:18,fontSize:5,opacity:0.3}}>★</div>
-                      <div style={{position:'absolute',top:3,right:28,fontSize:6,opacity:0.4}}>✦</div>
-                      <MiniPhotoBadge k="pharmacie" emoji="💊" size={44}/>
-                      <div style={{textAlign:'left',flex:1}}>
-                        <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:1}}>
-                          <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.02em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)'}}>Bridge Pharmacie</p>
-                          <span style={{background:'rgba(239,68,68,0.85)',borderRadius:20,padding:'1px 5px',display:'flex',alignItems:'center',gap:2,flexShrink:0}}>
-                            <span style={{width:3,height:3,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
-                            <span style={{color:'#fff',fontSize:6,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
-                          </span>
-                        </div>
-                        <p style={{color:'rgba(255,255,255,0.8)',fontSize:9,fontWeight:700,margin:'0 0 1px'}}>🌙 Ouverte la nuit · 💊 Disponible 24h/24</p>
-                        <p style={{color:'rgba(255,255,255,0.5)',fontSize:8,margin:0}}>{t.pharmaeSub}</p>
-                      </div>
-                    </div>
-                  </button>
+                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
+                    {midItems.map(renderCard)}
+                  </div>
                 );
               })()}
               {/* Row 3: Fleurs + Tabac */}
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
                 {botItems.map(renderCard)}
               </div>
-              {/* Row 4: Bridge Supermarché — même taille que Pharmacie, photo en fond */}
-              <button onClick={()=>choose('supermarche')} style={{background:'none',border:'none',cursor:'pointer',padding:0,width:'100%',transform:pressed==='supermarche'?'scale(0.94)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',animation:'svcFadeUp 0.45s ease-out 0.24s both'}}>
-                <div style={{
-                  background:'linear-gradient(145deg,#450A0A 0%,#7F1D1D 55%,#EF4444 100%)',
-                  borderRadius:18,border:`1.5px solid ${pressed==='supermarche'?'rgba(255,255,255,0.55)':'rgba(239,68,68,0.5)'}`,
-                  boxShadow:pressed==='supermarche'?'0 0 0 3px rgba(239,68,68,0.5),0 16px 40px rgba(239,68,68,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 6px 20px rgba(127,29,29,0.6),inset 0 1px 0 rgba(255,255,255,0.12)',
-                  padding:'14px 12px',display:'flex',alignItems:'center',gap:10,position:'relative',overflow:'hidden',
-                }}>
-                  {/* Photo en fond pleine carte */}
-                  <img src={CARD_PHOTOS.supermarche} alt="" loading="lazy"
-                    onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
-                    style={{position:'absolute',top:0,left:0,right:0,bottom:0,width:'100%',height:'100%',objectFit:'cover',objectPosition:'center',opacity:0.55,transform:'scale(1.5)',transformOrigin:'center center'}}/>
-                  <div style={{position:'absolute',top:0,left:0,right:0,height:'55%',background:'linear-gradient(180deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
-                  <MiniPhotoBadge k="supermarche" emoji="🛒" size={44}/>
-                  <div style={{textAlign:'left',flex:1,position:'relative',zIndex:1}}>
-                    <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:1}}>
-                      <p style={{color:'#fff',fontSize:13,fontWeight:900,letterSpacing:'0.02em',margin:0,textShadow:'0 1px 4px rgba(0,0,0,0.5)'}}>Bridge Supermarché</p>
-                      <HoursBadge k="supermarche"/>
-                    </div>
-                    <p style={{color:'rgba(255,255,255,0.75)',fontSize:8,fontWeight:600,margin:0}}>{t.supermarcheSub}</p>
-                  </div>
-                  <div style={{color:'rgba(255,255,255,0.5)',fontSize:18,flexShrink:0,position:'relative',zIndex:1}}>›</div>
-                </div>
-              </button>
               {/* Row 5: Boulangerie + Souk — nouvelles cartes (actives) */}
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
                 <button onClick={()=>choose('boulangerie')} style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:pressed==='boulangerie'?'scale(0.94)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',animation:'svcFadeUp 0.45s ease-out 0.32s both'}}>
