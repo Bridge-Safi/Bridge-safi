@@ -58,5 +58,5 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd artifacts/grado-eats && PORT=8080 BASE_PATH=/ pnpm dev"
+args = "cd /home/runner/workspace && pnpm install && cd artifacts/grado-eats && PORT=8080 BASE_PATH=/ pnpm dev"
 waitForPort = 8080
