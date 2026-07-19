@@ -7625,8 +7625,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
         @keyframes svcShine{0%{left:-100%;}100%{left:200%;}}
         @keyframes svcPulseRed{0%,100%{box-shadow:0 8px 32px rgba(185,28,28,0.35);}50%{box-shadow:0 8px 48px rgba(185,28,28,0.7);}}
       `}</style>
-      {/* Arabesque background pattern */}
-      <div style={{position:'fixed',inset:0,opacity:0.06,backgroundImage:`url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23065F46' fill-opacity='1'%3E%3Cpath d='M40 0L0 40L40 80L80 40L40 0zm0 14L66 40L40 66L14 40L40 14z'/%3E%3Cpath d='M40 24L56 40L40 56L24 40L40 24z' fill-opacity='0.5'/%3E%3C/g%3E%3C/svg%3E")`,backgroundSize:'80px 80px',pointerEvents:'none',zIndex:0}}/>
+
       {/* Hub button — TOP CENTER */}
       <div className="absolute top-4 left-1/2 z-50" style={{transform:'translateX(-50%)'}}>
         <button onClick={onBack}
