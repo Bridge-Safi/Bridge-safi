@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area,
@@ -234,6 +234,96 @@ function Slider({ label, value, min, max, step, onChange, unit = "DH" }: {
 }
 
 /* ─────────────────────────────────────── Intelaka tab ── */
+/* ─────────────────────────────────── Réel Tab (synchronisé) ── */
+// Chiffres RÉELS tirés du Manager (toutes les commandes Bridge : Eats, Pharmacie,
+// Tabac, Fleurs, Boulangerie, Souk...). Répartition confirmée par zabi :
+// articles -> restaurateurs · 6,5 DH service -> Bridge · livraison 12 = 6 livreur
+// (fixe toutes distances) + 6 Bridge · surcharge km -> Bridge.
+type FinSplit = { encaisse: number; commandes: number; bridge: number; livreurs: number; restaurateurs: number };
+type FinSummary = {
+  jour: FinSplit; global: FinSplit;
+  params: { livreurParCourse: number; fraisService: number; partLivraisonBridge: number; netBridgeParCommande: number };
+};
+
+function ReelTab() {
+  const [data, setData] = useState<FinSummary | null>(null);
+  const [err, setErr] = useState(false);
+  const [scope, setScope] = useState<"jour" | "global">("jour");
+
+  useEffect(() => {
+    let alive = true;
+    const load = () =>
+      fetch("https://www.safi-bridge.ma/api/finance/summary")
+        .then(r => (r.ok ? r.json() : Promise.reject()))
+        .then(d => { if (alive) { setData(d); setErr(false); } })
+        .catch(() => { if (alive) setErr(true); });
+    load();
+    const t = setInterval(load, 30000);
+    return () => { alive = false; clearInterval(t); };
+  }, []);
+
+  const s = data ? data[scope] : null;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+        <div>
+          <div style={{ fontWeight: 900, fontSize: 18, color: "#0f172a" }}>💸 Revenus réels Bridge</div>
+          <div style={{ fontSize: 12, color: "#64748b" }}>Synchronisé avec Eats · Livreurs · Restaurants (via Manager) — rafraîchi toutes les 30 s</div>
+        </div>
+        <div style={{ marginLeft: "auto", display: "flex", gap: 6, background: "#fff", borderRadius: 12, padding: 4, boxShadow: "0 1px 4px rgb(0 0 0 / .08)" }}>
+          {(["jour", "global"] as const).map(k => (
+            <button key={k} onClick={() => setScope(k)} style={{
+              padding: "8px 16px", borderRadius: 9, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 800,
+              background: scope === k ? "linear-gradient(135deg,#065f46,#10b981)" : "transparent",
+              color: scope === k ? "#fff" : "#64748b",
+            }}>
+              {k === "jour" ? "Aujourd'hui" : "Global"}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {err && (
+        <div style={{ background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.25)", borderRadius: 12, padding: 14, fontSize: 13, color: "#b91c1c" }}>
+          ⚠️ Impossible de joindre le Manager pour le moment — réessaie dans quelques secondes.
+        </div>
+      )}
+
+      {s && data && (
+        <>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
+            <KpiCard label="Encaissé (tous services)" value={fmt(s.encaisse)} sub={`${s.commandes} commande(s) livrée(s)`} gradient={GRADIENT_CARDS[0]} emoji="💰" />
+            <KpiCard label="TON NET BRIDGE" value={fmt(s.bridge)} sub={`${data.params.netBridgeParCommande} DH / commande (6,5 service + 6 livraison)`} gradient={GRADIENT_CARDS[1]} emoji="🚀" />
+            <KpiCard label="Part restaurateurs" value={fmt(s.restaurateurs)} sub="Articles (menus) — 100% reversés" gradient={GRADIENT_CARDS[2]} emoji="🍽️" />
+            <KpiCard label="Gains livreurs" value={fmt(s.livreurs)} sub={`${data.params.livreurParCourse} DH / course, toutes distances`} gradient={GRADIENT_CARDS[3 % GRADIENT_CARDS.length]} emoji="🛵" />
+          </div>
+
+          <div style={{ background: "#fff", borderRadius: 16, padding: 20, boxShadow: "0 1px 6px rgb(0 0 0 / .07)" }}>
+            <div style={{ fontWeight: 800, fontSize: 13, color: "#0f172a", marginBottom: 10 }}>📐 Comment c'est calculé (par commande livrée)</div>
+            {[
+              ["🍽️ Articles (prix Glovo ajustés : Pharmacie +7%, Fleurs −7%)", "→ 100% au restaurateur / commerçant"],
+              ["🧾 Frais de service 6,5 DH", "→ Bridge (toi)"],
+              ["🚚 Frais de livraison 12 DH", "→ 6 DH livreur (fixe, toutes distances) + 6 DH Bridge"],
+              ["🛣️ Surcharge distance 1 DH/km (silencieuse)", "→ Bridge (toi)"],
+            ].map(([a, b]) => (
+              <div key={a as string} style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "8px 0", borderBottom: "1px solid #f1f5f9", fontSize: 12.5 }}>
+                <span style={{ color: "#334155" }}>{a}</span>
+                <span style={{ color: "#059669", fontWeight: 700, textAlign: "right" }}>{b}</span>
+              </div>
+            ))}
+            <div style={{ marginTop: 10, fontSize: 11.5, color: "#64748b" }}>
+              💡 Ton net ≈ <b>12,5 DH × commandes livrées</b> (hors surcharge km). La part restaurateurs = encaissé − 18,5 DH × commandes.
+              Ces chiffres alimentent ta base pour la TVA et l'IS : ton CA imposable = ton net Bridge (pas le total encaissé).
+            </div>
+          </div>
+        </>
+      )}
+      {!s && !err && <div style={{ fontSize: 13, color: "#64748b" }}>Chargement des chiffres réels…</div>}
+    </div>
+  );
+}
+
 function IntelakaTab() {
   const [prixSite, setPrixSite] = useState(8000);
   const [qteSite, setQteSite] = useState(5);
@@ -1377,6 +1467,7 @@ function Sidebar() {
 
 /* ─────────────────────────────────────── App ── */
 const TABS = [
+  { id: "reel",      label: "🔴 Réel · Bridge",    sub: "Synchronisé Eats/Livreurs" },
   { id: "previsions", label: "📈 Prévisions CA",   sub: "Simulateur Intelaka" },
   { id: "charges",   label: "📉 Charges Tech",     sub: "Rentabilité" },
   { id: "tva",       label: "🧾 TVA",              sub: "Déclaration" },
@@ -1386,7 +1477,7 @@ const TABS = [
 ];
 
 export default function App() {
-  const [tab, setTab] = useState("previsions");
+  const [tab, setTab] = useState("reel");
   const [employes, setEmployes] = useState<Employe[]>(EMPLOYES_DEMO);
 
   const [prixSite] = useState(8000);
@@ -1456,6 +1547,7 @@ export default function App() {
           </div>
 
           {/* Content */}
+          {tab === "reel"       && <ReelTab />}
           {tab === "previsions" && <IntelakaTab />}
           {tab === "charges"   && <ChargesTab caTotal={caTotal} />}
           {tab === "tva"       && <TvaTab />}
