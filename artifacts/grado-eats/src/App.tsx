@@ -7799,36 +7799,6 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
           };
           return(
             <div style={{display:'flex',flexDirection:'column',gap:'16px',width:'100%',maxWidth:'100%',padding:'0 8px'}}>
-              {/* SUIVRE MES COMMANDES — juste au-dessus des services */}
-              <button onClick={()=>navigate('/mes-commandes')}
-                style={{
-                  display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,
-                  width:'100%',padding:'14px 18px',borderRadius:18,cursor:'pointer',
-                  background:'linear-gradient(145deg,#0a0a0a 0%,#161616 55%,#0a0a0a 100%)',
-                  border:'1.5px solid rgba(217,197,160,0.4)',
-                  boxShadow:'0 8px 28px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.08)',
-                }}>
-                <div style={{display:'flex',alignItems:'center',gap:10,minWidth:0}}>
-                  <div style={{width:38,height:38,borderRadius:12,background:'rgba(16,185,129,0.15)',border:'1px solid rgba(16,185,129,0.35)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,flexShrink:0}}>📦</div>
-                  <div style={{textAlign:'left',minWidth:0}}>
-                    <p style={{color:'#fff',fontSize:14,fontWeight:900,margin:0}} className={fClass}>
-                      {lang==='ar'?'تتبع طلباتي':lang==='en'?'Track my orders':'Suivre mes commandes'}
-                    </p>
-                    <p style={{color:'rgba(255,255,255,0.55)',fontSize:9,fontWeight:600,margin:'2px 0 0'}} className={fClass}>
-                      {lang==='ar'?'GPS مباشر · وقت الوصول':lang==='en'?'Live GPS · arrival time':'GPS en direct · heure d\'arrivée'}
-                    </p>
-                  </div>
-                </div>
-                {recentOrdersCount>0 ? (
-                  <span style={{background:'#10B981',color:'#04140D',fontSize:11,fontWeight:900,borderRadius:20,padding:'4px 10px',display:'flex',alignItems:'center',gap:4,flexShrink:0}}>
-                    <span style={{width:6,height:6,borderRadius:'50%',background:'#04140D',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
-                    {recentOrdersCount}
-                  </span>
-                ) : (
-                  <span style={{color:'rgba(255,255,255,0.35)',fontSize:14,flexShrink:0}}>{isAR?'←':'→'}</span>
-                )}
-              </button>
-
               {/* Row 1: Eats + Taxi */}
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
                 {topItems.map(renderCard)}
@@ -7928,6 +7898,35 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                   </div>
                 </button>
               </div>
+              {/* SUIVRE MES COMMANDES — entre Boulangerie/Souk et le jeu */}
+              <button onClick={()=>navigate('/mes-commandes')}
+                style={{
+                  display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,
+                  width:'100%',padding:'14px 18px',borderRadius:18,cursor:'pointer',
+                  background:'linear-gradient(145deg,#0a0a0a 0%,#161616 55%,#0a0a0a 100%)',
+                  border:'1.5px solid rgba(217,197,160,0.4)',
+                  boxShadow:'0 8px 28px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.08)',
+                }}>
+                <div style={{display:'flex',alignItems:'center',gap:10,minWidth:0}}>
+                  <div style={{width:38,height:38,borderRadius:12,background:'rgba(16,185,129,0.15)',border:'1px solid rgba(16,185,129,0.35)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,flexShrink:0}}>📦</div>
+                  <div style={{textAlign:'left',minWidth:0}}>
+                    <p style={{color:'#fff',fontSize:14,fontWeight:900,margin:0}} className={fClass}>
+                      {lang==='ar'?'تتبع طلباتي':lang==='en'?'Track my orders':'Suivre mes commandes'}
+                    </p>
+                    <p style={{color:'rgba(255,255,255,0.55)',fontSize:9,fontWeight:600,margin:'2px 0 0'}} className={fClass}>
+                      {lang==='ar'?'GPS مباشر · وقت الوصول':lang==='en'?'Live GPS · arrival time':'GPS en direct · heure d\'arrivée'}
+                    </p>
+                  </div>
+                </div>
+                {recentOrdersCount>0 ? (
+                  <span style={{background:'#10B981',color:'#04140D',fontSize:11,fontWeight:900,borderRadius:20,padding:'4px 10px',display:'flex',alignItems:'center',gap:4,flexShrink:0}}>
+                    <span style={{width:6,height:6,borderRadius:'50%',background:'#04140D',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
+                    {recentOrdersCount}
+                  </span>
+                ) : (
+                  <span style={{color:'rgba(255,255,255,0.35)',fontSize:14,flexShrink:0}}>{isAR?'←':'→'}</span>
+                )}
+              </button>
             </div>
           );
         })()}
