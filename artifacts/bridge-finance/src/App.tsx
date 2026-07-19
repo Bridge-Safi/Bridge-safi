@@ -294,15 +294,15 @@ function ReelTab() {
         <>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
             <KpiCard label="Encaissé (tous services)" value={fmt(s.encaisse)} sub={`${s.commandes} commande(s) livrée(s)`} gradient={GRADIENT_CARDS[0]} emoji="💰" />
-            <KpiCard label="TON NET BRIDGE" value={fmt(s.bridge)} sub={`${data.params.netBridgeParCommande} DH / commande (6,5 service + 6 livraison)`} gradient={GRADIENT_CARDS[1]} emoji="🚀" />
-            <KpiCard label="Part restaurateurs" value={fmt(s.restaurateurs)} sub="Articles (menus) — 100% reversés" gradient={GRADIENT_CARDS[2]} emoji="🍽️" />
+            <KpiCard label="TON NET BRIDGE" value={fmt(s.bridge)} sub="6% des articles + 6,5 service + 6 livraison / commande" gradient={GRADIENT_CARDS[1]} emoji="🚀" />
+            <KpiCard label="Part restaurateurs" value={fmt(s.restaurateurs)} sub="94% des articles (prix basés Glovo)" gradient={GRADIENT_CARDS[2]} emoji="🍽️" />
             <KpiCard label="Gains livreurs" value={fmt(s.livreurs)} sub={`${data.params.livreurParCourse} DH / course, toutes distances`} gradient={GRADIENT_CARDS[3 % GRADIENT_CARDS.length]} emoji="🛵" />
           </div>
 
           <div style={{ background: "#fff", borderRadius: 16, padding: 20, boxShadow: "0 1px 6px rgb(0 0 0 / .07)" }}>
             <div style={{ fontWeight: 800, fontSize: 13, color: "#0f172a", marginBottom: 10 }}>📐 Comment c'est calculé (par commande livrée)</div>
             {[
-              ["🍽️ Articles (prix Glovo ajustés : Pharmacie +7%, Fleurs −7%)", "→ 100% au restaurateur / commerçant"],
+              ["🍽️ Articles (prix basés Glovo)", "→ 94% restaurateur / commerçant · 6% Bridge (toi)"],
               ["🧾 Frais de service 6,5 DH", "→ Bridge (toi)"],
               ["🚚 Frais de livraison 12 DH", "→ 6 DH livreur (fixe, toutes distances) + 6 DH Bridge"],
               ["🛣️ Surcharge distance 1 DH/km (silencieuse)", "→ Bridge (toi)"],
@@ -313,7 +313,7 @@ function ReelTab() {
               </div>
             ))}
             <div style={{ marginTop: 10, fontSize: 11.5, color: "#64748b" }}>
-              💡 Ton net ≈ <b>12,5 DH × commandes livrées</b> (hors surcharge km). La part restaurateurs = encaissé − 18,5 DH × commandes.
+              💡 Ton net = <b>6% des articles + 12,5 DH × commandes livrées</b> (hors surcharge km). Les restaurateurs touchent 94% des articles.
               Ces chiffres alimentent ta base pour la TVA et l'IS : ton CA imposable = ton net Bridge (pas le total encaissé).
             </div>
           </div>
@@ -1478,7 +1478,41 @@ const TABS = [
 
 export default function App() {
   const [tab, setTab] = useState("reel");
-  const [employes, setEmployes] = useState<Employe[]>(EMPLOYES_DEMO);
+  // Personnel synchronisé : les vrais livreurs/chauffeurs (base Manager) avec
+  // leur paie réelle du mois (courses livrées × 6 DH). Les employés ajoutés à
+  // la main (id < 10000) sont conservés.
+  const [employes, setEmployes] = useState<Employe[]>([]);
+  useEffect(() => {
+    let alive = true;
+    const load = () =>
+      fetch("https://www.safi-bridge.ma/api/finance/staff")
+        .then(r => (r.ok ? r.json() : Promise.reject()))
+        .then((rows: { driverId: number; name: string; phone?: string | null; monthDeliveries: number; payMonth: number; totalDeliveries?: number }[]) => {
+          if (!alive || !Array.isArray(rows)) return;
+          setEmployes(prev => {
+            const manuels = prev.filter(e => e.id < 10000);
+            const synced: Employe[] = rows.map(r => ({
+              id: 10000 + r.driverId,
+              nom: r.name,
+              prenom: "",
+              cin: "",
+              tel: r.phone ?? "",
+              role: "Livreur",
+              type: "CDD",
+              salaire: r.payMonth ?? 0,
+              dateDebut: "",
+              duree: `${r.monthDeliveries ?? 0} course(s) ce mois × 6 DH — ${r.totalDeliveries ?? 0} au total`,
+              cnss: "",
+              actif: true,
+            }));
+            return [...synced, ...manuels];
+          });
+        })
+        .catch(() => {});
+    load();
+    const t = setInterval(load, 60000);
+    return () => { alive = false; clearInterval(t); };
+  }, []);
 
   const [prixSite] = useState(8000);
   const [qteSite]  = useState(5);
