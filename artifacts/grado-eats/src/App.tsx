@@ -7528,7 +7528,7 @@ function HoursBadge({k}:{k:string}) {
 // redirection HTTP vers un AUTRE domaine -> connexion TLS supplementaire à
 // chaque chargement = photos qui mettent du temps à apparaitre sur les cartes).
 const CARD_PHOTOS: Record<string,string> = {
-  delivery:    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Pizza.jpg/500px-Pizza.jpg',
+  delivery:    '/cover-eats.png',
   taxi:        'https://commons.wikimedia.org/wiki/Special:FilePath/Comfort_Hyundai_Sonata_taxi.jpg?width=500', // Taxi Confort moderne (pas luxe), demande zabi 2026-07-10
   fleurs:      '/cover-fleurs.png',
   tabac:       '/cover-tabac.png',
