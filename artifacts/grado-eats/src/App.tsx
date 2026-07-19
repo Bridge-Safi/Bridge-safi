@@ -7774,12 +7774,24 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                   <div style={{position:'absolute',top:0,left:0,right:0,height:'82%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
                   <div style={{position:'absolute',top:0,left:0,right:0,height:'80%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
                   <div style={{position:'absolute',top:0,bottom:0,width:'40%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.07),transparent)',animation:'svcShine 3.5s ease-in-out infinite',pointerEvents:'none'}}/>
-                  {item.pending&&(
-                    <div style={{position:'absolute',top:3,right:isAR?'auto':3,left:isAR?3:'auto',background:'rgba(239,68,68,0.92)',borderRadius:20,padding:'2px 7px',display:'flex',alignItems:'center',gap:3,backdropFilter:'blur(6px)'}}>
-                      <span style={{width:4,height:4,borderRadius:'50%',background:'#FCA5A5',display:'inline-block',animation:'pulse2 1.4s ease-in-out infinite'}}/>
-                      <span style={{color:'#fff',fontSize:7,fontWeight:900,letterSpacing:'0.1em'}}>EN ATTENTE</span>
-                    </div>
-                  )}
+                  {/* Bulle moderne haut-droite : OUVERT / EN ATTENTE */}
+                  {(()=>{
+                    const st=isServiceOpen(item.key);
+                    const isPending=item.pending;
+                    const bg=isPending?'rgba(220,38,38,0.82)':st.open?'rgba(5,150,105,0.82)':'rgba(220,38,38,0.82)';
+                    const dot=isPending?'#FCA5A5':st.open?'#6EE7B7':'#FCA5A5';
+                    const label=isPending?'EN ATTENTE':st.open?'OUVERT':'FERMÉ';
+                    return(
+                      <div style={{position:'absolute',top:7,right:isAR?'auto':7,left:isAR?7:'auto',zIndex:10,
+                        background:bg,backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',
+                        borderRadius:30,padding:'3px 9px',display:'flex',alignItems:'center',gap:4,
+                        boxShadow:'0 2px 10px rgba(0,0,0,0.3)',border:'1px solid rgba(255,255,255,0.2)'}}>
+                        <span style={{width:5,height:5,borderRadius:'50%',background:dot,display:'inline-block',flexShrink:0,
+                          boxShadow:`0 0 6px ${dot}`,animation:'pulse2 1.4s ease-in-out infinite'}}/>
+                        <span style={{color:'#fff',fontSize:8,fontWeight:900,letterSpacing:'0.08em',whiteSpace:'nowrap'}}>{label}</span>
+                      </div>
+                    );
+                  })()}
                   <p style={{color:'rgba(255,255,255,0.92)',fontSize:9,fontWeight:700,margin:0,textAlign:'center',textShadow:'0 1px 4px rgba(0,0,0,0.8)',position:'relative',zIndex:1}}>{item.sub}</p>
                 </div>
               </button>
@@ -7895,6 +7907,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                       onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
                       style={{position:'absolute',top:0,left:0,right:0,height:'82%',width:'100%',objectFit:'cover',opacity:0.9}}/>
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'82%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
+                    {(()=>{const st=isServiceOpen('boulangerie');return(<div style={{position:'absolute',top:7,right:7,zIndex:10,background:st.open?'rgba(5,150,105,0.82)':'rgba(220,38,38,0.82)',backdropFilter:'blur(10px)',borderRadius:30,padding:'3px 9px',display:'flex',alignItems:'center',gap:4,boxShadow:'0 2px 10px rgba(0,0,0,0.3)',border:'1px solid rgba(255,255,255,0.2)'}}><span style={{width:5,height:5,borderRadius:'50%',background:st.open?'#6EE7B7':'#FCA5A5',display:'inline-block',flexShrink:0,boxShadow:`0 0 6px ${st.open?'#6EE7B7':'#FCA5A5'}`,animation:'pulse2 1.4s ease-in-out infinite'}}/><span style={{color:'#fff',fontSize:8,fontWeight:900,letterSpacing:'0.08em'}}>{st.open?'OUVERT':'FERMÉ'}</span></div>);})()}
                     <p style={{color:'rgba(255,255,255,0.92)',fontSize:9,fontWeight:700,margin:0,textAlign:'center',textShadow:'0 1px 4px rgba(0,0,0,0.8)',position:'relative',zIndex:1}}>{t.boulangerieSub}</p>
                   </div>
                 </button>
@@ -7910,6 +7923,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                       onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
                       style={{position:'absolute',top:0,left:0,right:0,height:'82%',width:'100%',objectFit:'cover',opacity:0.9}}/>
                     <div style={{position:'absolute',top:0,left:0,right:0,height:'82%',background:'linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0.78) 100%)',pointerEvents:'none'}}/>
+                    {(()=>{const st=isServiceOpen('souk');return(<div style={{position:'absolute',top:7,right:7,zIndex:10,background:st.open?'rgba(5,150,105,0.82)':'rgba(220,38,38,0.82)',backdropFilter:'blur(10px)',borderRadius:30,padding:'3px 9px',display:'flex',alignItems:'center',gap:4,boxShadow:'0 2px 10px rgba(0,0,0,0.3)',border:'1px solid rgba(255,255,255,0.2)'}}><span style={{width:5,height:5,borderRadius:'50%',background:st.open?'#6EE7B7':'#FCA5A5',display:'inline-block',flexShrink:0,boxShadow:`0 0 6px ${st.open?'#6EE7B7':'#FCA5A5'}`,animation:'pulse2 1.4s ease-in-out infinite'}}/><span style={{color:'#fff',fontSize:8,fontWeight:900,letterSpacing:'0.08em'}}>{st.open?'OUVERT':'FERMÉ'}</span></div>);})()}
                     <p style={{color:'rgba(255,255,255,0.92)',fontSize:9,fontWeight:700,margin:0,textAlign:'center',textShadow:'0 1px 4px rgba(0,0,0,0.8)',position:'relative',zIndex:1}}>{t.soukSub}</p>
                   </div>
                 </button>
