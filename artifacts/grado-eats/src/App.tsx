@@ -13614,7 +13614,149 @@ function loadNav() {
   } catch { return null; }
 }
 
-// ─── DESKTOP SIDEBAR MINIMAL (Hub / Service pages) ───────────────────────────
+// ─── DESKTOP TOP NAV (≥768px) ────────────────────────────────────────────────
+// Props optionnels : certaines pages (Hub, ServiceSelect) n'ont pas page/cart/etc.
+function DesktopTopNav({
+  lang,cycleLang,profile,user,goToSignIn,
+  page,setPage,cartCount,setShowCart,
+  setSelectedRestaurant,setService,setShowProfile,
+  onHub,onServices,fClass,t,
+}:{
+  lang:Lang;cycleLang:()=>void;profile:UserProfile;user:any;goToSignIn?:()=>void;
+  page?:string;setPage?:(p:any)=>void;cartCount?:number;setShowCart?:(v:boolean)=>void;
+  setSelectedRestaurant?:(r:any)=>void;setService?:(s:any)=>void;setShowProfile?:(v:boolean)=>void;
+  onHub?:()=>void;onServices?:()=>void;fClass?:string;t?:typeof T.fr;
+}){
+  const {dark}=useDark();
+  const avatarSrc=profile.avatar||user?.imageUrl||null;
+  const initials=(profile.name||'?').split(' ').map((w:string)=>w[0]).join('').toUpperCase().slice(0,2);
+  const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
+  const isAR=lang==='ar';
+
+  const navPill=(label:string,icon:string,isActive:boolean,onClick:()=>void,accent=false)=>(
+    <button onClick={onClick} style={{
+      display:'flex',alignItems:'center',gap:7,
+      padding:'7px 14px',borderRadius:24,border:'none',cursor:'pointer',
+      background:accent?'linear-gradient(135deg,#065F46,#047857)':isActive?'rgba(6,95,70,0.12)':'transparent',
+      color:accent?'#fff':isActive?'#065F46':'var(--c-muted)',
+      fontWeight:800,fontSize:13,whiteSpace:'nowrap' as const,
+      boxShadow:accent?'0 3px 12px rgba(6,95,70,0.25)':isActive?'none':'none',
+      transition:'all 0.18s',
+    }}>
+      <span style={{fontSize:16}}>{icon}</span>
+      <span className={fClass||''}>{label}</span>
+    </button>
+  );
+
+  return(
+    <nav className="desktop-topnav" style={{direction:isAR?'rtl':'ltr'}}>
+
+      {/* ── Logo ── */}
+      <div style={{display:'flex',alignItems:'center',gap:10,flexShrink:0,cursor:'pointer'}}
+        onClick={onHub||(()=>{setPage?.('home');setSelectedRestaurant?.(null);})}>
+        <div style={{width:38,height:38,borderRadius:'50%',overflow:'hidden',
+          border:'2px solid #D9C5A0',boxShadow:'0 3px 12px rgba(6,95,70,0.18)',flexShrink:0}}>
+          <img src="/logo.jpeg" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.9)'}}/>
+        </div>
+        <div style={{lineHeight:1.1}}>
+          <p style={{fontWeight:900,fontSize:13,color:'#065F46',letterSpacing:'0.35em',margin:0}}>
+            {lang==='amz'?'ⴱⵔⵉⴷⵊ':lang==='ar'?'بريدج':'BRIDGE'}
+          </p>
+          <p style={{fontSize:8,color:'#B45309',fontWeight:700,margin:0,letterSpacing:'0.08em'}}>SAFI</p>
+        </div>
+      </div>
+
+      {/* ── Séparateur vertical ── */}
+      <div style={{width:1,height:28,background:'var(--c-border)',flexShrink:0,margin:'0 4px'}}/>
+
+      {/* ── Navigation centrale ── */}
+      <div style={{display:'flex',alignItems:'center',gap:4,flex:1,overflowX:'auto'}}>
+        {onHub&&navPill(lang==='ar'?'الرئيسية':lang==='en'?'Home':'Accueil','⌂',false,onHub)}
+        {onServices&&navPill(lang==='ar'?'الخدمات':lang==='en'?'Services':'Services','🛵',false,onServices,true)}
+        {setPage&&t&&<>
+          {navPill(t.navHome,'🏠',page==='home',()=>{setPage('home');setSelectedRestaurant?.(null);})}
+          {navPill(t.navTrack,'📍',page==='tracking',()=>setPage('tracking'))}
+          {navPill(lang==='ar'?'التواصل':lang==='en'?'Contact':'Contact','📞',page==='contact',()=>setPage('contact'))}
+          <div style={{width:1,height:24,background:'var(--c-border)',margin:'0 4px',flexShrink:0}}/>
+          {navPill(lang==='ar'?'تغيير الخدمة':lang==='en'?'Change service':'Services','🔄',false,()=>setService?.('none'))}
+        </>}
+      </div>
+
+      {/* ── Droite : panier + profil + lang + dark ── */}
+      <div style={{display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
+
+        {/* Panier */}
+        {setShowCart&&(
+          <button onClick={()=>setShowCart(true)} style={{
+            position:'relative',display:'flex',alignItems:'center',gap:7,
+            padding:'8px 16px',borderRadius:24,cursor:'pointer',
+            border:(cartCount||0)>0?'none':'1.5px solid var(--c-border)',
+            background:(cartCount||0)>0?'linear-gradient(135deg,#065F46,#047857)':'var(--c-card)',
+            color:(cartCount||0)>0?'#fff':'var(--c-text)',
+            fontWeight:800,fontSize:13,
+            boxShadow:(cartCount||0)>0?'0 4px 16px rgba(6,95,70,0.28)':'none',
+            transition:'all 0.18s',
+          }}>
+            <span style={{fontSize:17}}>🛒</span>
+            {(cartCount||0)>0&&<span style={{fontWeight:900}}>{cartCount}</span>}
+            {(cartCount||0)>0&&(
+              <span style={{
+                position:'absolute',top:-4,right:-4,
+                width:16,height:16,borderRadius:'50%',
+                background:'#4F46E5',color:'#fff',
+                fontSize:9,fontWeight:900,
+                display:'flex',alignItems:'center',justifyContent:'center',
+                border:'2px solid var(--c-nav)',
+              }}>{cartCount}</span>
+            )}
+          </button>
+        )}
+
+        {/* Profil */}
+        {user?(
+          <button onClick={()=>setShowProfile?.(true)} style={{
+            display:'flex',alignItems:'center',gap:8,
+            padding:'6px 12px 6px 6px',borderRadius:24,border:'1.5px solid var(--c-border)',
+            background:'var(--c-card)',cursor:'pointer',
+          }}>
+            <div style={{width:28,height:28,borderRadius:'50%',overflow:'hidden',
+              border:'1.5px solid #D9C5A0',flexShrink:0,background:'linear-gradient(135deg,#065F46,#059669)',
+              display:'flex',alignItems:'center',justifyContent:'center'}}>
+              {avatarSrc?<img src={avatarSrc} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+                :<span style={{fontSize:10,fontWeight:900,color:'#fff'}}>{initials}</span>}
+            </div>
+            <span style={{fontWeight:800,fontSize:12,color:'var(--c-text)',maxWidth:80,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+              {profile.name||(lang==='ar'?'ملفي':'Profil')}
+            </span>
+          </button>
+        ):(
+          <button onClick={goToSignIn} style={{
+            padding:'8px 16px',borderRadius:24,border:'none',cursor:'pointer',
+            background:'linear-gradient(135deg,#065F46,#047857)',color:'#fff',
+            fontWeight:900,fontSize:12,
+          }}>
+            {lang==='ar'?'تسجيل الدخول':lang==='en'?'Sign in':'Connexion'}
+          </button>
+        )}
+
+        {/* Langue */}
+        <button onClick={cycleLang} style={{
+          padding:'7px 13px',borderRadius:20,border:'1.5px solid var(--c-border)',
+          background:'var(--c-card)',color:'#065F46',fontWeight:900,fontSize:11,cursor:'pointer',
+          minHeight:'auto',flexShrink:0,
+        }}>
+          {LANG_LABELS[lang]}
+        </button>
+
+        {/* Dark mode */}
+        <DarkToggle size={34}/>
+      </div>
+    </nav>
+  );
+}
+
+// ─── DESKTOP SIDEBAR (kept for reference — replaced by DesktopTopNav) ─────────
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function DesktopSidebarHub({lang,cycleLang,profile,user,onServices,onHub}:{
   lang:Lang;cycleLang:()=>void;profile:UserProfile;user:any;
   onServices?:()=>void;onHub?:()=>void;
@@ -13965,21 +14107,21 @@ export default function App() {
     <FloatingHelpWA/></DarkModeCtx.Provider>
   );
 
-  const hubSidebar=<DesktopSidebarHub lang={lang} cycleLang={cycleLang} profile={profile} user={user} onServices={()=>setMode('services')}/>;
-  if(mode==='hub') return <DarkModeCtx.Provider value={dv}>{hubSidebar}<HubPage onServices={()=>setMode('services')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  const hubNav=<DesktopTopNav lang={lang} cycleLang={cycleLang} profile={profile} user={user} goToSignIn={goToSignIn} onServices={()=>setMode('services')}/>;
+  if(mode==='hub') return <DarkModeCtx.Provider value={dv}>{hubNav}<HubPage onServices={()=>setMode('services')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/><FloatingHelpWA/></DarkModeCtx.Provider>;
 
   const backToHub=()=>{setMode('hub');setService('none');};
-  const svcSidebar=<DesktopSidebarHub lang={lang} cycleLang={cycleLang} profile={profile} user={user} onHub={backToHub}/>;
-  if(service==='none') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<ServiceSelectPage onSelect={s=>{if(s==='taxi')setService('taxi-select');else setService(s);}} onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='taxi-select') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<TaxiVehicleSelectPage onBack={()=>setService('none')} onSelect={v=>setService(v)} lang={lang} cycleLang={cycleLang}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='taxi') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<MotoTaxiPage vehicleType='taxi' onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='moto') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<MotoTaxiPage vehicleType='moto' onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='tabac') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='fleurs') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<PharmaciePage onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='boulangerie') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<BoulangeriePage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='souk') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<SoukPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='supermarche') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<SupermarchePage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  const svcNav=<DesktopTopNav lang={lang} cycleLang={cycleLang} profile={profile} user={user} goToSignIn={goToSignIn} onHub={backToHub}/>;
+  if(service==='none') return <DarkModeCtx.Provider value={dv}>{svcNav}<ServiceSelectPage onSelect={s=>{if(s==='taxi')setService('taxi-select');else setService(s);}} onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='taxi-select') return <DarkModeCtx.Provider value={dv}>{svcNav}<TaxiVehicleSelectPage onBack={()=>setService('none')} onSelect={v=>setService(v)} lang={lang} cycleLang={cycleLang}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='taxi') return <DarkModeCtx.Provider value={dv}>{svcNav}<MotoTaxiPage vehicleType='taxi' onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='moto') return <DarkModeCtx.Provider value={dv}>{svcNav}<MotoTaxiPage vehicleType='moto' onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='tabac') return <DarkModeCtx.Provider value={dv}>{svcNav}<TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='fleurs') return <DarkModeCtx.Provider value={dv}>{svcNav}<FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}>{svcNav}<PharmaciePage onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='boulangerie') return <DarkModeCtx.Provider value={dv}>{svcNav}<BoulangeriePage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='souk') return <DarkModeCtx.Provider value={dv}>{svcNav}<SoukPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='supermarche') return <DarkModeCtx.Provider value={dv}>{svcNav}<SupermarchePage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={
@@ -13991,8 +14133,8 @@ export default function App() {
   <DarkModeCtx.Provider value={dv}>
     <div className={`min-h-screen overflow-x-hidden desktop-app-shell ${isAR?'rtl':'ltr'}`} style={{color:'var(--c-text)'}}>
 
-      {/* ── Desktop Sidebar (≥1280px only) ── */}
-      <DesktopSidebar
+      {/* ── Desktop Top Nav (≥768px) ── */}
+      <DesktopTopNav
         lang={lang} t={t} fClass={fClass} page={page} setPage={setPage}
         cartCount={cartCount} setShowCart={setShowCart}
         setSelectedRestaurant={setSelectedRestaurant}

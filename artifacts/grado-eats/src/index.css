@@ -11,6 +11,7 @@
   --c-text:     #1A2F23;
   --c-border:   #E5E1D8;
   --c-muted:    #9CA3AF;
+  --topnav-h:   64px;
 }
 
 html.dark {
@@ -25,25 +26,14 @@ html.dark {
   color-scheme: dark;
 }
 
-html.dark body {
-  background-color: var(--c-bg);
-  color: var(--c-text);
-}
-
-html.dark body::before {
-  opacity: 0.04;
-}
-
-html.dark input,
-html.dark textarea,
-html.dark select {
+html.dark body { background-color: var(--c-bg); color: var(--c-text); }
+html.dark body::before { opacity: 0.04; }
+html.dark input, html.dark textarea, html.dark select {
   background: var(--c-input) !important;
   color: var(--c-text) !important;
   border-color: var(--c-border) !important;
 }
-
-html.dark input::placeholder,
-html.dark textarea::placeholder {
+html.dark input::placeholder, html.dark textarea::placeholder {
   color: var(--c-muted) !important;
 }
 
@@ -59,8 +49,7 @@ html.dark textarea::placeholder {
   }
   body::before {
     content: '';
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background-image: url('/image_1.png');
     background-repeat: repeat;
     background-size: 240px;
@@ -71,110 +60,76 @@ html.dark textarea::placeholder {
   }
   .rtl { direction: rtl; }
   .ltr { direction: ltr; }
-  .font-arabic { font-family: 'Amiri', serif; }
+  .font-arabic   { font-family: 'Amiri', serif; }
   .font-tifinagh { font-family: 'Noto Sans Tifinagh', 'Segoe UI', sans-serif; }
 }
 
 .leaflet-pane { z-index: 1 !important; }
 .leaflet-top, .leaflet-bottom { z-index: 2 !important; }
-
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* ── Focus ring ─────────────────────────────────────────────────────────────── */
-@media (any-hover: none) and (min-width: 1280px),
-       (min-width: 1280px) {
-  :focus-visible {
-    outline: 4px solid #D9C5A0 !important;
-    outline-offset: 3px !important;
-    border-radius: 12px !important;
-    box-shadow: 0 0 0 6px rgba(217,197,160,0.35) !important;
-  }
+/* ── Tablet — mobile column ────────────────────────────────────────────────── */
+@media (min-width: 640px) and (max-width: 767px) {
+  #root > div { max-width: 480px; margin: 0 auto; }
 }
 
-/* ── Tablet — centre l'app comme une colonne mobile ───────────────────────── */
-@media (min-width: 640px) and (max-width: 1279px) {
-  #root > div {
-    max-width: 480px;
-    margin: 0 auto;
-  }
-}
-
-/* ── Desktop sidebar (caché sur mobile/tablette) ───────────────────────────── */
-.desktop-sidebar {
-  display: none;
-}
+/* ── Desktop top-nav utilities (hidden on mobile) ─────────────────────────── */
+.desktop-topnav  { display: none; }
 .mobile-only-block { display: block; }
 .mobile-only-flex  { display: flex;  }
 
-/* ── Desktop / PC / TV ≥ 1280px ────────────────────────────────────────────── */
-@media (min-width: 1280px) {
+/* ════════════════════════════════════════════════════════════════════════════
+   DESKTOP ≥ 768px — top navigation bar layout
+   ════════════════════════════════════════════════════════════════════════════ */
+@media (min-width: 768px) {
 
-  /* ── Sidebar fixe gauche ── */
-  .desktop-sidebar {
+  /* ── Top nav bar ── */
+  .desktop-topnav {
     display: flex !important;
-    flex-direction: column;
+    align-items: center;
     position: fixed;
-    top: 0; left: 0;
-    width: 248px; height: 100vh;
-    z-index: 60;
-    overflow: hidden;
+    top: 0; left: 0; right: 0;
+    height: var(--topnav-h);
+    z-index: 100;
     background: var(--c-nav);
-    border-right: 1px solid var(--c-border);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: 2px 0 24px rgba(6,95,70,0.07);
+    border-bottom: 1px solid var(--c-border);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    padding: 0 20px;
+    gap: 8px;
+    box-shadow: 0 1px 32px rgba(6,95,70,0.06);
   }
 
-  /* ── Masquer les contrôles flottants mobiles ── */
+  /* ── Hide mobile floating controls ── */
   .mobile-only-block { display: none !important; }
   .mobile-only-flex  { display: none !important; }
 
-  /* ── App Eats : décalage pour la sidebar ── */
-  .desktop-app-shell {
-    padding-left: 248px !important;
-  }
-  /* header mobile caché — la sidebar affiche le logo */
-  .desktop-app-shell > header {
-    display: none !important;
-  }
-  /* main : plus de max-width mobile */
+  /* ── Eats app shell : push content below top nav ── */
+  .desktop-app-shell > header { display: none !important; }
   .desktop-app-shell > main {
-    max-width: none !important;
-    padding-left: 32px !important;
-    padding-right: 32px !important;
+    padding-top: calc(var(--topnav-h) + 16px) !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
   }
 
-  /* ── Pages plein-écran (HubPage, ServiceSelectPage) : offset sidebar ── */
+  /* ── Full-screen pages (Hub, ServiceSelect) : below top nav ── */
   .desktop-page-offset {
-    left: 248px !important;
-    width: calc(100vw - 248px) !important;
+    top: var(--topnav-h) !important;
+    left: 0 !important;
     right: 0 !important;
+    width: 100% !important;
+    height: calc(100vh - var(--topnav-h)) !important;
   }
 
-  /* ── Hub page : contenu plus large sur desktop ── */
+  /* ── Hub inner content : wider on desktop ── */
   .hub-content-inner {
-    max-width: 700px !important;
-  }
-  .hub-content-inner > div {
-    gap: 14px !important;
+    max-width: 680px !important;
   }
 
-  /* ── Bottom nav : visible, décalé par la sidebar ── */
-  .tv-hide-on-tv {
-    display: block !important;
-    left: 248px !important;
-  }
-  .tv-hide-on-tv > div {
-    max-width: none !important;
-    padding: 0 32px !important;
-    gap: 0 !important;
-  }
-  .tv-hide-on-tv > div > button {
-    max-width: 120px;
-  }
-
-  /* ── Grille restaurants : 3 colonnes ── */
+  /* ── Restaurant grid : 3 columns ── */
   .tv-grid {
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
@@ -182,40 +137,49 @@ html.dark textarea::placeholder {
     flex-direction: unset !important;
   }
 
-  /* ── Hero banner plus haut ── */
-  .tv-hero { height: 280px !important; }
+  /* ── Hero banner taller ── */
+  .tv-hero { height: 260px !important; }
 
-  /* ── Focus ring accessible ── */
-  :focus-visible {
-    outline: 4px solid #D9C5A0 !important;
-    outline-offset: 3px !important;
-    border-radius: 12px !important;
-    box-shadow: 0 0 0 6px rgba(217,197,160,0.35) !important;
+  /* ── Bottom nav stays visible (user asked to keep it) ── */
+  .tv-hide-on-tv { display: block !important; }
+  .tv-hide-on-tv > div {
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 0 24px !important;
   }
 
-  /* ── Root : pas de max-width global ── */
-  #root > div:not(.desktop-sidebar) {
+  /* ── Root : no global mobile centering ── */
+  #root > div:not(.desktop-topnav) {
     max-width: none !important;
     margin: 0 !important;
   }
+
+  /* ── Search bar wider ── */
+  .desktop-search-expand {
+    max-width: 480px !important;
+    width: 100% !important;
+  }
+
+  /* ── Focus ring ── */
+  :focus-visible {
+    outline: 3px solid #D9C5A0 !important;
+    outline-offset: 2px !important;
+    border-radius: 10px !important;
+  }
 }
 
-@keyframes slideUp {
-  from { transform: translateY(100%); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
+/* ── Larger screens : wider content ── */
+@media (min-width: 1200px) {
+  .tv-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
 }
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-@keyframes pulseDot {
-  0%, 100% { transform: scale(1); }
-  50%       { transform: scale(1.35); }
-}
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
+
+/* ── Animations ─────────────────────────────────────────────────────────────── */
+@keyframes slideUp  { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes fadeIn   { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pulseDot { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.35); } }
+@keyframes spin     { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 .modal-overlay { animation: fadeIn 0.18s ease; }
 .modal-sheet   { animation: slideUp 0.24s cubic-bezier(0.34,1.1,0.64,1); }
