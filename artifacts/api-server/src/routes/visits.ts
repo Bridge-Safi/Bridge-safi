@@ -35,7 +35,7 @@ router.post("/visits/track", async (req, res) => {
   }
 });
 
-/** GET /api/admin/stats?adminKey=... — visitor stats */
+/** GET /api/admin/stats?adminKey=... — visitor + user registration stats */
 router.get("/admin/stats", async (req, res) => {
   if (!checkAdmin(req.query.adminKey)) {
     res.status(401).json({ error: "Clé admin invalide." });
@@ -47,6 +47,7 @@ router.get("/admin/stats", async (req, res) => {
     const weekStart = new Date(dayStart.getTime() - 6 * 86400000);
     const monthStart = new Date(dayStart.getTime() - 29 * 86400000);
 
+    // ── Visitor stats ──
     const [totals] = await db.select({
       totalViews: count(),
       uniqueVisitors: countDistinct(siteVisitsTable.sessionId),
@@ -67,10 +68,10 @@ router.get("/admin/stats", async (req, res) => {
       uniques: countDistinct(siteVisitsTable.sessionId),
     }).from(siteVisitsTable).where(gte(siteVisitsTable.createdAt, monthStart));
 
-    // Last 7 days breakdown
+    // Last 7 days visits breakdown
     const dailyRows = await db.execute(sql`
       SELECT
-        to_char(date_trunc('day', created_at), 'YYYY-MM-DD') AS day,
+        to_char(date_trunc('day', created_at AT TIME ZONE 'Africa/Casablanca'), 'YYYY-MM-DD') AS day,
         COUNT(*)::int AS views,
         COUNT(DISTINCT session_id)::int AS uniques
       FROM site_visits
@@ -79,12 +80,56 @@ router.get("/admin/stats", async (req, res) => {
       ORDER BY 1 DESC
     `);
 
+    // ── User registration stats ──
+    const userStatsRows = await db.execute(sql`
+      SELECT
+        COUNT(*)::int                                                        AS total,
+        COUNT(*) FILTER (WHERE created_at >= ${dayStart})::int              AS today,
+        COUNT(*) FILTER (WHERE created_at >= ${weekStart})::int             AS week,
+        COUNT(*) FILTER (WHERE created_at >= ${monthStart})::int            AS month
+      FROM users
+      WHERE role = 'client'
+    `);
+    const userStats = userStatsRows.rows[0] as { total: number; today: number; week: number; month: number };
+
+    // Last 7 days registrations breakdown
+    const dailyUsersRows = await db.execute(sql`
+      SELECT
+        to_char(date_trunc('day', created_at AT TIME ZONE 'Africa/Casablanca'), 'YYYY-MM-DD') AS day,
+        COUNT(*)::int AS registrations
+      FROM users
+      WHERE created_at >= ${weekStart}
+        AND role = 'client'
+      GROUP BY 1
+      ORDER BY 1 DESC
+    `);
+
+    // Recent registrations list (last 20)
+    const recentUsersRows = await db.execute(sql`
+      SELECT
+        name,
+        COALESCE(phone, email) AS contact,
+        to_char(created_at AT TIME ZONE 'Africa/Casablanca', 'DD/MM/YYYY HH24:MI') AS joined_at
+      FROM users
+      WHERE role = 'client'
+      ORDER BY created_at DESC
+      LIMIT 20
+    `);
+
     res.json({
       total: totals,
       today,
       week,
       month,
       daily: dailyRows.rows,
+      users: {
+        total: userStats.total,
+        today: userStats.today,
+        week: userStats.week,
+        month: userStats.month,
+        daily: dailyUsersRows.rows,
+        recent: recentUsersRows.rows,
+      },
     });
   } catch (err) {
     logger.error({ err }, "stats error");

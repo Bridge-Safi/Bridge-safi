@@ -2466,54 +2466,120 @@ function AdminStatsPanel({ adminKey }: { adminKey: string }) {
   if (err) return <div style={{ marginTop: 24, padding: 12, background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 12, color: '#991B1B', fontSize: 12 }}>{err}</div>;
   if (!stats) return null;
 
-  const Card = ({ label, value, sub }: { label: string; value: number|string; sub?: string }) => (
+  const Card = ({ label, value, sub, accent }: { label: string; value: number|string; sub?: string; accent?: string }) => (
     <div style={{ flex: 1, minWidth: 0, padding: 12, background: '#fff', borderRadius: 10, border: '1px solid #E5E7EB' }}>
       <div style={{ fontSize: 10, fontWeight: 800, color: '#6B7280', letterSpacing: '0.05em' }}>{label}</div>
-      <div style={{ fontSize: 22, fontWeight: 900, color: '#065F46', lineHeight: 1.2, marginTop: 2 }}>{value}</div>
+      <div style={{ fontSize: 22, fontWeight: 900, color: accent || '#065F46', lineHeight: 1.2, marginTop: 2 }}>{value}</div>
       {sub && <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{sub}</div>}
     </div>
   );
 
   const maxViews = Math.max(1, ...stats.daily.map((d: any) => d.views));
+  const maxReg = stats.users ? Math.max(1, ...stats.users.daily.map((d: any) => d.registrations)) : 1;
+
+  // Build a map of registrations by day for the bar chart
+  const regByDay: Record<string, number> = {};
+  if (stats.users?.daily) {
+    for (const d of stats.users.daily) regByDay[d.day] = d.registrations;
+  }
 
   return (
-    <div style={{ marginTop: 24, padding: 16, background: '#ECFDF5', borderRadius: 14, border: '1px solid #A7F3D0' }}>
-      <h3 style={{ fontSize: 14, fontWeight: 900, color: '#065F46', marginBottom: 12 }}>📊 Visiteurs Bridge</h3>
+    <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
 
-      <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-        <Card label="AUJOURD'HUI" value={stats.today.uniques} sub={`${stats.today.views} vues`} />
-        <Card label="7 JOURS" value={stats.week.uniques} sub={`${stats.week.views} vues`} />
-      </div>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
-        <Card label="30 JOURS" value={stats.month.uniques} sub={`${stats.month.views} vues`} />
-        <Card label="TOTAL" value={stats.total.uniqueVisitors} sub={`${stats.total.totalViews} vues`} />
+      {/* ── VISITEURS ── */}
+      <div style={{ padding: 16, background: '#ECFDF5', borderRadius: 14, border: '1px solid #A7F3D0' }}>
+        <h3 style={{ fontSize: 14, fontWeight: 900, color: '#065F46', marginBottom: 12 }}>👁️ Visiteurs Bridge</h3>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+          <Card label="AUJOURD'HUI" value={stats.today.uniques} sub={`${stats.today.views} vues`} />
+          <Card label="7 JOURS" value={stats.week.uniques} sub={`${stats.week.views} vues`} />
+        </div>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+          <Card label="30 JOURS" value={stats.month.uniques} sub={`${stats.month.views} vues`} />
+          <Card label="TOTAL ↗" value={stats.total.uniqueVisitors} sub={`${stats.total.totalViews} vues au total`} />
+        </div>
+        <div style={{ fontSize: 10, fontWeight: 800, color: '#065F46', letterSpacing: '0.05em', marginBottom: 6 }}>7 DERNIERS JOURS</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+          {stats.daily.length === 0 && <div style={{ fontSize: 11, color: '#9CA3AF', textAlign: 'center', padding: 8 }}>Aucune visite encore.</div>}
+          {stats.daily.map((d: any) => {
+            const pct = (d.views / maxViews) * 100;
+            const date = new Date(d.day + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+            return (
+              <div key={d.day} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 72, fontSize: 10, color: '#374151', fontWeight: 700 }}>{date}</div>
+                <div style={{ flex: 1, height: 14, background: '#fff', borderRadius: 6, overflow: 'hidden', border: '1px solid #D1FAE5' }}>
+                  <div style={{ width: `${pct}%`, height: '100%', background: 'linear-gradient(90deg,#10B981,#4ADE80)' }} />
+                </div>
+                <div style={{ minWidth: 96, textAlign: 'right', fontSize: 10, color: '#065F46', fontWeight: 800 }}>
+                  {d.uniques} pers · {d.views} vues
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
-      <div style={{ fontSize: 10, fontWeight: 800, color: '#065F46', letterSpacing: '0.05em', marginBottom: 6 }}>7 DERNIERS JOURS</div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {stats.daily.length === 0 && (
-          <div style={{ fontSize: 11, color: '#9CA3AF', textAlign: 'center', padding: 8 }}>Aucune visite encore.</div>
-        )}
-        {stats.daily.map((d: any) => {
-          const pct = (d.views / maxViews) * 100;
-          const date = new Date(d.day).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
-          return (
-            <div key={d.day} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 70, fontSize: 10, color: '#374151', fontWeight: 700 }}>{date}</div>
-              <div style={{ flex: 1, height: 14, background: '#fff', borderRadius: 6, overflow: 'hidden', border: '1px solid #D1FAE5' }}>
-                <div style={{ width: `${pct}%`, height: '100%', background: 'linear-gradient(90deg, #10B981, #4ADE80)' }} />
+      {/* ── INSCRITS ── */}
+      {stats.users && (
+        <div style={{ padding: 16, background: '#EFF6FF', borderRadius: 14, border: '1px solid #BFDBFE' }}>
+          <h3 style={{ fontSize: 14, fontWeight: 900, color: '#1D4ED8', marginBottom: 12 }}>👤 Inscrits Bridge</h3>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+            <Card label="AUJOURD'HUI" value={stats.users.today} accent="#1D4ED8" />
+            <Card label="7 JOURS" value={stats.users.week} accent="#1D4ED8" />
+          </div>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+            <Card label="30 JOURS" value={stats.users.month} accent="#1D4ED8" />
+            <Card label="TOTAL ↗" value={stats.users.total} sub="depuis le début" accent="#1D4ED8" />
+          </div>
+
+          {stats.users.daily.length > 0 && (
+            <>
+              <div style={{ fontSize: 10, fontWeight: 800, color: '#1D4ED8', letterSpacing: '0.05em', marginBottom: 6 }}>INSCRIPTIONS 7 DERNIERS JOURS</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 14 }}>
+                {stats.users.daily.map((d: any) => {
+                  const pct = (d.registrations / maxReg) * 100;
+                  const date = new Date(d.day + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+                  return (
+                    <div key={d.day} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ width: 72, fontSize: 10, color: '#374151', fontWeight: 700 }}>{date}</div>
+                      <div style={{ flex: 1, height: 14, background: '#fff', borderRadius: 6, overflow: 'hidden', border: '1px solid #BFDBFE' }}>
+                        <div style={{ width: `${pct}%`, height: '100%', background: 'linear-gradient(90deg,#3B82F6,#60A5FA)' }} />
+                      </div>
+                      <div style={{ minWidth: 60, textAlign: 'right', fontSize: 10, color: '#1D4ED8', fontWeight: 800 }}>
+                        +{d.registrations} inscrit{d.registrations > 1 ? 's' : ''}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <div style={{ minWidth: 90, textAlign: 'right', fontSize: 10, color: '#065F46', fontWeight: 800 }}>
-                {d.uniques} pers · {d.views} vues
+            </>
+          )}
+
+          {/* Liste des derniers inscrits */}
+          {stats.users.recent?.length > 0 && (
+            <>
+              <div style={{ fontSize: 10, fontWeight: 800, color: '#1D4ED8', letterSpacing: '0.05em', marginBottom: 6 }}>20 DERNIERS INSCRITS</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 260, overflowY: 'auto' }}>
+                {stats.users.recent.map((u: any, i: number) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: '#fff', borderRadius: 8, border: '1px solid #DBEAFE' }}>
+                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'linear-gradient(135deg,#3B82F6,#60A5FA)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#fff', fontWeight: 900, flexShrink: 0 }}>
+                      {(u.name || u.contact || '?')[0].toUpperCase()}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 11, fontWeight: 800, color: '#1E3A8A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.name || '—'}</div>
+                      <div style={{ fontSize: 10, color: '#6B7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.contact}</div>
+                    </div>
+                    <div style={{ fontSize: 9, color: '#9CA3AF', flexShrink: 0 }}>{u.joined_at}</div>
+                  </div>
+                ))}
               </div>
-            </div>
-          );
-        })}
-      </div>
+            </>
+          )}
+        </div>
+      )}
 
       <button onClick={refresh}
-        style={{ marginTop: 12, width: '100%', padding: '8px 0', background: '#065F46', color: '#fff', border: 'none', borderRadius: 8, fontSize: 11, fontWeight: 800, cursor: 'pointer' }}>
-        🔄 Rafraîchir
+        style={{ width: '100%', padding: '10px 0', background: '#065F46', color: '#fff', border: 'none', borderRadius: 8, fontSize: 11, fontWeight: 800, cursor: 'pointer' }}>
+        🔄 Rafraîchir les stats
       </button>
     </div>
   );
