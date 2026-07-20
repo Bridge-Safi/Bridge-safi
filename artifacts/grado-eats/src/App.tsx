@@ -13121,7 +13121,7 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
   profile:UserProfile; saveProfile:(p:UserProfile)=>void;
 }) {
   const [,navigate]=useLocation();
-  const {user}=useUser();
+  const {user,isSignedIn}=useUser();
   const {dark}=useDark();
   const t=T[lang]; const fClass=fontClass(lang); const isAR=lang==='ar';
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
@@ -13147,8 +13147,79 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
         @keyframes hubShimmer{0%{background-position:200% center;}100%{background-position:-200% center;}}
       `}</style>
 
+      {/* ── TOP BAR : badge SAFI trilingue + Se connecter + lang toggle ── */}
+      <div style={{position:'absolute',top:0,left:0,right:0,zIndex:50,display:'flex',flexDirection:'column',alignItems:'center',paddingTop:14,pointerEvents:'none'}}>
+
+        {/* Badge SAFI 3 langues */}
+        <div style={{
+          display:'inline-flex',alignItems:'center',gap:6,
+          background:dark?'rgba(6,95,70,0.18)':'linear-gradient(135deg,rgba(6,95,70,0.1),rgba(180,83,9,0.07))',
+          border:'1px solid rgba(217,197,160,0.6)',
+          borderRadius:20,padding:'5px 16px',
+          backdropFilter:'blur(10px)',
+          boxShadow:'0 2px 12px rgba(6,95,70,0.1)',
+          pointerEvents:'none',
+        }}>
+          <span style={{fontSize:11,fontWeight:900,letterSpacing:'0.14em',color:'#065F46'}}>SAFI</span>
+          <span style={{color:'#D9C5A0',fontSize:11,fontWeight:300}}>·</span>
+          <span style={{fontSize:11,fontWeight:700,color:'#B45309',fontFamily:'serif'}}>أسفي</span>
+          <span style={{color:'#D9C5A0',fontSize:11,fontWeight:300}}>·</span>
+          <span style={{fontSize:11,fontWeight:700,color:'#065F46'}} className="font-tifinagh">ⵙⴰⴼⵉ</span>
+        </div>
+
+        {/* Séparateur dot */}
+        <div style={{marginTop:5,marginBottom:0}}>
+          <div style={{width:7,height:7,borderRadius:'50%',background:'linear-gradient(135deg,#34D399,#B45309)',boxShadow:'0 0 8px rgba(5,150,105,0.5)'}}/>
+        </div>
+      </div>
+
+      {/* Se connecter — top-left */}
+      {!isSignedIn&&(
+        <div className={`absolute top-3 z-50 ${isAR?'right-3':'left-3'}`}>
+          <button
+            onClick={()=>window.location.href='/sign-in'}
+            style={{
+              background:'linear-gradient(135deg,rgba(6,95,70,0.92),rgba(4,55,38,0.95))',
+              backdropFilter:'blur(12px)',color:'#FDFCF9',
+              border:'1px solid rgba(217,197,160,0.4)',
+              boxShadow:'0 2px 8px rgba(6,95,70,0.25)',
+              borderRadius:20,padding:'5px 12px',fontSize:9,fontWeight:800,
+              letterSpacing:'0.04em',display:'flex',alignItems:'center',gap:4,cursor:'pointer',
+            }}
+          >
+            <span style={{fontSize:9}}>✦</span>
+            {lang==='ar'?'تسجيل الدخول':lang==='amz'?'ⴰⴽⵛⵎ':'Se connecter'}
+          </button>
+        </div>
+      )}
+
+      {/* Profil — top-left quand connecté */}
+      {isSignedIn&&(
+        <div className={`absolute top-3 z-50 flex items-center gap-2 ${isAR?'right-3':'left-3'}`}>
+          <button
+            onClick={()=>setShowProfileModal(true)}
+            style={{width:34,height:34,borderRadius:'50%',overflow:'hidden',border:'2px solid rgba(217,197,160,0.6)',background:'#065F46',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',boxShadow:'0 2px 8px rgba(6,95,70,0.25)',padding:0}}
+          >
+            {avatarSrc
+              ?<img src={avatarSrc} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+              :<span style={{fontSize:13,fontWeight:900,color:'#fff',lineHeight:1}}>{initials}</span>
+            }
+          </button>
+        </div>
+      )}
+
+      {/* Lang + Dark — top-right */}
+      <div className={`absolute top-3 z-50 flex items-center gap-2 ${isAR?'left-3':'right-3'}`}>
+        <DarkToggle size={34}/>
+        <button onClick={cycleLang}
+          className={`rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 px-3 ${lang==='amz'?'font-tifinagh':''}`}
+          style={{background:'var(--c-card)',border:'2px solid #D9C5A0',color:'#065F46',boxShadow:'0 2px 10px rgba(6,95,70,0.12)',height:'34px',fontSize:'12px'}}>
+          {LANG_LABELS[lang]}
+        </button>
+      </div>
+
       {/* ── CENTER CONTENT ── */}
-      <div className="flex flex-col items-center w-full max-w-sm mx-auto pt-20 pb-10 px-5 flex-1 justify-center min-h-screen">
+      <div className="flex flex-col items-center w-full max-w-sm mx-auto pt-24 pb-10 px-5 flex-1 justify-center min-h-screen">
 
         {/* ── 2 BIG BUTTONS ── */}
         <div style={{display:'flex',flexDirection:'column',gap:18,width:'100%',animation:'hubFadeIn 0.5s ease-out 0.4s both'}}>
