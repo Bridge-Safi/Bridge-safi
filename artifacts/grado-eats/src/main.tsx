@@ -3058,6 +3058,15 @@ function AdminAuthPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  // Noindex — empêche Google d'indexer cette page
+  useEffect(() => {
+    document.title = 'Bridge Safi · Espace privé';
+    let meta = document.querySelector('meta[name="robots"]') as HTMLMetaElement | null;
+    if (!meta) { meta = document.createElement('meta'); meta.name = 'robots'; document.head.appendChild(meta); }
+    meta.content = 'noindex, nofollow';
+    return () => { meta!.content = 'index, follow'; document.title = 'Bridge Safi · Livraison & Taxi à Safi, Maroc'; };
+  }, []);
+
   const callApi = async (path: string) => {
     setLoading(true); setError(''); setLink(''); setSuccess('');
     try {
@@ -3160,7 +3169,7 @@ function AdminAuthPage() {
       )}
       <AdminStatsPanel adminKey={adminKey} />
       <AdminCouponsPanel adminKey={adminKey} />
-      <PWAInstallBannerSimple appName="Bridge Manager" />
+      <PWAInstallBannerSimple appName="Bridge Admin" />
     </AuthPageWrapper>
   );
 }
