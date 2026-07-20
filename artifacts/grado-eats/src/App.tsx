@@ -206,7 +206,7 @@ type ML   = Record<Lang, string>;
 
 interface OptionChoice { id: string; names: ML; price: number; }
 interface OptionGroup  { id: string; names: ML; type: 'radio'|'checkbox'; required: boolean; choices: OptionChoice[]; }
-interface MenuItem     { id: string; names: ML; price: number; photo: string; safi?: boolean; options?: OptionGroup[]; }
+interface MenuItem     { id: string; names: ML; price: number; photo: string; safi?: boolean; options?: OptionGroup[]; ingredients?: string[]; }
 interface MenuCategory { id: string; emoji: string; names: ML; items: MenuItem[]; }
 interface Restaurant   {
   id: string; name: string; tagline: ML; logo: string; cover: string;
@@ -4016,6 +4016,383 @@ const RESTAURANTS: Restaurant[] = [
   },
 ];
 
+// ─── INGREDIENTS DATABASE ─────────────────────────────────────────────────────
+const INGR: Record<string, string[]> = {
+  // ── McDonald's menus ──
+  mc1:['Pain de sésame','Steak haché bœuf ×2','Sauce Big Mac','Salade iceberg','Fromage cheddar ×2','Oignon','Cornichons','Frites','Boisson'],
+  mc2:['Pain brioché','Escalope de poulet pané','Sauce mayonnaise','Salade iceberg','Frites','Boisson'],
+  mc3:['Pain brioché','Steak haché bœuf ×2','Fromage cheddar ×2','Ketchup','Moutarde','Cornichons','Oignon','Frites','Boisson'],
+  mc4:['Pain vapeur','Filet de merluche pané','Sauce tartare','Fromage fondu','Frites','Boisson'],
+  mc5:['Pain brioché','Filet de poulet croustillant','Salade','Tomates','Sauce légère','Frites','Boisson'],
+  mc6:['Blanc de poulet ×9','Farine assaisonnée','Épices','Frites','Boisson'],
+  mc7:['Pain brioché artisanal','Steak haché 100g','Bacon','Fromage cheddar','Oignon caramélisé','Sauce BBQ fumée','Salade','Boisson'],
+  // ── McDonald's sandwiches ──
+  ms1:['Pain de sésame','Steak haché ×2','Sauce Big Mac','Salade','Fromage cheddar ×2','Oignon','Cornichons'],
+  ms2:['Pain brioché','Escalope de poulet pané','Sauce mayonnaise','Salade iceberg'],
+  ms3:['Pain brioché','Steak haché ×2','Fromage cheddar ×2','Ketchup','Moutarde','Cornichons','Oignon'],
+  ms4:['Pain brioché','Steak haché','Fromage cheddar','Ketchup','Moutarde','Cornichons','Oignon'],
+  ms5:['Pain brioché','Escalope de poulet pané','Sauce mayonnaise'],
+  ms6:['Pain vapeur','Filet de merluche pané','Sauce tartare','Fromage fondu'],
+  ms7:['Pain brioché','Filet de poulet croustillant','Salade','Tomates','Sauce légère'],
+  ms8:['Pain brioché','Filet de poulet croustillant','Fromage','Sauce spéciale'],
+  ms9:['Pain brioché artisanal','Steak haché 100g','Bacon','Fromage cheddar','Oignon caramélisé','Sauce BBQ fumée','Salade'],
+  // ── McDonald's nuggets & wings ──
+  mnw1:['Blanc de poulet ×6','Farine assaisonnée','Épices','Huile de tournesol'],
+  mnw2:['Blanc de poulet ×9','Farine assaisonnée','Épices','Huile de tournesol'],
+  mnw3:['Ailes de poulet ×4','Épices','Huile de tournesol'],
+  mnw4:['Ailes de poulet ×6','Épices','Huile de tournesol'],
+  mnw5:['Blanc de poulet','Ailes de poulet','Épices','Huile de tournesol'],
+  // ── Happy Meal ──
+  mhm1:['Pain brioché','Steak haché','Fromage cheddar','Ketchup','Moutarde','Cornichons','Oignon','Frites mini','Boisson','Dessert','Jouet surprise'],
+  mhm2:['Pain brioché','Escalope de poulet pané','Sauce mayo','Frites mini','Boisson','Dessert','Jouet surprise'],
+  mhm3:['Blanc de poulet ×4','Épices','Sauce dip','Frites mini','Boisson','Dessert','Jouet surprise'],
+  // ── Sides ──
+  msi1:['Pommes de terre','Sel','Huile de tournesol'],
+  msi2:['Pommes de terre','Sel','Huile de tournesol'],
+  msi3:['Pommes de terre','Sel','Huile de tournesol'],
+  msi4:['Pommes de terre','Épices','Sel','Huile de tournesol'],
+  // ── Desserts ──
+  mde1:['Glace vanille','Brisures d\'Oreo','Crème'],
+  mde2:['Glace vanille','Éclats de KitKat','Crème'],
+  mde3:['Glace vanille','Brisures de Smarties','Crème'],
+  mde4:['Glace vanille','Coulis de chocolat'],
+  mde5:['Glace vanille','Coulis de caramel'],
+  mde6:['Glace vanille','Coulis de fraise'],
+  mde7:['Pâte dorée','Pommes','Cannelle','Sucre'],
+  mde8:['Lait','Glace vanille','Crème fouettée'],
+  mde9:['Lait','Glace chocolat','Cacao','Crème fouettée'],
+  mde10:['Lait','Glace fraise','Coulis fraise','Crème fouettée'],
+  mde11:['Farine','Pépites de chocolat noir','Sucre','Beurre','Œufs'],
+  // ── Drinks ──
+  mdr1:['Eau gazéifiée','Sirop de Coca-Cola','CO₂'],
+  mdr2:['Eau gazéifiée','Sirop Fanta orange','CO₂'],
+  mdr3:['Eau gazéifiée','Sirop Sprite citron','CO₂'],
+  mdr4:['Oranges pressées fraîches'],
+  mdr5:['Café arabica torréfié','Eau'],
+  mdr6:['Eau de source','Minéraux naturels'],
+  // ── Karam Al Cham ──
+  kara_0_0:['Shawarma mixte','Kefta chamia','Dessert','Limonade libanaise'],
+  kara_0_1:['Poulet mariné','Pain pita','Dessert','Limonade libanaise'],
+  kara_0_2:['Sarokhe','Shawarma mixte','Dessert','Limonade libanaise'],
+  kara_1_0:['Pâte à pizza','Sauce tomate','Mozzarella','Fruits de mer','Poivrons','Épices'],
+  kara_1_1:['Pâte à pizza','Sauce tomate','Mozzarella','Champignons','Jambon','Olives','Artichauts'],
+  kara_1_2:['Pâte à pizza','Sauce tomate','Mozzarella','Salami','Viande hachée','Champignons'],
+  kara_1_3:['Pâte à pizza','Sauce tomate','Mozzarella','Viande hachée','Oignon','Épices'],
+  kara_1_4:['Pâte à pizza','Sauce tomate','Mozzarella','Poulet grillé','Épices'],
+  kara_1_5:['Pâte à pizza','Sauce tomate','Mozzarella','Poivrons','Oignon','Champignons','Olives'],
+  kara_1_6:['Pâte à pizza','Sauce tomate','Mozzarella','Thon','Olives','Oignon'],
+  kara_1_7:['Pâte à pizza','Sauce tomate','Mozzarella','Basilic frais'],
+  kara_2_0:['Viande d\'agneau hachée','Poivrons rouges','Épices orientales','Citron','Persil'],
+  kara_2_1:['Viande d\'agneau hachée','Noix','Épices','Sumac','Citron'],
+  kara_2_2:['Viande hachée','Aubergine','Sauce tomate','Épices orientales'],
+  kara_2_3:['Pâte fine','Viande hachée','Oignon','Persil','Épices','Citron'],
+  kara_2_4:['Viande hachée','Sauce tochka','Épices syriennes'],
+  kara_2_5:['Coquelet entier','Épices','Herbes','Citron','Huile d\'olive'],
+  kara_2_6:['Poulet mariné','Pain pita turque','Sauce toum','Légumes'],
+  kara_3_0:['Riz basmati','Poulet entier','Cardamome','Cannelle','Safran','Oignons','Tomates','Épices khaliji'],
+  kara_3_9:['Riz basmati','Poulet','Épices khaliji','Bouillon'],
+  kara_3_10:['Riz basmati','Épices','Bouillon de légumes'],
+  kara_8_0:['Houmous','Baba ghanouj','Warak inab','Falafel','Fattouche','Salades variées'],
+  kara_8_1:['Feuilles de vigne','Riz','Viande hachée','Citron','Huile d\'olive','Épices'],
+  kara_8_2:['Pois chiches','Tahini','Citron','Ail','Huile d\'olive','Cumin'],
+  kara_8_3:['Aubergine grillée','Tahini','Ail','Citron','Huile d\'olive','Persil'],
+  kara_8_4:['Ail mixé','Huile d\'olive','Citron','Sel'],
+  kara_9_0:['Boulgour fin','Viande d\'agneau hachée','Oignon','Épices','Pignons de pin','Beurre clarifié'],
+  kara_9_1:['Pois chiches','Persil','Coriandre','Oignon','Ail','Cumin','Huile de friture'],
+  kara_9_2:['Pâte fine','Épinards','Oignon','Sumac','Huile d\'olive'],
+  kara_9_3:['Pâte fine','Viande hachée','Oignon','Épices orientales'],
+  kara_9_4:['Pâte fine','Fromage blanc','Menthe fraîche'],
+  kara_10_8:['Riz','Poulet mariné','Sauce toum','Salade','Tomates','Cornichons'],
+  kara_11_7:['Pain pita','Poulet mariné','Sauce toum','Tomates','Cornichons','Oignon mariné'],
+  kara_11_0:['Pain sarokhe','Poulet mariné','Sauce toum','Légumes marinés'],
+  kara_11_8:['Pain pita','Falafel','Houmous','Salade','Tomates'],
+  kara_15_0:['Lait','Amidon de maïs','Sucre','Eau de fleur d\'oranger','Pistaches'],
+  kara_15_1:['Pâte feuilletée','Noix','Sirop de miel','Beurre clarifié'],
+  kara_15_2:['Semoule','Yaourt','Sucre','Fruits secs','Eau de rose'],
+  kara_15_3:['Vermicelles de riz','Crème fraîche','Sucre','Eau de fleur d\'oranger'],
+  kara_15_4:['Pâte feuilletée','Noix','Sirop de sucre','Eau de rose'],
+  // ── Cheese Taste ──
+  chee_0_0:['Galette de blé','Escalope de poulet','Fromage fondu','Salade','Tomates','Sauce algérienne','Frites'],
+  chee_1_0:['Pain spécial','Fruits de mer','Sauce','Salade','Tomates'],
+  chee_1_1:['Pain spécial','Escalope de poulet','Sauce mayo','Salade'],
+  chee_1_2:['Pain spécial','Viande hachée','Sauce','Salade'],
+  chee_1_3:['Pain spécial','Thon','Sauce','Salade','Oignon'],
+  chee_2_0:['Galette de blé','Viande hachée','Fromage râpé','Sauce algérienne','Salade','Tomates'],
+  chee_2_1:['Galette de blé','Poulet + Viande hachée','Fromage râpé','Sauce algérienne','Légumes'],
+  chee_2_2:['Galette de blé','Fruits de mer','Fromage fondu','Sauce','Légumes'],
+  chee_2_3:['Galette de blé','Escalope panée','Fromage fondu','Sauce','Légumes'],
+  chee_2_4:['Galette de blé','Poulet','Fromage râpé','Sauce','Légumes'],
+  chee_2_5:['Galette de blé','Nuggets','Fromage','Sauce','Légumes'],
+  chee_3_0:['Pain brioché','Double steak','Fromage cheddar triple','Sauce maison','Salade','Tomates'],
+  chee_3_1:['Pain brioché','Filet de poulet','Fromage','Salade','Tomates','Sauce'],
+  chee_3_2:['Pain brioché','Steak haché bœuf','Fromage cheddar','Salade','Tomates','Sauce'],
+  chee_5_0:['Pomme de terre au four','Beurre','Fromage râpé','Viande hachée','Poulet','Légumes'],
+  chee_5_1:['Pomme de terre au four','Beurre','Fromage râpé','Jambon','Maïs','Cornichons'],
+  chee_5_2:['Pomme de terre au four','Beurre','Fromage râpé','Poulet','Sauce'],
+  chee_5_3:['Pomme de terre au four','Beurre','Fromage râpé','Viande hachée','Épices'],
+  chee_5_4:['Pomme de terre au four','Beurre','Fromage râpé','Thon','Cornichons'],
+  chee_5_5:['Pomme de terre au four','Beurre','Fromage râpé','Champignons','Poivrons','Olives'],
+  chee_6_0:['Riz sushi','Saumon frais','Avocat','Edamame','Concombre','Carotte','Sauce teriyaki','Algues nori','Sésame'],
+  chee_6_1:['Riz sushi','Fruits de mer','Avocat','Edamame','Concombre','Sauce teriyaki'],
+  chee_6_2:['Riz sushi','Poulet teriyaki','Avocat','Edamame','Ananas','Sauce hawaïenne'],
+  chee_7_0:['Pâte à pizza','Sauce tomate','Mozzarella','Champignons','Jambon','Olives','Artichauts'],
+  chee_7_1:['Pâte à pizza','Sauce tomate','Mozzarella','Saumon fumé','Câpres','Crème'],
+  chee_7_2:['Pâte à pizza','Sauce tomate','Mozzarella','Fruits de mer','Ail'],
+  chee_7_3:['Pâte à pizza','Sauce tomate','Gorgonzola','Gruyère','Mozzarella','Parmesan'],
+  chee_7_4:['Pâte à pizza','Sauce tomate','Mozzarella','Salami','Poivrons'],
+  chee_7_5:['Pâte à pizza','Sauce tomate','Mozzarella','Poulet','Ananas'],
+  chee_7_6:['Pâte à pizza','Sauce tomate','Mozzarella','Viande hachée','Oignon'],
+  chee_7_7:['Pâte à pizza','Sauce tomate','Mozzarella','Poulet grillé'],
+  chee_7_8:['Pâte à pizza','Sauce tomate','Mozzarella','Thon','Olives'],
+  chee_7_9:['Pâte à pizza','Sauce tomate','Mozzarella','Basilic frais'],
+  chee_9_0:['Pâtes à lasagne','Viande hachée','Béchamel','Sauce tomate','Mozzarella'],
+  chee_9_1:['Pâtes','Fruits de mer','Sauce crème','Ail','Persil'],
+  chee_9_2:['Pâtes','Poulet','Champignons','Sauce crème'],
+  chee_9_3:['Pâtes','Gorgonzola','Gruyère','Mozzarella','Parmesan'],
+  chee_9_4:['Pâtes','Viande hachée','Sauce tomate','Ail','Basilic'],
+  chee_10_0:['Blanc de poulet','Fromage fondu','Jambon de dinde','Chapelure','Œuf','Huile'],
+  chee_10_1:['Poulet émincé','Oignons','Poivrons','Sauce crème','Épices'],
+  chee_10_2:['Filet de poulet','Chapelure épicée','Farine','Œuf','Sauce'],
+  chee_10_3:['Ailes de poulet','Farine assaisonnée','Épices','Huile de friture'],
+  chee_10_4:['Filet de dinde','Chapelure','Farine','Épices'],
+  chee_11_0:['Fruits de mer','Béchamel','Fromage râpé','Chapelure'],
+  chee_11_1:['Viande hachée','Béchamel','Fromage râpé','Chapelure'],
+  chee_11_2:['Poulet','Béchamel','Fromage râpé','Chapelure'],
+  chee_13_0:['Viande de bœuf','Légumes','Épices marocaines','Citron confit','Olives'],
+  chee_13_1:['Fruits de mer','Légumes','Épices','Huile d\'olive'],
+  chee_14_0:['Tiramisu traditionnel (mascarpone, café, biscuits, cacao)'],
+  chee_14_1:['Café','Mascarpone','Savoiardi','Cacao','Sucre'],
+  chee_14_2:['Fromage frais','Biscuits graham','Sucre','Citron','Crème'],
+  // ── BLACKTOP COFFEE ──
+  blac_0_0:['Croissant','Œuf brouillé','Fromage','Saumon ou poulet','Café espresso'],
+  blac_1_0:['Œufs brouillés','Avocado toast','Bacon','Tomates cerises','Fromage','Café'],
+  blac_1_1:['Croissant','Saumon fumé','Avocat','Fromage','Café'],
+  blac_1_2:['Granola','Yaourt grec','Baies fraîches','Miel','Café'],
+  blac_1_3:['Msemen','Beurre','Miel','Fromage marocain','Argan','Thé à la menthe'],
+  blac_1_4:['Pain grillé','Beurre','Confiture','Jus d\'orange','Café'],
+  blac_1_5:['Crêpe','Jus de fruits','Chocolat chaud','Céréales'],
+  blac_2_0:['Pâte levée','Glaçage spéculos','Biscuit Lotus','Crème chantilly'],
+  blac_2_1:['Pâte levée','Ganache chocolat triple','Glaçage'],
+  blac_3_0:['Pain ciabatta','Poulet grillé','Avocat','Tomates séchées','Roquette','Sauce maison'],
+  blac_3_1:['Pain ciabatta','Thon','Avocat','Concombre','Salade','Sauce légère'],
+  blac_3_2:['Pain ciabatta','Avocat','Œuf poché','Salade','Tomates'],
+  blac_3_3:['Pain ciabatta','Dinde fumée','Fromage','Moutarde','Salade'],
+  blac_3_4:['Pain ciabatta','Mozzarella','Tomates','Basilic','Pesto'],
+  blac_3_5:['Pain ciabatta','Fromage cheddar','Salade','Tomates'],
+  blac_4_0:['Café espresso','Sirop de pistache','Chocolat','Lait glacé','Glaçons'],
+  blac_4_1:['Café espresso','Sirop de chocolat blanc','Lait glacé','Glaçons'],
+  blac_4_2:['Café espresso','Sirop de caramel','Chocolat','Lait glacé','Glaçons'],
+  blac_4_3:['Café espresso','Lait concentré sucré','Lait glacé','Glaçons'],
+  blac_4_4:['Café espresso','Sirop de chocolat','Lait glacé','Glaçons'],
+  blac_4_5:['Café espresso','Lait glacé','Glaçons'],
+  blac_4_6:['Café espresso','Eau glacée','Glaçons'],
+  blac_5_0:['Gaufre belge','Crème spéculos','Biscuit Lotus','Chantilly'],
+  blac_5_1:['Gaufre belge','Crème Oreo','Chocolat blanc','Chantilly'],
+  blac_9_0:['Café espresso','Sirop de pistache','Lait vapeur'],
+  blac_9_1:['Café espresso','Lait vapeur','Mousse de lait'],
+  blac_9_2:['Café espresso','Sirop de caramel','Chocolat','Lait vapeur'],
+  blac_9_3:['Café espresso','Sirop de caramel','Lait vapeur'],
+  blac_9_4:['Café espresso','Sirop de pistache','Lait vapeur'],
+  blac_9_5:['Café espresso double','Glace vanille'],
+  blac_9_6:['Café espresso','Lait vapeur','Mousse légère'],
+  blac_9_7:['Café espresso','Sirop de caramel','Chocolat','Lait vapeur'],
+  blac_9_8:['Café espresso','Sirop de chocolat blanc','Lait vapeur'],
+  blac_9_9:['Café espresso','Lait','Cacao','Mousse de lait'],
+  blac_9_10:['Café espresso','Lait concentré sucré','Lait vapeur'],
+  blac_9_11:['Café espresso','Lait vapeur','Goutte de lait'],
+  blac_9_12:['Café espresso ×2','Eau chaude'],
+  blac_9_13:['Café espresso','Lait vapeur','Mousse de lait'],
+  blac_9_14:['Café espresso','Lait vapeur'],
+  blac_9_15:['Thé gunpowder','Menthe fraîche','Sucre de canne','Eau chaude'],
+  blac_9_16:['Café espresso','Eau chaude'],
+  blac_9_17:['Café arabica','Eau chaude'],
+  // ── Food Kennedy ──
+  food_0_0:['Brochettes de viande hachée','Légumes grillés','Épices marocaines','Pain'],
+  food_1_0:['Galette de blé','Poulet + Viande hachée','Fromage râpé','Sauce algérienne','Salade','Tomates','Frites'],
+  food_1_1:['Poulet mariné','Épices dghmirah','Ail','Citron confit'],
+  food_1_2:['Galette de blé','Blanc de dinde','Fromage râpé','Sauce','Salade'],
+  food_3_0:['Poulet entier','Dghmirah','Épices marocaines','Ail','Huile d\'olive','Citron'],
+  food_3_1:['Demi-poulet','Dghmirah','Épices','Ail'],
+  food_3_2:['Couennes de bœuf','Pois chiches','Épices marocaines','Coriandre'],
+  food_3_3:['Quart de poulet','Dghmirah','Épices'],
+  food_5_0:['Galette de blé','Poulet + Viande + Crevettes','Fromage triple','Sauce XL','Salade','Frites'],
+  food_5_4:['Galette de blé','Viande hachée + Poulet','Fromage','Sauce algérienne','Légumes'],
+  food_5_5:['Galette de blé','Escalope panée','Fromage fondu','Sauce','Salade'],
+  food_5_8:['Galette de blé','Blanc de dinde','Fromage','Sauce','Légumes'],
+  food_5_9:['Galette de blé','Viande hachée','Fromage','Sauce algérienne','Légumes'],
+  food_5_10:['Galette de blé','Poulet + Viande','Fromage','Sauce algérienne','Légumes'],
+  food_6_0:['Pain brioché','Escalope panée','Fromage fondu','Sauce','Salade','Tomates'],
+  food_6_1:['Pain brioché','Steak double','Fromage','Oignon caramélisé','Sauce maison'],
+  food_6_3:['Pain brioché','Steak haché','Fromage cheddar','Salade','Tomates','Cornichons'],
+  food_6_4:['Pain brioché','Escalope de poulet','Fromage','Salade','Tomates'],
+  food_11_0:['Pâtes','Crevettes','Moules','Calamars','Sauce crème','Ail','Persil'],
+  food_11_1:['Pâtes','Viande hachée','Sauce tomate','Ail','Herbes'],
+  food_11_2:['Pâtes','Poulet','Champignons','Sauce crème'],
+  food_11_3:['Pâtes','Lardons','Œuf','Parmesan','Poivre noir'],
+  food_11_4:['Pâtes','Sauce tomate épicée','Ail','Piment'],
+  food_14_0:['Crêpe','Pistache','Kunafa','Crème','Sirop fleur d\'oranger'],
+  food_14_1:['Crêpe','Noisette','Amandes','Noix','Miel'],
+  food_14_2:['Crêpe','Kunafa','Fromage','Sirop'],
+  food_14_3:['Crêpe','Crème Lotus','Biscuit Lotus','Caramel'],
+  food_14_4:['Crêpe','Crème Oreo','Biscuit Oreo','Chocolat blanc'],
+  food_14_5:['Crêpe','Crème KitKat','Chocolat','Noisette'],
+  food_14_6:['Crêpe','Nutella','Banane','Noix'],
+  food_14_7:['Crêpe','Nutella','Noisettes'],
+  food_15_0:['Poulet émincé','Oignons','Poivrons','Sauce crème','Épices'],
+  food_15_1:['Blanc de poulet','Fromage fondu','Jambon de dinde','Chapelure','Œuf'],
+  food_15_2:['Viande hachée grillée','Épices marocaines','Herbes','Citron'],
+  food_15_3:['Brochettes mixtes','Légumes grillés','Riz','Salade'],
+  food_15_4:['Brochettes de dinde','Légumes grillés','Épices'],
+  // ── Pizza Hot ──
+  snac_0_0:['Pâte à pizza','Sauce tomate','Mozzarella','Poulet','Épices'],
+  snac_0_1:['Pâte à pizza','Sauce tomate','Mozzarella','Jambon','Champignons','Olives','Artichauts'],
+  snac_0_2:['Pâte à pizza','Sauce tomate','Mozzarella','Viande hachée','Oignon'],
+  snac_1_0:['Galette de blé','Poulet épicé + Viande','Fromage fondu','Sauce piquante','Salade'],
+  snac_1_1:['Galette de blé','Escalope panée','Fromage fondu','Sauce','Salade'],
+  snac_1_2:['Galette de blé','Poulet + Viande','Fromage','Sauce','Légumes'],
+  snac_1_3:['Galette de blé','Viande hachée','Fromage','Sauce','Légumes'],
+  snac_1_4:['Galette de blé','Blanc de dinde','Fromage','Sauce','Légumes'],
+  snac_1_5:['Galette de blé','Chawarma de poulet','Sauce toum','Légumes marinés'],
+  snac_1_6:['Galette de blé','Nuggets','Fromage','Sauce','Légumes'],
+  snac_2_0:['Pâte à pizza','Sauce tomate','Mozzarella','Salami','Viande','Champignons','Olives','Poivrons'],
+  snac_2_1:['Pâte à pizza','Sauce tomate','Mozzarella','Jambon','Champignons','Olives','Artichauts'],
+  snac_2_2:['Pâte à pizza','Sauce tomate','Mozzarella','Fruits de mer'],
+  snac_2_4:['Pâte à pizza','Sauce tomate','Fromage ×4'],
+  snac_2_5:['Pâte à pizza','Sauce tomate','Mozzarella','Jambon'],
+  snac_2_6:['Pâte à pizza','Sauce tomate','Mozzarella','Viande hachée'],
+  snac_2_7:['Pâte à pizza','Sauce tomate','Mozzarella','Poulet grillé'],
+  snac_2_8:['Pâte à pizza','Sauce tomate','Mozzarella','Chawarma de poulet'],
+  snac_2_9:['Pâte à pizza','Sauce tomate','Mozzarella','Thon','Olives'],
+  snac_2_10:['Pâte à pizza','Sauce tomate','Mozzarella','Basilic'],
+  snac_4_0:['Poulet mariné','Pain pita','Sauce toum','Salade','Tomates','Cornichons'],
+  snac_4_1:['Poulet mariné','Pain pita','Sauce toum extra','Salade'],
+  snac_4_2:['Poulet + Viande','Pain pita','Sauce','Légumes'],
+  snac_4_3:['Poulet mariné','Pain pita','Fromage ×2','Sauce'],
+  snac_4_4:['Poulet mariné','Pain pita','Fromage','Sauce'],
+  snac_4_5:['Poulet mariné','Pain pita','Sauce toum'],
+  snac_5_0:['Blanc de poulet','Fromage fondu','Jambon','Chapelure','Friture'],
+  snac_5_1:['Viande + Poulet','Légumes grillés','Riz','Salade'],
+  snac_5_2:['Blanc de poulet mariné','Brochette','Légumes grillés','Riz'],
+  snac_5_3:['Viande hachée','Brochette','Épices','Légumes'],
+  snac_5_4:['Filet de poulet','Chapelure épicée','Farine','Sauce'],
+  snac_5_5:['Poulet émincé','Oignons','Poivrons','Sauce crème'],
+  snac_6_0:['Pain brioché','Steak double','Fromage','Sauce','Salade'],
+  snac_6_1:['Pain brioché','Steak haché','Fromage cheddar','Sauce'],
+  snac_6_2:['Pain brioché','Escalope de poulet','Fromage','Sauce'],
+  snac_7_0:['Pâtes','Fruits de mer','Sauce crème','Ail'],
+  snac_7_1:['Pâtes','Viande hachée','Sauce tomate','Ail'],
+  snac_7_2:['Pâtes','Sauce tomate','Herbes'],
+  // ── Bubbles & Boost ──
+  bubb_0_0:['Café arabica','Eau chaude'],
+  bubb_0_1:['Café espresso','Lait vapeur','Mousse de lait'],
+  bubb_0_2:['Café espresso','Lait vapeur'],
+  bubb_1_0:['Lait','Crème glacée','Sirop maison','Chantilly'],
+  bubb_2_0:['Thé noir','Lait','Perles de tapioca','Sirop aromatisé'],
+  bubb_5_0:['Poudre de matcha','Miel','Citron vert','Eau chaude'],
+  bubb_5_1:['Poudre de matcha','Café','Lait d\'amande','Sirop'],
+  bubb_5_2:['Poudre de matcha','Sirop de caramel','Lait vapeur'],
+  bubb_5_3:['Poudre de matcha','Mangue','Glaçons','Lait'],
+  bubb_5_4:['Poudre de matcha','Caramel','Cannelle','Glaçons','Lait'],
+  bubb_5_5:['Poudre de matcha','Pâte d\'amlou (amandes·argan·miel)','Lait vapeur'],
+  bubb_5_6:['Poudre de matcha','Glaçons','Lait','Eau'],
+  bubb_5_7:['Poudre de matcha','Fraise','Glaçons','Lait'],
+  bubb_5_8:['Poudre de matcha','Pistache','Glaçons','Lait'],
+  bubb_5_9:['Poudre de matcha','Lait vapeur','Mousse'],
+  bubb_5_10:['Poudre de matcha','Lait glacé','Glaçons'],
+  bubb_6_0:['Acaï','Épinards','Gingembre','Curcuma','Protéines'],
+  bubb_6_1:['Grenade','Betterave','Carottes','Gingembre'],
+  bubb_6_2:['Orange','Ananas','Gingembre','Curcuma'],
+  bubb_6_3:['Thé vert','Citron','Concombre','Menthe'],
+  bubb_6_4:['Épinards','Pomme verte','Concombre','Citron','Gingembre'],
+  bubb_6_5:['Café','Banane','Datte','Cannelle','Lait d\'amande'],
+  bubb_7_0:['Beurre de noisette','Banane','Lait d\'avoine','Protéines'],
+  bubb_7_1:['Eau de coco','Fruits du dragon','Lavande','Citron'],
+  bubb_7_2:['Poudre de matcha','Café','Lait d\'amande'],
+  bubb_7_3:['Betterave','Baies de goji','Framboises','Pomme'],
+  bubb_7_4:['Abricot','Mangue','Papaye','Orange'],
+  bubb_7_5:['Basilic','Citron vert','Concombre','Pomme verte'],
+  bubb_7_6:['Ananas','Noix de coco','Mangue','Citron'],
+  bubb_7_7:['Cacao cru','Banane','Lait d\'amande','Dattes'],
+  bubb_8_0:['Avocat','Banane','Lait','Miel','Protéines'],
+  bubb_8_1:['Banane','Beurre d\'arachide','Lait','Cacao','Protéines'],
+  bubb_9_0:['Crêpe','Crème Magnum','Chocolat','Amande','Glaçage or'],
+  bubb_9_1:['Crêpe','Ganache chocolat noir','Chocolat blanc','Noisettes'],
+  bubb_9_3:['Crêpe','Crème Snickers','Caramel','Cacahuètes','Chocolat'],
+  bubb_9_4:['Crêpe','Crème Twix','Caramel','Biscuit Twix'],
+  bubb_9_5:['Crêpe','Nutella','Banane','Oreo','Crème'],
+  bubb_9_6:['Crêpe','Nutella','Banane','Crème fraîche'],
+  bubb_9_7:['Crêpe','Nutella','KitKat','Chocolat blanc'],
+  bubb_12_0:['Thé noir ou vert','Lait','Glaçons','Sirop au choix'],
+  bubb_13_0:['Lait','Crème glacée fraise','Coulis de fraise'],
+  bubb_13_1:['Lait','Crème glacée caramel','Coulis de caramel'],
+  bubb_13_2:['Lait','Crème glacée vanille','Vanille bourbon'],
+  bubb_13_3:['Lait','Crème glacée noisette','Praliné'],
+  bubb_13_4:['Lait','Crème glacée chocolat','Cacao'],
+  bubb_13_5:['Lait','Biscuit Oreo','Crème','Chocolat blanc'],
+  bubb_13_6:['Lait','Myrtilles','Crème glacée','Coulis'],
+  bubb_13_7:['Lait','Café fort','Crème glacée','Glaçons'],
+  bubb_13_8:['Lait','Noix de coco','Crème glacée','Sirop coco'],
+  bubb_13_9:['Lait','Ananas','Crème glacée','Sirop'],
+  bubb_13_10:['Lait','Pomme verte','Crème glacée','Sirop pomme'],
+  bubb_13_11:['Lait','Fruit du dragon','Crème glacée','Sirop'],
+  bubb_13_12:['Lait','Avocat','Crème glacée','Miel'],
+  // ── Les Maîtres du Pain ──
+  lesm_1_0:['Pâte feuilletée','Crème d\'amandes','Amandes effilées','Miel','Sucre glace'],
+  lesm_1_1:['Pâte feuilletée pur beurre','Chocolat noir','Beurre AOC'],
+  lesm_1_2:['Pâte feuilletée mini','Chocolat au lait','Beurre'],
+  lesm_2_0:['Pâte feuilletée','Crème pralinée noisette','Praliné pur','Sucre caramélisé'],
+  lesm_2_1:['Pâte feuilletée','Crème café','Mascarpone','Extrait de café'],
+  lesm_3_0:['Pâte sablée','Crème pâtissière','Poire','Gelée de fruits'],
+  lesm_3_1:['Pâte sablée','Crème pâtissière','Pêche','Gelée'],
+  lesm_3_2:['Pâte sablée','Frangipane','Amandes','Noisettes','Fruits secs'],
+  lesm_3_3:['Biscuit joconde','Mousse mangue','Insert passion','Miroir exotique'],
+  lesm_3_4:['Biscuit joconde','Mousse orange','Miroir agrumes','Gélatine'],
+  lesm_3_5:['Biscuit chocolat','Ganache chocolat noir','Mousse chocolat','Glaçage miroir noir'],
+  lesm_3_6:['Biscuit amande','Crème amande','Praliné feuilletine','Amandes torréfiées'],
+  lesm_3_7:['Biscuit chocolat','Kirsch','Chantilly','Cerises griottes','Copeaux de chocolat'],
+  lesm_3_8:['Biscuit sacher','Confiture de framboise','Ganache chocolat noir','Mousse framboise'],
+  lesm_3_9:['Biscuit exotique','Mousse coco','Mangue','Fruit de la passion','Glaçage miroir'],
+  lesm_3_10:['Biscuit chocolat','Ganache chocolat','Mousse chocolat','Praliné feuilletine'],
+  lesm_3_11:['Biscuit citron','Crème citron','Mousse citron','Glaçage blanc nacré'],
+  lesm_3_12:['Biscuit caramel','Mousse pécane','Caramel salé','Glaçage'],
+  lesm_3_13:['Biscuit noisette','Mousse noisette','Praliné','Glaçage noisette'],
+  lesm_3_14:['Biscuit charlotte','Mousse framboise','Gélatine','Fruits rouges'],
+  lesm_3_15:['Biscuit citron','Crème cheesecake','Coulis citron','Biscuits graham'],
+  lesm_3_16:['Biscuit framboise','Crème cheesecake','Coulis framboise','Biscuits graham'],
+  lesm_3_17:['Biscuit joconde','Crème citron','Miroir citron vert'],
+  lesm_3_18:['Pâte sablée','Crème citron','Meringue italienne','Zeste de citron'],
+  lesm_4_0:['Croissant pur beurre','Jambon de Paris','Fromage emmental','Beurre'],
+  lesm_5_0:['Café arabica','Eau chaude'],
+  lesm_5_1:['Café arabica','Sirop aromatisé','Eau'],
+  lesm_5_2:['Café arabica double','Eau chaude'],
+  lesm_5_3:['Café espresso allongé','Eau chaude'],
+  lesm_5_4:['Café espresso','Lait vapeur','Mousse de lait'],
+  lesm_5_5:['Lait entier chaud','Poudre de cacao','Sucre de canne'],
+  lesm_5_6:['Café espresso','Lait vapeur','Mousse épaisse'],
+  lesm_5_8:['Chocolat de couverture 70%','Lait entier','Crème fraîche'],
+  lesm_5_10:['Café espresso','Lait glacé','Glaçons','Sirop de vanille'],
+  lesm_5_11:['Café espresso','Lait concentré sucré','Lait glacé'],
+  lesm_5_12:['Café espresso','Lait concentré','Glaçons','Sirop de vanille'],
+  lesm_6_0:['Citrons pressés','Eau','Sucre de canne','Menthe fraîche'],
+  lesm_6_1:['Oranges pressées fraîches'],
+  lesm_6_2:['Citron','Gingembre frais','Eau','Miel de fleurs'],
+  lesm_6_3:['Bananes mûres','Lait','Sucre','Cannelle'],
+  lesm_6_4:['Fraises fraîches','Lait','Sucre'],
+  lesm_6_5:['Avocat','Lait','Sucre','Eau de fleur d\'oranger','Noix'],
+  lesm_6_6:['Mélange de fruits frais de saison','Citron','Sucre'],
+  lesm_7_0:['Eau pétillante','Menthe fraîche','Citron vert','Sucre de canne','Glaçons'],
+  lesm_7_1:['Eau pétillante','Fraises fraîches','Citron vert','Menthe','Sucre','Glaçons'],
+  lesm_7_2:['Eau pétillante','Sirop curaçao bleu','Citron','Menthe','Glaçons'],
+  lesm_7_3:['Eau pétillante','Mangue','Citron','Ananas','Menthe','Glaçons'],
+  lesm_7_4:['Eau pétillante','Fruits rouges','Framboise','Myrtille','Citron','Glaçons'],
+  lesm_8_0:['Génoise','Crème pâtissière','Fondant','Fruits confits'],
+  lesm_8_1:['Génoise mini','Crème légère','Fondant blanc'],
+  lesm_9_0:['Biscuit noisette','Mousse pralinée','Éclats de noisette','Glaçage','Décor chocolat'],
+  lesm_9_1:['Biscuit','Mousse caramel-pécane','Glaçage caramel','Pécanes'],
+  lesm_9_2:['Biscuit exotique','Mousse mangue-coco','Insert passion','Glaçage miroir'],
+  lesm_9_3:['Biscuit sacher','Mousse framboise','Confiture framboise','Glaçage chocolat'],
+};
+
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
 function fontClass(lang: Lang) {
@@ -4276,6 +4653,49 @@ function RestaurantCard({r,lang,t,onClick,compact=false,liveRating}:{r:Restauran
 
 // ─── ITEM OPTIONS MODAL ───────────────────────────────────────────────────────
 
+// ─── INGREDIENT MODAL ─────────────────────────────────────────────────────────
+function IngredientModal({item,lang,onClose}:{item:MenuItem;lang:Lang;onClose:()=>void}) {
+  const ingr=INGR[item.id]||[];
+  const fClass=fontClass(lang);
+  return (
+    <div className="fixed inset-0 z-[70] flex items-end" style={{background:'rgba(0,0,0,0.75)',backdropFilter:'blur(16px)'}} onClick={onClose}>
+      <div className="w-full max-w-md mx-auto rounded-t-3xl overflow-hidden" onClick={e=>e.stopPropagation()}
+        style={{background:'linear-gradient(160deg,#0D0D1F 0%,#0F172A 60%,#0D0D1F 100%)',border:'1px solid rgba(99,102,241,0.25)',boxShadow:'0 -8px 60px rgba(79,70,229,0.25)'}}>
+        {/* pill handle */}
+        <div className="flex justify-center pt-3 pb-1">
+          <div className="w-10 h-1 rounded-full" style={{background:'rgba(255,255,255,0.15)'}}/>
+        </div>
+        {/* header */}
+        <div className="px-6 pt-2 pb-4 flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0"
+            style={{background:'linear-gradient(135deg,#4F46E5,#7C3AED)',boxShadow:'0 0 24px rgba(99,102,241,0.5)'}}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8">
+              <path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/>
+            </svg>
+          </div>
+          <div className="flex-1">
+            <p className={`font-black text-white text-sm leading-tight ${fClass}`}>{item.names[lang]}</p>
+            <p className="text-[10px] font-bold mt-0.5" style={{color:'#818CF8'}}>Composition · {ingr.length} ingrédients</p>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center" style={{background:'rgba(255,255,255,0.07)',color:'#6B7280'}}>✕</button>
+        </div>
+        {/* ingredient pills */}
+        <div className="px-6 pb-8 flex flex-wrap gap-2">
+          {ingr.map((ing,i)=>(
+            <span key={i} className="px-3 py-1.5 rounded-full text-xs font-bold"
+              style={{background:'rgba(99,102,241,0.12)',border:'1px solid rgba(99,102,241,0.28)',color:'#C4B5FD',
+                animationName:'ingrFadeIn',animationDuration:'0.4s',animationTimingFunction:'ease-out',
+                animationDelay:`${i*0.04}s`,animationFillMode:'both'}}>
+              {ing}
+            </span>
+          ))}
+        </div>
+        <style>{`@keyframes ingrFadeIn{from{opacity:0;transform:scale(0.85) translateY(6px)}to{opacity:1;transform:none}}`}</style>
+      </div>
+    </div>
+  );
+}
+
 function ItemOptionsModal({item,lang,t,onClose,onAdd}:{
   item:MenuItem; lang:Lang; t:typeof T.fr;
   onClose:()=>void; onAdd:(selected:Record<string,string[]>,extra:number)=>void;
@@ -4391,6 +4811,7 @@ function RestaurantPage({restaurant,lang,t,onBack,onAddToCart}:{
 }) {
   const [activeCategory,setActiveCategory]=useState(restaurant.categories[0]?.id||'');
   const [optionsItem,setOptionsItem]=useState<MenuItem|null>(null);
+  const [ingredientsItem,setIngredientsItem]=useState<MenuItem|null>(null);
   const fClass=fontClass(lang); const isAR=lang==='ar';
   const liveRatings=useLiveRatings([restaurant.name]);
   const liveR=liveRatings[restaurant.name];
@@ -4480,6 +4901,16 @@ function RestaurantPage({restaurant,lang,t,onBack,onAddToCart}:{
                     <span className="text-white text-[8px] font-black">{t.customize}</span>
                   </div>
                 )}
+                {INGR[item.id]&&(
+                  <button onClick={e=>{e.stopPropagation();setIngredientsItem(item);}}
+                    className="absolute bottom-2 left-2 flex items-center gap-1 px-1.5 py-1 rounded-full transition-all active:scale-90"
+                    style={{background:'rgba(15,10,40,0.82)',backdropFilter:'blur(6px)',border:'1px solid rgba(129,140,248,0.45)'}}>
+                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" strokeWidth="2.2">
+                      <path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/>
+                    </svg>
+                    <span className="font-black" style={{fontSize:'7px',color:'#C4B5FD',letterSpacing:'0.02em'}}>Ingrédients</span>
+                  </button>
+                )}
               </div>
               <div className="p-2.5">
                 <p className={`text-[11px] font-black leading-tight mb-2 line-clamp-2 ${fClass}`} style={{color:'var(--c-text)'}}>{item.names[lang]}</p>
@@ -4498,6 +4929,9 @@ function RestaurantPage({restaurant,lang,t,onBack,onAddToCart}:{
       {optionsItem&&(
         <ItemOptionsModal item={optionsItem} lang={lang} t={t} onClose={()=>setOptionsItem(null)}
           onAdd={(sel,extra)=>handleAddItem(optionsItem,sel,extra)}/>
+      )}
+      {ingredientsItem&&(
+        <IngredientModal item={ingredientsItem} lang={lang} onClose={()=>setIngredientsItem(null)}/>
       )}
     </div>
   );
@@ -7577,7 +8011,7 @@ const CARD_PHOTOS: Record<string,string> = {
   tabac:       '/cover-tabac.png',
   pharmacie:   '/cover-pharmacie.png',
   supermarche: '/cover-supermarche.png',
-  boulangerie: '/boul-maitres-a7a06fa5.jpg',
+  boulangerie: '/cover-boulangerie.png',
   souk:        '/cover-souk.png',
 };
 function MiniPhotoBadge({k,emoji,size=38}:{k:string;emoji:string;size?:number}) {
