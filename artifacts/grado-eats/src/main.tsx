@@ -2512,6 +2512,29 @@ function AdminOrdersPanel({ adminKey }: { adminKey: string }) {
     <div style={{ marginTop: 20, padding: 12, background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 12, color: '#991B1B', fontSize: 12 }}>{err}</div>
   );
 
+  const [cleaning, setCleaning] = useState(false);
+  const [cleanResult, setCleanResult] = useState<string>('');
+
+  const cleanup = async () => {
+    if (!window.confirm('Fermer toutes les commandes bloquées depuis plus de 2h ? (elles seront marquées annulées)')) return;
+    setCleaning(true); setCleanResult('');
+    try {
+      const r = await fetch('/api/admin/orders/cleanup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminKey: adminKey.trim(), olderThanMinutes: 120 }),
+      });
+      const data = await r.json();
+      if (r.ok) {
+        setCleanResult(`✅ ${data.closed} commande(s) fantôme(s) fermée(s)`);
+        refresh();
+      } else {
+        setCleanResult(`❌ ${data.error}`);
+      }
+    } catch { setCleanResult('❌ Erreur réseau'); }
+    finally { setCleaning(false); }
+  };
+
   const pending    = orders.filter(o => o.status === 'pending');
   const active     = orders.filter(o => ['accepted','preparing','ready','on_the_way'].includes(o.status));
 
@@ -2531,6 +2554,18 @@ function AdminOrdersPanel({ adminKey }: { adminKey: string }) {
           {loading ? '…' : '🔄'}
         </button>
       </div>
+
+      {/* Bouton nettoyage commandes fantômes */}
+      <button onClick={cleanup} disabled={cleaning}
+        style={{ width: '100%', padding: '9px 0', marginBottom: 10, borderRadius: 8, border: '1px solid #7F1D1D',
+          background: cleaning ? '#1E293B' : '#450A0A', color: cleaning ? '#64748B' : '#FCA5A5',
+          fontSize: 11, fontWeight: 900, cursor: cleaning ? 'default' : 'pointer', letterSpacing: '0.04em' }}>
+        {cleaning ? '⏳ Nettoyage en cours…' : '🗑️ Fermer les commandes fantômes (+2h)'}
+      </button>
+      {cleanResult && (
+        <div style={{ fontSize: 11, fontWeight: 800, color: cleanResult.startsWith('✅') ? '#4ADE80' : '#F87171',
+          marginBottom: 10, textAlign: 'center' }}>{cleanResult}</div>
+      )}
 
       {orders.length === 0 && !loading && (
         <div style={{ textAlign: 'center', padding: '18px 0', color: '#475569', fontSize: 12, fontWeight: 700 }}>

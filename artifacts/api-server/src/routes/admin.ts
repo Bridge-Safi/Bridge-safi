@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { logger } from "../lib/logger";
 import { db, ordersTable } from "@workspace/db";
-import { desc, notInArray, eq } from "drizzle-orm";
+import { desc, notInArray, eq, sql as sqlRaw } from "drizzle-orm";
 
 const router = Router();
 
@@ -206,6 +206,35 @@ router.post("/admin/delete-user", async (req, res) => {
     res.json({ ok: true, message: `${email} a été supprimé. Il peut se réinscrire.` });
   } catch (err) {
     logger.error({ err }, "Admin delete error");
+    res.status(500).json({ error: "Erreur serveur." });
+  }
+});
+
+// ── POST /api/admin/orders/cleanup — ferme toutes les commandes bloquées ───────
+// Marque comme "cancelled" toutes les commandes encore actives (pending /
+// accepted / preparing / ready / on_the_way) créées il y a plus de 2h.
+// Ces commandes sont des "fantômes" : livrées dans la réalité mais jamais
+// mises à jour en base.
+router.post("/admin/orders/cleanup", async (req, res) => {
+  const { adminKey, olderThanMinutes } = req.body ?? {};
+  if (adminKey !== DRIVER_KEY) {
+    res.status(401).json({ error: "Clé admin invalide." });
+    return;
+  }
+  const ageMinutes = Number(olderThanMinutes ?? 120); // défaut 2h
+  try {
+    const result = await db.execute(
+      sqlRaw`UPDATE orders
+             SET status = 'cancelled', updated_at = NOW()
+             WHERE status IN ('pending','accepted','preparing','ready','on_the_way')
+               AND created_at < NOW() - (${ageMinutes} || ' minutes')::interval
+             RETURNING ref`
+    );
+    const refs = (result.rows as { ref: string }[]).map(r => r.ref);
+    logger.info({ count: refs.length, ageMinutes }, "Admin bulk-closed stale orders");
+    res.json({ ok: true, closed: refs.length, refs });
+  } catch (err) {
+    logger.error({ err }, "Admin cleanup error");
     res.status(500).json({ error: "Erreur serveur." });
   }
 });
