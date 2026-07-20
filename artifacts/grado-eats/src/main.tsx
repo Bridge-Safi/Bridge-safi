@@ -2450,6 +2450,116 @@ type Coupon = { code: string; discountType: 'percent'|'fixed'; discountValue: nu
   maxUses: number|null; usedCount: number; expiresAt: string|null; active: boolean; note: string|null; };
 
 
+const STATUS_LABEL: Record<string, { label: string; color: string }> = {
+  pending:    { label: '🟡 En attente',       color: '#F59E0B' },
+  accepted:   { label: '✅ Acceptée',          color: '#10B981' },
+  preparing:  { label: '👨‍🍳 En préparation',  color: '#3B82F6' },
+  ready:      { label: '📦 Prête',             color: '#8B5CF6' },
+  on_the_way: { label: '🛵 En chemin',         color: '#06B6D4' },
+};
+
+function AdminOrdersPanel({ adminKey }: { adminKey: string }) {
+  const [orders, setOrders]       = useState<any[]>([]);
+  const [err, setErr]             = useState('');
+  const [loading, setLoading]     = useState(false);
+  const [cleaning, setCleaning]   = useState(false);
+  const [cleanResult, setCleanResult] = useState('');
+
+  const refresh = async () => {
+    if (!adminKey.trim()) { setOrders([]); return; }
+    setLoading(true); setErr('');
+    try {
+      const r = await fetch(`/api/admin/orders?adminKey=${encodeURIComponent(adminKey.trim())}`);
+      const data = await r.json();
+      if (!r.ok) { setErr(data.error || 'Erreur'); return; }
+      setOrders(data.orders || []);
+    } catch { setErr('Erreur réseau'); }
+    finally { setLoading(false); }
+  };
+
+  useEffect(() => { refresh(); /* eslint-disable-next-line */ }, [adminKey]);
+  useEffect(() => {
+    if (!adminKey.trim()) return;
+    const t = setInterval(refresh, 15000);
+    return () => clearInterval(t);
+    /* eslint-disable-next-line */
+  }, [adminKey]);
+
+  const cleanup = async () => {
+    if (!window.confirm('Fermer toutes les commandes bloquées depuis plus de 2h ?')) return;
+    setCleaning(true); setCleanResult('');
+    try {
+      const r = await fetch('/api/admin/orders/cleanup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminKey: adminKey.trim(), olderThanMinutes: 120 }),
+      });
+      const data = await r.json();
+      setCleanResult(r.ok ? `✅ ${data.closed} commande(s) fermée(s)` : `❌ ${data.error}`);
+      if (r.ok) refresh();
+    } catch { setCleanResult('❌ Erreur réseau'); }
+    finally { setCleaning(false); }
+  };
+
+  if (!adminKey.trim()) return null;
+  if (err) return <div style={{ marginTop: 20, padding: 12, background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 12, color: '#991B1B', fontSize: 12 }}>{err}</div>;
+
+  const pending = orders.filter(o => o.status === 'pending');
+  const active  = orders.filter(o => ['accepted','preparing','ready','on_the_way'].includes(o.status));
+
+  return (
+    <div style={{ marginTop: 24, padding: 16, background: '#0F172A', borderRadius: 14, border: '1px solid #1E3A5F' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+        <h3 style={{ fontSize: 14, fontWeight: 900, color: '#F8FAFC', margin: 0 }}>
+          📋 Commandes en cours
+          {orders.length > 0 && <span style={{ marginLeft: 8, fontSize: 11, background: '#1E3A5F', color: '#93C5FD', borderRadius: 20, padding: '2px 8px', fontWeight: 700 }}>{orders.length}</span>}
+        </h3>
+        <button onClick={refresh} disabled={loading} style={{ fontSize: 11, fontWeight: 800, color: '#93C5FD', background: 'transparent', border: '1px solid #1E3A5F', borderRadius: 8, padding: '4px 10px', cursor: 'pointer' }}>
+          {loading ? '…' : '🔄'}
+        </button>
+      </div>
+
+      <button onClick={cleanup} disabled={cleaning} style={{ width: '100%', padding: '9px 0', marginBottom: 8, borderRadius: 8, border: '1px solid #7F1D1D', background: cleaning ? '#1E293B' : '#450A0A', color: cleaning ? '#64748B' : '#FCA5A5', fontSize: 11, fontWeight: 900, cursor: cleaning ? 'default' : 'pointer' }}>
+        {cleaning ? '⏳ Nettoyage…' : '🗑️ Fermer les commandes fantômes (+2h)'}
+      </button>
+      {cleanResult && <div style={{ fontSize: 11, fontWeight: 800, color: cleanResult.startsWith('✅') ? '#4ADE80' : '#F87171', marginBottom: 8, textAlign: 'center' }}>{cleanResult}</div>}
+
+      {orders.length === 0 && !loading && <div style={{ textAlign: 'center', padding: '16px 0', color: '#475569', fontSize: 12, fontWeight: 700 }}>Aucune commande active</div>}
+
+      {pending.length > 0 && (
+        <div style={{ marginBottom: 8 }}>
+          <div style={{ fontSize: 10, fontWeight: 900, color: '#F59E0B', letterSpacing: '0.1em', marginBottom: 6 }}>🟡 EN ATTENTE ({pending.length})</div>
+          {pending.map(o => <AdminOrderRow key={o.ref} o={o} />)}
+        </div>
+      )}
+      {active.length > 0 && (
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 900, color: '#60A5FA', letterSpacing: '0.1em', marginBottom: 6 }}>🛵 EN COURS ({active.length})</div>
+          {active.map(o => <AdminOrderRow key={o.ref} o={o} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AdminOrderRow({ o }: { o: any }) {
+  const st = STATUS_LABEL[o.status] ?? { label: o.status, color: '#9CA3AF' };
+  const time = new Date(o.createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const items: { name: string; qty: number }[] = Array.isArray(o.items) ? o.items : [];
+  return (
+    <div style={{ background: '#1E293B', borderRadius: 10, padding: '10px 12px', marginBottom: 6, border: `1px solid ${o.status === 'pending' ? '#78350F' : '#1E3A5F'}` }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+        <span style={{ fontSize: 11, fontWeight: 900, color: '#D9C5A0', letterSpacing: '0.08em' }}>{o.ref} <span style={{ color: '#475569', fontWeight: 700, fontSize: 9 }}>{time}</span></span>
+        <span style={{ fontSize: 10, fontWeight: 800, color: st.color, background: `${st.color}22`, padding: '2px 7px', borderRadius: 6 }}>{st.label}</span>
+      </div>
+      <p style={{ margin: '0 0 2px', fontSize: 12, fontWeight: 700, color: '#F1F5F9' }}>👤 {o.customerName} · 📞 {o.customerPhone}</p>
+      <p style={{ margin: '0 0 4px', fontSize: 11, color: '#64748B' }}>📍 {o.customerAddress}</p>
+      {items.length > 0 && <p style={{ margin: 0, fontSize: 10, color: '#94A3B8' }}>{items.map((it, i) => `×${it.qty} ${it.name}`).join(' · ')}</p>}
+      <p style={{ margin: '4px 0 0', fontSize: 13, fontWeight: 900, color: '#4ADE80' }}>💰 {o.total} MAD</p>
+    </div>
+  );
+}
+
 function AdminStatsPanel({ adminKey }: { adminKey: string }) {
   const [stats, setStats] = useState<any>(null);
   const [err, setErr] = useState('');
@@ -3234,6 +3344,7 @@ function AdminAuthPage() {
           </p>
         </div>
       )}
+      <AdminOrdersPanel adminKey={adminKey} />
       <AdminStatsPanel adminKey={adminKey} />
       <AdminCouponsPanel adminKey={adminKey} />
       <PWAInstallBannerSimple appName="Bridge Admin" />
