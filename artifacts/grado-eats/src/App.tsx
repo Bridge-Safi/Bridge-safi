@@ -5072,7 +5072,7 @@ function HomePage({lang,t,onSelectRestaurant}:{lang:Lang;t:typeof T.fr;onSelectR
           </div>
         )
         : (
-          <div className="tv-grid px-4 flex flex-col gap-3 mb-6">
+          <div className="tv-grid px-4 gap-4 mb-6">
             {filtered.map((r,idx)=>{
               // Une grande carte toutes les 5 : McDo en 1er, puis un resto au hasard tous les 5
               const isFeatured=activeFilter==='all' && idx%5===0;
@@ -5708,12 +5708,13 @@ function SharedPaymentOptions({lang,amount,selected,onSelect,showCash=true,showC
 
 type CheckoutStep='cart'|'form'|'payment'|'card'|'success';
 
-function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantName,onOrderSuccess,saveProfile,serviceFeeThreshold=70,serviceFeeAmount=SERVICE_FEE}:{
+function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantName,onOrderSuccess,onGoHome,saveProfile,serviceFeeThreshold=70,serviceFeeAmount=SERVICE_FEE}:{
   cart:CartItem[]; lang:Lang; onClose:()=>void;
   onQty:(cartId:string,delta:number)=>void;
   saveProfile?:(p:UserProfile)=>void;
   profile:UserProfile; onClearCart:()=>void; restaurantName?:string;
   onOrderSuccess?:(ref:string)=>void;
+  onGoHome?:()=>void;
   serviceFeeThreshold?:number; serviceFeeAmount?:number;
 }) {
   const { isSignedIn, user } = useUser();
@@ -6342,9 +6343,14 @@ function CheckoutDrawer({cart,lang,onClose,onQty,profile,onClearCart,restaurantN
               </div>
             )}
             <button onClick={()=>{onClearCart();onClose();}}
-              className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 ${fClass}`}
+              className={`w-full py-4 rounded-2xl font-black text-sm text-white transition-all active:scale-95 mb-3 ${fClass}`}
               style={{background:'linear-gradient(135deg,#065F46,#047857)',boxShadow:'0 6px 20px rgba(6,95,70,0.3)'}}>
               {t.newOrder} 🍽️
+            </button>
+            <button onClick={()=>{onClose();onGoHome?.();}}
+              className={`w-full py-3 rounded-2xl font-black text-sm transition-all active:scale-95 ${fClass}`}
+              style={{background:'var(--c-bg)',border:'1.5px dashed #BBF7D0',color:'#065F46'}}>
+              🏠 {lang==='ar'?'العودة للخدمات':lang==='en'?'Back to services':'Retour aux services'}
             </button>
           </div>
         )}
@@ -6558,6 +6564,15 @@ function SimpleTrackingPage({orderRef,lang,onNewOrder}:{orderRef:string;lang:Lan
         </div>
       )}
 
+      {/* Passer une autre commande — visible avant livraison */}
+      {!isDelivered&&(
+        <button onClick={onNewOrder}
+          className="w-full py-3 rounded-2xl font-black text-sm mb-4 transition-all active:scale-95"
+          style={{background:'var(--c-bg)',border:'1.5px dashed #BBF7D0',color:'#065F46',cursor:'pointer'}}>
+          🍽️ {lang==='ar'?'تمرير طلب آخر':lang==='en'?'Place another order':'Passer une autre commande'}
+        </button>
+      )}
+
       {/* Contact footer */}
       <div className="rounded-2xl p-3 flex items-center gap-3" style={{background:'var(--c-input)',border:'1px solid var(--c-border)'}}>
         <span className="text-lg">📞</span>
@@ -6707,7 +6722,7 @@ function ReceiptModal({orderRef,lang,accent,accentDark,onClose}:{orderRef:string
     </div>
   );
 }
-function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string}) {
+function TrackingPage({lang,t,orderRef,onNewOrder}:{lang:Lang;t:typeof T.fr;orderRef:string;onNewOrder?:()=>void}) {
   const [activeStage,setActiveStage]=useState(0);
   const [realPos,setRealPos]=useState<{lat:number;lng:number}|null>(null);
   const [lastSeen,setLastSeen]=useState<number|null>(null);
@@ -6896,7 +6911,7 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
           <DriverRatingBox orderRef={orderRef} lang={lang} accent="#065F46" accentDark="#059669" textColor="#065F46" mutedColor="#059669" cardBg="rgba(255,255,255,0.7)" cardBorder="#86EFAC"/>
           <div className="flex items-center justify-center gap-2 mt-4">
             <button
-              onClick={()=>{window.location.href='/';}}
+              onClick={()=>onNewOrder?onNewOrder():(window.location.href='/')}
               className="px-6 py-2.5 rounded-2xl font-black text-sm text-white transition-all active:scale-95"
               style={{background:'linear-gradient(135deg,#065F46,#059669)',border:'none',cursor:'pointer',boxShadow:'0 4px 14px rgba(5,150,105,0.35)'}}>
               {lang==='ar'?'طلب جديد':lang==='en'?'New order':'Nouvelle commande'}
@@ -6983,6 +6998,13 @@ function TrackingPage({lang,t,orderRef}:{lang:Lang;t:typeof T.fr;orderRef:string
       )}
       {!isDelivered&&orderRef&&(
         <CancelOrderButton orderRef={orderRef} lang={lang} textColor="#065F46" mutedColor="#059669" cardBg="var(--c-bg)" cardBorder="var(--c-border)" onCancelled={()=>setOrderCancelled(true)}/>
+      )}
+      {!isDelivered&&onNewOrder&&(
+        <button onClick={onNewOrder}
+          className="w-full py-3 rounded-2xl font-black text-sm mt-3 mb-1 transition-all active:scale-95"
+          style={{background:'var(--c-bg)',border:'1.5px dashed #BBF7D0',color:'#065F46',cursor:'pointer'}}>
+          🍽️ {lang==='ar'?'تمرير طلب آخر':lang==='en'?'Place another order':'Passer une autre commande'}
+        </button>
       )}
       <AdSlot lang={lang} />
     </div>
@@ -8093,7 +8115,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
  
 
   return(
-    <div className={`fixed inset-0 flex flex-col z-40 ${isAR?'rtl':'ltr'}`}
+    <div className={`fixed inset-0 flex flex-col z-40 desktop-page-offset ${isAR?'rtl':'ltr'}`}
       style={{background:'var(--c-bg)',overflowY:'auto'}}>
       <style>{`
         @keyframes svcFloat{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-9px) rotate(4deg);}}
@@ -13115,7 +13137,7 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
   const [showProfileModal,setShowProfileModal]=useState(false);
 
   return (
-    <div className={`fixed inset-0 overflow-y-auto flex flex-col ${isAR?'rtl':'ltr'}`}
+    <div className={`fixed inset-0 overflow-y-auto flex flex-col desktop-page-offset ${isAR?'rtl':'ltr'}`}
       style={{background: dark
         ? '#000'
         : 'linear-gradient(160deg,#f0fdf4 0%,#fefce8 50%,#f0fdf4 100%)'}}>
@@ -13130,7 +13152,7 @@ function HubPage({onServices,lang,cycleLang,profile,saveProfile}:{
       `}</style>
 
       {/* ── CENTER CONTENT ── */}
-      <div className="flex flex-col items-center w-full max-w-sm mx-auto pt-20 pb-10 px-5 flex-1 justify-center min-h-screen">
+      <div className="hub-content-inner flex flex-col items-center w-full max-w-sm mx-auto pt-20 pb-10 px-5 flex-1 justify-center min-h-screen">
 
         {/* ── 2 BIG BUTTONS ── */}
         <div style={{display:'flex',flexDirection:'column',gap:18,width:'100%',animation:'hubFadeIn 0.5s ease-out 0.4s both'}}>
@@ -13592,6 +13614,237 @@ function loadNav() {
   } catch { return null; }
 }
 
+// ─── DESKTOP SIDEBAR MINIMAL (Hub / Service pages) ───────────────────────────
+function DesktopSidebarHub({lang,cycleLang,profile,user,onServices,onHub}:{
+  lang:Lang;cycleLang:()=>void;profile:UserProfile;user:any;
+  onServices?:()=>void;onHub?:()=>void;
+}){
+  const {dark}=useDark();
+  const avatarSrc=profile.avatar||user?.imageUrl||null;
+  const initials=(profile.name||'?').split(' ').map((w:string)=>w[0]).join('').toUpperCase().slice(0,2);
+  const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
+  return(
+    <aside className="desktop-sidebar">
+      {/* Logo */}
+      <div style={{padding:'22px 18px 18px',borderBottom:'1px solid var(--c-border)'}}>
+        <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <div style={{width:46,height:46,borderRadius:'50%',overflow:'hidden',border:'2.5px solid #D9C5A0',
+            boxShadow:'0 4px 16px rgba(6,95,70,0.15)',flexShrink:0}}>
+            <img src="/logo.jpeg" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.9)'}}/>
+          </div>
+          <div>
+            <p style={{fontWeight:900,fontSize:13,color:'#065F46',letterSpacing:'0.35em',margin:0}}>
+              {lang==='amz'?'ⴱⵔⵉⴷⵊ':lang==='ar'?'بريدج':'BRIDGE'}
+            </p>
+            <p style={{fontSize:9,color:'#B45309',fontWeight:700,margin:'2px 0 0',letterSpacing:'0.1em'}}>
+              SAFI · آسفي · ⵙⴰⴼⵉ
+            </p>
+          </div>
+        </div>
+      </div>
+      {/* Nav */}
+      <nav style={{flex:1,padding:'12px 8px',display:'flex',flexDirection:'column',gap:4}}>
+        {onHub&&(
+          <button onClick={onHub} style={{display:'flex',alignItems:'center',gap:12,padding:'11px 14px',borderRadius:14,
+            border:'none',cursor:'pointer',background:'transparent',color:'var(--c-text)',fontWeight:800,fontSize:13,width:'100%'}}>
+            <span style={{fontSize:18}}>⌂</span>
+            <span>{lang==='ar'?'الرئيسية':lang==='en'?'Home':'Accueil'}</span>
+          </button>
+        )}
+        {onServices&&(
+          <button onClick={onServices} style={{display:'flex',alignItems:'center',gap:12,padding:'11px 14px',borderRadius:14,
+            border:'none',cursor:'pointer',background:'linear-gradient(135deg,#065F46,#047857)',color:'#fff',fontWeight:800,fontSize:13,width:'100%',
+            boxShadow:'0 4px 14px rgba(6,95,70,0.3)'}}>
+            <span style={{fontSize:18}}>🛵</span>
+            <span>{lang==='ar'?'الخدمات':lang==='en'?'Services':'Services'}</span>
+          </button>
+        )}
+      </nav>
+      {/* Footer */}
+      <div style={{padding:'12px 8px',borderTop:'1px solid var(--c-border)',display:'flex',flexDirection:'column',gap:6}}>
+        {user?(
+          <div style={{display:'flex',alignItems:'center',gap:10,padding:'9px 12px',borderRadius:14,
+            border:'1.5px solid var(--c-border)',background:'var(--c-card)'}}>
+            <div style={{width:30,height:30,borderRadius:'50%',overflow:'hidden',border:'2px solid #D9C5A0',
+              flexShrink:0,background:'#065F46',display:'flex',alignItems:'center',justifyContent:'center'}}>
+              {avatarSrc?<img src={avatarSrc} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+                :<span style={{fontSize:10,fontWeight:900,color:'#fff'}}>{initials}</span>}
+            </div>
+            <p style={{fontWeight:800,fontSize:11,color:'var(--c-text)',margin:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+              {profile.name||(lang==='ar'?'ملفي':'Mon profil')}
+            </p>
+          </div>
+        ):null}
+        <div style={{display:'flex',gap:6,alignItems:'center'}}>
+          <button onClick={cycleLang} style={{flex:1,padding:'7px',borderRadius:12,border:'1.5px solid var(--c-border)',
+            background:'var(--c-card)',color:'#065F46',fontWeight:900,fontSize:12,cursor:'pointer',minHeight:'auto'}}>
+            {LANG_LABELS[lang]}
+          </button>
+          <DarkToggle size={36}/>
+        </div>
+        <p style={{fontSize:8,color:'#C9BFB2',textAlign:'center',margin:'2px 0 0'}}>© 2026 BRIDGE SAFI</p>
+      </div>
+    </aside>
+  );
+}
+
+// ─── DESKTOP SIDEBAR (≥1280px uniquement) ────────────────────────────────────
+function DesktopSidebar({
+  lang,t,fClass,page,setPage,cartCount,setShowCart,
+  setSelectedRestaurant,profile,user,goToSignIn,
+  cycleLang,setService,setShowProfile,
+}:{
+  lang:Lang;t:typeof T.fr;fClass:string;
+  page:string;setPage:(p:any)=>void;
+  cartCount:number;setShowCart:(v:boolean)=>void;
+  setSelectedRestaurant:(r:any)=>void;
+  profile:UserProfile;user:any;goToSignIn:()=>void;
+  cycleLang:()=>void;setService:(s:any)=>void;
+  setShowProfile:(v:boolean)=>void;
+}){
+  const {dark}=useDark();
+  const avatarSrc=profile.avatar||user?.imageUrl||null;
+  const initials=(profile.name||'?').split(' ').map((w:string)=>w[0]).join('').toUpperCase().slice(0,2);
+  const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
+
+  const navItems=[
+    {icon:'🏠',label:t.navHome,id:'home',    onClick:()=>{setPage('home');setSelectedRestaurant(null);}},
+    {icon:'📍',label:t.navTrack,id:'tracking',onClick:()=>setPage('tracking')},
+    {icon:'📞',label:lang==='ar'?'التواصل':lang==='en'?'Contact':'Contact',id:'contact',onClick:()=>setPage('contact')},
+  ];
+
+  return(
+    <aside className="desktop-sidebar">
+      {/* ── Logo ── */}
+      <div style={{padding:'22px 18px 18px',borderBottom:'1px solid var(--c-border)'}}>
+        <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <div style={{width:46,height:46,borderRadius:'50%',overflow:'hidden',border:'2.5px solid #D9C5A0',
+            boxShadow:'0 4px 16px rgba(6,95,70,0.15)',flexShrink:0}}>
+            <img src="/logo.jpeg" alt="Bridge" style={{width:'100%',height:'100%',objectFit:'cover',transform:'scale(1.9)'}}/>
+          </div>
+          <div>
+            <p style={{fontWeight:900,fontSize:13,color:'#065F46',letterSpacing:'0.35em',margin:0}}>
+              {lang==='amz'?'ⴱⵔⵉⴷⵊ':lang==='ar'?'بريدج':'BRIDGE'}
+            </p>
+            <p style={{fontSize:9,color:'#B45309',fontWeight:700,margin:'2px 0 0',letterSpacing:'0.1em'}}>
+              SAFI · آسفي · ⵙⴰⴼⵉ
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Navigation ── */}
+      <nav style={{flex:1,padding:'10px 8px',display:'flex',flexDirection:'column',gap:2,overflowY:'auto'}}>
+        {navItems.map(item=>{
+          const isActive=page===item.id;
+          return(
+            <button key={item.id} onClick={item.onClick} style={{
+              display:'flex',alignItems:'center',gap:12,
+              padding:'11px 14px',borderRadius:14,border:'none',cursor:'pointer',
+              background:isActive?'#065F46':'transparent',
+              color:isActive?'#fff':'var(--c-text)',
+              fontWeight:800,fontSize:13,textAlign:'left',width:'100%',
+              transition:'all 0.18s',
+            }}>
+              <span style={{fontSize:18,flexShrink:0}}>{item.icon}</span>
+              <span className={fClass} style={{flex:1}}>{item.label}</span>
+              {isActive&&<span style={{width:5,height:5,borderRadius:'50%',background:'#D9C5A0',flexShrink:0}}/>}
+            </button>
+          );
+        })}
+
+        {/* ── Séparateur ── */}
+        <div style={{height:1,background:'var(--c-border)',margin:'8px 4px'}}/>
+
+        {/* ── Changer de service ── */}
+        <button onClick={()=>setService('none')} style={{
+          display:'flex',alignItems:'center',gap:12,
+          padding:'10px 14px',borderRadius:14,border:'none',cursor:'pointer',
+          background:'transparent',color:'#9CA3AF',
+          fontWeight:700,fontSize:12,textAlign:'left',width:'100%',
+        }}>
+          <span style={{fontSize:16,flexShrink:0}}>🔄</span>
+          <span className={fClass}>{lang==='ar'?'تغيير الخدمة':lang==='en'?'Change service':'Changer de service'}</span>
+        </button>
+
+        {/* ── Panier ── */}
+        <button onClick={()=>setShowCart(true)} style={{
+          display:'flex',alignItems:'center',gap:12,
+          padding:'11px 14px',borderRadius:14,border:'none',cursor:'pointer',
+          background:cartCount>0?'linear-gradient(135deg,#065F46,#047857)':'transparent',
+          color:cartCount>0?'#fff':'var(--c-text)',
+          fontWeight:800,fontSize:13,textAlign:'left',width:'100%',
+          boxShadow:cartCount>0?'0 4px 14px rgba(6,95,70,0.3)':'none',
+          marginTop:4,
+        }}>
+          <span style={{fontSize:18,position:'relative',flexShrink:0}}>
+            🛒
+            {cartCount>0&&(
+              <span style={{position:'absolute',top:-4,right:-6,
+                background:'#4F46E5',color:'#fff',
+                fontSize:8,fontWeight:900,borderRadius:'50%',
+                width:14,height:14,display:'flex',alignItems:'center',justifyContent:'center',
+              }}>{cartCount}</span>
+            )}
+          </span>
+          <span className={fClass} style={{flex:1}}>{t.navCart||'Panier'}</span>
+          {cartCount>0&&(
+            <span style={{background:'rgba(255,255,255,0.25)',fontSize:11,fontWeight:900,borderRadius:10,padding:'2px 8px',flexShrink:0}}>{cartCount}</span>
+          )}
+        </button>
+      </nav>
+
+      {/* ── Pied : profil + langue + dark mode ── */}
+      <div style={{padding:'10px 8px',borderTop:'1px solid var(--c-border)',display:'flex',flexDirection:'column',gap:6}}>
+        {user?(
+          <button onClick={()=>setShowProfile(true)} style={{
+            display:'flex',alignItems:'center',gap:10,
+            padding:'9px 12px',borderRadius:14,border:'1.5px solid var(--c-border)',
+            background:'var(--c-card)',cursor:'pointer',width:'100%',
+          }}>
+            <div style={{width:30,height:30,borderRadius:'50%',overflow:'hidden',border:'2px solid #D9C5A0',
+              flexShrink:0,background:'linear-gradient(135deg,#065F46,#059669)',
+              display:'flex',alignItems:'center',justifyContent:'center'}}>
+              {avatarSrc
+                ?<img src={avatarSrc} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+                :<span style={{fontSize:10,fontWeight:900,color:'#fff'}}>{initials}</span>}
+            </div>
+            <div style={{flex:1,textAlign:'left',minWidth:0}}>
+              <p style={{fontWeight:800,fontSize:11,color:'var(--c-text)',margin:0,
+                overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+                {profile.name||user.firstName||(lang==='ar'?'ملفي':'Mon profil')}
+              </p>
+              <p style={{fontSize:9,color:'#9CA3AF',margin:'1px 0 0'}}>
+                {lang==='ar'?'عرض الملف':lang==='en'?'View profile':'Voir le profil'}
+              </p>
+            </div>
+          </button>
+        ):(
+          <button onClick={goToSignIn} style={{
+            display:'flex',alignItems:'center',justifyContent:'center',gap:8,
+            padding:'10px 14px',borderRadius:14,border:'none',cursor:'pointer',
+            background:'linear-gradient(135deg,#065F46,#047857)',color:'#fff',
+            fontWeight:900,fontSize:12,width:'100%',
+          }}>
+            👤 {lang==='ar'?'تسجيل الدخول':lang==='en'?'Sign in':'Se connecter'}
+          </button>
+        )}
+        <div style={{display:'flex',gap:6,alignItems:'center'}}>
+          <button onClick={cycleLang} style={{
+            flex:1,padding:'7px',borderRadius:12,border:'1.5px solid var(--c-border)',
+            background:'var(--c-card)',color:'#065F46',fontWeight:900,fontSize:12,cursor:'pointer',
+            minHeight:'auto',
+          }}>
+            {LANG_LABELS[lang]}
+          </button>
+          <DarkToggle size={36}/>
+        </div>
+        <p style={{fontSize:8,color:'#C9BFB2',textAlign:'center',margin:'2px 0 0'}}>© 2026 BRIDGE SAFI · safi-bridge.ma</p>
+      </div>
+    </aside>
+  );
+}
+
 export default function App() {
   const saved = loadNav();
   const { isLoaded, isSignedIn, user } = useUser();
@@ -13712,19 +13965,21 @@ export default function App() {
     <FloatingHelpWA/></DarkModeCtx.Provider>
   );
 
-  if(mode==='hub') return <DarkModeCtx.Provider value={dv}><HubPage onServices={()=>setMode('services')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  const hubSidebar=<DesktopSidebarHub lang={lang} cycleLang={cycleLang} profile={profile} user={user} onServices={()=>setMode('services')}/>;
+  if(mode==='hub') return <DarkModeCtx.Provider value={dv}>{hubSidebar}<HubPage onServices={()=>setMode('services')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/><FloatingHelpWA/></DarkModeCtx.Provider>;
 
   const backToHub=()=>{setMode('hub');setService('none');};
-  if(service==='none') return <DarkModeCtx.Provider value={dv}><ServiceSelectPage onSelect={s=>{if(s==='taxi')setService('taxi-select');else setService(s);}} onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='taxi-select') return <DarkModeCtx.Provider value={dv}><TaxiVehicleSelectPage onBack={()=>setService('none')} onSelect={v=>setService(v)} lang={lang} cycleLang={cycleLang}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='taxi') return <DarkModeCtx.Provider value={dv}><MotoTaxiPage vehicleType='taxi' onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='moto') return <DarkModeCtx.Provider value={dv}><MotoTaxiPage vehicleType='moto' onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='tabac') return <DarkModeCtx.Provider value={dv}><TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='fleurs') return <DarkModeCtx.Provider value={dv}><FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}><PharmaciePage onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='boulangerie') return <DarkModeCtx.Provider value={dv}><BoulangeriePage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='souk') return <DarkModeCtx.Provider value={dv}><SoukPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
-  if(service==='supermarche') return <DarkModeCtx.Provider value={dv}><SupermarchePage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  const svcSidebar=<DesktopSidebarHub lang={lang} cycleLang={cycleLang} profile={profile} user={user} onHub={backToHub}/>;
+  if(service==='none') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<ServiceSelectPage onSelect={s=>{if(s==='taxi')setService('taxi-select');else setService(s);}} onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><PWAInstallBanner lang={lang}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='taxi-select') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<TaxiVehicleSelectPage onBack={()=>setService('none')} onSelect={v=>setService(v)} lang={lang} cycleLang={cycleLang}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='taxi') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<MotoTaxiPage vehicleType='taxi' onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='moto') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<MotoTaxiPage vehicleType='moto' onBack={()=>setService('taxi-select')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='tabac') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<TabacPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='fleurs') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<FleurPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='pharmacie') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<PharmaciePage onBack={backToHub} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='boulangerie') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<BoulangeriePage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='souk') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<SoukPage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
+  if(service==='supermarche') return <DarkModeCtx.Provider value={dv}>{svcSidebar}<SupermarchePage onBack={()=>setService('none')} lang={lang} cycleLang={cycleLang} profile={profile} saveProfile={saveProfile} onOrderSuccess={handleSimpleOrderSuccess}/><FloatingHelpWA/></DarkModeCtx.Provider>;
 
   // Pill button style (shared between lang + profile)
   const pillStyle:React.CSSProperties={
@@ -13734,10 +13989,19 @@ export default function App() {
 
   return (
   <DarkModeCtx.Provider value={dv}>
-    <div className={`min-h-screen overflow-x-hidden ${isAR?'rtl':'ltr'}`} style={{color:'var(--c-text)'}}>
+    <div className={`min-h-screen overflow-x-hidden desktop-app-shell ${isAR?'rtl':'ltr'}`} style={{color:'var(--c-text)'}}>
 
-      {/* ── Top-left: Back ── */}
-      <div className={`fixed top-4 z-50 flex items-center gap-2 ${isAR?'right-4':'left-4'}`}>
+      {/* ── Desktop Sidebar (≥1280px only) ── */}
+      <DesktopSidebar
+        lang={lang} t={t} fClass={fClass} page={page} setPage={setPage}
+        cartCount={cartCount} setShowCart={setShowCart}
+        setSelectedRestaurant={setSelectedRestaurant}
+        profile={profile} user={user} goToSignIn={goToSignIn}
+        cycleLang={cycleLang} setService={setService} setShowProfile={setShowProfile}
+      />
+
+      {/* ── Top-left: Back (mobile/tablet uniquement) ── */}
+      <div className={`mobile-only-flex fixed top-4 z-50 items-center gap-2 ${isAR?'right-4':'left-4'}`}>
         <button onClick={()=>setService('none')}
           className="flex items-center justify-center rounded-full transition-all active:scale-90"
           style={{...pillStyle, width:'42px', height:'42px', padding:0, fontSize:'18px'}}>
@@ -13745,8 +14009,8 @@ export default function App() {
         </button>
       </div>
 
-      {/* ── Top-right: Profile + Language ── */}
-      <div className={`fixed top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
+      {/* ── Top-right: Profile + Language (mobile/tablet uniquement) ── */}
+      <div className={`mobile-only-flex fixed top-5 z-50 items-center gap-2 ${isAR?'left-5':'right-5'}`}>
        {user ? ( 
     <button onClick={()=>setShowProfile(true)}
           className="rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90 hover:scale-110 relative"
@@ -13773,7 +14037,7 @@ export default function App() {
       </div>
 
 
-      {/* ── Header ── */}
+      {/* ── Header (mobile/tablet uniquement — sidebar affiche le logo sur desktop) ── */}
       <header className="relative pt-14 pb-4 flex flex-col items-center"
         style={{borderBottom:'1px solid var(--c-border)',background:'var(--c-nav-soft)',backdropFilter:'blur(14px)'}}>
         <div className="h-14 w-14 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0"
@@ -13792,12 +14056,12 @@ export default function App() {
         {page==='restaurant'&&selectedRestaurant&&(
           <RestaurantPage restaurant={selectedRestaurant} lang={lang} t={t} onBack={handleBack} onAddToCart={addToCart}/>
         )}
-        {page==='tracking'&&<TrackingPage lang={lang} t={t} orderRef={lastOrderRef}/>}
+        {page==='tracking'&&<TrackingPage lang={lang} t={t} orderRef={lastOrderRef} onNewOrder={()=>{setPage('home');setService('none');setMode('services');}}/>}
         {page==='simple-tracking'&&<SimpleTrackingPage orderRef={lastOrderRef} lang={lang} onNewOrder={()=>{setPage('home');setService('none');setMode('services');}}/>}
         {page==='contact'&&<ContactPage lang={lang} t={t}/>}
       </main>
 
-      {/* ── Bottom nav (hidden on TV/large screens) ── */}
+      {/* ── Bottom nav (visible partout — "garde les bas") ── */}
       <nav className="tv-hide-on-tv fixed bottom-0 inset-x-0 z-40"
         style={{background:'var(--c-nav)',backdropFilter:'blur(20px)',borderTop:'1px solid var(--c-border)'}}>
         <div className="max-w-md mx-auto flex">
@@ -13831,7 +14095,7 @@ export default function App() {
       </nav>
 
       <PWAInstallBanner lang={lang}/>
-      {showCart&&<CheckoutDrawer cart={cart} lang={lang} onClose={()=>setShowCart(false)} onQty={adjustQty} profile={profile} saveProfile={saveProfile} onClearCart={clearCart} restaurantName={selectedRestaurant?.name} onOrderSuccess={ref=>{setLastOrderRef(ref);setPage('tracking');setShowCart(false);}}/>}
+      {showCart&&<CheckoutDrawer cart={cart} lang={lang} onClose={()=>setShowCart(false)} onQty={adjustQty} profile={profile} saveProfile={saveProfile} onClearCart={clearCart} restaurantName={selectedRestaurant?.name} onOrderSuccess={ref=>{setLastOrderRef(ref);setPage('tracking');setShowCart(false);}} onGoHome={()=>{setShowCart(false);setPage('home');setService('none');setMode('services');}}/>}
       {showProfile&&<ProfileModal lang={lang} profile={profile} onSave={saveProfile} onClose={()=>setShowProfile(false)}/>}
 
       {showDriver&&(

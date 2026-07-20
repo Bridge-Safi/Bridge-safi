@@ -92,7 +92,7 @@ html.dark textarea::placeholder {
   }
 }
 
-/* ── Desktop / laptop — centre l'app comme une colonne mobile ─────────────── */
+/* ── Tablet — centre l'app comme une colonne mobile ───────────────────────── */
 @media (min-width: 640px) and (max-width: 1279px) {
   #root > div {
     max-width: 480px;
@@ -100,52 +100,103 @@ html.dark textarea::placeholder {
   }
 }
 
-/* ── TV layout — wider viewport uses a centered column with max-width ──────── */
+/* ── Desktop sidebar (caché sur mobile/tablette) ───────────────────────────── */
+.desktop-sidebar {
+  display: none;
+}
+.mobile-only-block { display: block; }
+.mobile-only-flex  { display: flex;  }
+
+/* ── Desktop / PC / TV ≥ 1280px ────────────────────────────────────────────── */
 @media (min-width: 1280px) {
-  body {
-    font-size: 18px;
+
+  /* ── Sidebar fixe gauche ── */
+  .desktop-sidebar {
+    display: flex !important;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0;
+    width: 248px; height: 100vh;
+    z-index: 60;
+    overflow: hidden;
+    background: var(--c-nav);
+    border-right: 1px solid var(--c-border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 2px 0 24px rgba(6,95,70,0.07);
   }
 
-  #root > div {
-    max-width: 900px;
-    margin: 0 auto;
-  }
+  /* ── Masquer les contrôles flottants mobiles ── */
+  .mobile-only-block { display: none !important; }
+  .mobile-only-flex  { display: none !important; }
 
-  button, a, [role="button"] {
-    min-height: 52px;
+  /* ── App Eats : décalage pour la sidebar ── */
+  .desktop-app-shell {
+    padding-left: 248px !important;
   }
-
-  .tv-hero {
-    height: 320px !important;
-  }
-
-  .tv-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
-  }
-
-  .tv-card-title {
-    font-size: 1.1rem !important;
-  }
-
-  .tv-hide-on-tv {
+  /* header mobile caché — la sidebar affiche le logo */
+  .desktop-app-shell > header {
     display: none !important;
   }
+  /* main : plus de max-width mobile */
+  .desktop-app-shell > main {
+    max-width: none !important;
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+  }
 
-  .tv-service-grid {
+  /* ── Pages plein-écran (HubPage, ServiceSelectPage) : offset sidebar ── */
+  .desktop-page-offset {
+    left: 248px !important;
+    width: calc(100vw - 248px) !important;
+    right: 0 !important;
+  }
+
+  /* ── Hub page : contenu plus large sur desktop ── */
+  .hub-content-inner {
+    max-width: 700px !important;
+  }
+  .hub-content-inner > div {
+    gap: 14px !important;
+  }
+
+  /* ── Bottom nav : visible, décalé par la sidebar ── */
+  .tv-hide-on-tv {
+    display: block !important;
+    left: 248px !important;
+  }
+  .tv-hide-on-tv > div {
+    max-width: none !important;
+    padding: 0 32px !important;
+    gap: 0 !important;
+  }
+  .tv-hide-on-tv > div > button {
+    max-width: 120px;
+  }
+
+  /* ── Grille restaurants : 3 colonnes ── */
+  .tv-grid {
+    display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
-    max-width: 860px !important;
-    gap: 20px !important;
+    gap: 16px !important;
+    flex-direction: unset !important;
   }
 
-  .tv-logo {
-    width: 180px !important;
-    height: 180px !important;
+  /* ── Hero banner plus haut ── */
+  .tv-hero { height: 280px !important; }
+
+  /* ── Focus ring accessible ── */
+  :focus-visible {
+    outline: 4px solid #D9C5A0 !important;
+    outline-offset: 3px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 0 0 6px rgba(217,197,160,0.35) !important;
   }
 
-  .tv-filter-chip {
-    font-size: 1rem !important;
-    padding: 10px 20px !important;
-    border-radius: 24px !important;
+  /* ── Root : pas de max-width global ── */
+  #root > div:not(.desktop-sidebar) {
+    max-width: none !important;
+    margin: 0 !important;
   }
 }
 
