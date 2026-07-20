@@ -7577,7 +7577,7 @@ const CARD_PHOTOS: Record<string,string> = {
   tabac:       '/cover-tabac.png',
   pharmacie:   '/cover-pharmacie.png',
   supermarche: '/cover-supermarche.png',
-  boulangerie: '/cover-boulangerie.png',
+  boulangerie: '/boul-maitres-a7a06fa5.jpg',
   souk:        '/cover-souk.png',
 };
 function MiniPhotoBadge({k,emoji,size=38}:{k:string;emoji:string;size?:number}) {
@@ -10539,10 +10539,10 @@ function BoulangerieItem({it,qty,effectivePrice,onAdd,onRem}:{it:BoulItem;qty:nu
   );
 }
 
-const BOUL_VENDOR_META:Record<'maitres'|'palm'|'rayan',{name:string;emoji:string;sub:Record<Lang,string>}>={
-  maitres:{name:'Les Maîtres du Pain',emoji:'🥐',sub:{fr:'Viennoiseries & pâtisserie fine · Safi',en:'Pastries & fine bakery · Safi',ar:'معجنات وحلويات · آسفي',amz:'ⵜⴰⵖⵔⵓⵎⵜ · ⵙⴰⴼⵉ'}},
-  palm:{name:'Boulangerie Palm',emoji:'🌴',sub:{fr:'Boulangerie traditionnelle · Safi',en:'Traditional bakery · Safi',ar:'مخبزة تقليدية · آسفي',amz:'ⵜⴰⵖⵔⵓⵎⵜ ⵜⴰⵇⴱⵓⵔⵜ · ⵙⴰⴼⵉ'}},
-  rayan:{name:'Rayan',emoji:'🥖',sub:{fr:'Boulangerie & pâtisserie · Safi',en:'Bakery & pastry · Safi',ar:'مخبزة وحلويات · آسفي',amz:'ⵜⴰⵖⵔⵓⵎⵜ · ⵙⴰⴼⵉ'}},
+const BOUL_VENDOR_META:Record<'maitres'|'palm'|'rayan',{name:string;emoji:string;cover:string;sub:Record<Lang,string>}>={
+  maitres:{name:'Les Maîtres du Pain',emoji:'🥐',cover:'/boul-maitres-a7a06fa5.jpg',sub:{fr:'Viennoiseries & pâtisserie fine · Safi',en:'Pastries & fine bakery · Safi',ar:'معجنات وحلويات · آسفي',amz:'ⵜⴰⵖⵔⵓⵎⵜ · ⵙⴰⴼⵉ'}},
+  palm:{name:'Boulangerie Palm',emoji:'🌴',cover:'/boul-palm-31829f54.jpg',sub:{fr:'Boulangerie traditionnelle · Safi',en:'Traditional bakery · Safi',ar:'مخبزة تقليدية · آسفي',amz:'ⵜⴰⵖⵔⵓⵎⵜ ⵜⴰⵇⴱⵓⵔⵜ · ⵙⴰⴼⵉ'}},
+  rayan:{name:'Rayan',emoji:'🥖',cover:'/boul-rayan-cover.jpg',sub:{fr:'Boulangerie & pâtisserie · Safi',en:'Bakery & pastry · Safi',ar:'مخبزة وحلويات · آسفي',amz:'ⵜⴰⵖⵔⵓⵎⵜ · ⵙⴰⴼⵉ'}},
 };
 function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{onBack:()=>void;lang:Lang;cycleLang:()=>void;profile:UserProfile;saveProfile:(p:UserProfile)=>void;onOrderSuccess?:(ref:string)=>void}) {
   const { user } = useUser();
@@ -10658,7 +10658,7 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
     return(
       <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`}
         dir={isAR?'rtl':'ltr'}
-        style={{background:'linear-gradient(160deg,#1C0F02 0%,#422006 40%,#78350F 70%,#0F172A 100%)',color:'#fff',minHeight:'100dvh',position:'relative',overflow:'hidden'}}>
+        style={{background:'#000',color:'#fff',minHeight:'100dvh',position:'relative',overflow:'hidden'}}>
         <style>{`
           @keyframes boulFadeUp{0%{opacity:0;transform:translateY(20px);}100%{opacity:1;transform:translateY(0);}}
         `}</style>
@@ -10687,8 +10687,8 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
                 <button key={v} onClick={()=>{setBoulVendor(v);setBoulCat('viennoiseries');setBoulSearch('');setBoulScreenSelect(false);}}
                   className="w-full text-left active:scale-[0.97] transition-transform"
                   style={{animation:`boulFadeUp 0.5s ease-out ${i*0.1}s both`,background:'rgba(255,255,255,0.05)',border:'1.5px solid rgba(250,204,21,0.2)',borderRadius:22,padding:'16px 18px',backdropFilter:'blur(10px)',display:'flex',alignItems:'center',gap:16}}>
-                  <div style={{width:64,height:64,borderRadius:18,flexShrink:0,background:'linear-gradient(145deg,#000000 0%,#0D0D0D 45%,#3A2408 100%)',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                    <span style={{fontSize:32,filter:'drop-shadow(0 3px 8px rgba(0,0,0,0.4))'}}>{meta.emoji}</span>
+                  <div style={{width:72,height:72,borderRadius:18,flexShrink:0,overflow:'hidden',boxShadow:'0 4px 16px rgba(0,0,0,0.6)'}}>
+                    <img src={meta.cover} alt={meta.name} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
                   </div>
                   <div style={{flex:1}}>
                     <p className="font-black" style={{fontSize:17,color:'#fff',margin:'0 0 3px'}}>{meta.name}</p>
@@ -10711,7 +10711,7 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
   return(
     <div className={`min-h-screen flex flex-col ${isAR?'rtl':'ltr'}`}
       dir={isAR?'rtl':'ltr'}
-      style={{background:'linear-gradient(160deg,#1C0F02 0%,#422006 40%,#78350F 70%,#0F172A 100%)',color:'#fff',minHeight:'100dvh'}}>
+      style={{background:'#000',color:'#fff',minHeight:'100dvh'}}>
 
       <div style={{position:'fixed',top:16,left:isAR?'auto':16,right:isAR?16:'auto',zIndex:50}}>
         <button onClick={()=>{if(sent){onBack();}else{setBoulScreenSelect(true);}}} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(250,204,21,0.14)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:18}}>←</button>
