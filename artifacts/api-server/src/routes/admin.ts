@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { logger } from "../lib/logger";
+import { db, ordersTable } from "@workspace/db";
+import { desc, notInArray, eq } from "drizzle-orm";
 
 const router = Router();
 
@@ -204,6 +206,54 @@ router.post("/admin/delete-user", async (req, res) => {
     res.json({ ok: true, message: `${email} a été supprimé. Il peut se réinscrire.` });
   } catch (err) {
     logger.error({ err }, "Admin delete error");
+    res.status(500).json({ error: "Erreur serveur." });
+  }
+});
+
+// ── GET /api/admin/orders?adminKey=... — toutes les commandes actives ─────────
+// N'inclut PAS les commandes delivered/cancelled/refused (déjà terminées).
+router.get("/admin/orders", async (req, res) => {
+  const adminKey = (req.query.adminKey as string | undefined) ?? "";
+  if (adminKey !== DRIVER_KEY) {
+    res.status(401).json({ error: "Clé admin invalide." });
+    return;
+  }
+  try {
+    const orders = await db
+      .select()
+      .from(ordersTable)
+      .where(notInArray(ordersTable.status, ["delivered", "cancelled", "refused"]))
+      .orderBy(desc(ordersTable.createdAt));
+    res.json({ orders });
+  } catch (err) {
+    logger.error({ err }, "Admin orders fetch error");
+    res.status(500).json({ error: "Erreur serveur." });
+  }
+});
+
+// ── PATCH /api/admin/orders/:ref/assign — assigner un livreur à une commande ──
+router.patch("/admin/orders/:ref/assign", async (req, res) => {
+  const { adminKey, driverName } = req.body ?? {};
+  if (adminKey !== DRIVER_KEY) {
+    res.status(401).json({ error: "Clé admin invalide." });
+    return;
+  }
+  const { ref } = req.params;
+  if (!driverName || typeof driverName !== "string") {
+    res.status(400).json({ error: "Nom du livreur requis." });
+    return;
+  }
+  try {
+    const [order] = await db
+      .update(ordersTable)
+      .set({ driverName: driverName.trim(), updatedAt: new Date() })
+      .where(eq(ordersTable.ref, ref))
+      .returning();
+    if (!order) { res.status(404).json({ error: "Commande introuvable." }); return; }
+    logger.info({ ref, driverName }, "Admin assigned driver to order");
+    res.json({ ok: true, order });
+  } catch (err) {
+    logger.error({ err }, "Admin assign driver error");
     res.status(500).json({ error: "Erreur serveur." });
   }
 });
