@@ -8123,47 +8123,31 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
         <div style={{width:7,height:7,borderRadius:'50%',background:'linear-gradient(135deg,#34D399,#B45309)',boxShadow:'0 0 8px rgba(5,150,105,0.5)'}}/>
       </div>
 
-      {/* Profile button + Bridge ID + Diamonds — LEFT */}{isSignedIn && (
-      <div className={`absolute top-3 z-50 flex flex-col items-center gap-1 ${isAR?'right-3':'left-3'}`}>
-        <div style={{display:'flex',alignItems:'center',gap:8}}>
+      {/* LEFT — HUB circle (haut) + Se connecter / Profil circle (bas) */}
+      <div className={`absolute top-5 z-50 flex flex-col items-center gap-2 ${isAR?'right-5':'left-5'}`}>
+        {/* Cercle HUB — retour page 1 */}
+        <button onClick={onBack}
+          className="rounded-full flex items-center justify-center transition-all active:scale-90 hover:scale-110"
+          style={{width:38,height:38,background:'var(--c-card)',border:'2.5px solid #D9C5A0',color:'#065F46',boxShadow:'0 4px 20px rgba(6,95,70,0.15)',cursor:'pointer',fontSize:15,fontWeight:900}}>
+          {isAR?'⌂':'⌂'}
+        </button>
+        {/* Cercle Se connecter ou Profil */}
+        {isSignedIn?(
           <button onClick={()=>setShowProfile(true)}
-            style={{width:40,height:40,borderRadius:'50%',overflow:'hidden',border:'2.5px solid #D9C5A0',background:'#F0EBE1',boxShadow:'0 4px 14px rgba(6,95,70,0.15)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',padding:0}}>
+            style={{width:38,height:38,borderRadius:'50%',overflow:'hidden',border:'2.5px solid #D9C5A0',background:'#F0EBE1',boxShadow:'0 4px 14px rgba(6,95,70,0.15)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',padding:0}}>
             {avatarSrc
               ?<img src={avatarSrc} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
               :<span style={{fontSize:13,fontWeight:900,color:'#065F46',lineHeight:1}}>{initials}</span>
             }
           </button>
-        </div>
-        <div style={{background:'rgba(6,95,70,0.12)',border:'1px solid rgba(6,95,70,0.3)',borderRadius:6,padding:'2px 5px'}}>
-          <span style={{fontSize:7,fontWeight:900,color:'#065F46',letterSpacing:'0.06em'}}>
-            {getBridgeId(effectivePhone, effectiveName)}
-          </span>
-        </div>
-        <div style={{display:'flex',alignItems:'center',gap:3,background:'#FEF9C3',border:'1px solid #FDE047',borderRadius:8,padding:'2px 6px',boxShadow:'0 1px 4px rgba(0,0,0,0.08)'}}>
-          <span style={{fontSize:10}}>💎</span>
-          <span style={{fontSize:8,fontWeight:900,color:'#92400E'}}>{diamonds.toLocaleString()}</span>
-        </div>
-    </div>    
-    )}              
-      
-   {!isSignedIn && (
-  <div className={`absolute top-3 z-50 ${isAR?'right-3':'left-3'}`}>
-    <button
-    onClick={() => window.location.href = '/sign-in'}
-      style={{
-        background:'linear-gradient(135deg,rgba(6,95,70,0.92),rgba(4,55,38,0.95))',
-        backdropFilter:'blur(12px)',color:'#FDFCF9',
-        border:'1px solid rgba(217,197,160,0.4)',
-        boxShadow:'0 2px 8px rgba(6,95,70,0.25)',
-        borderRadius:20,padding:'5px 12px',fontSize:9,fontWeight:800,
-        letterSpacing:'0.04em',display:'flex',alignItems:'center',gap:4,cursor:'pointer',
-      }}
-    >
-      <span style={{fontSize:9}}>✦</span>
-      {lang==='ar'?'تسجيل الدخول':lang==='amz'?'ⴰⴽⵛⵎ':'Se connecter'}
-    </button>
-  </div>
-)}  
+        ):(
+          <button onClick={()=>window.location.href='/sign-in'}
+            className="rounded-full flex items-center justify-center transition-all active:scale-90 hover:scale-110"
+            style={{width:38,height:38,background:'var(--c-card)',border:'2.5px solid #D9C5A0',color:'#065F46',boxShadow:'0 4px 20px rgba(6,95,70,0.15)',cursor:'pointer',fontSize:14}}>
+            ✦
+          </button>
+        )}
+      </div>  
       
       {/* Language + Dark toggle — RIGHT */}
       <div className={`absolute top-5 z-50 flex items-center gap-2 ${isAR?'left-5':'right-5'}`}>
