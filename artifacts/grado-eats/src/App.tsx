@@ -7787,8 +7787,7 @@ function PharmaciePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess
         <SharkDiamondWidget onNavigate={()=>navigatePharm('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
       </div>
       <div style={{position:'fixed',top:12,left:'50%',transform:'translateX(-50%)',zIndex:49,display:'flex',alignItems:'center',gap:8,pointerEvents:'none'}}>
-        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:36,height:36,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(165,180,252,0.5))'}}/>
-        <span style={{fontWeight:900,fontSize:12,letterSpacing:'0.1em',color:'#A5B4FC',textShadow:'0 1px 6px rgba(0,0,0,0.6)'}}>BRIDGE PHARMACIE</span>
+        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:56,height:56,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(165,180,252,0.5))'}}/>
       </div>
 
       {/* Content */}
@@ -9373,8 +9372,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
           <button onClick={onBack} style={{width:38,height:38,borderRadius:'50%',border:'none',cursor:'pointer',background:'rgba(255,255,255,0.12)',backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:18,flexShrink:0}}>←</button>
           <div style={{flex:1,textAlign:'center'}}>
             <div style={{display:'flex',alignItems:'center',gap:10,justifyContent:'center'}}>
-              <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:44,height:44,objectFit:'contain',filter:`drop-shadow(0 2px 10px ${vAccentDark}66)`}}/>
-              <p style={{color:vAccent,fontWeight:900,fontSize:14,letterSpacing:'0.12em',margin:0}}>{isTaxi?'BRIDGE TAXI CONFORT':'BRIDGE MOTO TAXI'}</p>
+              <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:56,height:56,objectFit:'contain',filter:`drop-shadow(0 2px 10px ${vAccentDark}66)`}}/>
             </div>
             <p style={{color:`rgba(${isTaxi?'253,230,138':'254,215,170'},0.5)`,fontSize:9,letterSpacing:'0.18em',margin:0}}>{isTaxi?'CONFORT · SAFI · آسفي':'RAPIDE · SAFI · آسفي'}</p>
           </div>
@@ -10082,8 +10080,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
         <SharkDiamondWidget onNavigate={()=>navigateFleur('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
       </div>
       <div style={{position:'fixed',top:12,left:'50%',transform:'translateX(-50%)',zIndex:49,display:'flex',alignItems:'center',gap:8,pointerEvents:'none'}}>
-        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:36,height:36,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(190,24,93,0.5))'}}/>
-        <span style={{fontWeight:900,fontSize:12,letterSpacing:'0.1em',color:'#F9A8D4',textShadow:'0 1px 6px rgba(0,0,0,0.6)'}}>BRIDGE FLEURS</span>
+        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:56,height:56,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(190,24,93,0.5))'}}/>
       </div>
 
       <div className="flex-1 overflow-y-auto pb-36">
@@ -10620,8 +10617,7 @@ function TabacPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
         <SharkDiamondWidget onNavigate={()=>navigateTabac('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
       </div>
       <div style={{position:'fixed',top:12,left:'50%',transform:'translateX(-50%)',zIndex:49,display:'flex',alignItems:'center',gap:8,pointerEvents:'none'}}>
-        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:36,height:36,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(180,83,9,0.5))'}}/>
-        <span style={{fontWeight:900,fontSize:12,letterSpacing:'0.1em',color:'#FCD34D',textShadow:'0 1px 6px rgba(0,0,0,0.6)'}}>BRIDGE TABAC</span>
+        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:56,height:56,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(180,83,9,0.5))'}}/>
       </div>
 
       {/* Content */}
@@ -11082,8 +11078,7 @@ function BoulangeriePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
           <SharkDiamondWidget onNavigate={()=>navigateBoul('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
         </div>
       <div style={{position:'fixed',top:12,left:'50%',transform:'translateX(-50%)',zIndex:49,display:'flex',alignItems:'center',gap:8,pointerEvents:'none'}}>
-        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:36,height:36,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(250,204,21,0.6))'}}/>
-        <span style={{fontWeight:900,fontSize:12,letterSpacing:'0.1em',color:'#FDE68A',textShadow:'0 1px 6px rgba(0,0,0,0.6)'}}>BRIDGE BOULANGERIE</span>
+        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:56,height:56,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(250,204,21,0.6))'}}/>
       </div>
 
         <div className={`flex flex-col items-center px-6 pt-24 pb-12 max-w-md mx-auto w-full gap-3 relative ${fClass}`} style={{zIndex:1}}>
@@ -11478,8 +11473,7 @@ function SoukPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{on
           <SharkDiamondWidget onNavigate={()=>navigateSouk('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
         </div>
       <div style={{position:'fixed',top:12,left:'50%',transform:'translateX(-50%)',zIndex:49,display:'flex',alignItems:'center',gap:8,pointerEvents:'none'}}>
-        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:36,height:36,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(192,132,252,0.6))'}}/>
-        <span style={{fontWeight:900,fontSize:12,letterSpacing:'0.1em',color:'#E9D5FF',textShadow:'0 1px 6px rgba(0,0,0,0.6)'}}>BRIDGE SOUK</span>
+        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:56,height:56,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(192,132,252,0.6))'}}/>
       </div>
 
         <div className={`flex flex-col items-center px-6 pt-24 pb-12 max-w-md mx-auto w-full gap-3 relative ${fClass}`} style={{zIndex:1}}>
@@ -12914,8 +12908,7 @@ function SupermarchePage({onBack,lang,cycleLang,profile,saveProfile,onOrderSucce
           <SharkDiamondWidget onNavigate={()=>navigateMkt('/game')} profile={profile} lang={lang} saveProfile={saveProfile}/>
         </div>
       <div style={{position:'fixed',top:12,left:'50%',transform:'translateX(-50%)',zIndex:49,display:'flex',alignItems:'center',gap:8,pointerEvents:'none'}}>
-        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:36,height:36,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(74,222,128,0.6))'}}/>
-        <span style={{fontWeight:900,fontSize:12,letterSpacing:'0.1em',color:'#86EFAC',textShadow:'0 1px 6px rgba(0,0,0,0.6)'}}>BRIDGE SUPERMARCHÉ</span>
+        <img src="/bridge_logo_nobg.png" alt="Bridge" style={{width:56,height:56,objectFit:'contain',filter:'drop-shadow(0 2px 8px rgba(74,222,128,0.6))'}}/>
       </div>
 
         <div className={`flex flex-col items-center px-6 pt-24 pb-12 max-w-md mx-auto w-full gap-3 relative`} style={{zIndex:1}}>
