@@ -8177,26 +8177,6 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
       </div>
 
       <div className="relative flex flex-col items-center w-full max-w-2xl mx-auto pt-20 pb-8 px-4">
-        {/* Badge localisation style glass */}
-        <div style={{
-          display:'inline-flex',alignItems:'center',gap:6,
-          background:'linear-gradient(135deg,rgba(6,95,70,0.1),rgba(180,83,9,0.07))',
-          border:'1px solid rgba(217,197,160,0.6)',
-          borderRadius:20,padding:'4px 14px',
-          backdropFilter:'blur(10px)',marginBottom:6,
-        }}>
-          <span style={{fontSize:10,fontWeight:800,letterSpacing:'0.12em',color:'#065F46'}}>SAFI</span>
-          <span style={{color:'#D9C5A0',fontSize:10}}>·</span>
-          <span style={{fontSize:10,fontWeight:700,color:'#B45309'}}>آسفي</span>
-          <span style={{color:'#D9C5A0',fontSize:10}}>·</span>
-          <span style={{fontSize:10,fontWeight:700,color:'#065F46'}}>ⵙⴰⴼⵉ</span>
-        </div>
-        {/* Séparateur lumineux */}
-        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:20,marginTop:4}}>
-          <div style={{width:40,height:1,background:'linear-gradient(to right,transparent,#D9C5A0)'}}/>
-          <div style={{width:6,height:6,borderRadius:'50%',background:'linear-gradient(135deg,#34D399,#B45309)',boxShadow:'0 0 8px rgba(5,150,105,0.6)'}}/>
-          <div style={{width:40,height:1,background:'linear-gradient(to left,transparent,#D9C5A0)'}}/>
-        </div>
         {/* Sous-titre dans glass pill */}
         <div style={{
           background:'linear-gradient(135deg,rgba(6,95,70,0.08),rgba(217,197,160,0.12))',
