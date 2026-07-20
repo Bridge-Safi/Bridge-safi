@@ -10000,7 +10000,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   const [resAddr,setResAddr]=useState(profile.address||'');
   const [resDate,setResDate]=useState('');
   const [resTime,setResTime]=useState('');
-  const [resMode,setResMode]=useState<'retrait'|'livraison'>('retrait');
+  const [resMode,setResMode]=useState<'retrait'|'livraison'|'sur_place'>('sur_place');
   const [err,setErr]=useState('');
   const isAR=lang==='ar'; const fClass=fontClass(lang);
   const LANG_LABELS:Record<Lang,string>={fr:'FR',en:'EN',ar:'AR',amz:'ⴰⵎⵣ'};
@@ -10023,14 +10023,16 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
   const minDate=()=>{const d=new Date();d.setDate(d.getDate()+1);return d.toISOString().split('T')[0];};
 
   const handleReserve=async()=>{
-    if(!resName.trim()||!resPhone.trim()||!resDate||!resTime||(resMode==='livraison'&&!resAddr.trim())){setErr('*');return;}
+    const needDateTime=resMode!=='sur_place';
+    if(!resName.trim()||!resPhone.trim()||(needDateTime&&(!resDate||!resTime))||(resMode==='livraison'&&!resAddr.trim())){setErr('*');return;}
     setSending(true);
     const items=cart.map(ci=>{const p=FLEURS_CATALOG.find(f=>f.id===ci.id)!;return{name:p.names.fr,qty:ci.qty,price:p.price};});
     const floristName=activeFlorist?FLORIST_META[activeFlorist].name:'Bridge Fleurs';
-    const delivAddr=resMode==='retrait'?`${floristName} — Retrait sur place`:`${resAddr.trim()}, Safi, Maroc`;
+    const delivAddr=resMode==='sur_place'?`${floristName} — Commande sur place`:resMode==='retrait'?`${floristName} — Retrait sur place`:`${resAddr.trim()}, Safi, Maroc`;
+    const orderNotes=resMode==='sur_place'?`🏪 Commande sur place`:`📅 ${resDate} · ⏰ ${resTime}`;
     try{
       await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({ref:orderRef,service:'fleurs',customerName:resName.trim(),customerPhone:resPhone.trim(),customerAddress:delivAddr,items,total:cartTotal,deliveryMode:resMode,paymentMethod:'cash',restaurantName:`Bridge Fleurs — ${floristName}`,notes:`📅 ${resDate} · ⏰ ${resTime}`}),
+        body:JSON.stringify({ref:orderRef,service:'fleurs',customerName:resName.trim(),customerPhone:resPhone.trim(),customerAddress:delivAddr,items,total:cartTotal,deliveryMode:resMode,paymentMethod:'cash',restaurantName:`Bridge Fleurs — ${floristName}`,notes:orderNotes}),
       }).catch(()=>{});
     }finally{setSending(false);}
     setLastRef(orderRef);
@@ -10275,9 +10277,9 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
 
             {/* Mode */}
             <div className="flex gap-2 mb-4">
-              {([{k:'retrait',emoji:'🏪',label:{fr:'Retrait',en:'Pickup',ar:'استلام',amz:'ⴰⵙⵉⵔⵎ'}},{k:'livraison',emoji:'🛵',label:{fr:'Livraison',en:'Delivery',ar:'توصيل',amz:'ⴰⵙⵏⵙⴰⵢ'}}] as {k:'retrait'|'livraison';emoji:string;label:Record<Lang,string>}[]).map(opt=>(
+              {([{k:'sur_place',emoji:'🌸',label:{fr:'Sur place',en:'In-store',ar:'في المحل',amz:'ⴰⴷⴷⴰⵔ'}},{k:'retrait',emoji:'🏪',label:{fr:'Réservation',en:'Pickup',ar:'حجز',amz:'ⴰⵙⵉⵔⵎ'}},{k:'livraison',emoji:'🛵',label:{fr:'Livraison',en:'Delivery',ar:'توصيل',amz:'ⴰⵙⵏⵙⴰⵢ'}}] as {k:'sur_place'|'retrait'|'livraison';emoji:string;label:Record<Lang,string>}[]).map(opt=>(
                 <button key={opt.k} onClick={()=>{setResMode(opt.k);setErr('');}}
-                  className="flex-1 rounded-2xl p-3 font-black text-[12px] transition-all active:scale-95"
+                  className="flex-1 rounded-2xl p-3 font-black text-[11px] transition-all active:scale-95"
                   style={{background:resMode===opt.k?activeGrad:'white',color:resMode===opt.k?'white':'#6B7280',border:`2px solid ${resMode===opt.k?'transparent':'#E5E7EB'}`,boxShadow:resMode===opt.k?`0 4px 16px rgba(0,0,0,0.2)`:'none',cursor:'pointer'}}>
                   {opt.emoji} {opt.label[lang]}
                 </button>
@@ -10299,22 +10301,31 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
                   <input className="w-full px-4 py-3 rounded-xl text-sm font-medium outline-none" style={{background:'white',border:`1.5px solid ${err&&!resAddr.trim()?'#EF4444':'#E5E7EB'}`,color:'#111'}} placeholder={lang==='ar'?'عنوانك بسافي…':'Votre adresse à Safi…'} value={resAddr} onChange={e=>{setResAddr(e.target.value);setErr('');}}/>
                 </div>
               )}
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest mb-1.5" style={{color:'#6B7280'}}>📅 {lang==='ar'?'تاريخ الاستلام':lang==='en'?'Date':'Date de réservation'}</p>
-                <input type="date" min={minDate()} className="w-full px-4 py-3 rounded-xl text-sm font-medium outline-none" style={{background:'white',border:`1.5px solid ${err&&!resDate?'#EF4444':'#E5E7EB'}`,color:'#111'}} value={resDate} onChange={e=>{setResDate(e.target.value);setErr('');}}/>
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest mb-1.5" style={{color:'#6B7280'}}>⏰ {lang==='ar'?'الوقت':lang==='en'?'Time Slot':'Créneau horaire'}</p>
-                <div className="grid grid-cols-2 gap-2">
-                  {['9h – 12h','12h – 15h','15h – 18h','18h – 21h'].map(slot=>(
-                    <button key={slot} onClick={()=>{setResTime(slot);setErr('');}}
-                      className="py-2.5 rounded-xl font-black text-[11px] transition-all active:scale-95"
-                      style={{background:resTime===slot?activeGrad:'white',color:resTime===slot?'white':'#6B7280',border:`1.5px solid ${err&&!resTime?'#EF4444':resTime===slot?'transparent':'#E5E7EB'}`,cursor:'pointer'}}>
-                      {slot}
-                    </button>
-                  ))}
+              {resMode==='sur_place'&&(
+                <div className="rounded-xl p-3 text-center" style={{background:'rgba(168,85,247,0.08)',border:'1.5px solid rgba(168,85,247,0.2)'}}>
+                  <p className="text-[12px] font-bold" style={{color:activeDark}}>🌸 {lang==='ar'?'سنتواصل معك فور استلام الطلب':lang==='en'?'We\'ll contact you right after your order':'Nous vous contactons dès réception de votre commande'}</p>
                 </div>
-              </div>
+              )}
+              {resMode!=='sur_place'&&(
+                <>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest mb-1.5" style={{color:'#6B7280'}}>📅 {lang==='ar'?'تاريخ الاستلام':lang==='en'?'Date':'Date de réservation'}</p>
+                    <input type="date" min={minDate()} className="w-full px-4 py-3 rounded-xl text-sm font-medium outline-none" style={{background:'white',border:`1.5px solid ${err&&!resDate?'#EF4444':'#E5E7EB'}`,color:'#111'}} value={resDate} onChange={e=>{setResDate(e.target.value);setErr('');}}/>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest mb-1.5" style={{color:'#6B7280'}}>⏰ {lang==='ar'?'الوقت':lang==='en'?'Time Slot':'Créneau horaire'}</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {['9h – 12h','12h – 15h','15h – 18h','18h – 21h'].map(slot=>(
+                        <button key={slot} onClick={()=>{setResTime(slot);setErr('');}}
+                          className="py-2.5 rounded-xl font-black text-[11px] transition-all active:scale-95"
+                          style={{background:resTime===slot?activeGrad:'white',color:resTime===slot?'white':'#6B7280',border:`1.5px solid ${err&&!resTime?'#EF4444':resTime===slot?'transparent':'#E5E7EB'}`,cursor:'pointer'}}>
+                          {slot}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
               {err&&<p className="text-xs font-bold" style={{color:'#EF4444'}}>⚠️ {lang==='ar'?'يرجى ملء جميع الحقول':lang==='en'?'Please fill all fields':'Veuillez remplir tous les champs'}</p>}
             </div>
           </div>
@@ -10368,7 +10379,7 @@ function FleurPage({onBack,lang,cycleLang,profile,saveProfile,onOrderSuccess}:{
           <button onClick={handleReserve} disabled={sending}
             className="w-full py-4 rounded-2xl font-black text-base text-white transition-all active:scale-95"
             style={{background:sending?'#9CA3AF':activeGrad,boxShadow:sending?'none':'0 8px 28px rgba(124,58,237,0.4)',border:'none',cursor:sending?'not-allowed':'pointer'}}>
-            {sending?(lang==='ar'?'جاري الإرسال…':'Envoi en cours…'):(lang==='ar'?'✓ تأكيد الحجز':lang==='en'?'✓ Confirm Reservation':'✓ Confirmer la réservation')}
+            {sending?(lang==='ar'?'جاري الإرسال…':'Envoi en cours…'):resMode==='sur_place'?(lang==='ar'?'✓ تأكيد الطلب':lang==='en'?'✓ Confirm Order':'✓ Confirmer la commande'):(lang==='ar'?'✓ تأكيد الحجز':lang==='en'?'✓ Confirm Reservation':'✓ Confirmer la réservation')}
           </button>
         </div>
       )}
