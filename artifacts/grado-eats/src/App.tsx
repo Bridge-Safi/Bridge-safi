@@ -8122,6 +8122,28 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
         @keyframes svcFadeUp{0%{opacity:0;transform:translateY(22px) scale(0.96);}100%{opacity:1;transform:translateY(0) scale(1);}}
         @keyframes svcShine{0%{left:-100%;}100%{left:200%;}}
         @keyframes svcPulseRed{0%,100%{box-shadow:0 8px 32px rgba(185,28,28,0.35);}50%{box-shadow:0 8px 48px rgba(185,28,28,0.7);}}
+        @keyframes svcCardFloat{0%,100%{transform:translateY(0px);}50%{transform:translateY(-9px);}}
+        @media(min-width:768px){
+          .svc-card-inner{
+            min-height:230px!important;
+            border-radius:24px!important;
+            animation:svcCardFloat 4s ease-in-out infinite;
+            transition:transform 0.32s cubic-bezier(.34,1.56,.64,1),box-shadow 0.32s!important;
+          }
+          .svc-card-inner:hover{
+            transform:translateY(-14px) scale(1.035)!important;
+            box-shadow:0 32px 64px rgba(0,0,0,0.45),0 0 0 1.5px rgba(255,255,255,0.18),inset 0 1px 0 rgba(255,255,255,0.3)!important;
+            animation-play-state:paused!important;
+          }
+          .svc-card-btn:nth-child(1) .svc-card-inner{animation-delay:0s}
+          .svc-card-btn:nth-child(2) .svc-card-inner{animation-delay:0.6s}
+          .svc-card-grid-row:nth-child(2) .svc-card-btn:nth-child(1) .svc-card-inner{animation-delay:1.1s}
+          .svc-card-grid-row:nth-child(2) .svc-card-btn:nth-child(2) .svc-card-inner{animation-delay:1.7s}
+          .svc-card-grid-row:nth-child(3) .svc-card-btn:nth-child(1) .svc-card-inner{animation-delay:0.35s}
+          .svc-card-grid-row:nth-child(3) .svc-card-btn:nth-child(2) .svc-card-inner{animation-delay:0.95s}
+          .svc-card-grid-row:nth-child(4) .svc-card-btn:nth-child(1) .svc-card-inner{animation-delay:1.45s}
+          .svc-card-grid-row:nth-child(4) .svc-card-btn:nth-child(2) .svc-card-inner{animation-delay:2.05s}
+        }
       `}</style>
 
       {/* SAFI badge trilingue — TOP CENTER (remplace le bouton HUB) */}
@@ -8223,6 +8245,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
             const idx=cardIdx[item.key]??0;
             return(
               <button key={item.key} onClick={()=>choose(item.key)}
+                className="svc-card-btn"
                 style={{
                   background:'none',border:'none',cursor:'pointer',padding:0,
                   transform:isPressed?'scale(0.94)':'scale(1)',
@@ -8230,7 +8253,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                   opacity:item.pending?0.82:1,
                   animation:`svcFadeUp 0.45s ease-out ${idx*0.08}s both`,
                 }}>
-                <div style={{
+                <div className="svc-card-inner" style={{
                   background: item.grad,
                   borderRadius:18,
                   border:`1.5px solid ${isPressed?'rgba(255,255,255,0.55)':item.border}`,
@@ -8278,7 +8301,7 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
           return(
             <div style={{display:'flex',flexDirection:'column',gap:'16px',width:'100%',maxWidth:'100%',padding:'0 16px'}}>
               {/* Row 1: Eats + Taxi */}
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
+              <div className="svc-card-grid-row" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
                 {topItems.map(renderCard)}
               </div>
               {/* Row 2: Pharmacie + Supermarché */}
@@ -8288,19 +8311,19 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                   {key:'supermarche' as const, label:'Bridge Supermarché', sub:t.supermarcheSub, emoji:'🛒', pending:false, grad:'linear-gradient(145deg,#450A0A 0%,#7F1D1D 55%,#EF4444 100%)',           glow:'rgba(239,68,68,0.5)',    border:'rgba(239,68,68,0.45)',    bottom:'#DC2626'},
                 ];
                 return(
-                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
+                  <div className="svc-card-grid-row" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
                     {midItems.map(renderCard)}
                   </div>
                 );
               })()}
               {/* Row 3: Fleurs + Tabac */}
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
+              <div className="svc-card-grid-row" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
                 {botItems.map(renderCard)}
               </div>
-              {/* Row 5: Boulangerie + Souk — nouvelles cartes (actives) */}
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
-                <button onClick={()=>choose('boulangerie')} style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:pressed==='boulangerie'?'scale(0.94)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',animation:'svcFadeUp 0.45s ease-out 0.32s both'}}>
-                  <div style={{
+              {/* Row 4: Boulangerie + Souk — nouvelles cartes (actives) */}
+              <div className="svc-card-grid-row" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
+                <button onClick={()=>choose('boulangerie')} className="svc-card-btn" style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:pressed==='boulangerie'?'scale(0.94)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',animation:'svcFadeUp 0.45s ease-out 0.32s both'}}>
+                  <div className="svc-card-inner" style={{
                     background:'linear-gradient(145deg,#422006 0%,#A16207 55%,#FACC15 100%)',
                     borderRadius:18,border:`1.5px solid ${pressed==='boulangerie'?'rgba(255,255,255,0.55)':'rgba(250,204,21,0.45)'}`,
                     boxShadow:pressed==='boulangerie'?'0 0 0 3px rgba(250,204,21,0.5),0 16px 40px rgba(250,204,21,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 8px 32px rgba(161,98,7,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
@@ -8318,8 +8341,8 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     </div>
                   </div>
                 </button>
-                <button onClick={()=>choose('souk')} style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:pressed==='souk'?'scale(0.94)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',animation:'svcFadeUp 0.45s ease-out 0.4s both'}}>
-                  <div style={{
+                <button onClick={()=>choose('souk')} className="svc-card-btn" style={{background:'none',border:'none',cursor:'pointer',padding:0,transform:pressed==='souk'?'scale(0.94)':'scale(1)',transition:'transform 0.2s cubic-bezier(.34,1.56,.64,1)',animation:'svcFadeUp 0.45s ease-out 0.4s both'}}>
+                  <div className="svc-card-inner" style={{
                     background:'linear-gradient(145deg,#3B0764 0%,#7E22CE 55%,#C084FC 100%)',
                     borderRadius:18,border:`1.5px solid ${pressed==='souk'?'rgba(255,255,255,0.55)':'rgba(192,132,252,0.45)'}`,
                     boxShadow:pressed==='souk'?'0 0 0 3px rgba(192,132,252,0.5),0 16px 40px rgba(192,132,252,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 8px 32px rgba(126,34,206,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
