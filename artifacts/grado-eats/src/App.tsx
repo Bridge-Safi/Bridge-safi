@@ -8123,17 +8123,19 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
         <div style={{width:7,height:7,borderRadius:'50%',background:'linear-gradient(135deg,#34D399,#B45309)',boxShadow:'0 0 8px rgba(5,150,105,0.5)'}}/>
       </div>
 
-      {/* LEFT — HUB circle (haut) + Se connecter / Profil circle (bas) */}
-      <div className={`absolute top-5 z-50 flex flex-col items-center gap-2 ${isAR?'right-5':'left-5'}`}>
+      {/* LEFT — HUB + Se connecter / Profil côte à côte */}
+      <div className={`absolute top-5 z-50 flex flex-row items-center gap-2 ${isAR?'right-5':'left-5'}`}>
         {/* Cercle HUB — retour page 1 */}
         <button onClick={onBack}
           className="rounded-full flex items-center justify-center transition-all active:scale-90 hover:scale-110"
-          style={{width:38,height:38,background:'var(--c-card)',border:'2.5px solid #D9C5A0',color:'#065F46',boxShadow:'0 4px 20px rgba(6,95,70,0.15)',cursor:'pointer',fontSize:15,fontWeight:900}}>
-          {isAR?'⌂':'⌂'}
+          title="Retour Hub"
+          style={{width:38,height:38,background:'var(--c-card)',border:'2.5px solid #D9C5A0',color:'#065F46',boxShadow:'0 4px 20px rgba(6,95,70,0.15)',cursor:'pointer',fontSize:16,fontWeight:900}}>
+          ⌂
         </button>
         {/* Cercle Se connecter ou Profil */}
         {isSignedIn?(
           <button onClick={()=>setShowProfile(true)}
+            className="rounded-full transition-all active:scale-90 hover:scale-110"
             style={{width:38,height:38,borderRadius:'50%',overflow:'hidden',border:'2.5px solid #D9C5A0',background:'#F0EBE1',boxShadow:'0 4px 14px rgba(6,95,70,0.15)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',padding:0}}>
             {avatarSrc
               ?<img src={avatarSrc} alt="Profil" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
@@ -8143,8 +8145,9 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
         ):(
           <button onClick={()=>window.location.href='/sign-in'}
             className="rounded-full flex items-center justify-center transition-all active:scale-90 hover:scale-110"
-            style={{width:38,height:38,background:'var(--c-card)',border:'2.5px solid #D9C5A0',color:'#065F46',boxShadow:'0 4px 20px rgba(6,95,70,0.15)',cursor:'pointer',fontSize:14}}>
-            ✦
+            title="Se connecter"
+            style={{width:38,height:38,background:'linear-gradient(135deg,#065F46,#059669)',border:'2.5px solid rgba(52,211,153,0.5)',color:'#fff',boxShadow:'0 4px 16px rgba(6,95,70,0.35)',cursor:'pointer',fontSize:18}}>
+            👤
           </button>
         )}
       </div>  
@@ -8217,11 +8220,11 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                   display:'flex',flexDirection:'column',alignItems:'stretch',justifyContent:'flex-end',
                   position:'relative',overflow:'hidden',
                   transition:'box-shadow 0.25s,border-color 0.25s',
-                  minHeight:148,
+                  minHeight:172,
                 }}>
                   <img src={CARD_PHOTOS[item.key]} alt="" loading="lazy"
                     onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
-                    style={{position:'absolute',top:0,left:0,right:0,height:item.key==='taxi'?'82%':'92%',width:'100%',objectFit:'cover',objectPosition:'center',opacity:0.95,transform:item.key==='taxi'?'none':'scale(1.5)',transformOrigin:'center center'}}/>
+                    style={{position:'absolute',top:0,left:0,right:0,height:'100%',width:'100%',objectFit:'cover',objectPosition:'center',opacity:0.95}}/>
                   <div style={{position:'absolute',top:0,left:0,right:0,height:item.key==='taxi'?'82%':'92%',background:'linear-gradient(180deg,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,0.82) 100%)',pointerEvents:'none'}}/>
                   <div style={{position:'absolute',top:0,left:0,right:0,height:'90%',background:'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 100%)',borderRadius:'10px 10px 60% 60%',pointerEvents:'none'}}/>
                   <div style={{position:'absolute',top:0,bottom:0,width:'40%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.07),transparent)',animation:'svcShine 3.5s ease-in-out infinite',pointerEvents:'none'}}/>
@@ -8281,12 +8284,12 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     borderRadius:18,border:`1.5px solid ${pressed==='boulangerie'?'rgba(255,255,255,0.55)':'rgba(250,204,21,0.45)'}`,
                     boxShadow:pressed==='boulangerie'?'0 0 0 3px rgba(250,204,21,0.5),0 16px 40px rgba(250,204,21,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 8px 32px rgba(161,98,7,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
                     padding:0,display:'flex',flexDirection:'column',alignItems:'stretch',justifyContent:'flex-end',
-                    position:'relative',overflow:'hidden',minHeight:148,
+                    position:'relative',overflow:'hidden',minHeight:172,
                   }}>
                     <img src={CARD_PHOTOS.boulangerie} alt="" loading="lazy"
                       onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
-                      style={{position:'absolute',top:0,left:0,right:0,height:'92%',width:'100%',objectFit:'cover',objectPosition:'center',opacity:0.95,transform:'scale(1.5)',transformOrigin:'center center'}}/>
-                    <div style={{position:'absolute',top:0,left:0,right:0,height:'92%',background:'linear-gradient(180deg,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,0.82) 100%)',pointerEvents:'none'}}/>
+                      style={{position:'absolute',top:0,left:0,right:0,height:'100%',width:'100%',objectFit:'cover',objectPosition:'center',opacity:0.95}}/>
+                    <div style={{position:'absolute',top:0,left:0,right:0,height:'100%',background:'linear-gradient(180deg,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,0.82) 100%)',pointerEvents:'none'}}/>
                     {(()=>{const st=isServiceOpen('boulangerie');return(<div style={{position:'absolute',top:6,right:6,zIndex:10,background:st.open?'rgba(5,150,105,0.82)':'rgba(220,38,38,0.82)',backdropFilter:'blur(12px)',borderRadius:20,padding:'2px 6px',display:'flex',alignItems:'center',gap:3,boxShadow:'0 1px 6px rgba(0,0,0,0.25)',border:'1px solid rgba(255,255,255,0.18)'}}><span style={{width:4,height:4,borderRadius:'50%',background:st.open?'#6EE7B7':'#FCA5A5',display:'inline-block',flexShrink:0,boxShadow:`0 0 4px ${st.open?'#6EE7B7':'#FCA5A5'}`,animation:'pulse2 1.4s ease-in-out infinite'}}/><span style={{color:'#fff',fontSize:6,fontWeight:800,letterSpacing:'0.06em'}}>{st.open?'OUVERT':'FERMÉ'}</span></div>);})()}
                     <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.03em',margin:'0 0 5px',textShadow:'0 2px 8px rgba(0,0,0,0.9)',textAlign:'center',position:'relative',zIndex:2,paddingLeft:8,paddingRight:8}}>Bridge Boulangerie</p>
                     <div style={{background:'#A16207',padding:'3px 14px',display:'flex',alignItems:'center',justifyContent:'center',position:'relative',zIndex:2,width:'100%',boxSizing:'border-box'}}>
@@ -8300,12 +8303,12 @@ function ServiceSelectPage({onSelect,onBack,lang,cycleLang,profile,saveProfile}:
                     borderRadius:18,border:`1.5px solid ${pressed==='souk'?'rgba(255,255,255,0.55)':'rgba(192,132,252,0.45)'}`,
                     boxShadow:pressed==='souk'?'0 0 0 3px rgba(192,132,252,0.5),0 16px 40px rgba(192,132,252,0.4),inset 0 1px 0 rgba(255,255,255,0.25)':'0 8px 32px rgba(126,34,206,0.45),inset 0 1px 0 rgba(255,255,255,0.2)',
                     padding:0,display:'flex',flexDirection:'column',alignItems:'stretch',justifyContent:'flex-end',
-                    position:'relative',overflow:'hidden',minHeight:148,
+                    position:'relative',overflow:'hidden',minHeight:172,
                   }}>
                     <img src={CARD_PHOTOS.souk} alt="" loading="lazy"
                       onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none';}}
-                      style={{position:'absolute',top:0,left:0,right:0,height:'92%',width:'100%',objectFit:'cover',objectPosition:'center',opacity:0.95,transform:'scale(1.5)',transformOrigin:'center center'}}/>
-                    <div style={{position:'absolute',top:0,left:0,right:0,height:'92%',background:'linear-gradient(180deg,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,0.82) 100%)',pointerEvents:'none'}}/>
+                      style={{position:'absolute',top:0,left:0,right:0,height:'100%',width:'100%',objectFit:'cover',objectPosition:'center',opacity:0.95}}/>
+                    <div style={{position:'absolute',top:0,left:0,right:0,height:'100%',background:'linear-gradient(180deg,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,0.82) 100%)',pointerEvents:'none'}}/>
                     {(()=>{const st=isServiceOpen('souk');return(<div style={{position:'absolute',top:6,right:6,zIndex:10,background:st.open?'rgba(5,150,105,0.82)':'rgba(220,38,38,0.82)',backdropFilter:'blur(12px)',borderRadius:20,padding:'2px 6px',display:'flex',alignItems:'center',gap:3,boxShadow:'0 1px 6px rgba(0,0,0,0.25)',border:'1px solid rgba(255,255,255,0.18)'}}><span style={{width:4,height:4,borderRadius:'50%',background:st.open?'#6EE7B7':'#FCA5A5',display:'inline-block',flexShrink:0,boxShadow:`0 0 4px ${st.open?'#6EE7B7':'#FCA5A5'}`,animation:'pulse2 1.4s ease-in-out infinite'}}/><span style={{color:'#fff',fontSize:6,fontWeight:800,letterSpacing:'0.06em'}}>{st.open?'OUVERT':'FERMÉ'}</span></div>);})()}
                     <p style={{color:'#fff',fontSize:14,fontWeight:900,letterSpacing:'0.03em',margin:'0 0 5px',textShadow:'0 2px 8px rgba(0,0,0,0.9)',textAlign:'center',position:'relative',zIndex:2,paddingLeft:8,paddingRight:8}}>Bridge Souk</p>
                     <div style={{background:'#7E22CE',padding:'3px 14px',display:'flex',alignItems:'center',justifyContent:'center',position:'relative',zIndex:2,width:'100%',boxSizing:'border-box'}}>
