@@ -8841,7 +8841,31 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
   const trackIntervalRef=useRef<number|null>(null);
   const [taxiRating,setTaxiRating]=useState(0);
   const [prixProposeTaxi,setPrixProposeTaxi]=useState('');
+  const [prixSuggereTaxi,setPrixSuggereTaxi]=useState<number|null>(null);
   const [acceptedDriverOfferTaxi,setAcceptedDriverOfferTaxi]=useState(false);
+
+  // Calcul du tarif suggéré : InDrive Safi -6% (distance à vol d'oiseau)
+  useEffect(()=>{
+    if(!destination.trim()){setPrixSuggereTaxi(null);return;}
+    const origin=clientPos||{lat:32.2994,lng:-9.2372}; // centre Safi par défaut
+    let cancelled=false;
+    fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(destination+', Safi, Maroc')}&format=json&limit=1`)
+      .then(r=>r.json())
+      .then((results:Array<{lat:string;lon:string}>)=>{
+        if(cancelled||!results.length)return;
+        const destLat=parseFloat(results[0].lat);const destLng=parseFloat(results[0].lon);
+        const toRad=(d:number)=>d*Math.PI/180;
+        const R=6371;
+        const dLat=toRad(destLat-origin.lat);const dLon=toRad(destLng-origin.lng);
+        const a=Math.sin(dLat/2)**2+Math.cos(toRad(origin.lat))*Math.cos(toRad(destLat))*Math.sin(dLon/2)**2;
+        const km=R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))*1.3; // ×1.3 pour routes
+        // InDrive Safi Taxi: 15 DH base + 2.5 DH/km, -6% Bridge
+        const raw=Math.max(15,15+km*2.5)*0.94;
+        const suggested=Math.round(raw/5)*5; // arrondi au 5 DH
+        if(!cancelled)setPrixSuggereTaxi(suggested);
+      }).catch(()=>{});
+    return()=>{cancelled=true;};
+  },[destination,clientPos]);
   const [fakeVehiclesTaxi,setFakeVehiclesTaxi]=useState([
     {lat:32.3010,lng:-9.2390,id:1,emoji:'🚖'},
     {lat:32.3050,lng:-9.2430,id:2,emoji:'🚖'},
@@ -8902,7 +8926,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
       }).catch(()=>{});
       await fetch(`${DRIVER_APP_URL}/api/trips`,{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({trackingNumber:ref,passengerName:name.trim(),passengerPhone:phone.trim(),pickupAddress:pickup,dropoffAddress:destination.trim(),vehicleType:'car',passengers,fare:0,paymentMethod:payInfo,driverTrackUrl,status:'scheduled'}),
+        body:JSON.stringify({trackingNumber:ref,passengerName:name.trim(),passengerPhone:phone.trim(),pickupAddress:pickup,dropoffAddress:destination.trim(),vehicleType:'taxi',passengers,fare:0,paymentMethod:payInfo,driverTrackUrl,status:'scheduled'}),
       }).catch(()=>{});
     }finally{setSending(false);}
     if(taxiGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:taxiGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${taxiUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
@@ -9039,6 +9063,13 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
                   style={{flex:1,borderRadius:10,border:'1.5px solid var(--c-border)',padding:'10px 11px',fontSize:15,fontWeight:900,background:'var(--c-bg)',color:'var(--c-text)',outline:'none',boxSizing:'border-box' as const}}/>
                 <span style={{fontWeight:900,color:'var(--c-text)',fontSize:14,whiteSpace:'nowrap' as const}}>DH</span>
               </div>
+              {prixSuggereTaxi&&(
+                <button onClick={()=>setPrixProposeTaxi(String(prixSuggereTaxi))}
+                  style={{marginTop:6,width:'100%',padding:'7px 12px',borderRadius:10,border:'1.5px dashed rgba(245,158,11,0.5)',background:'rgba(245,158,11,0.08)',color:'#92400E',fontSize:11,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                  <span>💡 {lang==='ar'?'السعر المقترح (InDrive -6%)':lang==='en'?'Suggested price (InDrive -6%)':'Prix suggéré Bridge (InDrive Safi -6%)'}</span>
+                  <span style={{fontWeight:900,fontSize:14,color:'#78350F'}}>{prixSuggereTaxi} DH</span>
+                </button>
+              )}
               <p style={{fontSize:10,color:'#9CA3AF',margin:'4px 0 0'}}>
                 {lang==='ar'?'السائق يرى سعرك ويمكنه الرد باقتراح مختلف':lang==='en'?'Driver will see your offer and can counter-propose':'Le chauffeur voit votre offre et peut proposer un autre prix'}
               </p>
@@ -9287,7 +9318,32 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
   const [trackData,setTrackData]=useState<{found:boolean;lat?:number;lng?:number;status?:string;driverName?:string;eta?:number;clientLat?:number;clientLng?:number;driverPrice?:number}|null>(null);
   const trackIntervalRef=useRef<number|null>(null);
   const [prixProposeMoto,setPrixProposeMoto]=useState('');
+  const [prixSuggereMoto,setPrixSuggereMoto]=useState<number|null>(null);
   const [acceptedDriverOfferMoto,setAcceptedDriverOfferMoto]=useState(false);
+
+  // Calcul du tarif suggéré : InDrive Safi -6% (distance à vol d'oiseau)
+  useEffect(()=>{
+    if(!destination.trim()){setPrixSuggereMoto(null);return;}
+    const origin=clientPos||{lat:32.2994,lng:-9.2372};
+    let cancelled=false;
+    fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(destination+', Safi, Maroc')}&format=json&limit=1`)
+      .then(r=>r.json())
+      .then((results:Array<{lat:string;lon:string}>)=>{
+        if(cancelled||!results.length)return;
+        const destLat=parseFloat(results[0].lat);const destLng=parseFloat(results[0].lon);
+        const toRad=(d:number)=>d*Math.PI/180;
+        const R=6371;
+        const dLat=toRad(destLat-origin.lat);const dLon=toRad(destLng-origin.lng);
+        const a=Math.sin(dLat/2)**2+Math.cos(toRad(origin.lat))*Math.cos(toRad(destLat))*Math.sin(dLon/2)**2;
+        const km=R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))*1.3;
+        // InDrive Safi Taxi Confort: 15+2.5/km; Moto Taxi: 10+1.8/km; -6% Bridge
+        const baseRate=isTaxi?2.5:1.8;const baseFlat=isTaxi?15:10;
+        const raw=Math.max(baseFlat,baseFlat+km*baseRate)*0.94;
+        const suggested=Math.round(raw/5)*5;
+        if(!cancelled)setPrixSuggereMoto(suggested);
+      }).catch(()=>{});
+    return()=>{cancelled=true;};
+  },[destination,clientPos,isTaxi]);
   const [fakeVehiclesMoto,setFakeVehiclesMoto]=useState([
     {lat:32.2990,lng:-9.2360,id:1,emoji:vEmoji},
     {lat:32.3040,lng:-9.2410,id:2,emoji:vEmoji},
@@ -9344,14 +9400,10 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
     const offeredPrice=parseFloat(prixProposeMoto)||0;
     const finalPrice=Math.max(0,offeredPrice-motoGemMAD);
     const payInfoMoto=motoPayMethod==='qr'?'QR Code':motoPayMethod==='cash'?'Espèces':motoPayMethod==='apple'?'Apple Pay':motoPayMethod==='google'?'Google Pay':motoPayMethod==='paypal'?'PayPal'+(paypalEmail?' · '+paypalEmail:''):'Espèces';
-    // Le back-end Livreurs (chauffeurs/motards) distingue les livreurs par
-    // vehicleType 'car' | 'moto' UNIQUEMENT — jamais 'taxi'. Avant ce fix, une
-    // course "Taxi Confort" envoyait vehicleType:'taxi', qui ne correspondait
-    // JAMAIS au vehicleType 'car' des chauffeurs → la course n'était donc
-    // jamais dispatchée à aucun chauffeur. On traduit ici 'taxi' → 'car' au
-    // moment de l'appel réseau, tout en gardant 'taxi' partout ailleurs
-    // (historique client, préfixe de référence, couleurs UI).
-    const apiVehicleType:'car'|'moto'=isTaxi?'car':'moto';
+    // Taxi Confort → vehicleType:'taxi' (pool chauffeurs taxi)
+    // Moto Taxi   → vehicleType:'moto_taxi' (pool motards taxi)
+    // Les livreurs de livraison utilisent 'car'/'moto' via /api/deliveries — aucun conflit.
+    const apiVehicleType=isTaxi?'taxi':'moto_taxi';
     try{
       await fetch(`/api/tracking/${ref}`,{
         method:'POST',headers:{'Content-Type':'application/json'},
@@ -9480,6 +9532,13 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
                   style={{flex:1,borderRadius:10,border:'1.5px solid var(--c-border)',padding:'10px 11px',fontSize:15,fontWeight:900,background:'var(--c-bg)',color:'var(--c-text)',outline:'none',boxSizing:'border-box' as const}}/>
                 <span style={{fontWeight:900,color:'var(--c-text)',fontSize:14,whiteSpace:'nowrap' as const}}>DH</span>
               </div>
+              {prixSuggereMoto&&(
+                <button onClick={()=>setPrixProposeMoto(String(prixSuggereMoto))}
+                  style={{marginTop:6,width:'100%',padding:'7px 12px',borderRadius:10,border:`1.5px dashed ${isTaxi?'rgba(245,158,11,0.5)':'rgba(249,115,22,0.5)'}`,background:isTaxi?'rgba(245,158,11,0.08)':'rgba(249,115,22,0.08)',color:isTaxi?'#92400E':'#9A3412',fontSize:11,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                  <span>💡 {lang==='ar'?'السعر المقترح (InDrive -6%)':lang==='en'?'Suggested price (InDrive -6%)':'Prix suggéré Bridge (InDrive Safi -6%)'}</span>
+                  <span style={{fontWeight:900,fontSize:14,color:isTaxi?'#78350F':'#7C2D12'}}>{prixSuggereMoto} DH</span>
+                </button>
+              )}
               <p style={{fontSize:10,color:'#9CA3AF',margin:'4px 0 0'}}>
                 {lang==='ar'?'المرسال يرى سعرك':lang==='en'?`${vDriverWord('en')} sees your offer`:`${vDriverWord('fr')} voit votre offre et peut counter-proposer`}
               </p>
