@@ -179,11 +179,14 @@ router.post("/tracking/:ref", (req, res) => {
 
   if (!isShop) {
     // Notify all drivers with push notification (taxi/moto uniquement)
+    // URL → site livreur pour que Khalidou Ba et les chauffeurs aillent au bon endroit
+    const isMoto = ref.startsWith('MT-');
+    const serviceLabel = isMoto ? '🛵 Bridge Moto Taxi' : '🚖 Bridge Taxi Confort';
     notifyDrivers({
       type: "NEW_TAXI",
-      title: "🚖 Nouvelle course Taxi !",
+      title: `${serviceLabel} — Nouvelle course !`,
       body: `${customerName || 'Client'} → ${destination || '?'} · ${clientAddress || 'Safi'}`,
-      data: { ref, url: "/dispatch" },
+      data: { ref, url: "https://livreur.safi-bridge.ma" },
     }).catch(() => {});
   }
 });
