@@ -1,1 +1,2 @@
 - [Bridge Safi auth & order history](bridge-safi-auth-and-history.md) — custom JWT auth (no Clerk), order history must be account-scoped server-side, not localStorage.
+- [Chauffeur trip API contract](chauffeur-trip-api-contract.md) — live chauffeur site uses car/moto on /api/trips; Eats deliveries use a separate /api/deliveries endpoint.

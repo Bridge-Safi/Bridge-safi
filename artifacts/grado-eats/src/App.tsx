@@ -8927,7 +8927,12 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
       await fetch(`${DRIVER_APP_URL}/api/trips`,{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({trackingNumber:ref,passengerName:name.trim(),passengerPhone:phone.trim(),pickupAddress:pickup,dropoffAddress:destination.trim(),vehicleType:'car',passengers,fare:0,paymentMethod:payInfo,driverTrackUrl,status:'scheduled',notes:'🚖 Bridge Taxi Confort',serviceType:'taxi_confort'}),
-      }).catch(()=>{});
+      }).then(async response=>{
+        if(!response.ok) throw new Error(`driver trip rejected (${response.status})`);
+      });
+    }catch{
+      setFormErr('send');
+      return;
     }finally{setSending(false);}
     if(taxiGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:taxiGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${taxiUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     localStorage.setItem('bridge_taxi_ref',ref);
@@ -9112,7 +9117,9 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
               </div>
             </div>
             {formErr&&<p style={{color:'#DC2626',fontSize:12,fontWeight:700,margin:0}}>
-              {lang==='ar'?'يرجى ملء جميع الحقول':lang==='en'?'Please fill all fields':'Veuillez remplir tous les champs'}
+              {formErr==='send'
+                ?(lang==='ar'?'تعذر إرسال الرحلة إلى السائقين':lang==='en'?'The ride could not be sent to drivers':'La course n’a pas pu être envoyée aux chauffeurs')
+                :(lang==='ar'?'يرجى ملء جميع الحقول':lang==='en'?'Please fill all fields':'Veuillez remplir tous les champs')}
             </p>}
             {/* 💎 Diamond discount */}
             <div style={{borderRadius:14,padding:'12px 14px',background:'linear-gradient(135deg,#0A1A12,#0D2E1A)',border:'1px solid rgba(74,222,128,0.3)'}}>
@@ -9400,9 +9407,10 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
     const offeredPrice=parseFloat(prixProposeMoto)||0;
     const finalPrice=Math.max(0,offeredPrice-motoGemMAD);
     const payInfoMoto=motoPayMethod==='qr'?'QR Code':motoPayMethod==='cash'?'Espèces':motoPayMethod==='apple'?'Apple Pay':motoPayMethod==='google'?'Google Pay':motoPayMethod==='paypal'?'PayPal'+(paypalEmail?' · '+paypalEmail:''):'Espèces';
-    // Le site livreur n'accepte que 'car' | 'moto' comme vehicleType.
-    // Taxi Confort → 'car'  (chauffeurs taxi confort enregistrés comme 'car')
-    // Moto Taxi   → 'moto' (motards enregistrés comme 'moto')
+    // Le site chauffeur distingue les deux pools via vehicleType :
+    // Taxi Confort → 'car', Moto Taxi → 'moto'.
+    // Les livraisons Bridge Eats utilisent un autre endpoint (/api/deliveries)
+    // et ne passent donc jamais dans ce routage de courses.
     const apiVehicleType:'car'|'moto'=isTaxi?'car':'moto';
     try{
       await fetch(`/api/tracking/${ref}`,{
@@ -9411,8 +9419,13 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
       }).catch(()=>{});
       await fetch(`${DRIVER_APP_URL}/api/trips`,{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({trackingNumber:ref,passengerName:name.trim(),passengerPhone:phone.trim(),pickupAddress:pickup,dropoffAddress:destination.trim(),vehicleType:apiVehicleType,passengers:isTaxi?undefined:1,fare:finalPrice||undefined,paymentMethod:payInfoMoto,driverTrackUrl,status:'scheduled',notes:isTaxi?'🚖 Bridge Taxi Confort':'🛵 Bridge Moto Taxi',serviceType:isTaxi?'taxi_confort':'moto_taxi'}),
-      }).catch(()=>{});
+        body:JSON.stringify({trackingNumber:ref,passengerName:name.trim(),passengerPhone:phone.trim(),pickupAddress:pickup,dropoffAddress:destination.trim(),vehicleType:apiVehicleType,passengers:isTaxi?undefined:1,fare:finalPrice,paymentMethod:payInfoMoto,driverTrackUrl,status:'scheduled',notes:isTaxi?'🚖 Bridge Taxi Confort':'🛵 Bridge Moto Taxi',serviceType:isTaxi?'taxi_confort':'moto_taxi'}),
+      }).then(async response=>{
+        if(!response.ok) throw new Error(`driver trip rejected (${response.status})`);
+      });
+    }catch{
+      setFormErr('send');
+      return;
     }finally{setSending(false);}
     if(motoGemMAD>0){getAuthHeaders().then(h=>fetch('/api/game/diamonds/spend',{method:'POST',credentials:'include',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({spend:motoGemMAD*200})}).then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d.diamonds==='number'){const ck=`bridge_diamonds_cache_${motoUser?.id||'anon'}`;try{localStorage.setItem(ck,String(d.diamonds));}catch{}window.dispatchEvent(new StorageEvent('storage',{key:ck,newValue:String(d.diamonds)}));}}).catch(()=>{}));}
     localStorage.setItem(vLocalKey,ref);
@@ -9556,7 +9569,9 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
               </div>
             </div>
             {formErr&&<p style={{color:'#DC2626',fontSize:12,fontWeight:700,margin:0}}>
-              {lang==='ar'?'يرجى ملء جميع الحقول':lang==='en'?'Please fill all fields':'Veuillez remplir tous les champs'}
+              {formErr==='send'
+                ?(lang==='ar'?'تعذر إرسال الرحلة إلى السائقين':lang==='en'?'The ride could not be sent to drivers':'La course n’a pas pu être envoyée aux chauffeurs')
+                :(lang==='ar'?'يرجى ملء جميع الحقول':lang==='en'?'Please fill all fields':'Veuillez remplir tous les champs')}
             </p>}
             <div style={{borderRadius:14,padding:'12px 14px',background:'linear-gradient(135deg,#0A1A12,#0D2E1A)',border:'1px solid rgba(74,222,128,0.3)'}}>
               <p style={{fontSize:11,fontWeight:900,color:'#D9C5A0',margin:'0 0 6px'}}>

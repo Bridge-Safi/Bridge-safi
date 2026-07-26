@@ -59,11 +59,11 @@ Les courses sont envoyées au site livreur (`DRIVER_APP_URL = https://livreur.sa
 
 | Service | vehicleType envoyé | Pool de chauffeurs |
 |---|---|---|
-| Taxi Confort | `taxi` | Chauffeurs taxi confort uniquement |
-| Moto Taxi | `moto_taxi` | Motards taxi uniquement |
+| Taxi Confort | `car` via `/api/trips` | Chauffeurs taxi confort uniquement |
+| Moto Taxi | `moto` via `/api/trips` | Motards taxi uniquement |
 | Livraisons (Eats, Tabac…) | `car` / `moto` via `/api/deliveries` | Livreurs standard |
 
-> ⚠️ Ne jamais remettre `vehicleType:'car'` pour Taxi Confort — les courses partiraient dans la pool livreurs et ne seraient jamais acceptées par les chauffeurs taxi.
+> ⚠️ Ne pas confondre les endpoints : les courses Taxi/Moto passent par `/api/trips` et les livraisons Bridge Eats par `/api/deliveries`. Le site chauffeur distingue les pools Taxi/Moto avec `vehicleType:'car'` et `vehicleType:'moto'`.
 
 ## Tarifs suggérés (InDrive Safi -6%)
 
