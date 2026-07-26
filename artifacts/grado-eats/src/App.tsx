@@ -9066,7 +9066,7 @@ function TaxiPage({onBack,lang,cycleLang,profile,saveProfile}:{
               {prixSuggereTaxi&&(
                 <button onClick={()=>setPrixProposeTaxi(String(prixSuggereTaxi))}
                   style={{marginTop:6,width:'100%',padding:'7px 12px',borderRadius:10,border:'1.5px dashed rgba(245,158,11,0.5)',background:'rgba(245,158,11,0.08)',color:'#92400E',fontSize:11,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                  <span>💡 {lang==='ar'?'السعر المقترح (InDrive -6%)':lang==='en'?'Suggested price (InDrive -6%)':'Prix suggéré Bridge (InDrive Safi -6%)'}</span>
+                  <span>💡 {lang==='ar'?'السعر المقترح (-6%)':lang==='en'?'Suggested price (-6%)':'Prix suggéré Bridge (-6%)'}</span>
                   <span style={{fontWeight:900,fontSize:14,color:'#78350F'}}>{prixSuggereTaxi} DH</span>
                 </button>
               )}
@@ -9535,7 +9535,7 @@ function MotoTaxiPage({onBack,lang,cycleLang,profile,saveProfile,vehicleType='mo
               {prixSuggereMoto&&(
                 <button onClick={()=>setPrixProposeMoto(String(prixSuggereMoto))}
                   style={{marginTop:6,width:'100%',padding:'7px 12px',borderRadius:10,border:`1.5px dashed ${isTaxi?'rgba(245,158,11,0.5)':'rgba(249,115,22,0.5)'}`,background:isTaxi?'rgba(245,158,11,0.08)':'rgba(249,115,22,0.08)',color:isTaxi?'#92400E':'#9A3412',fontSize:11,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                  <span>💡 {lang==='ar'?'السعر المقترح (InDrive -6%)':lang==='en'?'Suggested price (InDrive -6%)':'Prix suggéré Bridge (InDrive Safi -6%)'}</span>
+                  <span>💡 {lang==='ar'?'السعر المقترح (-6%)':lang==='en'?'Suggested price (-6%)':'Prix suggéré Bridge (-6%)'}</span>
                   <span style={{fontWeight:900,fontSize:14,color:isTaxi?'#78350F':'#7C2D12'}}>{prixSuggereMoto} DH</span>
                 </button>
               )}
