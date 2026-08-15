@@ -8833,6 +8833,41 @@ function PWAInstallBanner({ lang }: { lang: Lang }) {
   );
 }
 
+function BetaBubble() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{position:'fixed',top:14,left:'50%',transform:'translateX(-50%)',zIndex:70,display:'flex',flexDirection:'column',alignItems:'center',pointerEvents:'none'}}>
+      <button onClick={()=>setOpen(o=>!o)} title="Bridge est en test"
+        style={{
+          pointerEvents:'auto',
+          display:'flex',alignItems:'center',gap:6,
+          padding:'6px 14px',borderRadius:999,
+          border:'1.5px solid rgba(217,197,160,0.7)',
+          background:'linear-gradient(135deg,#065F46,#047857)',
+          color:'#fff',fontWeight:900,fontSize:11,letterSpacing:'0.03em',
+          boxShadow:'0 4px 14px rgba(6,95,70,0.35)',cursor:'pointer',
+          animation:'betaPulse 2.4s ease-in-out infinite',
+        }}>
+        <span style={{fontSize:13}}>🚧</span> VERSION TEST
+      </button>
+      {open && (
+        <div onClick={()=>setOpen(false)}
+          style={{
+            pointerEvents:'auto',marginTop:8,maxWidth:260,textAlign:'center',
+            padding:'10px 14px',borderRadius:14,cursor:'pointer',
+            background:'var(--c-card)',color:'var(--c-text)',
+            border:'1.5px solid rgba(217,197,160,0.7)',
+            boxShadow:'0 6px 20px rgba(0,0,0,0.25)',
+            fontSize:12,fontWeight:700,lineHeight:1.4,
+          }}>
+          Bridge n'est pas encore lancé — vous testez une version d'essai. Bientôt disponible ! 🎉
+        </div>
+      )}
+      <style>{`@keyframes betaPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}`}</style>
+    </div>
+  );
+}
+
 function FloatingHelpWA() {
   // Regroupe Aide + WhatsApp, affiche en bas a droite sur TOUTES les pages
   // (demande zabi 2026-07-10 : "met la [aide] a cote de wharrsap et message
